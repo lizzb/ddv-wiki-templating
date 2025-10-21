@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<title>Mr. Data Converter</title>
+<meta name="description" content="Convert your spreadsheet data into one of several web-friendly formats, including JSON and XML.">
+<meta name="google-site-verification" content="XyXgwlcIf2zzTHcUBbZYXChfZ1a2gNTej4wO-hfBVlE">
+<link rel="stylesheet" href="css/styles.min.css">
+<link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-touch-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon-180x180.png">
+<link rel="icon" type="image/png" href="favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="favicons/android-chrome-192x192.png" sizes="192x192">
+<link rel="icon" type="image/png" href="favicons/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="favicons/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="favicons/manifest.json">
+<link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="favicons/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-TileImage" content="favicons/mstile-144x144.png">
+<meta name="msapplication-config" content="favicons/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<div id="base" class="hbox">
+  <div id="header" class="panel">
+    <div id="description">
+      <h1>Mr. Data Converter</h1>
+      <p>I will convert your spreadsheet data into one of several web-friendly formats.</p>
+      <p>Fork me on <a href="https://github.com/thdoan/mr-data-converter">GitHub</a>.</p>
+    </div>
+    <hr>
+    <div id="settings">
+      <h3>Settings</h3>
+      <form id="settings-form">
+        <p>
+          Delimiter:
+          <label><input type="radio" id="delimiterAuto" name="delimiter" value="auto" class="settings-element" checked> Auto</label>
+          <label><input type="radio" id="delimiterComma" name="delimiter" value="comma" class="settings-element"> Comma</label>
+          <label><input type="radio" id="delimiterTab" name="delimiter" value="tab" class="settings-element"> Tab</label>
+        </p>
+        <p>
+          Decimal Sign:
+          <label><input type="radio" id="decimalDot" name="decimal" value="dot" class="settings-element" checked> Dot</label>
+          <label><input type="radio" id="decimalComma" name="decimal" value="comma" class="settings-element"> Comma</label>
+        </p>
+        <p>
+          <label><input type="checkbox" id="headersProvidedCB" class="settings-element" checked> First row is the header</label>
+        </p>
+        <div id="headerGroup" class="settings-group">
+          <p>
+            Safe header names:
+            <label><input type="radio" id="headersSafe" name="headerType" value="safe" class="settings-element" checked> Yes</label>
+            <label><input type="radio" id="headersUnsafe" name="headerType" value="unsafe" class="settings-element"> No</label>
+          </p>
+          <p>
+            Transform:
+            <label><input type="radio" id="headersNoTransform" name="headerModifications" value="none" class="settings-element" checked> None</label>
+            <label><input type="radio" id="headersDowncase" name="headerModifications" value="downcase" class="settings-element"> Lowercase</label>
+            <label><input type="radio" id="headersUpcase" name="headerModifications" value="upcase" class="settings-element"> Uppercase</label>
+          </p>
+        </div>
+        <p>
+          <label><input type="checkbox" id="includeWhiteSpaceCB" class="settings-element" checked> Include white space in output</label>
+        </p>
+        <div id="indentGroup" class="settings-group">
+          <p>
+            Indent with:
+            <label><input type="radio" id="includeWhiteSpaceSpaces" name="indentType" value="spaces" class="settings-element" checked> Spaces</label>
+            <label><input type="radio" id="includeWhiteSpaceTabs" name="indentType" value="tabs" class="settings-element"> Tabs</label>
+          </p>
+        </div>
+        <p>
+          <label><input type="checkbox" id="includeHtmlClassCB" class="settings-element" checked> Include <code>class</code> in HTML output</label>
+        </p>
+        <br>
+        <button type="button" id="restore">Restore Defaults</button>
+      </form>
+    </div>
+  </div>
+  <div id="converter" class="vbox panel">
+    <div class="wrapper">
+      <div id="input-header" class="group-header panel">
+        <p class="group-headline">
+          <label for="data-input">Input CSV or tab-delimited data.</label>
+          <span class="subhead">
+            Using Excel? Simply copy &amp; paste. No data on hand?&nbsp;
+            <a href="javascript:;" id="insert-sample">Use sample</a>
+          </span>
+        </p>
+      </div>
+      <textarea id="data-input" class="text-input panel" autofocus></textarea>
+      <div id="output-header" class="group-header panel">
+        <p class="group-headline">
+          <label for="data-output">Output as</label>
+          <select id="data-selector">
+            <option value="asp">ASP/VBScript</option>
+            <option value="csharp">C#</option>
+            <option value="cfml">ColdFusion</option>
+            <option value="go">Go</option>
+            <option value="html">HTML</option>
+            <option value="jsonArrayCols">JSON - Column Arrays</option>
+            <option value="jsonArrayRows">JSON - Row Arrays</option>
+            <option value="jsonDict">JSON - Dictionary</option>
+            <option value="json" selected>JSON - Properties</option>
+            <option value="luaArray">Lua - Array Table</option>
+            <option value="luaDict">Lua - Dictionary Table</option>
+            <option value="markdown">Markdown</option>
+            <option value="mysql">MySQL</option>
+            <option value="perl">Perl</option>
+            <option value="php">PHP</option>
+            <option value="python">Python</option>
+            <option value="rtf">RTF</option>
+            <option value="ruby">Ruby</option>
+            <option value="trac">Trac</option>
+            <option value="wiki">Wiki</option>
+            <option value="xmlIllustrator">XML - Illustrator</option>
+            <option value="xml">XML - Nodes</option>
+            <option value="xmlProperties">XML - Properties</option>
+            <option value="xmlSmart">XML - Smart</option>
+            <option value="yaml">YAML</option>
+          </select>
+          <span id="output-notes" class="subhead"></span>
+        </p>
+      </div>
+      <textarea id="data-output" class="text-input panel"></textarea>
+    </div>
+  </div>
+</div>
+<!--[if lt IE 9]>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
+<![endif]-->
+<!--[if IE 9]><!-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+<!--<![endif]-->
+<script src="js/app.js"></script>
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-2843793-6','auto');ga('send','pageview');
+</script>
+</body>
+</html>
