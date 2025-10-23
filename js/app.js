@@ -1,3 +1,5 @@
+var templateType = "spDuties"; // other vals: clothingFurniture, spDuties, spRewards, questItems, meals, ingredients// this value is changed based on changes to radio buttons in settings...?
+
 /*!
  * CSVParser.js
  * Mr-Data-Converter
@@ -18,8 +20,194 @@ DataGridRenderer={asp:function(n,t,i,r,u){var o="",c=n.length,l=t.length,e,s,f,h
  *
  * Created by Shan Carter on 2010-09-01.
  */
-DataConverter.prototype.init=function(){var n=this;this.inputTextArea=$("#data-input");this.outputTextArea=$("#data-output");this.dataSelector=$("#data-selector");this.outputNotes=$("#output-notes");$("#converter > .wrapper").append('<div class="loader">  <span class="loader-text">Loading...</span>  <i class="loader-icon"></i></div>');this.outputTextArea.val()&&(n.outputDataType=this.dataSelector.children("option:selected").val(),n.convert());this.inputTextArea.add(this.outputTextArea).click(function(){this.select()});$("#insert-sample").click(function(t){t.preventDefault();n.insertSampleData();n.convert();ga("send","event","SampleData","InsertGeneric")});this.inputTextArea.on({change:function(){n.convert();ga("send","event","DataType",n.outputDataType)},keyup:function(){var t=$(this);t.data("wait")||(t.data("wait",!0),n.convert(),setTimeout(function(){t.data("wait",!1)},500))}});this.dataSelector.change(function(){n.outputDataType=$(this).val();n.outputDataType==="xmlSmart"?(n.outputNotes.text("This format requires safe header names to be disabled."),$("#headersUnsafe").click()):n.outputNotes.text("");n.convert();n.outputTextArea.select();saveSettings()});$(".loader").remove();this.node.addClass("loaded")};DataConverter.prototype.convert=function(){if(this.inputText=this.inputTextArea.val(),this.inputText.length>0){this.includeWhiteSpace?this.newLine="\n":(this.indent="",this.newLine="");CSVParser.resetLog();var n=CSVParser.parse(this.inputText,this.delimiter,this.decimal,this.headersProvided,this.safeHeaders,this.downcaseHeaders,this.upcaseHeaders),t=n.dataGrid,i=n.headerNames,r=n.headerTypes,u=n.errors;this.outputText=DataGridRenderer[this.outputDataType](t,i,r,this.indent,this.newLine);this.outputTextArea.val(u+this.outputText)}};DataConverter.prototype.insertSampleData=function(){this.inputTextArea.val('NAME\tVALUE\tCOLOR\tDATE\nAlan\t12\tblue\tSep. 25, 2009\nShan\t13\t"green\tblue"\tSep. 27, 2009\nJohn\t45\torange\tSep. 29, 2009\nMinna\t27\tteal\tSep. 30, 2009')};
+DataConverter.prototype.init = function() {
+    var n = this;
+    this.inputTextArea = $("#data-input");
+    this.outputTextArea = $("#data-output");
+    this.dataSelector = $("#data-selector");
+    this.outputNotes = $("#output-notes");
+    this.templateOutputTextArea = $('#template-output');
+    $("#converter > .wrapper").append('<div class="loader">  <span class="loader-text">Loading...</span>  <i class="loader-icon"></i></div>');
+    this.outputTextArea.val() && (n.outputDataType = this.dataSelector.children("option:selected").val(), n.convert());
+    this.inputTextArea.add(this.outputTextArea).click(function() {
+        this.select()
+    });
+    $(".insert-sample").click(function(t) {
+        t.preventDefault();
+        const value = $(this).data('value');
+        n.insertSampleData(value);
+        n.convert();
+        //ga("send", "event", "SampleData", "InsertGeneric")
+    });
+
+    this.inputTextArea.on({
+        change: function() {
+            n.convert();
+            //ga("send", "event", "DataType", n.outputDataType)
+        },
+        keyup: function() {
+            var t = $(this);
+            t.data("wait") || (t.data("wait", !0), n.convert(), setTimeout(function() {
+                t.data("wait", !1)
+            }, 500))
+        }
+    });
+    this.dataSelector.change(function() {
+        n.outputDataType = $(this).val();
+        n.outputDataType === "xmlSmart" ? (n.outputNotes.text("This format requires safe header names to be disabled."), $("#headersUnsafe").click()) : n.outputNotes.text("");
+        n.convert();
+        n.outputTextArea.select();
+        saveSettings()
+    });
+    $(".loader").remove();
+    this.node.addClass("loaded")
+};
+DataConverter.prototype.convert = function() {
+    if (this.inputText = this.inputTextArea.val(), this.inputText.length > 0) {
+        this.includeWhiteSpace ? this.newLine = "\n" : (this.indent = "", this.newLine = "");
+        CSVParser.resetLog();
+        var n = CSVParser.parse(this.inputText, this.delimiter, this.decimal, this.headersProvided, this.safeHeaders, this.downcaseHeaders, this.upcaseHeaders),
+            t = n.dataGrid,
+            i = n.headerNames,
+            r = n.headerTypes,
+            u = n.errors;
+        this.outputText = DataGridRenderer[this.outputDataType](t, i, r, this.indent, this.newLine);
+        this.outputTextArea.val(u + this.outputText);
+
+
+        const jsonString = this.outputText;
+        // convert to array of JSON objects with properties from formatted string
+		const jsonArray = JSON.parse(jsonString);
+
+		//console.log("renderParent about to be called with global var templateType value:", templateType);
+        this.templateOutputTextArea.val(renderParent(jsonArray, templateType));
+    }
+};
+DataConverter.prototype.insertSampleData = function(dataName) {  
+
+	// 
+
+  	var outputString = "";
+  	if (dataName == "spDuties") {
+  		outputString = 
+  		// ====== spDuties: num, icon, name, qty, reward ======
+	    'num\ticon\tname\tqty\treward\n' +
+	    '1\tFishing\tCatch fish somewhere "Valorous"\t10\t15\n' +
+	    '2\tGoofy\'s Stall\tSell items.\t20\t15\n' +
+	    '3\tGain Star Coins\tEarn 30,000 Star Coins.\t30K\t25';
+  	}
+  	else if (dataName == "spRewards") {
+  		outputString = 
+	    // ====== spRewards: tier, tile, name, premium, eventtokens, itemType, location, source ======
+	    'tier\ttile\tname\tpremium\teventtokens\titemType\tlocation\tsource\n' +
+	    '6\t6A\tSpiderweb Dress Daisy\tno\t100\tCharacter Dream Style\tstarpath - witchful\tStar Path - Witchful Thinking - 6A - T6 (100 tokens)\n' +
+	    '6\t6B\tPurple Witch Robes\tyes\t50\tClothing\tstarpath - witchful\tStar Path - Witchful Thinking - 6B - T6 Premium (50 tokens)\n' +
+	    '6\t6C\t610\tyes\t60\tMoonstones\tstarpath - witchful\tStar Path - Witchful Thinking - 6C - T6 Premium (60 tokens)\n' +
+	    '6\t6D\tPurple Witch Purse\tyes\t30\tAccessory\tstarpath - witchful\tStar Path - Witchful Thinking - 6D - T6 Premium (30 tokens)\n' +
+	    '6\t6E\tWooden Potion Cupboard\tno\t30\tFurniture\tstarpath - witchful\tStar Path - Witchful Thinking - 6E - T6 (30 tokens)\n';
+  	}
+  	else if (dataName == "questItems") {
+  		outputString = 
+	    // ====== questItems: name, description, questname, questcharacter, realmname =====
+	    'name\tdescription\tquestname\tquestcharacter\trealmname\n' +
+	    'Flag Poles\tThese flag poles are needed to play Capture the Sun.\tCapture the Sun\tJoy\tnone';
+  	}
+  	else if (dataName == "meals") {
+  		outputString = 
+	    // ====== meals: name, type, stars ======
+	    'name\ttype\tstars\n' +
+	    'Tea Sandwiches\tAppetizers\t4\n' +
+	    'Cheshire Cat Tail\tDesserts\t4\n' +
+	    'Garlic Chocolate Tart\tDesserts\t5';
+  	}
+  	else if (dataName == "ingredients") {
+  		outputString = 
+  		// ====== ingredients: name, type, stars =====
+	    'name\ttype\tstars\n' +
+	    'Brussels Sprout\tVegetables\tnull\n' +
+	    'Cauliflower\tVegetables\tnull\n' +
+	    'Green Beans\tVegetables\tnull';
+  	}
+  	else if (dataName == "clothingFurniture") {
+  		outputString = 
+  		// ===== sampleItems: itemType, collection, version, versionRemoved, obtainable, ID, sheetOrder, universe, limited, speculated, Subgroup, name, category, tagsConfirmed, tags, color, traits, Checklist, verified, buyprice, MSCost, source, placement, size, W, L, functions, npcInterest, location, inStore =====
+    'itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\n'+
+	'Furniture\tSV\t1.17.11\t\t\tnull\t22.138\tSleeping Beauty\tnull\t\t\tRustic Cottage Bed\tBeds\tTODO\tRustic, Bedroom\tbrown, purple\tSimple, Calm, Strong, Wondrous\tFALSE\t2025.07.25 - 2a (TT to 07.27)\t4600\t\tStore\tdefault\t4x6\t4\t6\tSit\tnull\tSize 2\tSV';
+  	}
+
+  this.inputTextArea.val(outputString);
+};
+
+
+
 /*!
+ * 
  * Controller.js
+ * 
  */
-$(document).ready(function(){function r(n){n&&ga("send","event","Restore Defaults",n.currentTarget.id);localStorage.clear();location.reload()}function i(n){if(n&&ga("send","event","Settings",n.currentTarget.id),d.delimiter=$("input[name=delimiter]:checked").val(),d.decimal=$("input[name=decimal]:checked").val(),d.headersProvided=$("#headersProvidedCB").prop("checked"),d.headersProvided){$("#headerGroup input").prop("disabled",!1);d.safeHeaders=$("input[name=headerType]:checked").val()==="safe";switch($("input[name=headerModifications]:checked").val()){case"none":d.downcaseHeaders=!1;d.upcaseHeaders=!1;break;case"downcase":d.downcaseHeaders=!0;d.upcaseHeaders=!1;break;case"upcase":d.downcaseHeaders=!1;d.upcaseHeaders=!0}}else $("#headerGroup input").prop("disabled",!0);if(d.includeWhiteSpace=$("#includeWhiteSpaceCB").prop("checked"),d.includeWhiteSpace){$("#indentGroup input").prop("disabled",!1);switch($("input[name=indentType]:checked").val()){case"spaces":d.indent="  ";break;case"tabs":d.indent="\t"}}else $("#indentGroup input").prop("disabled",!0);d.includeHtmlClass=$("#includeHtmlClassCB").prop("checked");d.convert();saveSettings()}var t,n;if(d=new DataConverter("converter"),d.init(),settings=$("#settings-form")[0],localStorage.settings){try{t=JSON.parse(localStorage.settings)}catch(u){}if(t)for(n in t)n==="outputDataType"?$("#data-selector").val(t[n]).change():typeof t[n]=="boolean"?settings[n].checked=t[n]:settings[n].value=t[n]}$(".settings-element").change(i);$("#restore").click(r);i()});
+$(document).ready(function() {
+    function r(n) {
+        n /*&& ga("send", "event", "Restore Defaults", n.currentTarget.id)*/;
+        localStorage.clear();
+        location.reload()
+    }
+
+    function i(n) {
+        if (n /*&& ga("send", "event", "Settings", n.currentTarget.id)*/,d.delimiter = $("input[name=delimiter]:checked").val(), d.decimal = $("input[name=decimal]:checked").val(), d.headersProvided = $("#headersProvidedCB").prop("checked"), d.headersProvided) {
+            $("#headerGroup input").prop("disabled", !1);
+            d.safeHeaders = $("input[name=headerType]:checked").val() === "safe";
+
+            // this is janky, i'm overriding the header modifications (upcase, downcase, none) so that i dont have to do my own event handlers atm...
+            var headerModVal = $("input[name=headerModifications]:checked").val();
+            switch (headerModVal) {
+                case "none":
+                	templateType = headerModVal;
+                    d.downcaseHeaders = !1;
+                    d.upcaseHeaders = !1;
+                    break;
+                case "downcase":
+                    d.downcaseHeaders = !0;
+                    d.upcaseHeaders = !1;
+                    break;
+                case "upcase":
+                	templateType = headerModVal;
+                    d.downcaseHeaders = !1;
+                    d.upcaseHeaders = !0;
+                    break;
+                case "spRewards":
+                case "questItems":
+                case "meals":
+                case "ingredients":
+                case "spDuties":
+               	case "clothingFurniture":
+                    templateType = headerModVal;
+                    break;
+            }
+
+        } else $("#headerGroup input").prop("disabled", !0);
+        if (d.includeWhiteSpace = $("#includeWhiteSpaceCB").prop("checked"), d.includeWhiteSpace) {
+            $("#indentGroup input").prop("disabled", !1);
+            switch ($("input[name=indentType]:checked").val()) {
+                case "spaces":
+                    d.indent = "  ";
+                    break;
+                case "tabs":
+                    d.indent = "\t"
+            }
+        } else $("#indentGroup input").prop("disabled", !0);
+        d.includeHtmlClass = $("#includeHtmlClassCB").prop("checked");
+        d.convert();
+        saveSettings()
+    }
+    var t, n;
+    if (d = new DataConverter("converter"), d.init(), settings = $("#settings-form")[0], localStorage.settings) {
+        try {
+            t = JSON.parse(localStorage.settings)
+        } catch (u) {}
+        if (t)
+            for (n in t) n === "outputDataType" ? $("#data-selector").val(t[n]).change() : typeof t[n] == "boolean" ? settings[n].checked = t[n] : settings[n].value = t[n]
+    }
+    $(".settings-element").change(i);
+    $("#restore").click(r);
+    i()
+});// todo: check for values coming from the settings panel and assign defaults, then hide settings panel

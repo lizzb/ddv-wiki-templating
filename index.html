@@ -7,7 +7,8 @@
 <title>Mr. Data Converter</title>
 <meta name="description" content="Convert your spreadsheet data into one of several web-friendly formats, including JSON and XML.">
 <meta name="google-site-verification" content="XyXgwlcIf2zzTHcUBbZYXChfZ1a2gNTej4wO-hfBVlE">
-<link rel="stylesheet" href="css/styles.min.css">
+<link rel="stylesheet" href="css/converter.css">
+<!--<link rel="stylesheet" href="css/styles.min.css">-->
 <link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-touch-icon-57x57.png">
 <link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-touch-icon-60x60.png">
 <link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-touch-icon-72x72.png">
@@ -33,14 +34,33 @@
 <div id="base" class="hbox">
   <div id="header" class="panel">
     <div id="description">
-      <h1>Mr. Data Converter</h1>
-      <p>I will convert your spreadsheet data into one of several web-friendly formats.</p>
-      <p>Fork me on <a href="https://github.com/thdoan/mr-data-converter">GitHub</a>.</p>
+      <!--<h1>Mr. Data Converter</h1>--><h4>ddv wiki templating</h4>
+      <p>Copy data from lizz's ddv google sheet to generate wiki-ready article text.</p>
+      <!--<p>Forked from a fork of <a href="https://github.com/thdoan/mr-data-converter">Mr. Data Converter</a>.</p>-->
     </div>
     <hr>
     <div id="settings">
+      Maybe some settings in the future. Leaving here for now to prevent errors in accessing input values that don't exist.
+      
       <h3>Settings</h3>
       <form id="settings-form">
+        <p>
+            Transform:
+            <label><input type="radio" id="headersNoTransform" name="headerModifications" value="none" class="settings-element" checked> None</label>
+            <label><input type="radio" id="headersDowncase" name="headerModifications" value="downcase" class="settings-element"> Lowercase</label>
+            <label><input type="radio" id="headersUpcase" name="headerModifications" value="upcase" class="settings-element"> Uppercase</label>
+
+            <br><br>
+            Template:
+            <label><input type="radio" id="" name="headerModifications" value="spDuties" class="settings-element"> SP Duties</label>
+            <label><input type="radio" id="" name="headerModifications" value="spRewards" class="settings-element"> SP Rewards</label>
+            <label><input type="radio" id="" name="headerModifications" value="questItems" class="settings-element"> Quest Items</label>
+            <label><input type="radio" id="" name="headerModifications" value="meals" class="settings-element"> Meals</label>
+            <label><input type="radio" id="" name="headerModifications" value="ingredients" class="settings-element"> Ingredients</label>
+            <label><input type="radio" id="" name="headerModifications" value="clothingFurniture" class="settings-element"> Clothing / Furniture</label>
+            <br><br><br><br>
+          </p>
+        <!-- Delimiter values: auto, comma, tab // Decimal values: dot, comma // ... -->
         <p>
           Delimiter:
           <label><input type="radio" id="delimiterAuto" name="delimiter" value="auto" class="settings-element" checked> Auto</label>
@@ -61,12 +81,6 @@
             <label><input type="radio" id="headersSafe" name="headerType" value="safe" class="settings-element" checked> Yes</label>
             <label><input type="radio" id="headersUnsafe" name="headerType" value="unsafe" class="settings-element"> No</label>
           </p>
-          <p>
-            Transform:
-            <label><input type="radio" id="headersNoTransform" name="headerModifications" value="none" class="settings-element" checked> None</label>
-            <label><input type="radio" id="headersDowncase" name="headerModifications" value="downcase" class="settings-element"> Lowercase</label>
-            <label><input type="radio" id="headersUpcase" name="headerModifications" value="upcase" class="settings-element"> Uppercase</label>
-          </p>
         </div>
         <p>
           <label><input type="checkbox" id="includeWhiteSpaceCB" class="settings-element" checked> Include white space in output</label>
@@ -84,24 +98,31 @@
         <br>
         <button type="button" id="restore">Restore Defaults</button>
       </form>
+      
     </div>
   </div>
   <div id="converter" class="vbox panel">
     <div class="wrapper">
       <div id="input-header" class="group-header panel">
         <p class="group-headline">
-          <label for="data-input">Input CSV or tab-delimited data.</label>
+          <label for="data-input"><!--Input CSV or tab-delimited data.-->Copy data from Sheets:</label>
           <span class="subhead">
-            Using Excel? Simply copy &amp; paste. No data on hand?&nbsp;
-            <a href="javascript:;" id="insert-sample">Use sample</a>
+            <!--TODO: turn these into a UI element that stays highlighted-->
+            <!--Using Excel? Simply copy &amp; paste. No data on hand?&nbsp;-->
+            <a href="javascript:;" class="insert-sample" data-value="spDuties">SP Duties</a>
+            <a href="#" class="insert-sample" data-value="spRewards">SP Rewards</a>
+            <a href="#" class="insert-sample" data-value="questItems">Quest Items</a>
+            <a href="#" class="insert-sample" data-value="meals">Meals</a>
+            <a href="#" class="insert-sample" data-value="ingredients">Ingredients</a>
+            <a href="#" class="insert-sample" data-value="clothingFurniture">Clothing/Furniture</a>
           </span>
         </p>
       </div>
       <textarea id="data-input" class="text-input panel" autofocus></textarea>
       <div id="output-header" class="group-header panel">
         <p class="group-headline">
-          <label for="data-output">Output as</label>
-          <select id="data-selector">
+          <label for="data-output">Output as</label> <b>JSON - Properties</b>
+          <!--<select id="data-selector">
             <option value="asp">ASP/VBScript</option>
             <option value="csharp">C#</option>
             <option value="cfml">ColdFusion</option>
@@ -127,11 +148,21 @@
             <option value="xmlProperties">XML - Properties</option>
             <option value="xmlSmart">XML - Smart</option>
             <option value="yaml">YAML</option>
-          </select>
+          </select>-->
           <span id="output-notes" class="subhead"></span>
         </p>
       </div>
       <textarea id="data-output" class="text-input panel"></textarea>
+
+      <div id="template-output-header" class="group-header panel">
+        <p class="group-headline">
+          <label for="template-output">Output for wiki:</label>
+          <span class="subhead">
+            <!--TODO: choose output template type?-->
+          </span>
+        </p>
+      </div>
+      <textarea id="template-output" class="text-input panel" autofocus></textarea>
     </div>
   </div>
 </div>
@@ -141,13 +172,16 @@
 <!--[if IE 9]><!-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 <!--<![endif]-->
+<script src="js/data.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/script.js"></script>
 <script src="js/app.js"></script>
-<script>
+<!--<script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 ga('create','UA-2843793-6','auto');ga('send','pageview');
-</script>
+</script>-->
 </body>
 </html>

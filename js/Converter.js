@@ -128,5 +128,6 @@ DataConverter.prototype.convert = function() {
 };
 
 DataConverter.prototype.insertSampleData = function() {
+  // This does not seem to be the data tha is actually used for sample data insertion - actually defined in app.js
   this.inputTextArea.val('NAME\tVALUE\tCOLOR\tDATE\nAlan\t12\tblue\tSep. 25, 2009\nShan\t13\t"green\tblue"\tSep. 27, 2009\nJohn\t45\torange\tSep. 29, 2009\nMinna\t27\tteal\tSep. 30, 2009');
 };

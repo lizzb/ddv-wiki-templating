@@ -114,7 +114,8 @@ p {
   padding-bottom: 0;
 }
 .group-header a {
-  color: #f6f;
+  color: #f6f; /* div encasing these links, not sure on priority*/
+  color: cyan;
 }
 .group-header .subhead {
   font-size: 14px;
@@ -128,13 +129,14 @@ p {
 }
 .text-input {
   width: 100%;
-  background-color: #c9b7c7;
+  /*background-color: #c9b7c7;*/
   border: none;
   -moz-box-shadow: 1px 1px 10px #333 inset;
   -webkit-box-shadow: 1px 1px 10px #333 inset;
   box-shadow: 1px 1px 10px #333 inset;
   color: #664d63;
-  font-family: Consolas, Courier New, monospace;
+  /*font-family: Consolas, Courier New, monospace;*/
+  font-family: Andale Mono, Courier, monospace;
   font-size: 12px;
   line-height: 18px;
   padding: 10px;
@@ -163,7 +165,8 @@ p {
   line-height: 43px;
 }
 #data-input {
-  height: calc(50% - 43px);
+  /*height: calc(50% - 43px);*/
+  height: 100px;
   min-height: 43px;
 }
 #output-header {
@@ -171,12 +174,34 @@ p {
   line-height: 47px;
 }
 #data-output {
-  height: calc(50% - 47px);
+  /*height: calc(50% - 47px);*//*not working?*/
+  height: 100px;
   min-height: 47px;
 }
+#template-output-header {
+  height: 43px;
+  line-height: 43px;
+}
+#template-output {
+  height: 500px;/*none of these are working?*/
+}
+
 #data-selector {
   margin-left: 0.5rem;
   padding: 2px 0;
+}
+
+.insert-sample {
+    display: inline-block;
+    /*width: 115px;
+    height: 25px;*/
+    background: #4E9CAF;
+    padding: 5px;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    line-height: 25px;
 }
 
 /*** Loading Animation (Spinner) ***/
