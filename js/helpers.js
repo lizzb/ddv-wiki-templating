@@ -729,6 +729,113 @@ function renderMeals(dataArray) {
 }
 
 
+function renderIngredients(dataArray) {
+  var newExpansionCollection = "Wishblossom Ranch";
+  // Create stub articles for quest items
+  var renderedHTML = '';
+  var delimiter = '';
+  delimiter = '\n\n\n-----------------------------\n\n\n';
+  dataArray.forEach(function (item) {
+    template = '';
+    template += '{{stub}}';
+    template += '\n{{infobox';
+    template += '\n|image=%%name%%.png';
+    template += '\n|description=';
+    template += '\n|type=Ingredient';
+    template += '\n|ingtype=<!--Seafood/Fruit/Vegetables/Spices/Dairy and Oil/Grains/Protein-->';
+    template += '\n|collection='+newExpansionCollection;
+    template += '\n|collectioncategory=<!--Fish/Vegetables-->';
+    template += '\n|energy=';
+    template += '\n|buyprice=';
+    template += '\n|sellprice=';
+    template += '\n|giftreward=';
+    template += '\n<!--';
+    template += '\n|from=fishing';
+    template += '\n|pool=';
+    template += '\n';
+    template += '\n|from={{name|Foraging}}<br>{{--}}{{inlineIcon|Trees|iconOnly|size=20|link=INGREDIENTNAME Tree}} [[INGREDIENTNAME Tree]]';
+    template += '\n|from={{name|Foraging}}<br>{{--}}{{inlineIcon|Underbrush|iconOnly|size=20|link=INGREDIENTNAME Bush}} [[INGREDIENTNAME Bush]]';
+    template += '\n';
+    template += '\n|from={{name|Goofy\'s Stall|link=Goofy\'s Stall#BIOME1NAME{{!}}Goofy\'s Stall}}<br>';
+    template += '\n{{name|Gardening}}';
+    template += '\n|seed=INGREDIENTNAME Seed';
+    template += '\n|growtime={{growthTime|XXXXX}}<br>{{growthTime|XXXXX|biome=BIOME1NAME|biome2=BIOME2NAME}}';
+    template += '\n';
+    template += '\n|biomes={{name|BIOME1NAME|link=BIOME1NAME{{!}}REGION1NAME}}<br>{{name|BIOME1NAME|link=BIOME1NAME{{!}}REGION2NAME}}';
+    template += '\n|biomes=BIOME1NAME, BIOME2NAME';
+    template += '\n-->';
+    template += '\n|gridSize=';
+    template += '\n|placement=';
+    template += '\n|stackMax=';
+    template += '\n}}';
+    template += "\n'''%%name%%''' is a <!--[[:Category:Vegetables|vegetable]]--> type [[Ingredients|ingredient]] used in [[cooking]]. <!--It can be [[Gardening|grown]] from [[%%name%% Seed]]s, which are purchased from [[Goofy's Stall]] in [[BIOME1]] and the [[BIOME2]]. It can be found growing on [[%%name%% Tree]]s in '''REGION1''' and '''REGION2''' areas of the [[BIOME1]].";
+    template += '\n';
+    template += "\nEach harvest gives YIELDCOUNT '''%%name%%''', and the fruit takes XXXXX hour to regrow. Trees/Bushes will continue to produce fruit even if moved outside their origin biome.";
+    template += '\n';
+    template += "\nThe [[%%name%% Seed|seeds]] are unlocked for sale after the first upgrade of [[Goofy\'s Stall]] in [[BIOME1]], and after the initial repair of [[Goofy\'s Stall]] in the [[BIOME2]]. The [[BIOME1]] stall also has a chance to sell '''%%name%%''' directly. After planting it takes XXXXX minutes to grow, and WATERINGCOUNT total waterings until YIELDCOUNT can be harvested.";
+    template += '\n-->';
+    template += '\nIt can be consumed to regain [[energy]], or used as an [[Ingredients|ingredient]] in [[Cooking#Meal_Recipes|cooked meals]]. Once collected it will be added to the [[:Category:'+newExpansionCollection+' Ingredients Collection|'+newExpansionCollection+' Ingredients Collection]].';
+    template += '\n ';
+    template += "\n[[Ingredients]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory, they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
+    template += '\n<!--';
+    template += '\n==Ingredient Specific Recipes==';
+    template += "\n'''{{PAGENAME}}''' is specifically required in the following [[Meals#Recipes|recipes]], and other [[ingredients]] of the same type can't be substituted.";
+    template += "\n{| class='wikitable sortable' id='recipe-table'";
+    template += '\n! class=unsortable | Image';
+    template += '\n!Name';
+    template += '\n!Stars';
+    template += '\n!Energy';
+    template += '\n!Sell Price';
+    template += '\n!Ingredients';
+    template += '\n|-';
+    template += '\n| [[File:RECIPENAME.png|center|50x50px|link=RECIPENAME]]';
+    template += '\n| [[RECIPENAME]]';
+    template += '\n| {{stars|XXXXX}}';
+    template += '\n| {{energy|XXXXX}}';
+    template += '\n| {{price|XXXXX}}';
+    template += '\n| {{ItemRecipe | RECIPENAME }}';
+    template += '\n|}';
+    template += '\n';
+    /*
+    template += '\n==Crafting Recipes==';
+    template += "\n'''{{PAGENAME}}''' is a required material in the following [[Crafting|crafting recipe]].";
+    template += "\n{| class='wikitable sortable' id='recipe-table'";
+    template += '\n! class=unsortable | Image';
+    template += '\n!Name';
+    template += '\n!Crafting Recipe';
+    template += '\n|-';
+    template += '\n|[[File:CRAFTEDITEMNAME.png|50px|center|link=CRAFTEDITEMNAME]]';
+    template += '\n|[[CRAFTEDITEMNAME]]';
+    template += '\n|';
+    template += '\n{{name|ING1NAME|ING1QUANTITY}}<br>';
+    template += '\n{{name|ING2NAME|ING2QUANTITY}}<br>';
+    template += '\n{{name|ING3NAME|ING3QUANTITY}}';
+    template += '\n|}';
+    template += '\n';
+    template += '\n==Quest Objectives==';
+    template += '\n{{Objectives|header}}';
+    template += '\n{{ObjectivesRow|{{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUMBER}}|COUNT|USE OBJECTIVE}}';
+    template += '\n{{Objectives|footer}}';
+    template += '\n';
+    template += '\n==Quest Recipes==';
+    template += '\n{{Recipe|header|quest}}';
+    template += '\n{{RecipeRow|RECIPENAME|quest={{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUMBER}}}}';
+    template += '\n{{Recipe|footer}}';
+    */
+    template += '\n-->';
+
+  template += output_history(item);
+    template += '\n\n{{NavboxIngredient}}';
+    template +=
+      '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
+
+    renderedHTML += microTemplate(template, item);
+    renderedHTML += delimiter;
+  });
+  return renderedHTML;
+}
+
+
 
 
 function renderQuestItems(dataArray) {

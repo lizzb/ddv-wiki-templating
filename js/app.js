@@ -66,7 +66,25 @@ DataConverter.prototype.convert = function() {
     if (this.inputText = this.inputTextArea.val(), this.inputText.length > 0) {
         this.includeWhiteSpace ? this.newLine = "\n" : (this.indent = "", this.newLine = "");
         CSVParser.resetLog();
-        var n = CSVParser.parse(this.inputText, this.delimiter, this.decimal, this.headersProvided, this.safeHeaders, this.downcaseHeaders, this.upcaseHeaders),
+        var inputText = this.inputText;
+        // Pull the values for these options from the HTML radios/checkboxes elements
+        // this is no longer necessary and defaults could be provided, but the onclick events keep getting messed up when i remove them from the html
+        /*
+        var delimiter = "auto"; //this.delimiter;
+        var decimal = "comma"; //this.decimal;
+        var headersProvided = true; //this.headersProvided;
+        var safeHeaders = false; //this.safeHeaders;
+        var downcaseHeaders = false; //this.downcaseHeaders;
+        var upcaseHeaders = false; //this.upcaseHeaders;
+        */
+        var delimiter = this.delimiter;
+        var decimal = this.decimal;
+        var headersProvided = this.headersProvided;
+        var safeHeaders = this.safeHeaders;
+        var downcaseHeaders = this.downcaseHeaders;
+        var upcaseHeaders = this.upcaseHeaders;
+        //console.log(delimiter, decimal, headersProvided, safeHeaders, downcaseHeaders, upcaseHeaders);
+        var n = CSVParser.parse(inputText, delimiter, decimal, headersProvided, safeHeaders, downcaseHeaders, upcaseHeaders),
             t = n.dataGrid,
             i = n.headerNames,
             r = n.headerTypes,
@@ -123,16 +141,29 @@ DataConverter.prototype.insertSampleData = function(dataName) {
   	else if (dataName == "ingredients") {
   		outputString = 
   		// ====== ingredients: name, type, stars =====
-	    'name\ttype\tstars\n' +
-	    'Brussels Sprout\tVegetables\tnull\n' +
-	    'Cauliflower\tVegetables\tnull\n' +
-	    'Green Beans\tVegetables\tnull';
+	    'name\ttype\n' +
+	    'Brussels Sprout\tVegetables\n' +
+	    'Cauliflower\tVegetables\n' +
+	    'Green Beans\tVegetables';
   	}
   	else if (dataName == "clothingFurniture") {
   		outputString = 
   		// ===== sampleItems: itemType, collection, version, versionRemoved, obtainable, ID, sheetOrder, universe, limited, speculated, Subgroup, name, category, tagsConfirmed, tags, color, traits, Checklist, verified, buyprice, MSCost, source, placement, size, W, L, functions, npcInterest, location, inStore =====
-    'itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\n'+
-	'Furniture\tSV\t1.17.11\t\t\tnull\t22.138\tSleeping Beauty\tnull\t\t\tRustic Cottage Bed\tBeds\tTODO\tRustic, Bedroom\tbrown, purple\tSimple, Calm, Strong, Wondrous\tFALSE\t2025.07.25 - 2a (TT to 07.27)\t4600\t\tStore\tdefault\t4x6\t4\t6\tSit\tnull\tSize 2\tSV';
+    //'itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\n'+
+	//'Furniture\tSV\t1.17.11\t\t\tnull\t22.138\tSleeping Beauty\tnull\t\t\tRustic Cottage Bed\tBeds\tTODO\tRustic, Bedroom\tbrown, purple\tSimple, Calm, Strong, Wondrous\tFALSE\t2025.07.25 - 2a (TT to 07.27)\t4600\t\tStore\tdefault\t4x6\t4\t6\tSit\tnull\tSize 2\tSV';
+
+'itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\t\nClothing\tDV\t1.14.3\t\t--\t50500144\t13.430\tGeneral\t\t\t\tFairy Haircut\t\t\t\t\t\tTRUE\t2024.12.05 - 1c\t\t\tStar Path - Frost & Fairies - 2E - T2 Premium (30 tokens)\t\t\t\t\t\t\tstarpath - frost\t\t\nClothing\t--\t1.11\t\t\t110800021\t19.523\tnone (Mulan)\tLimited Time\t\t\tOrnate Hand Fan\tAccessory\t\t\t\t\tTRUE\t2024.06.26 - 17\t10 tokens\t\tStar Path - Majesty and Magnolias - 2C - T2 (10 tokens)\t\t\t\t\t\t\tstarpath - majesty\t\t\nClothing\tDV\t1.11\t\t\t50500124\t19.508\tMulan\tPremium Limited Time\t\tu12 za71 Premium Limited Time <-- hair zzq 70\tBlooming Lotus Updo\tHair\t\t\t\t\tTRUE\t2024.06.27 - 5\t10 tokens\t\tStar Path - Majesty and Magnolias - 5C - T5 Premium (10 tokens)\t\t\t\t\t\t\tstarpath - majesty\t\t\nClothing\t--\t1.12\t\t\t\t27.026\tNone (The Princess and the Frog)\t\t\t\tDapper Green Umbrella\t\t\t\t\t\tTRUE\t2024.08.22 - 12\t40 Tokens\t\tStar Path - Dapper Delights - 5G - T5 (40 tokens)\t\t\t\t\t\t\tstarpath - dapper\t\t\nClothing\t--\t1.14.3\t\t\t110800027\t13.543\tNone - Accessory\t\t\t\tHandheld Plushie\t\t\t\t\t\tFALSE\t\t1000 M\t1000\tPremium Bundle - Handheld Plushie (1000 M)\t\t\t\t\t\t\tpremium\t\t\nClothing\t--\t1.15\t\t\t\t13.558\tAccessory\t\t\t\tWicker Bag with Genie Charm\t\t\t\t\t\tTRUE\t2025.02.27 - 1j\t40 tokens\t\tStar Path - Oasis Retreat - 3B - T3 Premium (40 tokens)\t\t\t\t\t\t\tstarpath - oasis\t\t';
+
+/*
+// doesnt work....?
+'itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\t' +
+'Clothing\tDV\t1.14.3\t\t--\t50500144\t13.430\tGeneral\t\t\t\tFairy Haircut\t\t\t\t\t\tTRUE\t2024.12.05 - 1c\t\t\tStar Path - Frost & Fairies - 2E - T2 Premium (30 tokens)\t\t\t\t\t\t\tstarpath - frost\t\t';
+'Clothing\t--\t1.11\t\t\t110800021\t19.523\tnone (Mulan)\tLimited Time\t\t\tOrnate Hand Fan\tAccessory\t\t\t\t\tTRUE\t2024.06.26 - 17\t10 tokens\t\tStar Path - Majesty and Magnolias - 2C - T2 (10 tokens)\t\t\t\t\t\t\tstarpath - majesty\t\t' +
+'Clothing\tDV\t1.11\t\t\t50500124\t19.508\tMulan\tPremium Limited Time\t\tu12 za71 Premium Limited Time <-- hair zzq 70\tBlooming Lotus Updo\tHair\t\t\t\t\tTRUE\t2024.06.27 - 5\t10 tokens\t\tStar Path - Majesty and Magnolias - 5C - T5 Premium (10 tokens)\t\t\t\t\t\t\tstarpath - majesty\t\t' +
+'Clothing\t--\t1.12\t\t\t\t27.026\tNone (The Princess and the Frog)\t\t\t\tDapper Green Umbrella\t\t\t\t\t\tTRUE\t2024.08.22 - 12\t40 Tokens\t\tStar Path - Dapper Delights - 5G - T5 (40 tokens)\t\t\t\t\t\t\tstarpath - dapper\t\t' +
+'Clothing\t--\t1.14.3\t\t\t110800027\t13.543\tNone - Accessory\t\t\t\tHandheld Plushie\t\t\t\t\t\tFALSE\t\t1000 M\t1000\tPremium Bundle - Handheld Plushie (1000 M)\t\t\t\t\t\t\tpremium\t\t' +
+'Clothing\t--\t1.15\t\t\t\t13.558\tAccessory\t\t\t\tWicker Bag with Genie Charm\t\t\t\t\t\tTRUE\t2025.02.27 - 1j\t40 tokens\t\tStar Path - Oasis Retreat - 3B - T3 Premium (40 tokens)\t\t\t\t\t\t\tstarpath - oasis\t\t' ;
+ */
   	}
 
   this.inputTextArea.val(outputString);
@@ -206,6 +237,7 @@ $(document).ready(function() {
         } catch (u) {}
         if (t)
             for (n in t) n === "outputDataType" ? $("#data-selector").val(t[n]).change() : typeof t[n] == "boolean" ? settings[n].checked = t[n] : settings[n].value = t[n]
+        	// TODO: comment out original (above) once a bunch of settings are removed from interface and instead have code defined defaults? 
     }
     $(".settings-element").change(i);
     $("#restore").click(r);

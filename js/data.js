@@ -1,13 +1,13 @@
 var starPathNameShort = "Witchful Thinking";
 var starPathName = "Witchful Thinking";
 var starPathToken = "brewtoken";
-var updateNumber = "1.19";// Expansion 2-2
+var updateNumber = "1.20";// Expansion 3-1 // 1.20
 
 // toggle to wrap in cleanup tag
-var collectionConfirmed = true;
+var collectionConfirmed = false;
 
 // whether or not to include filler copy pasta for furniture functions
-var functionsConfirmed = true;
+var functionsConfirmed = false;
 
 // whether to console print out source of item as detected
 var showItemDebug = false; 

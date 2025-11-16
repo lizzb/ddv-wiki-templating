@@ -22,7 +22,7 @@ function renderParent(dataArray, templateType) {
       outputHTML = renderMeals(dataArray);
       break;
     case "ingredients":
-      outputHTML = "Ingredient template missing"; //renderMeals(dataArray);
+      outputHTML = renderIngredients(dataArray); //"Ingredient template missing"; //renderMeals(dataArray);
       break;
     case "clothingFurniture":
       outputHTML = renderClothingFurnitureArticle(dataArray);
@@ -270,13 +270,23 @@ function output_history(item) {
 function updateAppropriateVersion(item) {
   if (!item.version) item.version = updateNumber;
 
+  // Replace correct sheet version number with generalized version label for wiki
   if (item.collection == "SV" || item.collection == "Storybook Vale") {
     switch(item.version) {
+      case "1.14.1":
+        item.version = "Expansion 2-1";
+        break;
+      case "1.14.3":
+        item.version = "1.14";
+        break;
       case "1.17.11":
-      item.version = "Expansion 2-2";
-      break;
-    default:
-      break;
+        item.version = "Expansion 2-2";
+        break;
+      case "1.20.1":
+        item.version = "Expansion 3-1";
+        break;
+      default:
+        break;
     }
   }
 
