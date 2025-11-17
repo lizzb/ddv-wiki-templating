@@ -1,5 +1,5 @@
-// this value is changed based on changes to radio buttons in html
-var templateType = "companions"; // other vals: clothingFurniture, spDuties, spRewards, questItems, meals, ingredients, companions
+// this value is changed based on changes to radio buttons in html - not sure if this actually does anything
+var templateType = "meals"; // other vals: clothingFurniture, spDuties, spRewards, questItems, meals, ingredients, companions
 
 // yes, i know this is poor form
 var starPathNameShort = "Witchful Thinking";
