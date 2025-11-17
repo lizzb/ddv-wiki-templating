@@ -22,7 +22,7 @@ function renderParent(dataArray, templateType) {
       outputHTML = renderMeals(dataArray);
       break;
     case "ingredients":
-      outputHTML = renderIngredients(dataArray); //"Ingredient template missing"; //renderMeals(dataArray);
+      outputHTML = renderIngredients(dataArray); //"Ingredient template missing";
       break;
     case "companions":
       outputHTML = renderCompanions(dataArray);
@@ -55,6 +55,7 @@ function output_type(item) {
   return output;
 }
 
+// only useful for handling clothing/furniture
 function output_category(item) {
   if (!item.category) {
     if (item.itemType == 'Clothing')
@@ -135,6 +136,9 @@ function output_collection(item) {
       break;
     case 'SV':
       item.collection = wrapComment('Storybook Vale', !collectionConfirmed);
+      break;
+    case 'WR':
+      item.collection = wrapComment('Wishblossom Ranch', !collectionConfirmed);
       break;
     case 'Dream Style':
       item.collection = 'n/a - CHARACTER DREAM STYLE';
@@ -273,7 +277,7 @@ function output_history(item) {
 function updateAppropriateVersion(item) {
   if (!item.version) item.version = updateNumber;
 
-  // Replace correct sheet version number with generalized version label for wiki
+  // Replace correct sheet version number with generalized version label for wiki history template
   if (item.collection == "SV" || item.collection == "Storybook Vale") {
     switch(item.version) {
       case "1.14.1":
@@ -285,6 +289,12 @@ function updateAppropriateVersion(item) {
       case "1.17.11":
         item.version = "Expansion 2-2";
         break;
+      default:
+        break;
+    }
+  }
+  if (item.collection == "WR" || item.collection == "Wishblossom Ranch") {
+    switch(item.version) {
       case "1.20.1":
         item.version = "Expansion 3-1";
         break;
@@ -292,6 +302,7 @@ function updateAppropriateVersion(item) {
         break;
     }
   }
+
 
   
   return item;
@@ -534,6 +545,13 @@ function output_from(item) {
     "It has a chance to be available for purchase as rotating stock from [[Scrooge's Store]]";
 
   switch (item.inStore) {
+    case 'EI':
+      if (showItemDebug) {
+        console.log(item.name, ' is a scrooge item');
+      }
+      itemSource = itemSource_scroogeDefault + ' in [[Eternity Isle]].';
+      infoboxFrom += "|from=Scrooge's Store (Eternity Isle)\n|storeSlots=";
+      break;
     case 'x - SV':
     case 'SV':
       if (showItemDebug) {
@@ -542,12 +560,12 @@ function output_from(item) {
       itemSource = itemSource_scroogeDefault + ' in [[Storybook Vale]].';
       infoboxFrom += "|from=Scrooge's Store (Storybook Vale)\n|storeSlots=";
       break;
-    case 'EI':
+    case 'WR':
       if (showItemDebug) {
         console.log(item.name, ' is a scrooge item');
       }
-      itemSource = itemSource_scroogeDefault + ' in [[Eternity Isle]].';
-      infoboxFrom += "|from=Scrooge's Store (Eternity Isle)\n|storeSlots=";
+      itemSource = itemSource_scroogeDefault + ' in [[Wishblossom Ranch]].';
+      infoboxFrom += "|from=Scrooge's Store (Wishblossom Ranch)\n|storeSlots=";
       break;
     case 'x':
       if (showItemDebug) {
@@ -1295,7 +1313,7 @@ function generateStallTemplate(item) {
     template += '}}\n';
 
     template +=
-      "'''%%name%%''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to [[Goofy's Stall]] in any biome in [[Dreamlight Valley]], [[Eternity Isle]], or [[Storybook Vale]].";
+      "'''%%name%%''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to [[Goofy's Stall]] in any biome in [[Dreamlight Valley]], [[Eternity Isle]], [[Storybook Vale]], or [[Wishblossom Ranch]].";
 
     template += '\n\n' + generateBodyFromPremiumShop(item);
 

@@ -132,14 +132,17 @@ DataConverter.prototype.insertSampleData = function(dataName) {
   	else if (dataName == "meals") {
   		outputString = 
 	    // ====== meals: name, type, stars ======
-	    'name\ttype\tstars\n' +
-	    'Tea Sandwiches\tAppetizers\t4\n' +
-	    'Cheshire Cat Tail\tDesserts\t4\n' +
-	    'Garlic Chocolate Tart\tDesserts\t5';
+	    'name\ttype\tstars\ting1\ting2\ting3\ting4\ting5\n' +
+	    'Roast\tEntrées\t1\tMeat\t\t\t\t\n' +
+	    'Chowder\tEntrées\t4\tSeafood\tMilk\tPotato\tVegetables\t\n' +
+	    'Grecian Baked Fish\tEntrées\t5\tStygian Mudskipper\tElysian Grain\tOlives\tSalt Crystal\tAmbrosia\n' +
+	    //'Tea Sandwiches\tAppetizers\t4\thello\tim\tan\tingrident\tfive\n' +
+	    'Cheshire Cat Tail\tDesserts\t4\tonly\tfour\there\tok\t\n';
+	    
   	}
   	else if (dataName == "ingredients") {
   		outputString = 
-  		// ====== ingredients: name, type, stars =====
+  		// ====== ingredients: name, type =====
 	    'name\ttype\n' +
 	    'Brussels Sprout\tVegetables\n' +
 	    'Cauliflower\tVegetables\n' +
