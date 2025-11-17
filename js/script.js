@@ -27,6 +27,12 @@ function renderParent(dataArray, templateType) {
     case "companions":
       outputHTML = renderCompanions(dataArray);
       break;
+    case "gems":
+      outputHTML = renderGems(dataArray);
+      break;
+    case "flowers":
+      outputHTML = renderFlowers(dataArray);
+      break;
     case "clothingFurniture":
       outputHTML = renderClothingFurnitureArticle(dataArray);
       outputHTML += renderPSBundles(dataArray);

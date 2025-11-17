@@ -142,11 +142,20 @@ DataConverter.prototype.insertSampleData = function(dataName) {
   	}
   	else if (dataName == "ingredients") {
   		outputString = 
-  		// ====== ingredients: name, type =====
-	    'name\ttype\n' +
+  		// ====== ingredients: name, ingtype =====
+	    'name\tingtype\n' +
 	    'Brussels Sprout\tVegetables\n' +
-	    'Cauliflower\tVegetables\n' +
-	    'Green Beans\tVegetables';
+	    'Cauliflower\tSpices\n' +
+	    'Green Beans\tFruit';
+  	}
+  	else if (dataName == "gems") {
+  		// also used for flowers
+  		outputString = 
+  		// ====== gems: name, biome =====
+	    'name\tbiome\n' +
+	    'Star Sapphire\tEverafter\n' +
+	    'Red Daisy\tPlaza\n' +
+	    'Shiny Garnet\tPlaza';
   	}
   	else if (dataName == "companions") {
   		outputString = 'name\ttype\tbiome\tregion\tfavfood\tlikedfoods\nBee 1\tBee\tPixie Acres\ttba\ttba\ttba\nSkunk 2\tSkunk\tGlamour Gulch\ttba\ttba\ttba\nGoose 3\tGoose\tWishing Alps\ttba\ttba\ttba';
@@ -217,6 +226,8 @@ $(document).ready(function() {
                 case "spDuties":
                	case "clothingFurniture":
                	case "companions":
+               	case "gems":
+               	case "flowers":
                     templateType = headerModVal;
                     break;
             }
