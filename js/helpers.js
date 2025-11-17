@@ -839,6 +839,107 @@ function renderIngredients(dataArray) {
 }
 
 
+function renderCompanions(dataArray) {
+  var newExpansionCollection = "Wishblossom Ranch";
+  // Create stub articles for quest items
+  var renderedHTML = '';
+  var delimiter = '';
+  delimiter = '\n\n\n-----------------------------\n\n\n';
+  dataArray.forEach(function (item) {
+    template = '';
+    template += "{{stub}}";
+    template += "\n{{Infobox";
+    template += "\n|image=%%name%%.png";
+    template += "\n|type=Companions";
+    template += "\n|category=Animal Companions, Critter";
+    template += "\n|collection="+newExpansionCollection;
+    template += "\n|hangout=<!--Flowers/Ore-->";
+    template += "\n|critterType=<!--Goose/Bee/Skunk-->";
+    template += "\n|found={{name|BIOME1}}<br>(REGION1)";
+    template += "\n|favfood=<!--{{name|FAV1}}<br>{{name|FAV2}}-->";
+    template += "\n|likedfoods=<!--{{inlineIcon|Gems|link=Mining#Gems}}{{inlineIcon|Grains|link=:Category:Grains}}-->";
+    /*
+    template += "\n|likedfoods=<!--{{inlineIcon|Gems|link=Mining#Gems}}{{inlineIcon|Grains|link=:Category:Grains}}<br>";
+    template += "\n{{inlineIcon|Spices & Herbs|link=:Category:Spices}}*<br>";
+    template += "\n{{inlineIcon|Vegetables|link=:Category:Vegetables}}*<br><--Refers to the Grains, Spices & Herbs, and Vegetables Ingredient Categories as defined in the '''Collection Menu''', not while Cooking - e.g. no Seaweed, includes Vanilla.--*''(Collection Menu Categorization)''<br>";
+    template += "\n{{inlineIcon|Fruit}} grown from [[Crop Seeds|seeds]]-->";
+    */
+    template += "\n|minfeedings=";
+    template += "\n}}";
+    template += "\n{{ItemDescription";
+    template += "\n|%%name%%";
+    template += "\n|type=Companion";
+    template += "\n|critterType=<!--Goose/Bee/Skunk-->";
+    template += "\n|from=Feeding Critters";
+    template += "\n|found=in the '''Wishblossom Ranch''' Village<!--in '''REGION1''' area of [[BIOME1]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[The Spark of Imagination]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
+    template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
+    ////template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]], [[:Category:Spices|Spices & Herbs]], and [[:Category:Vegetables|Vegetables]] as they are defined on the Ingredients tab of the '''Collection Menu''' - e.g. [[Vanilla]] is included, and [[Seaweed]] is not. They will additionally eat Fruit grown from [[Crop Seeds|seeds]], i.e. [[Cosmic Figs]], [[Grapes]], [[Melon]], [[Pineapple]]-->";
+    //template += "\n|likedFoods=[[:Category:Grains|Grains]] as they are defined on the '''Ingredients''' section of the '''Collection Menu''' (not as they are grouped at a [[:Category:Cooking Stations|Cooking Station]])";
+    template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
+    template += "\n|critterCollection="+newExpansionCollection;
+    template += "\n|hangout=<!--[[Mining#Resources|Ore]] / [[Foraging#Flowers{{!}}Flowers]]-->";
+    template += "\n|numFeedings=<!--three <!--(3)-->}}";
+    template += "\n";
+    template += "\n{{CritterSchedule";
+    template += "\n|location=<!--BIOME1{{!}}REGION1-->";
+    template += "\n|sunday=TBA";
+    template += "\n|monday=TBA";
+    template += "\n|tuesday=TBA";
+    template += "\n|wednesday=TBA";
+    template += "\n|thursday=TBA";
+    template += "\n|friday=TBA";
+    template += "\n|saturday=TBA";
+    template += "\n}}<!--";
+    template += "\n";
+    template += "\n==Yield==";
+    template += "\n{| class=wikitable id='recipe-table'";
+    template += "\n!style='' | Food Type";
+    template += "\n!style='' | Item";
+    template += "\n!style='' | Possible Rewards";
+    template += "\n|-";
+    template += "\n| Favorite";
+    template += "\n| TBA";
+    template += "\n|";
+    template += "\nTBA";
+    template += "\n{{name|Dream Shard|1}}<br>";
+    template += "\n{{name|Memory Shard}}<br>";
+    template += "\n{{name|Motif Bag}}";
+    template += "\n|-";
+    template += "\n| Liked";
+    template += "\n|";
+    template += "\nTBA";
+    template += "\n|";
+    template += "\nTBA";
+    template += "\n|}-->";
+    template += "\n{{cleanup|Missing Love and Like rewards}}";
+    template += "\n";
+    template += "\n==Friendship Rewards==";
+    template += "\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.";
+    template += "\n{| class=wikitable id='recipe-table'";
+    template += "\n!Lvl";
+    template += "\n!Image";
+    template += "\n!Name";
+    template += "\n!Type";
+    template += "\n|-";
+    template += "\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->";
+    template += "\n|-";
+    template += "\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]";
+    template += "\n|-";
+    template += "\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || <!--[[File:Companion Gather Flowers Icon.png| 50x50px| center]]--> || <!--[[Foraging|Flower Gathering Bonus]]--> || [[Foraging|Resource Collection]]";
+    template += "\n|-";
+    template += "\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]";
+    template += "\n|}";
+
+    template += output_history(item);
+    template += "{{NavboxCompanion}}";
+    template += "__noTOC__";
+
+    renderedHTML += microTemplate(template, item);
+    renderedHTML += delimiter;
+  });
+  return renderedHTML;
+}
+
 
 
 function renderQuestItems(dataArray) {

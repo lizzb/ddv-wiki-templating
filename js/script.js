@@ -24,6 +24,9 @@ function renderParent(dataArray, templateType) {
     case "ingredients":
       outputHTML = renderIngredients(dataArray); //"Ingredient template missing"; //renderMeals(dataArray);
       break;
+    case "companions":
+      outputHTML = renderCompanions(dataArray);
+      break;
     case "clothingFurniture":
       outputHTML = renderClothingFurnitureArticle(dataArray);
       outputHTML += renderPSBundles(dataArray);

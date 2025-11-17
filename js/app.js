@@ -1,4 +1,3 @@
-var templateType = "spDuties"; // other vals: clothingFurniture, spDuties, spRewards, questItems, meals, ingredients// this value is changed based on changes to radio buttons in settings...?
 
 /*!
  * CSVParser.js
@@ -146,6 +145,9 @@ DataConverter.prototype.insertSampleData = function(dataName) {
 	    'Cauliflower\tVegetables\n' +
 	    'Green Beans\tVegetables';
   	}
+  	else if (dataName == "companions") {
+  		outputString = 'name\ttype\tbiome\tregion\tfavfood\tlikedfoods\nBee 1\tBee\tPixie Acres\ttba\ttba\ttba\nSkunk 2\tSkunk\tGlamour Gulch\ttba\ttba\ttba\nGoose 3\tGoose\tWishing Alps\ttba\ttba\ttba';
+  	}
   	else if (dataName == "clothingFurniture") {
   		outputString = 
   		// ===== sampleItems: itemType, collection, version, versionRemoved, obtainable, ID, sheetOrder, universe, limited, speculated, Subgroup, name, category, tagsConfirmed, tags, color, traits, Checklist, verified, buyprice, MSCost, source, placement, size, W, L, functions, npcInterest, location, inStore =====
@@ -211,6 +213,7 @@ $(document).ready(function() {
                 case "ingredients":
                 case "spDuties":
                	case "clothingFurniture":
+               	case "companions":
                     templateType = headerModVal;
                     break;
             }
