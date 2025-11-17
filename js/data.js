@@ -1,20 +1,3 @@
-var starPathNameShort = "Witchful Thinking";
-var starPathName = "Witchful Thinking";
-var starPathToken = "brewtoken";
-var updateNumber = "1.20";// Expansion 3-1 // 1.20
-
-// toggle to wrap in cleanup tag
-var collectionConfirmed = false;
-
-// whether or not to include filler copy pasta for furniture functions
-var functionsConfirmed = false;
-
-// whether to console print out source of item as detected
-var showItemDebug = false; 
-
-
-
-
 
 var jafarFigurineCelestialBase = { itemType: 'Furniture', collection: 'EI', version: 1.12, versionRemoved: null, obtainable: 'x', ID: 40003252, sheetOrder: 1.115, universe: 'Aladdin', limited: '', speculated: null, Subgroup: null, name: 'Jafar Figurine — Celestial Base', category: 'Misc.', tagsConfirmed: 'yes', tags: 'Rec Room', color: 'gray', traits: 'Lavish, Calm, Strong, Wondrous', Checklist: 'FALSE', verified: '2024.08.28 - 1 - hotfix', buyprice: '360', MSCost: '', source: 'Scramblecoin', placement: '', size: '1x1', W: 1, L: 1, functions: '-', npcInterest: null, location: 'scramblecoin', inStore: '', };
 var jeweledVizierTrousers = { itemType: 'Clothing', collection: 'DV', version: 1.12, versionRemoved: null, obtainable: '', ID: null, sheetOrder: 1.111, universe: 'Aladdin', limited: '', speculated: null, Subgroup: null, name: 'Jeweled Vizier Trousers', category: 'Pants', tagsConfirmed: '', tags: '', color: '', traits: '', Checklist: 'FALSE', verified: '2024.10.08 - 2', buyprice: '-', MSCost: '', source: 'Jafar Level 10 Quest (The Trial of Eternity) (reward)', placement: '', size: '', W: null, L: null, functions: '-', npcInterest: null, location: 'quest', inStore: '', };

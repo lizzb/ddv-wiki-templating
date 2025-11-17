@@ -6,7 +6,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <title>DDV Wiki Templating (unofficial)</title>
 <meta name="description" content="Convert lizz's spreadsheet data into ddv wiki articles. (Forked from Mr. Data Converter)">
-<meta name="google-site-verification" content="XyXgwlcIf2zzTHcUBbZYXChfZ1a2gNTej4wO-hfBVlE">
+<!--<meta name="google-site-verification" content="XyXgwlcIf2zzTHcUBbZYXChfZ1a2gNTej4wO-hfBVlE">-->
 
 <link rel="stylesheet" href="css/converter.css">
 <!--<link rel="stylesheet" href="css/styles.min.css">-->
@@ -38,7 +38,7 @@
   <div id="header" class="panel">
     <div id="description">
       <!--<h1>Mr. Data Converter</h1>--><h4>ddv wiki templating</h4>
-      <p>Copy data from lizz's ddv google sheet to generate wiki-ready article text.</p>
+      <p>Copy data from <b>lizz's<a href="http://tinyurl.com/lizz-ddv-sheet" target="_blank"> ddv google sheet</a></b> to generate wiki-ready article text.</p>
       <!--<p>Forked from a fork of <a href="https://github.com/thdoan/mr-data-converter">Mr. Data Converter</a>.</p>-->
     </div>
     <hr>
@@ -64,19 +64,19 @@
             <label><input type="radio" id="" name="headerModifications" value="clothingFurniture" class="settings-element"> Clothing / Furniture</label>
             <br><br><br><br>
           </p>
-        <!--
-        <p>
-          Delimiter:
-          <label><input type="radio" id="delimiterAuto" name="delimiter" value="auto" class="settings-element" checked> Auto</label>
-          <label><input type="radio" id="delimiterComma" name="delimiter" value="comma" class="settings-element"> Comma</label>
-          <label><input type="radio" id="delimiterTab" name="delimiter" value="tab" class="settings-element"> Tab</label>
-        </p>-->
+        
         
         <div id="description">
         <p>Ignore everything below this line.</p>
         <hr>
         </div>
 
+        <p>
+          Delimiter:
+          <label><input type="radio" id="delimiterAuto" name="delimiter" value="auto" class="settings-element" checked> Auto</label>
+          <label><input type="radio" id="delimiterComma" name="delimiter" value="comma" class="settings-element"> Comma</label>
+          <label><input type="radio" id="delimiterTab" name="delimiter" value="tab" class="settings-element"> Tab</label>
+        </p>
         <p>
           Decimal Sign:
           <label><input type="radio" id="decimalDot" name="decimal" value="dot" class="settings-element" checked> Dot</label>
@@ -195,6 +195,7 @@
 <!--[if IE 9]><!-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
 <!--<![endif]-->
+<script src="js/globals.js"></script>
 <script src="js/data.js"></script>
 <script src="js/helpers.js"></script>
 <script src="js/script.js"></script>

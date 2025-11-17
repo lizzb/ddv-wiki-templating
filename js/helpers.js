@@ -276,6 +276,9 @@ function getCharacterUniverse(charName) {
     'EVE',
     'WALL-E',
     'Vanellope',
+    'Snow White',
+    'Tigger',
+    'Cruella de Vil'
   ];
 
   var universe = 'TODO_UNIVERSE';
@@ -558,7 +561,7 @@ function renderPSBundles(dataArray) {
 
     // TODO - this doesnt seem to be catching
     if (item.name == item.bundleName) {
-      console.log(item.bundleName, ' IS A STANDALONE ITEM');
+      if (showItemDebug) { console.log(item.bundleName, ' IS A STANDALONE ITEM'); }
       item.standalone = true;
 
       //console.log(itemFrom); // TODO - 2025.06.24 - figure out why this errors out, itemFrom needs to always be defined??
@@ -578,7 +581,7 @@ function renderPSBundles(dataArray) {
         '|Added}}\n\n{{NavboxPremiumBundle}}';
     } else {
       item.standalone = false;
-      console.log('psBundleItems: ', item.psBundleItems);
+      if (showItemDebug) { console.log('psBundleItems: ', item.psBundleItems); }
       item.psBundleNavbox = "'''[[%%bundleName%%]]''' • ";
       item.psTopTable =
         '| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row 1 right-->';
@@ -690,7 +693,7 @@ function renderMeals(dataArray) {
     template += '\n|sellprice=';
     template += '\n|collection=Dreamlight Valley'; // todo - logic here and in body
     template +=
-      '\n|giftreward=\n|orderReward=\n|size=\n|placement=\n|ingredients=<!--{{IngredientList | ING1, ING2, ING3, ING4 | addCategories }}-->\n}}';
+      '\n|giftreward=\n|orderReward=\n|size=\n|placement=\n|ingredients=<!--{{IngredientList | ING1, ING2, ING3, ING4, ING5 | addCategories }}-->\n}}';
     template +=
       "\n'''%%name%%''' is a " +
       insertNumberWord(item.stars) +
