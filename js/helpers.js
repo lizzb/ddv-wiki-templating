@@ -691,7 +691,7 @@ function renderMeals(dataArray) {
     template += '\n|stars=%%stars%%';
     template += '\n|energy=';
     template += '\n|sellprice=';
-    template += '\n|collection=Dreamlight Valley'; // todo - logic here and in body
+    template += '\n|collection='+newExpansionCollection; // todo - logic here and in body
     template +=
       '\n|giftreward=\n|orderReward=\n|size=\n|placement=\n|ingredients=<!--{{IngredientList | ING1, ING2, ING3, ING4, ING5 | addCategories }}-->\n}}';
     template +=
@@ -702,7 +702,7 @@ function renderMeals(dataArray) {
       ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
 
     template +=
-      '\n\n<!--It can be [[Cooking|cooked]] by using [[:Category:Grains|any Grain]]. It can be [[Cooking|cooked]] by combining [[:Category:Vegetables|any Vegetable]], [[ING2]], [[ING3]], and [[ING4]]. -->Once collected it will be added to the [[:Category:Storybook Vale Meals Collection|Storybook Vale Meals Collection]].';
+      '\n\n<!--It can be [[Cooking|cooked]] by using [[:Category:Grains|any Grain]]. It can be [[Cooking|cooked]] by combining [[:Category:Vegetables|any Vegetable]], [[ING2]], [[ING3]], and [[ING4]]. -->Once collected it will be added to the [[:Category:'+newExpansionCollection+' Meals Collection|'+newExpansionCollection+' Meals Collection]].';
 
     template +=
       "\n\n[[Cooking#Meals|Meals]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
@@ -722,7 +722,7 @@ function renderMeals(dataArray) {
     template = '';
     template =
       '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%type%%}}\n| {{stars|%%stars%%}}\n| <!--{{energy|XXXXX}}-->\n| <!--{{price|XXXXX}}-->\n| {{ItemRecipe | %%name%% }}';
-    template += '\n| [[Storybook Vale]]';
+    template += '\n| [['+newExpansionCollection+']]';
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
@@ -733,7 +733,6 @@ function renderMeals(dataArray) {
 
 
 function renderIngredients(dataArray) {
-  var newExpansionCollection = "Wishblossom Ranch";
   // Create stub articles for quest items
   var renderedHTML = '';
   var delimiter = '';
@@ -840,7 +839,6 @@ function renderIngredients(dataArray) {
 
 
 function renderCompanions(dataArray) {
-  var newExpansionCollection = "Wishblossom Ranch";
   // Create stub articles for quest items
   var renderedHTML = '';
   var delimiter = '';
@@ -855,7 +853,7 @@ function renderCompanions(dataArray) {
     template += "\n|collection="+newExpansionCollection;
     template += "\n|hangout=<!--Flowers/Ore-->";
     template += "\n|critterType=<!--Goose/Bee/Skunk-->";
-    template += "\n|found={{name|BIOME1}}<br>(REGION1)";
+    template += "\n|found={{name|%%biome%%}}<br>(%%region%%)";
     template += "\n|favfood=<!--{{name|FAV1}}<br>{{name|FAV2}}-->";
     template += "\n|likedfoods=<!--{{inlineIcon|Gems|link=Mining#Gems}}{{inlineIcon|Grains|link=:Category:Grains}}-->";
     /*
@@ -931,8 +929,8 @@ function renderCompanions(dataArray) {
     template += "\n|}";
 
     template += output_history(item);
-    template += "{{NavboxCompanion}}";
-    template += "__noTOC__";
+    template += "\n\n{{NavboxCompanion}}";
+    template += "\n__noTOC__";
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
