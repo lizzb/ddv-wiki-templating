@@ -725,7 +725,7 @@ function insertIngredientCategoryLink(input) {
 
 
 function oxfordJoin(arr) {
-  return arr.join(', ').replace(/, ([^,]*)$/, ' and $1');
+  return arr.join(', ').replace(/, ([^,]*)$/, ', and $1');
 }
 /*
 exports.oxford = function(arr, conjunction, ifempty){
@@ -805,7 +805,8 @@ function renderMeals(dataArray) {
 
     // meal switch statement template
     //template = '\n|%%name%%=<!--{{name|ING1NAME}}<br>{{name|ING2NAME}}<br>{{name|ING3NAME}}<br>{{name|ING4NAME}}<br>{{name|ING5NAME}}-->\n';
-    template = '\n|%%name%%=<!--'+item.itemRecipeString+'-->\n';
+    template = '\n|%%name%%=<!--'+item.itemRecipeString+'-->';
+    //template += '\n';
 
 
     renderedHTML += microTemplate(template, item);
@@ -832,8 +833,8 @@ function renderMeals(dataArray) {
     else {
       template += '\n|type=Meal'; 
     }
-    if (!item.type) { item.type = '<!--Appetizers/Entrées/Desserts-->'; }
-    template += '\n|category=%%type%%';
+    if (!item.category) { item.category = '<!--Appetizers/Entrées/Desserts-->'; }
+    template += '\n|category=%%category%%';
     template += '\n|collection='+newExpansionCollection;
     template += '\n|stars=%%stars%%';
     template += '\n|energy=';
@@ -844,7 +845,7 @@ function renderMeals(dataArray) {
 
     template += wrapComment('{{IngredientList | '+item.ingredientListString+' | addCategories }}', !collectionConfirmed);
     template += '\n}}';
-    template += "\n'''%%name%%''' is a " + insertNumberWord(item.stars) + '' + insertCookingLink(item.type) + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
+    template += "\n'''%%name%%''' is a " + insertNumberWord(item.stars) + '' + insertCookingLink(item.category) + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
 
     template += '\n\n';
 
@@ -871,12 +872,13 @@ function renderMeals(dataArray) {
     renderedHTML += delimiter;
   });
 
-  renderedHTML += '\n\n===== MEAL ARTICLES =====\n\n';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
+  renderedHTML += '\n\n===== COOKING ARTICLE =====\n\n';
+  //delimiter = '\n\n\n-----------------------------\n\n\n';
+  delimiter = '';//no breaks between items, assumes already in correct category/alpha order
   dataArray.forEach(function (item) {
     template = '';
     template =
-      '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%type%%}}\n| {{stars|%%stars%%}}\n| <!--{{energy|XXXXX}}-->\n| <!--{{price|XXXXX}}-->\n| {{ItemRecipe | %%name%% }}';
+      '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}\n| {{stars|%%stars%%}}\n| <!--{{energy|XXXXX}}-->\n| <!--{{price|XXXXX}}-->\n| {{ItemRecipe | %%name%% }}';
     template += '\n| [['+newExpansionCollection+']]';
 
     renderedHTML += microTemplate(template, item);
@@ -922,42 +924,7 @@ function renderGems(dataArray) {
   var delimiter = '';
   delimiter = '\n\n\n-----------------------------\n\n\n';
   dataArray.forEach(function (item) {
-    template = '';
-    template += '{{infobox';
-    template += '\n|image=%%name%%.png';
-    template += '\n|description=';
-    template += '\n|type=Gem';
-    template += '\n|collection='+newExpansionCollection;
-    template += '\n|buyprice=';
-    template += '\n|sellprice=';
-    template += '\n|giftreward=';
-    template += '\n|color=';
-    template += '\n|from=mining';
-    template += '\n<!--|from=<span id="nametemplate">[[File:Goofy\'s Stall.png|20x20px|link=]] [[Aladdin\'s Gem Stall]] (5)</span><br>';
-    template += '\n|from={{inlineIcon|Mining|size=20|link=Mining}}';
-    template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
-    template += '\n|biomes=BIOME1-->';
-    template += '\n|gridSize=';
-    template += '\n|placement=<!--surfaces-->';
-    template += '\n|stackMax=';
-    template += '\n}}';
-    template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in the [[Everafter]] area of [[Wishblossom Ranch]]. ";
-    template += '';
-    template += 'It can be used as a [[Crafting|crafting material]] to make items at a [[:Category:Crafting Stations|crafting station]]. ';
-    template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
-    template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Gems Collection|'+newExpansionCollection+' Gems Collection]].';
-    template += ' ';
-    template += "\n\n[[Mining#Gems|Gems]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
-    template += ' ';
-    template += '\n<!--\nIn nodes where this gem can be found there is a chance to find [[Shiny %%name%%]], which is a less common and more valuable variant. In nodes where this gem can be found there is a chance to find [[NONSHINY]], which is a more common and less valuable variant.-->';
-
-    //crafting recipes, quest objectives, quest recipes
-    //template += insertRecipeDefaults(dataArray);
-
-    template += output_history(item);
-    template += '\n\n{{NavboxGem}}';
-    template +=
-      '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]] [[Category:Missing Colors]]';
+    template = generateGemTemplate(item);
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
@@ -965,15 +932,51 @@ function renderGems(dataArray) {
   return renderedHTML;
 }
 
+function generateGemTemplate(item) {
+  var template = '';
+  template = '';
+  template += '{{infobox';
+  template += '\n|image=%%name%%.png';
+  template += '\n|description=';
+  template += '\n|type=Gem';
+  template += '\n|collection='+newExpansionCollection;
+  template += '\n|buyprice=';
+  template += '\n|sellprice=';
+  template += '\n|giftreward=';
+  template += '\n|color=';
+  template += '\n|from=mining';
+  template += '\n<!--|from=<span id="nametemplate">[[File:Goofy\'s Stall.png|20x20px|link=]] [[Aladdin\'s Gem Stall]] (5)</span><br>-->';
+  template += '\n|from={{inlineIcon|Mining|size=20|link=Mining}}';
+  //template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
+  template += '\n|biomes=%%biome%%';
+  template += '\n|gridSize=';
+  template += '\n|placement=<!--surfaces-->';
+  template += '\n|stackMax=';
+  template += '\n}}';
+//  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in [[Everafter]] area of [[Wishblossom Ranch]]. ";
+  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in the [[%%biome%%]]. ";
+  template += '';
+  template += 'It can be used as a [[Crafting|crafting material]] to make items at a [[:Category:Crafting Stations|crafting station]]. ';
+  template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
+  template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Gems Collection|'+newExpansionCollection+' Gems Collection]].';
+  template += ' ';
+  template += "\n\n[[Mining#Gems|Gems]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
+  template += ' ';
+  template += '\n<!--\nIn nodes where this gem can be found there is a chance to find [[Shiny %%name%%]], which is a less common and more valuable variant. In nodes where this gem can be found there is a chance to find [[NONSHINY]], which is a more common and less valuable variant.-->';
 
-function renderFlowers(dataArray) {
+  //crafting recipes, quest objectives, quest recipes
+  //template += insertRecipeDefaults(dataArray);
 
-  // Create stub articles for gem items
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
-    template = '';
+  template += output_history(item);
+  template += '\n\n{{NavboxGem}}';
+  template +='\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]] [[Category:Missing Colors]]';
+  return template;
+}
+
+
+
+function generateFlowerTemplate(item) {
+  var template = '';
     template += '{{Infobox';
     template += '\n|image=%%name%%.png';
     template += '\n|description=';
@@ -984,17 +987,18 @@ function renderFlowers(dataArray) {
     template += '\n|giftreward=';
     template += '\n|color=';
     template += '\n|from={{name|Foraging}}';
-    template += '\n|biomes=<!--{{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}';
-    template += '\n|biomes=BIOME1-->';
+    template += '\n|biomes=<!--{{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}-->';
+    template += '\n|biomes=%%biome%%';
     template += '\n|spawnTimer={{growthTime|}}';
     template += '\n|spawnMax=';
     template += '\n|gridSize=';
     template += '\n|placement=<!--surfaces, unpaved-->';
     template += '\n|stackMax=';
     template += '\n}}';
-    template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild<!--in '''REGION1''' and '''REGION2''' areas in [[BIOME1]]-->.";
+    //template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild<!--in '''REGION1''' and '''REGION2''' areas in [[BIOME1]]-->.";
+    template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild in the [[%%biome%%]].";
     template += '';
-    template += "\n\n<!--There are exactly ITEMCOUNT '''{{PAGENAME}}''' found in [[BIOME1]], and another-->Another flower of the same type and color will only appear after one has been picked. There is an [[Flowers#Flower Spawning|internal-game timer]] for this flower type which respawns<!-- one every 60 minutes-->, and it can take up to 2 hours to fully repopulate all of these flowers between both areas.";
+    template += "\n\n<!--There are exactly ITEMCOUNT '''{{PAGENAME}}''' found in the [[%%biome%%]], and another-->Another flower of the same type and color will only appear after one has been picked. There is an [[Flowers#Flower Spawning|internal-game timer]] for this flower type which respawns<!-- one every 60 minutes-->, and it can take up to 2 hours to fully repopulate all of these flowers between both areas.";
     // line about beast flower shop? template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
     template += ' Once collected it will be added to the [[:Category:'+newExpansionCollection+' Foraging Collection|'+newExpansionCollection+' Foraging Collection]].';
     template += ' ';
@@ -1005,31 +1009,41 @@ function renderFlowers(dataArray) {
 
     template += output_history(item);
     template += '\n\n{{NavboxForage}}';
-    template +=
-      '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]] [[Category:Missing Colors]]';
+    template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]] [[Category:Missing Colors]]';
+  return template;
+}
 
+
+function renderFlowers(dataArray) {
+  var renderedHTML = '';
+  var delimiter = '';
+  delimiter = '\n\n\n-----------------------------\n\n\n';
+  dataArray.forEach(function (item) {
+    var template = generateFlowerTemplate(item);
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
   });
   return renderedHTML;
 }
 
-function renderIngredients(dataArray) {
-  // Create stub articles for quest items
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
-    template = '';
+/*
+function generateRandomTemplate(item) {
+  var template = '';
+  return template;
+}
+*/
+
+function generateIngredientsTemplate(item) {
+  var template = '';
     template += '{{stub}}';
     template += '\n{{infobox';
     template += '\n|image=%%name%%.png';
     template += '\n|description=';
     template += '\n|type=Ingredient';
-    if (!item.type) {
-      item.type = '<!--Seafood/Fruit/Vegetables/Spices/Dairy and Oil/Grains/Protein-->';
+    if (!item.cookingType) {
+      item.cookingType = '<!--Seafood/Fruit/Vegetables/Spices/Dairy and Oil/Grains/Protein-->';
     }
-    template += '\n|ingtype=%%ingtype%%';
+    template += '\n|ingtype=%%cookingType%%';
     template += '\n|collection='+newExpansionCollection;
     template += '\n|collectioncategory=<!--Fish/Seafood/Vegetables-->';
     template += '\n|energy=';
@@ -1037,34 +1051,66 @@ function renderIngredients(dataArray) {
     template += '\n|sellprice=';
     template += '\n|giftreward=';
     template += '\n<!--';
-    template += '\n|from=fishing';
-    template += '\n|pool=None/Gold/{{pool|White}}, can be {{pool|Blue}}';
-    template += '\n';
-    template += '\n|from={{name|Foraging}}<br>{{--}}{{inlineIcon|Trees|iconOnly|size=20|link=%%name%% Tree}} [[%%name%% Tree]]';
-    template += '\n|from={{name|Foraging}}<br>{{--}}{{inlineIcon|Underbrush|iconOnly|size=20|link=%%name%% Bush}} [[%%name%% Bush]]';
-    template += '\n';
-    template += '\n|from={{name|Goofy\'s Stall|link=Goofy\'s Stall#BIOME1{{!}}Goofy\'s Stall}}<br>';
-    template += '\n{{name|Gardening}}';
-    template += '\n|seed=%%name%% Seed';
-    template += '\n|growtime={{growthTime|XXXXX}}<br>{{growthTime|XXXXX|biome=BIOME1|biome2=BIOME2NAME}}';
-    template += '\n';
-    template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
-    template += '\n|biomes=BIOME1, BIOME2';
+    if (item.cookingType == "Fish") {
+      template += '\n|from=fishing';
+      template += '\n|biomes=%%biome%%';
+      template += '\n|pool=None/Gold/{{pool|White}}, can be {{pool|Blue}}';
+    }
+    else {
+      if (item.obtainMethod == "Stall") {
+        template += '\n|from={{name|Goofy\'s Stall|link=Goofy\'s Stall#BIOME1{{!}}Goofy\'s Stall}}<br>';
+      } 
+      else if (item.obtainMethod == "Foraging - Tree/Bush") {
+        template += '\n|from={{name|Foraging}}<br>{{--}}{{inlineIcon|Trees|iconOnly|size=20|link=%%name%% Tree}} [[%%name%% Tree]]';
+        template += '\n|from={{name|Foraging}}<br>{{--}}{{inlineIcon|Underbrush|iconOnly|size=20|link=%%name%% Bush}} [[%%name%% Bush]]';
+      }
+      else if (item.obtainMethod == "Gardening") {
+        template += '\n|from={{name|Gardening}}';
+        template += '\n|biomes=%%biome%%';
+        template += '\n|seed=%%name%% Seed';
+        template += '\n|growtime={{growthTime|XXXXX}}<br>{{growthTime|XXXXX|biome=BIOME1|biome2=BIOME2NAME}}';
+      }
+      else {
+        //template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
+        //template += '\n|biomes=BIOME1, BIOME2';
+        template += '\n|biomes=%%biome%%';
+      }
+    }
     template += '\n-->';
     template += '\n|gridSize=';
     template += '\n|placement=';
     template += '\n|stackMax=';
     template += '\n}}';
-    template += "\n'''%%name%%''' is a "+insertIngredientCategoryLink(item.ingtype)+" type [[Ingredients|ingredient]] used in [[cooking]].";
-    template += "<!--It can be [[Gardening|grown]] from [[%%name%% Seed]]s, which are purchased from [[Goofy's Stall]] in [[BIOME1]] and the [[BIOME2]].";
-    template += " It can be found growing on [[%%name%% Tree]]s in '''REGION1''' and '''REGION2''' areas of the [[BIOME1]].";
-    template += " It can be found [[foraging|growing wild]] on the ground in the [[BIOME1]]";
-    template += '\n';
-    template += "\nEach harvest gives YIELDCOUNT '''%%name%%''', and the fruit takes XXXXX hours/minutes to regrow. Trees/Bushes will continue to produce fruit even if moved outside their origin biome.";
-    template += '\n';
-    template += "\nThe [[%%name%% Seed|seeds]] are unlocked for sale after the first upgrade of [[Goofy\'s Stall]] in [[BIOME1]], and after the initial repair of [[Goofy\'s Stall]] in the [[BIOME2]]. The [[BIOME1]] stall also has a chance to sell '''%%name%%''' directly. After planting it takes XXXXX minutes to grow, and WATERINGCOUNT total waterings until YIELDCOUNT can be harvested.";
-    template += '\n-->';
-    template += '\nIt can be consumed to regain [[energy]], or used as an [[Ingredients|ingredient]] in [[Cooking#Meal Recipes|cooked meals]]. Once collected it will be added to the [[:Category:'+newExpansionCollection+' Ingredients Collection|'+newExpansionCollection+' Ingredients Collection]].';
+
+    if (item.cookingType == "Fish") {
+      //fishlogic
+      // '''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools--><!-- in all regions of [[BIOME]]-->.
+      template += "\n'''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools--> in the [[%%biome%%]].";
+    }
+    else {
+      template += "\n'''%%name%%''' is a "+insertIngredientCategoryLink(item.cookingType)+" type [[Ingredients|ingredient]] used in [[cooking]].";
+      template += "<!--";
+      //template += "It can be [[Gardening|grown]] from [[%%name%% Seed]]s, which are purchased from [[Goofy's Stall]] in [[BIOME1]] and the [[BIOME2]].";
+      //template += " It can be found growing on [[%%name%% Tree]]s in '''REGION1''' and '''REGION2''' areas of the [[BIOME1]].";
+      template += "It can be [[Gardening|grown]] from [[%%name%% Seed]]s, which are purchased from [[Goofy's Stall]] in the [[%%biome%%]].";
+      template += " It can be found growing on [[%%name%% Tree]]s in the [[%%biome%%]].";
+      
+      template += " It can be found [[foraging|growing wild]] on the ground in the [[%%biome%%]]";
+      template += '\n';
+      template += "\nEach harvest gives YIELDCOUNT '''%%name%%''', and the fruit takes XXXXX hours/minutes to regrow. Trees/Bushes will continue to produce fruit even if moved outside their origin biome.";
+      template += '\n';
+      template += "\nThe [[%%name%% Seed|seeds]] are unlocked for sale after the first upgrade of [[Goofy\'s Stall]] in [[BIOME1]], and after the initial repair of [[Goofy\'s Stall]] in the [[BIOME2]].";
+      template += " The [[%%biome%%]] stall also has a chance to sell '''%%name%%''' directly.";
+      template += " After planting it takes XXXXX minutes to grow, and WATERINGCOUNT total waterings until YIELDCOUNT can be harvested.";
+      template += '\n-->';
+    }
+    template += '\n\nIt can be consumed to regain [[energy]], or used as an [[Ingredients|ingredient]] in [[Cooking#Meal Recipes|cooked meals]].';
+    if (item.cookingType == "Fish") {
+      template += ' Once collected it will be added to the [[:Category:'+newExpansionCollection+' Fish Collection|'+newExpansionCollection+' Fish Collection]].';
+    }
+    else {
+      template += ' Once collected it will be added to the [[:Category:'+newExpansionCollection+' Ingredients Collection|'+newExpansionCollection+' Ingredients Collection]].';
+    }
     template += '\n ';
     template += "\n[[Ingredients]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
     template += '\n<!--';
@@ -1086,36 +1132,39 @@ function renderIngredients(dataArray) {
     template += '\n| {{ItemRecipe | RECIPENAME }}';
     template += '\n|}';
     template += '\n';
-    /*
-    {{stub}}
-{{infobox
-|image=%%name%%.png
-|description=
-|type=Ingredient
-|ingtype=Fish
-|collection=
-|collectioncategory=Fish
-|energy=
-|sellprice=
-|giftreward=
-|from=fishing
-|biomes=<!--BIOME-->
-|pool=
-|gridSize=
-|placement=<!--surfaces-->
-}}
-'''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools--><!-- in all regions of [[BIOME]]-->.
-*/
-    
+
     //crafting recipes, quest objectives, quest recipes
     //template += insertRecipeDefaults(dataArray);
 
     template += '\n-->';
 
-  template += output_history(item);
+    template += output_history(item);
     template += '\n\n{{NavboxIngredient}}';
-    template +=
-      '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
+    template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
+
+    return template;
+}
+
+function renderIngredients(dataArray) {
+
+  // Create stub articles for quest items
+  var renderedHTML = '';
+  var delimiter = '';
+  delimiter = '\n\n\n-----------------------------\n\n\n';
+    
+  dataArray.forEach(function (item) {
+    var template = '';
+
+    if (isFlower(item)) {
+      template = generateFlowerTemplate(item);
+    }
+    else if (isGem(item)) {
+      template = generateGemTemplate(item);
+    }
+
+    else {
+      template = generateIngredientsTemplate(item);
+    }
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
@@ -1137,9 +1186,9 @@ function renderCompanions(dataArray) {
     template += "\n|type=Companions";
     template += "\n|category=Animal Companions, Critter";
     template += "\n|collection="+newExpansionCollection;
-    template += "\n|hangout=<!--Flowers/Ore-->";
-    template += "\n|critterType=<!--Goose/Bee/Skunk-->";
-    template += "\n|found={{name|%%biome%%}}<br>(%%region%%)";
+    template += "\n|hangout=<!--Flowers/Ore/Fruit-->";
+    template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk-->;
+    template += "\n|found={{name|%%biome%%}}"; //<br>(%%region%%)";
     template += "\n|favfood=<!--{{name|FAV1}}<br>{{name|FAV2}}-->";
     template += "\n|likedfoods=<!--{{inlineIcon|Gems|link=Mining#Gems}}{{inlineIcon|Grains|link=:Category:Grains}}-->";
     /*
@@ -1148,24 +1197,24 @@ function renderCompanions(dataArray) {
     template += "\n{{inlineIcon|Vegetables|link=:Category:Vegetables}}*<br><--Refers to the Grains, Spices & Herbs, and Vegetables Ingredient Categories as defined in the '''Collection Menu''', not while Cooking - e.g. no Seaweed, includes Vanilla.--*''(Collection Menu Categorization)''<br>";
     template += "\n{{inlineIcon|Fruit}} grown from [[Crop Seeds|seeds]]-->";
     */
-    template += "\n|minfeedings=";
+    template += "\n|minfeedings=<!--%%numFeedings%%-->";
     template += "\n}}";
     template += "\n{{ItemDescription";
     template += "\n|%%name%%";
     template += "\n|type=Companion";
-    template += "\n|critterType=<!--Goose/Bee/Skunk-->";
+    template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk-->;
     template += "\n|from=Feeding Critters";
-    template += "\n|found=in the '''Wishblossom Ranch''' Village<!--in '''REGION1''' area of [[BIOME1]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[The Spark of Imagination]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
+    template += "\n|found=in the '''Wishblossom Ranch''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
     template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
     ////template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]], [[:Category:Spices|Spices & Herbs]], and [[:Category:Vegetables|Vegetables]] as they are defined on the Ingredients tab of the '''Collection Menu''' - e.g. [[Vanilla]] is included, and [[Seaweed]] is not. They will additionally eat Fruit grown from [[Crop Seeds|seeds]], i.e. [[Cosmic Figs]], [[Grapes]], [[Melon]], [[Pineapple]]-->";
     //template += "\n|likedFoods=[[:Category:Grains|Grains]] as they are defined on the '''Ingredients''' section of the '''Collection Menu''' (not as they are grouped at a [[:Category:Cooking Stations|Cooking Station]])";
     template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
     template += "\n|critterCollection="+newExpansionCollection;
     template += "\n|hangout=<!--[[Mining#Resources|Ore]] / [[Foraging#Flowers{{!}}Flowers]]-->";
-    template += "\n|numFeedings=<!--three <!--(3)-->}}";
+    template += "\n|numFeedings=<!--(%%numFeedings%%)--><!--three <!--(3)-->}}";
     template += "\n";
     template += "\n{{CritterSchedule";
-    template += "\n|location=<!--BIOME1{{!}}REGION1-->";
+    template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
     template += "\n|sunday=TBA";
     template += "\n|monday=TBA";
     template += "\n|tuesday=TBA";
@@ -1177,23 +1226,25 @@ function renderCompanions(dataArray) {
     template += "\n";
     template += "\n==Yield==";
     template += "\n{| class=wikitable id='recipe-table'";
-    template += "\n!style='' | Food Type";
-    template += "\n!style='' | Item";
-    template += "\n!style='' | Possible Rewards";
+    template += '\n!style="" | Food Type';
+    template += '\n!style="" | Item';
+    template += '\n!style="" | Possible Rewards';
     template += "\n|-";
     template += "\n| Favorite";
     template += "\n| TBA";
     template += "\n|";
-    template += "\nTBA";
-    template += "\n{{name|Dream Shard|1}}<br>";
+    //template += "\nTBA";
+    template += "\n{{name|Dream Shard|2}}<br>";
     template += "\n{{name|Memory Shard}}<br>";
     template += "\n{{name|Motif Bag}}";
     template += "\n|-";
     template += "\n| Liked";
+    template += "\n| TBA";
     template += "\n|";
-    template += "\nTBA";
-    template += "\n|";
-    template += "\nTBA";
+    //template += "\nTBA";
+    template += "\n{{name|Dream Shard}}<br>";
+    template += "\n{{name|Memory Shard}}<br>";
+    template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
     template += "\n|}-->";
     template += "\n{{cleanup|Missing Love and Like rewards}}";
     template += "\n";
@@ -1388,11 +1439,19 @@ function renderSPDuties(dataArray) {
 
 
 
-
-
-
-
-
+// is flower or gem
+function isFlower(item) {
+  return (
+    (item.name && item.name.includes('Flower')) ||
+    (item.cookingType && item.cookingType == 'Flower'));
+  }
+function isGem(item) {
+  return (
+    (item.name && item.name.includes('Shiny')) ||
+    (item.cookingType && item.cookingType == 'Gem') ||
+    (item.collectionType && item.collectionType.includes('Gem'))
+    );
+}
 
 function isWallpaper(item) {
   return (
@@ -1452,9 +1511,10 @@ function isHouse(item) {
 }
 
 function isStall(item) {
+  // some crafted items are called stall
   var result =  (
     (item.universe && item.universe.includes('Stall')) ||
-    (item.name && item.name.includes('Stall'))); 
+    (item.collection && item.collection.includes('Stall'))); 
   if (result) {
     item.itemType = 'Stall';
   }

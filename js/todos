@@ -1,0 +1,197 @@
+
+
+===== PRIORITY =====
+todo:
+- house and stall articles worked on 2025.10.05
+- add returning star path item category
+
+escape quotes in bundle and item names --> i think the problem is in using mr data converter
+
+
+- populate wallpaper and flooring articles
+- verify: well skin template
+- verify: accessory template
+- verify: hairstyle template
+
+- verify: parse out characters to use for "appliedto" for char dream styles
+
+- create: glider template
+
+- verify: if = under, change to underneath. if = ceiling, change to ceilings. if = wall, change to walls for placement values
+
+
+- escape quotes in item names
+
+- fix character dream style generation for bundles, and "house" not "furniture"
+
+- parsing bonus rewards for star path from source
+
+- todo: in article generation, standalone items :|bundleName=xxxxx (Bundle){{!}}xxxxx
+- |image=Naboo Interior Furniture Bundle Store.png -- TODO - should only append "store" to bundle image file name if a standalone
+
+- tODO: from param and storeSlots for scrooge items - add by default, not omit by default
+
+- TODO: remove "|functions=Rug" from generated
+
+- TODO : fix source generation for mythical cloud throne, all companion friendships
+
+- Tea Party Monkey , Park Stands Bundle , its a small world pillar, alien swirling saucers -- todo - forgotten in generation
+
+
+
+
+===== MEDIUM =====
+
+- Decide on ceiling placement language and insert
+TODO; , and must be placed indoors, from the ceiling.
+>>>>> can only be placed indoors from the ceiling. ???
+
+
+- Decide on wall placement language and insert
+>>> It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], and must be placed indoors on a wall.
+>>> no comma afer indoors.. or yes comma?
+>>> and must be placed indoors, on a wall.
+>>> CAN be placed or MUST be placed??
+
+- missing size category is missing
+
+- default to unconfirmed collection AND add missing collection category
+
+- add indoors-only body text to dummy placeholder
+
+- auto-add indoor/outdoor text in paragraph 3
+
+- if surfacearea = not null, in intro text insert table text
+
+- in intro sentence, use bed, not seating, for items with the bed category
+// TODO: override "bed" if item has "bed" in title in intro sentence
+
+- populate commented out body text for functions if empty
+
+- better default handling of empty functions/surface area
+
+todo: fix "Store - only after Peter Pan Realm Quest (The Music's On the Walls)" -- needs to generate text
+>>>>> It has a chance to be available for purchase as rotating stock from [[Scrooge's Store]] after the completing the quest [[The Music's on the Walls]].
+
+
+
+
+
+===== LOW =====
+
+- generate relateditems for all items in a premium bundle (minus the current item)
+
+- adding spaces and using join for psBundleItems, or replacing afterwards all "\w,\w" with "$1, $2"
+
+- populate store slots if any value
+
+- extra line break for scrooge items? for from param
+
+- for returning SP items, override whatever the collectionConfirmed value is and always do uncommented
+
+- fix "buyprice=null and placement=null"
+
+- remove any space + line breaks to just line breaks (no trailing spaces)
+
+- todo: do not add missing price category if it is a clothing item from a star path
+
+
+
+
+
+
+
+=============
+EXTRA NOTES
+
+
+===== DONE?? ====
+
+use case to test template generation:
+Popsicle Stick Bench - outdooronly seating, returning L>SP item
+Luxo Umbrella Table - outdooronly table, returning P>SP item
+
+
+TODO - either dragon statue or magnolia arch changed bounding boxes, because can no onger intersect - in 1.17 i think, check discord
+
+
+
+
+
+
+
+
+
+As of 2025.08.17, the following match the actual articles:
+- Wonderland Wishing Well
+- Summer Vacation Scrooge
+
+
+- Fairy Haircut
+
+2025.09.19 tested:
+
+  // commented out matches article
+  //extremelyGoofyConductor,
+  //summerVacationScrooge,
+  //popsicleStickBench,
+
+  //wickerBag,
+  //dapperGreenUmbrella,
+  //ornateHandFan,
+  //handheldPlushie, // ehh
+
+  //bloomingLotusUpdo,
+  //fairyHaircut,
+
+  //wonderlandWishingWell,
+  //frostyFairyGodmother, //ehh
+  
+  
+  //pirateShipDeckFlooring,
+  
+  //rusticCottageBed,
+
+  //agrabahMarketPotteryStand
+
+
+
+Use cases:
+accessory nonpremium star path
+Accessory premium standalone
+face paint no premium star path
+Hair premium star path
+Spring bundle with well+ stall
+Stall
+Sp wallpaper premium
+Sp returning flooring not premium
+Store furniture with conditional quest
+Store furniture with a function
+Store furniture without a function - remove all placeholder — edit val in sheet
+Store wallpaper
+Clothing level reward
+Clothing quest reward
+Clothing star path premium
+Clothing star path limited to returning premium
+Clothing wings standalone premium
+Clothing event memory mania
+Furniture outdoor only and table returning star path
+Furniture ceiling lighting
+Furniture indoor only wall mounted fireplace
+Furniture  indoor only wall
+Furniture outdoor only arch interactable lighting
+Furniture outdoor only water
+Furniture gathering fx
+Furniture interact premium
+Furniture bed with sit function
+Furniture bed with lounge function
+Furniture chair with sit function
+Companion premium
+Companion star path
+Character style returning sp limited
+Character style premium
+Character style star path
+House star path bonus items
+Furniture from quest crafting unlock recipe surfaces lighting (wonderland candle)
+Furniture table with irregular surface shape - luxo table?
+Parse character universe and character

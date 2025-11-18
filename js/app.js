@@ -130,7 +130,7 @@ DataConverter.prototype.insertSampleData = function(dataName) {
 	    'Flag Poles\tThese flag poles are needed to play Capture the Sun.\tCapture the Sun\tJoy\tnone';
   	}
   	else if (dataName == "meals") {
-  		outputString = 
+  		/*outputString = 
 	    // ====== meals: name, type, stars ======
 	    'name\ttype\tstars\ting1\ting2\ting3\ting4\ting5\n' +
 	    'Roast\tEntrées\t1\tMeat\t\t\t\t\n' +
@@ -138,15 +138,105 @@ DataConverter.prototype.insertSampleData = function(dataName) {
 	    'Grecian Baked Fish\tEntrées\t5\tStygian Mudskipper\tElysian Grain\tOlives\tSalt Crystal\tAmbrosia\n' +
 	    //'Tea Sandwiches\tAppetizers\t4\thello\tim\tan\tingrident\tfive\n' +
 	    'Cheshire Cat Tail\tDesserts\t4\tonly\tfour\there\tok\t\n';
+	    */
+	    outputString = 'collection\tversion\tversionRemoved\tname\tChecklist\tsheetOrder\tstars\tcategory\ting1\ting2\ting3\ting4\ting5'
++'\nWR\t1.20\tbiome1\tBeauty and the Beetroot Napoleons\t\t1.001\t5\tAppetizers\tRed Currants\tBeetroot\tButter\tEgg\tMilk'
++'\nWR\t1.20\tbiome1\tButtermilk Borscht\t\t1.002\t4\tAppetizers\tBeetroot\tDill\tMilk\tEgg\t'
++'\nWR\t1.20\tbiome2\tFelt Food Spread\t\t1.003\t3\tAppetizers\tButton Mushroom\tEgg\tSatinFinned Betta\t\t'
++'\nWR\t1.20\tbiome1\tScarlet Kale and Cheese Pinwheels\t\t1.004\t3\tAppetizers\tScarlet Kale\tCheese\tWheat\t\t'
++'\nWR\t1.20\tbiome1\tAlpine Fishcakes\t\t1.005\t2\tAppetizers\tDill\tAlpine Bass\t\t\t'
++'\nWR\t1.20\tbiome2\tEdible Button Stew\t\t1.006\t2\tAppetizers\tButton Mushroom\tCarrot\t\t\t'
++'\nWR\t1.20\tbiome2\tKanine Krunchies Cereal\t\t1.007\t2\tAppetizers\tPearly Barley\tPincushion Peach\t\t\t'
++'\nWR\t1.20\tbiome2\tJellied Salad\t\t1.008\t2\tAppetizers\tJelliedFish\tScarlet Kale\t\t\t'
++'\nWR\t1.20\tbiome3\tFizzy Nectar Soda\t\t1.009\t2\tAppetizers\tBonsai Starfruit\tSlush Ice\t\t\t'
++'\nWR\t1.20\tbiome3\tRosehip Honey Tea\t\t1.010\t1\tAppetizers\tCoral Honey\t\t\t\t'
++'\nWR\t1.20\tbiome2\tFishy Pineapple Jelly\t\t2.001\t5\tEntrees\tMeasuringTape Snail\tJelliedFish\tCrab\tScarlet Kale\tAny Fish'
++'\nWR\t1.20\tbiome3\tPixie Pizza\t\t2.002\t5\tEntrees\tFairy Kamut\tCheese\tTomato\tFairy Sprinkles\tButton Mushroom'
++'\nWR\t1.20\tbiome1\tSmoked Fish Charcuterie Spread\t\t2.003\t4\tEntrees\tWheat\tTuna\tMountain Whitefish\tAny Fish\t'
++'\nWR\t1.20\tbiome3\tFriendly Bento\t\t2.004\t4\tEntrees\tTigger Fish\tScarlet Kale\tCoral Honey\tAny Vegetable\t'
++'\nWR\t1.20\tbiome3\tBread Bowl Pumpkin Soup\t\t2.005\t4\tEntrees\tTigger Fish\tFairy Kamut\tPumpkin\tMilk\t'
++'\nWR\t1.20\tbiome2\tAfternoon Tea Set\t\t2.006\t4\tEntrees\tDark Chocolate Coffee Beans\tPearly Barley\tAny Vegetable\tPincushion Peach\t'
++'\nWR\t1.20\tbiome2\tStargazy Pie\t\t2.007\t4\tEntrees\tMeasuringTape Snail\tSatinFinned Betta\tAlpine Bass\tWheat\t'
++'\nWR\t1.20\tbiome2\tHorace\'s Ham Sandwich\t\t2.008\t3\tEntrees\tPearly Barley\tCheese\tAny Vegetables\t\t'
++'\nWR\t1.20\tbiome3\tHoney Glazed Carrots\t\t2.009\t3\tEntrees\tCoral Honey\tCarrot\tDill\t\t'
++'\nWR\t1.20\tbiome3\tHoney Pancakes\t\t2.010\t3\tEntrees\tCoral Honey\tWheat\tEgg\t\t'
++'\nWR\t1.20\tbiome1\tBeetiful Spaetzle\t\t2.011\t3\tEntrees\tBeetroot\tEgg\tWheat\t\t'
++'\nWR\t1.20\tbiome1\tBaked Whitefish & Roasted Beetroot\t\t2.012\t2\tEntrees\tBeetroot\tMountain Whitefish\t\t\t'
++'\nWR\t1.20\tbiome2\tJellied Fish Terrine\t\t2.013\t1\tEntrees\tJelliedFish\t\t\t\t'
++'\nWR\t1.20\tbiome1\tScarlet Bouquet Salad\t\t2.014\t1\tEntrees\tScarlet Kale\t\t\t\t'
++'\nWR\t1.20\tbiome2\tVintage Peach Trifle\t\t3.001\t5\tDesserts\tPincushion Peach\tMilk\tPearly Barley\tSugarcane\tAny Fruits'
++'\nWR\t1.20\tbiome3\tFairy Boot Cake\t\t3.002\t5\tDesserts\tFairy Kamut\tCoral Honey\tEgg\tButter\tDark Chocolate Coffee Beans'
++'\nWR\t1.20\tbiome1\tRed Currant Linzer Cookies\t\t3.003\t4\tDesserts\tRed Currants\tSugarcane\tWheat\tButter\t'
++'\nWR\t1.20\tbiome3\tFairy Ice Cream Dome Cake\t\t3.004\t4\tDesserts\tFairy Kamut\tFairy Sprinkles\tSlush Ice\tRed Currants\t'
++'\nWR\t1.20\tbiome2\t101 Teeny Tiny Dalmation Cupcakes\t\t3.005\t4\tDesserts\tDark Chocolate Coffee Beans\tEgg\tWheat\tSugarcane\t'
++'\nWR\t1.20\tbiome3\tFairy Wands\t\t3.006\t3\tDesserts\tBonsai Starfruit\tLollipop Fruit\tAny Fruit\t\t'
++'\nWR\t1.20\tbiome1\tBeet Brownie Stack\t\t3.007\t3\tDesserts\tBeetroot\tAny Sweet\tEgg\t\t'
++'\nWR\t1.20\tbiome1\tRed Currant Valley Cakes\t\t3.008\t3\tDesserts\tRed Currants\tMilk\tEgg\t\t'
++'\nWR\t1.20\tbiome2\tEton Mess\t\t3.009\t3\tDesserts\tRed Currants\tPincushion Peach\tEgg\t\t'
++'\nWR\t1.20\tbiome3\tFairy Bread\t\t3.010\t2\tDesserts\tFairy Kamut\tFairy Sprinkles\t\t\t'
++'\nWR\t1.20\tbiome3\tTigger Tails\t\t3.011\t2\tDesserts\tLollipop Fruit\tFairy Sprinkles\t\t\t'
++'\nWR\t1.20\tbiome1\tBeet Sugar Sculpture\t\t3.012\t2\tDesserts\tBeetroot\tSugarcane\t\t\t';
 	    
   	}
   	else if (dataName == "ingredients") {
-  		outputString = 
-  		// ====== ingredients: name, ingtype =====
+  		/*outputString = 
+  		// ====== ingredients: name, cookingType =====
 	    'name\tingtype\n' +
 	    'Brussels Sprout\tVegetables\n' +
 	    'Cauliflower\tSpices\n' +
-	    'Green Beans\tFruit';
+	    'Green Beans\tFruit';*/
+
+		outputString = 'collection\tversion\tversionremoved\tobtainable\tID\tsheetOrder\tname\tChecklist\tcookingType\tcollectionType\tobtainMethod\tbiome\tenergy\tsellprice'
+		+'\nWR\t1.20.1\t\t\t\t\tMountain Whitefish\t\tFish\tFish\tFishing\tWishing Alps\t\t'
+		/*+'\nWR\t1.20.1\t\t\t\t\tAlpine Bass\t\tFish\tFish\tFishing\tBIOME1/2\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tJellied-Fish\t\tFish\tFish\tFishing\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tSatin-Finned Betta\t\tFish\tFish\tFishing\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tBalloon Fish\t\tFish\tFish\tFishing\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tTigger Fish\t\tFish\tFish\tFishing\tPixie Acres\t\t'*/
+		+'\nWR\t1.20.1\t\t\t\t\tPink Crocus\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tWishing Alps\t\t'
+		/*+'\nWR\t1.20.1\t\t\t\t\tPurple Crocus\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tWishing Alps\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tWhite Crocus\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tWishing Alps\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tYellow Crocus\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tWishing Alps\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tBlack Silk Flower\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tGreen Silk Flower\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tRed Silk Flower\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tSilver Silk Flower\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tBlue Lily of the Valley\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tPink Lily of the Valley\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tPurple Lily of the Valley\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tYellow Lily of the Valley\t\tFlower\tForaging > Flowers\tForaging (Pick Up)\tPixie Acres\t\t'*/
+		+'\nWR\t1.20.1\t\t\t\t\tRed Currants\t\tFruit\tFruit\tForaging - Tree/Bush\tBIOME1/2/3\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tPincushion Peach\t\tFruit\t\t\tGlamor Gulch\t\t'
+		/*+'\nWR\t1.20.1\t\t\t\t\tBonsai Starfruit\t\tFruit\t\t\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tLollipop Fruit\t\tFruit\t\t\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tPearly Barley\t\tGrains\tGrains\tGardening\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tFairy Kamut\t\tGrain\t\t\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tSilver Ore\t\tITEMS\tGem\t\tBIOME 1/2\t\t'*/
+		+'\nWR\t1.20.1\t\t\t\t\tPyrite\t\tITEMS\tGem\t\tWishing Alps\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tJasper\t\tITEMS\tGem\t\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tGrassy Ore\t\tITEMS\tGem\t\tPixie Acres\t\t'
+		/*+'\nWR\t1.20.1\t\t\t\t\tHoneycomb Stone\t\tITEMS\tGem\t\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tRusty Barn Hinge\t\tITEMS\t\t\tBIOME 1/2\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tSnow\t\tITEMS\t\t\tBIOME 1/2\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tPixie Dust\t\tITEMS\t\t\tBIOME 1/2/3\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tOld Braided Rope\t\tITEMS\t\t\tBIOME 1/3\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tAntique Clothes Iron\t\tITEMS\t\t\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tBeady Soil\t\tITEMS\t\t\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tSequin Strands\t\tITEMS\t\t\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tWire Coat Hanger\t\tITEMS\t\t\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tCopter Seeds\t\tITEMS\t\t\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tFeather\t\tITEMS\t\t\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tGiant Acorns\t\tITEMS\t\t\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tHoneycomb\t\tITEMS\t\t\tPixie Acres\t\t'*/
+		+'\nWR\t1.20.1\t\t\t\t\tReclaimed Barn Wood\t\tRaw Material\tForaging > Crafting Materials\tForaging (Pick Up)\tBIOME 1/2\t\t'
+		/*+'\nWR\t1.20.1\t\t\t\t\tMeasuring-Tape Snail\t\tSeafood\t\t\tGlamor Gulch\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tDill\t\tSpice\tSpices & Herbs\t\tBIOME1/3\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tDark Chocolate Coffee Beans\t\tSweet\t\t\tBIOME2/3\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tCoral Honey\t\tSweet\t\tForaging\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tFairy Sprinkles\t\tSweet\t\tForaging\tPixie Acres\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tBeetroot\t\tVegetable\t\t\tWishing Alps\t\t'
+		+'\nWR\t1.20.1\t\t\t\t\tScarlet Kale\t\tVegetable\t\t\tBIOME1/2/3/\t\t'*/
+		+'\nWR\t1.20.1\t\t\t\t\tButton Mushroom\t\tVegetable\t\t\tBIOME2/3\t\t';
   	}
   	else if (dataName == "gems") {
   		// also used for flowers
@@ -158,7 +248,21 @@ DataConverter.prototype.insertSampleData = function(dataName) {
 	    'Shiny Garnet\tPlaza';
   	}
   	else if (dataName == "companions") {
-  		outputString = 'name\ttype\tbiome\tregion\tfavfood\tlikedfoods\nBee 1\tBee\tPixie Acres\ttba\ttba\ttba\nSkunk 2\tSkunk\tGlamour Gulch\ttba\ttba\ttba\nGoose 3\tGoose\tWishing Alps\ttba\ttba\ttba';
+  		//outputString = 'name\ttype\tbiome\tregion\tfavfood\tlikedfoods\nBee 1\tBee\tPixie Acres\ttba\ttba\ttba\nSkunk 2\tSkunk\tGlamour Gulch\ttba\ttba\ttba\nGoose 3\tGoose\tWishing Alps\ttba\ttba\ttba';
+  		outputString = 'name\ttype\tbiome\tregion\tfavfood\tlikedfoods\tschedule\tnumFeedings'
+		+'\nGoose\tGoose\tWishing Alps\t\tRed Currants\tBlueberry, Gooseberry, Raspberry, Strawberry\tMon, Wed, Fri, Sat, Sun\t1'
+		+'\nTrue North Goose\tGoose\tWishing Alps\t\tRed Currants\tBlueberry, Gooseberry, Raspberry, Strawberry\tTue, Thu\t1'
+		+'\nBlack Goose\tGoose\tWishing Alps\t\tRed Currants\tBlueberry, Gooseberry, Raspberry, Strawberry\tEvery day, 5am - 11am\t1'
+		+'\nGolden Goose\tGoose\tWishing Alps\t\tRed Currants\tBlueberry, Gooseberry, Raspberry, Strawberry\tEvery day, 7am - 8am / 7pm - 8pm\t1'
+		+'\nBlue Goose\tGoose\tWishing Alps\t\tRed Currants\tBlueberry, Gooseberry, Raspberry, Strawberry\tEvery day, 6pm - 8pm\t1'
+		+'\nSkunk\tSkunk\tGlamor Gulch\t\tButton Mushroom and Pincushion Peach\tAny Fruits, Any Vegetables, Egg, Cheese\tEvery day, PM\t1'
+		+'\nBrown Skunk\tSkunk\tGlamor Gulch\t\tButton Mushroom and Pincushion Peach\tAny Fruits, Any Vegetables, Egg, Cheese\tMon PM, Wed PM, Fri PM, Sun PM // PM: Mon, Wed, Fri, Sun\t2'
+		+'\nWhite Skunk\tSkunk\tGlamor Gulch\t\tButton Mushroom and Pincushion Peach\tAny Fruits, Any Vegetables, Egg, Cheese\tTue PM, Thu PM, Sat PM, Sun PM // PM: Tue, Thu, Sat, Sun\t2'
+		+'\nPatterned Skunk\tSkunk\tGlamor Gulch\t\tButton Mushroom and Pincushion Peach\tAny Fruits, Any Vegetables, Egg, Cheese\tEvery day, during Heavy Cloud, Heavy Rain, Light Rain or Stormy Weather\t2'
+		+'\nSweet Bee\tBee\tPixie Acres\t\tCoral Honey\tAny Flowers\tEvery day, 7am - 8pm\t1'
+		+'\nPink Sweet Bee\tBee\tPixie Acres\t\tCoral Honey\tAny Flowers\tWed, Fri, Sat\t2'
+		+'\nBlue Sweet Bee\tBee\tPixie Acres\t\tCoral Honey\tAny Flowers\tEvery day, during Clear Skies or Light Clouds Weather\t2'
+		+'\nWhite Sweet Bee\tBee\tPixie Acres\t\tCoral Honey\tAny Flowers\tEvery day from 8PM to 7AM\t2';
   	}
   	else if (dataName == "clothingFurniture") {
   		outputString = 
@@ -166,7 +270,12 @@ DataConverter.prototype.insertSampleData = function(dataName) {
     //'itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\n'+
 	//'Furniture\tSV\t1.17.11\t\t\tnull\t22.138\tSleeping Beauty\tnull\t\t\tRustic Cottage Bed\tBeds\tTODO\tRustic, Bedroom\tbrown, purple\tSimple, Calm, Strong, Wondrous\tFALSE\t2025.07.25 - 2a (TT to 07.27)\t4600\t\tStore\tdefault\t4x6\t4\t6\tSit\tnull\tSize 2\tSV';
 
-'itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\t\nClothing\tDV\t1.14.3\t\t--\t50500144\t13.430\tGeneral\t\t\t\tFairy Haircut\t\t\t\t\t\tTRUE\t2024.12.05 - 1c\t\t\tStar Path - Frost & Fairies - 2E - T2 Premium (30 tokens)\t\t\t\t\t\t\tstarpath - frost\t\t\nClothing\t--\t1.11\t\t\t110800021\t19.523\tnone (Mulan)\tLimited Time\t\t\tOrnate Hand Fan\tAccessory\t\t\t\t\tTRUE\t2024.06.26 - 17\t10 tokens\t\tStar Path - Majesty and Magnolias - 2C - T2 (10 tokens)\t\t\t\t\t\t\tstarpath - majesty\t\t\nClothing\tDV\t1.11\t\t\t50500124\t19.508\tMulan\tPremium Limited Time\t\tu12 za71 Premium Limited Time <-- hair zzq 70\tBlooming Lotus Updo\tHair\t\t\t\t\tTRUE\t2024.06.27 - 5\t10 tokens\t\tStar Path - Majesty and Magnolias - 5C - T5 Premium (10 tokens)\t\t\t\t\t\t\tstarpath - majesty\t\t\nClothing\t--\t1.12\t\t\t\t27.026\tNone (The Princess and the Frog)\t\t\t\tDapper Green Umbrella\t\t\t\t\t\tTRUE\t2024.08.22 - 12\t40 Tokens\t\tStar Path - Dapper Delights - 5G - T5 (40 tokens)\t\t\t\t\t\t\tstarpath - dapper\t\t\nClothing\t--\t1.14.3\t\t\t110800027\t13.543\tNone - Accessory\t\t\t\tHandheld Plushie\t\t\t\t\t\tFALSE\t\t1000 M\t1000\tPremium Bundle - Handheld Plushie (1000 M)\t\t\t\t\t\t\tpremium\t\t\nClothing\t--\t1.15\t\t\t\t13.558\tAccessory\t\t\t\tWicker Bag with Genie Charm\t\t\t\t\t\tTRUE\t2025.02.27 - 1j\t40 tokens\t\tStar Path - Oasis Retreat - 3B - T3 Premium (40 tokens)\t\t\t\t\t\t\tstarpath - oasis\t\t';
+//'itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\t\nClothing\tDV\t1.14.3\t\t--\t50500144\t13.430\tGeneral\t\t\t\tFairy Haircut\t\t\t\t\t\tTRUE\t2024.12.05 - 1c\t\t\tStar Path - Frost & Fairies - 2E - T2 Premium (30 tokens)\t\t\t\t\t\t\tstarpath - frost\t\t\nClothing\t--\t1.11\t\t\t110800021\t19.523\tnone (Mulan)\tLimited Time\t\t\tOrnate Hand Fan\tAccessory\t\t\t\t\tTRUE\t2024.06.26 - 17\t10 tokens\t\tStar Path - Majesty and Magnolias - 2C - T2 (10 tokens)\t\t\t\t\t\t\tstarpath - majesty\t\t\nClothing\tDV\t1.11\t\t\t50500124\t19.508\tMulan\tPremium Limited Time\t\tu12 za71 Premium Limited Time <-- hair zzq 70\tBlooming Lotus Updo\tHair\t\t\t\t\tTRUE\t2024.06.27 - 5\t10 tokens\t\tStar Path - Majesty and Magnolias - 5C - T5 Premium (10 tokens)\t\t\t\t\t\t\tstarpath - majesty\t\t\nClothing\t--\t1.12\t\t\t\t27.026\tNone (The Princess and the Frog)\t\t\t\tDapper Green Umbrella\t\t\t\t\t\tTRUE\t2024.08.22 - 12\t40 Tokens\t\tStar Path - Dapper Delights - 5G - T5 (40 tokens)\t\t\t\t\t\t\tstarpath - dapper\t\t\nClothing\t--\t1.14.3\t\t\t110800027\t13.543\tNone - Accessory\t\t\t\tHandheld Plushie\t\t\t\t\t\tFALSE\t\t1000 M\t1000\tPremium Bundle - Handheld Plushie (1000 M)\t\t\t\t\t\t\tpremium\t\t\nClothing\t--\t1.15\t\t\t\t13.558\tAccessory\t\t\t\tWicker Bag with Genie Charm\t\t\t\t\t\tTRUE\t2025.02.27 - 1j\t40 tokens\t\tStar Path - Oasis Retreat - 3B - T3 Premium (40 tokens)\t\t\t\t\t\t\tstarpath - oasis\t\t';
+
+"itemType\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\t"
++"\nFurniture\tEI\t1.8\t1.9 bug, back 1.10\t--\t40002073\t1.218\tAncient Civilization\t\t\tac - market stall\tSmall Blue Market Stall\tMisc.\t\t\tblue, brown\tLavish, Calm, Strong, Wondrous\tTRUE\t2024.03.12\tn/a\t\tCrafting\tdefault (outdoor)\t8x6\t8\t6\tTable - 4x4\t\tcrafting\t\t"
+//+"\nFurniture\tDV\t1.17\t\t\t\t20.0767\tOther\t\t\t\tSizzling BBQ Cooking Station\tEssentials, Utilities\t\tRustic, Outdoors\tred, brown\tSimple, Playful, Strong, Familiar\tTRUE\t2025.07.01 - 1z\tn/a\t\tCrafting -- Summer Sizzle (End of Summer)\tdefault\t2x2\t2\t2\tCooking Station\t\tcrafting\t\t"
+//+"\nFurniture\tDV\t1.19\t\t\t\t20.0432\tOther\t\t\t\tIcy Counter\tDecor\t\t\tblue\tLavish, Calm, Strong, Wondrous\tFALSE\t2025.10.05 - 1f\t-\t\tCrafting after Cogsworth Level 4 (On Her Majesty's Festive Service)\t\t8x4\t8\t4\t-- (no table)\t\tquest/crafting\t\t"
 
 /*
 // doesnt work....?
@@ -178,6 +287,10 @@ DataConverter.prototype.insertSampleData = function(dataName) {
 'Clothing\t--\t1.14.3\t\t\t110800027\t13.543\tNone - Accessory\t\t\t\tHandheld Plushie\t\t\t\t\t\tFALSE\t\t1000 M\t1000\tPremium Bundle - Handheld Plushie (1000 M)\t\t\t\t\t\t\tpremium\t\t' +
 'Clothing\t--\t1.15\t\t\t\t13.558\tAccessory\t\t\t\tWicker Bag with Genie Charm\t\t\t\t\t\tTRUE\t2025.02.27 - 1j\t40 tokens\t\tStar Path - Oasis Retreat - 3B - T3 Premium (40 tokens)\t\t\t\t\t\t\tstarpath - oasis\t\t' ;
  */
++'\nFurniture\tSV\t1.14.1\t\tx\t40003469\t20.0201\tOther\t\t\t\tBright Hanging Glass Orbs\tDecor, Ceiling\tyes - added\tRustic, Elegant, Living Room, Rec Room, Dining Room\tblue, green, red\tLavish, Playful, Delicate, Wondrous\tFALSE\t2024.12.05 - 1i\t5000\t\tStore\tceiling (indoor)\t5x5\t10\t10\tLighting (Automatic)\t\tSize 2\tSV\t'
++'\nFurniture\tEI\t1.14.1\t\tx\t40003638\t20.0243\tOther\t\t\t\tClay Cooking Stove\tEssentials, Appliance\ttodo\tRustic, Traditional, Kitchen, Outdoors\tbrown\tLavish, Calm, Delicate, Wondrous\tFALSE\t2024.12.09 - 1j\t7360\t\tStore\tdefault\t2x2\t4\t4\tCooking Station (Use)\t\tSize 4\tx\t'
+
++'\nFurniture\tDV\t1.3\t1.9, back 1.10\tx\t40001084\t20.1016\tOther\t\t\tlamppost - wooden\tWooden Lamppost with Blue Light\tDecor, Lighting\t\t\tblue, black, brown, gray\tSimple, Calm, Strong, Wondrous\tFALSE\t2023.02.21\tn/a\t\tCrafting\tdefault\t2x1 (not full) (1 empty)\t4\t2\tLight (Interact)\t\tcrafting\t\t';
   	}
 
   this.inputTextArea.val(outputString);

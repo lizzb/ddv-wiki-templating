@@ -301,8 +301,10 @@ function updateAppropriateVersion(item) {
   }
   if (item.collection == "WR" || item.collection == "Wishblossom Ranch") {
     switch(item.version) {
+      //case "1.2":
+      case "1.20":
       case "1.20.1":
-        item.version = "Expansion 3-1";
+        item.version = "Expansion 3";
         break;
       default:
         break;

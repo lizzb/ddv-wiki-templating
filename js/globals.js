@@ -4,7 +4,7 @@
 // this value is changed based on changes to radio buttons in html - not sure if this actually does anything
 var templateType = "meals"; // other vals: clothingFurniture, spDuties, spRewards, questItems, meals, ingredients, companions
 
-var updateNumber = "Expansion 3-1"; //"1.20";// Expansion 3 // 1.20
+var updateNumber = "Expansion 3"; //"1.20";// Expansion 3 // 1.20
 var newExpansionCollection = "Wishblossom Ranch";
 
 var starPathNameShort = "Witchful Thinking";
