@@ -6,7 +6,7 @@ function getElementId(elementID) {
   return document.getElementById(elementID);
 }
 
-// Render a template composed of variables defined inline
+// Render a template composed of variables defined inline -- TODO - renderflowers looks like the same ??
 function renderVariableTemplate(dataArray, template) {
   var renderedHTML = '';
   var separator = ''; // Chars to visually separate template renderings
@@ -17,7 +17,6 @@ function renderVariableTemplate(dataArray, template) {
   });
   return renderedHTML;
 }
-
 
 function microTemplate(templateStr, objData) {
   /* ===== DEFINE DELIMITERS HERE ===== */
@@ -1048,6 +1047,8 @@ function generateFlowerTemplate(item) {
 }
 
 
+
+ // TODO - renderflowers looks like the same as renderVariableTemplate(dataArray, template) {
 function renderFlowers(dataArray) {
   var renderedHTML = '';
   var delimiter = '';

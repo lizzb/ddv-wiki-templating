@@ -7,6 +7,7 @@ function renderParent(dataArray, templateType) {
   //var dataArray = sampleItems;
   // templateType is a global var changed by radio buttons
 
+
   var outputHTML = '';
   switch(templateType) {
     case "spDuties":
@@ -40,6 +41,15 @@ function renderParent(dataArray, templateType) {
     default:
       outputHTML = "Unsure what template generating function to use, templateType: ", templateType;
   }
+
+  // if a custom template is provided in the textarea, use that instead of the one specified by the function
+  var inputTemplateValue = document.getElementById("template-input").value;
+  if (inputTemplateValue) {
+    outputHTML = renderVariableTemplate(dataArray, inputTemplateValue);
+  }
+    // Set the value
+   //document.getElementById("template-input").value = "New content for the textarea.";
+//%%name%%: %%type%%
 
   //outputHTML += renderUpdatedFlooring(flooring);
   //outputHTML += renderClothingFurnitureArticle(flooring);
