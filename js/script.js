@@ -57,7 +57,12 @@ function output_image(item) {
 }
 
 function output_type(item) {
+  //console.log("type, itemtype, craftingcategory", item.type, item.itemType, item.craftingcategory, item.category)
   var output = '|type=%%itemType%%\n';
+  // if  crafting then
+  if (isCraftable(item)) {
+    output += '|craftingcategory=%%recipeCategory%%\n';//Furniture
+  }
   return output;
 }
 
@@ -85,13 +90,15 @@ function output_buyprice(item) {
   }
   
   // Possibly crafting
-  if (item.buyprice == 'n/a' || item.buyprice == '-') { 
+  if (isCraftable(item) || item.buyprice == 'n/a' || item.buyprice == '-') { 
     output = '';
   }
 
+  // TODO - fix this logic
   if (output != '' && !item.buyprice) {
     item.missingCategories.push('[[Category: Missing Price]]');
   }
+
 
   // not sure this is still required
   //const regex = /\n\|buyprice=\d\d [tT]okens/gi;
@@ -130,6 +137,7 @@ function output_collection(item) {
   }
 
   // TODO - think calling this at wrong time, some values entering are <!--Dreamlight Valley-->
+  // TODO - since item isnt the thing returned from this function, nothing happens below
   switch (item.collection) {
     case 'Tracked Wall':
     case 'Tracked Floor':
@@ -138,13 +146,16 @@ function output_collection(item) {
       item.collection = wrapComment('Dreamlight Valley', !collectionConfirmed);
       break;
     case 'EI':
-      item.collection = wrapComment('Eternity Isle', !collectionConfirmed);
+      //item.collection = wrapComment('Eternity Isle', !collectionConfirmed);
+      item.collection = 'Eternity Isle';
       break;
     case 'SV':
-      item.collection = wrapComment('Storybook Vale', !collectionConfirmed);
+      //item.collection = wrapComment('Storybook Vale', !collectionConfirmed);
+      item.collection = 'Storybook Vale';
       break;
     case 'WR':
-      item.collection = wrapComment('Wishblossom Ranch', !collectionConfirmed);
+      //item.collection = wrapComment('Wishblossom Ranch', !collectionConfirmed);
+      item.collection = 'Wishblossom Ranch';
       break;
     case 'Dream Style':
       item.collection = 'n/a - CHARACTER DREAM STYLE';
@@ -163,7 +174,8 @@ function output_collection(item) {
     }
   }
 
-  var output = '|collection=%%collection%%\n';
+
+  var output = '|collection='+wrapComment('%%collection%%', !collectionConfirmed)+'\n';
   return output;
 }
 
@@ -284,6 +296,15 @@ function updateAppropriateVersion(item) {
   if (!item.version) item.version = updateNumber;
 
   // Replace correct sheet version number with generalized version label for wiki history template
+  if (item.collection == "EI" || item.collection == "Eternity Isle") {
+    switch(item.version) {
+      case "1.8":
+        item.version = "Expansion 1-1";
+        break;
+      default:
+        break;
+    }
+  }
   if (item.collection == "SV" || item.collection == "Storybook Vale") {
     switch(item.version) {
       case "1.14.1":
@@ -356,6 +377,12 @@ function output_navbox(item) {
         universe.toLowerCase().trim().replace(/\s/g, '') +
         '|disney}}';
     } else output = disneyNavClothing + disneyNavFurniture;
+  }
+  if (isCraftable(item)) {
+     output = `{{NavboxCrafting|${item.collection.toLowerCase().trim().replace(/\s/g, '')}}}`;
+
+     /// todo - wrap conditional
+     output +=`\n\n`+wrapComment (`[[Category:${item.collection} Furniture Sets Collection]]`, !collectionConfirmed);
   }
   if (isCharacterDreamStyle(item)) {
     output = '{{NavboxDreamStyle|character}}';
@@ -542,38 +569,26 @@ function output_from(item) {
   var itemSource = ''; //item.itemSource; // itemSource is the body text to insert
 
   // ========== 1 CHECK IF FROM crafting ==========
-  if (isCraftable(item)) {
-    itemSource =
-      'It can be crafted using a [[:Category:Crafting_Stations|Crafting Station]].';
-  }
+  //jk this gets overridden
+  /*if (isCraftable(item)) {
+    infoboxFrom = '|recipe={{name|Petrified Wood|10}}<br>-this might get overriden\n';
+    itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]]. -this might get overriden';
+  }*/
 
   // ========== 2 CHECK IF FROM SCROOGE ==========
 
-  var itemSource_scroogeDefault =
-    "It has a chance to be available for purchase as rotating stock from [[Scrooge's Store]]";
+  var itemSource_scroogeDefault = "It has a chance to be available for purchase as rotating stock from [[Scrooge's Store]]";
 
   switch (item.inStore) {
     case 'EI':
-      if (showItemDebug) {
-        console.log(item.name, ' is a scrooge item');
-      }
-      itemSource = itemSource_scroogeDefault + ' in [[Eternity Isle]].';
-      infoboxFrom += "|from=Scrooge's Store (Eternity Isle)\n|storeSlots=";
-      break;
     case 'x - SV':
     case 'SV':
-      if (showItemDebug) {
-        console.log(item.name, ' is a scrooge item');
-      }
-      itemSource = itemSource_scroogeDefault + ' in [[Storybook Vale]].';
-      infoboxFrom += "|from=Scrooge's Store (Storybook Vale)\n|storeSlots=";
-      break;
     case 'WR':
       if (showItemDebug) {
         console.log(item.name, ' is a scrooge item');
       }
-      itemSource = itemSource_scroogeDefault + ' in [[Wishblossom Ranch]].';
-      infoboxFrom += "|from=Scrooge's Store (Wishblossom Ranch)\n|storeSlots=";
+      itemSource = itemSource_scroogeDefault + ' in [['+item.collection+']].';
+      infoboxFrom += "|from=Scrooge's Store ("+item.collection+")\n|storeSlots=";
       break;
     case 'x':
       if (showItemDebug) {
@@ -584,7 +599,11 @@ function output_from(item) {
       break;
     default:
       infoboxFrom = ''; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
-      itemSource = 'SOURCE TODO.';
+      itemSource = 'SOURCE TODO.'; // crafting
+      if (isCraftable(item)) {
+        infoboxFrom = '|recipe='+createInfoboxRecipe(item)+'\n';
+        itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
+      }
   }
 
   // quick hack
@@ -768,16 +787,11 @@ function output_from(item) {
   return output;
 }
 
-function generateFrom_Crafting(item) {}
+function generateFrom_Crafting(item) {
 
-function isCraftable(item) {
-  return item.location && item.location.includes('crafting');
 }
 
-function isStarPath(item) {
-  // TODO: add OR source contains the word starpath
-  return item.location && item.location.includes('starpath');
-}
+
 
 function output_itemSource(item) {
   var output = '%%itemSource%%';
@@ -863,7 +877,7 @@ function output_itemUsage(item) {
     }
     else {
     
-    // item.itemType is not Clothing, so furniture or crafted furniture
+    // item.itemType is not Clothing, so furniture or crafted furniture -- NO reevaluate....
     output +=
       'It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]';
     switch (item.placement) {
@@ -928,8 +942,7 @@ function output_itemIntro(item) {
     case 'Pants':
     case 'Shoes':
     case 'Shorts':
-      itemUseIntro_clothing =
-        ' pair of ' + item.category.toLowerCase() + ' [[clothing]].';
+      itemUseIntro_clothing =' pair of ' + item.category.toLowerCase() + ' [[clothing]].';
       break;
     case 'Hose Socks':
       itemUseIntro_clothing = ' pair of ' + 'socks' + ' [[clothing]].';
@@ -964,20 +977,17 @@ function output_itemIntro(item) {
     case 'Tops':
       itemUseIntro_clothing = ' piece of ' + 'top' + ' [[clothing]].';
     case 'Hairstyle':
-      itemUseIntro_clothing =
-        ' piece of ' + '[[:Category:Hairstyle|hairstyle]]' + ' [[clothing]].';
+      itemUseIntro_clothing =' piece of ' + '[[:Category:Hairstyle|hairstyle]]' + ' [[clothing]].';
       break;
     case 'Accessories':
-      itemUseIntro_clothing =
-        ' piece of ' + '[[:Category:Accessories|accessory]]' + ' [[clothing]].';
+      itemUseIntro_clothing =' piece of ' + '[[:Category:Accessories|accessory]]' + ' [[clothing]].';
       break;
     case 'Character':
     case 'Character Dream Style':
       itemUseIntro_clothing = '';
       break;
     default:
-      itemUseIntro_clothing =
-        ' piece<!--/pair--> of <!--back/costume/dress/shoes--> [[clothing]].';
+      itemUseIntro_clothing =' piece<!--/pair--> of <!--back/costume/dress/shoes--> [[clothing]].';
   }
   //'<!--Accessories, companions, tools, Gliders-->';
   
@@ -1124,7 +1134,24 @@ function renderClothingFurnitureArticle(dataArray) {
     item.missingCategories = [];
 
     item = parseItemSource(item);
-    item = item = parseSizePlacementEnv(item);
+    item = parseSizePlacementEnv(item);
+
+    switch (item.collection) {
+      case 'DV':
+        item.collection = 'Dreamlight Valley';
+        break;
+      case 'EI':
+        item.collection = 'Eternity Isle';
+        break;
+      case 'SV':
+        item.collection = 'Storybook Vale';
+        break;
+      case 'WR':
+        item.collection = 'Wishblossom Ranch';
+        break;
+      default:
+        break;
+    }
     
 
     if (isHairstyle(item)) {
@@ -1504,7 +1531,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 function jankyCleanup(originalRenderedHTML) {
   var newStr = originalRenderedHTML;
   newStr = newStr.replaceAll('=null', '=');
-  newStr = newStr.replaceAll(
+  /*newStr = newStr.replaceAll(
     '[[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]]',
     '[[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]]'
   );
@@ -1519,7 +1546,7 @@ function jankyCleanup(originalRenderedHTML) {
   newStr = newStr.replaceAll(
     '[[:Category: <!--Storybook Vale--> Clothing Sets Collection|<!--Storybook Vale--> Clothing Sets Collection]]',
     '[[:Category:Storybook Vale Clothing Sets Collection|Storybook Vale Clothing Sets Collection]]'
-  );
+  );*/
 
   newStr = newStr.replaceAll("timburton\'sthenightmarebeforechristmas",'nightmarebeforechristmas');
 
@@ -1527,6 +1554,9 @@ function jankyCleanup(originalRenderedHTML) {
   newStr = newStr.replaceAll('mickey&friends', 'mickeyandfriends');
   newStr = newStr.replaceAll('\n|size=remove', '');
   newStr = newStr.replaceAll('\n|gridSize=remove', '');
+
+  // need to figure out why for crafted items theres extra space?
+  newStr = newStr.replaceAll('\n\n|gridSize', '\n|gridSize');
 
   // main culprit of double space is itemUseIntro
   newStr = newStr.replaceAll('  ', ' ');

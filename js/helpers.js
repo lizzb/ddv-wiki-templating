@@ -770,16 +770,50 @@ function isVersatileIngredient(ingName) {
   return false;
 }
 
+
+function wrapNameTemplate(ing, ingQty) {
+  output = '';
+  output += '{{name|'+ing;
+  if (ingQty>1) output += '|'+ingQty;
+  output += '}}';
+  return output;
+}
+
+// for making infobox |recipe for crafted items with ing1, ing1qty, ing2, ing2qty...
+//function createIngredientList(item, wrapType, joinType) {
+function createInfoboxRecipe(item) {
+
+  /*
+  |recipe={{name|Petrified Wood|10}}<br>
+{{name|Moss|2}}<br>
+{{name|Pine Cone|5}}<br>
+{{name|Crimson Eternal Poppies|2}}*/
+    var output = '|recipe=';
+    var ingredientArray = [];
+    if (item["ing1"] && item["ing1"] != "-") ingredientArray.push(wrapNameTemplate(item["ing1"]));
+    if (item["ing2"] && item["ing2"] != "-") ingredientArray.push(wrapNameTemplate(item["ing2"]));
+    if (item["ing3"] && item["ing3"] != "-") ingredientArray.push(wrapNameTemplate(item["ing3"]));
+    if (item["ing4"] && item["ing4"] != "-") ingredientArray.push(wrapNameTemplate(item["ing4"]));
+    if (item["ing5"] && item["ing5"] != "-") ingredientArray.push(wrapNameTemplate(item["ing5"]));
+    if (item["ing6"] && item["ing6"] != "-") ingredientArray.push(wrapNameTemplate(item["ing6"]));
+    //item.ingredientArray = ingredientArray;
+    output = ingredientArray.join("<br>\n");
+
+  return output;
+}
+
+
 function renderMeals(dataArray) {
   var renderedHTML = '===== Template:ItemRecipe switch:=====\n';
   var delimiter = '';
   dataArray.forEach(function (item) {
     var ingredientArray = [];
-    if (item["ing1"]) ingredientArray.push(item["ing1"]);
-    if (item["ing2"]) ingredientArray.push(item["ing2"]);
-    if (item["ing3"]) ingredientArray.push(item["ing3"]);
-    if (item["ing4"]) ingredientArray.push(item["ing4"]);
-    if (item["ing5"]) ingredientArray.push(item["ing5"]);
+    if (item["ing1"] && item["ing1"] != "-") ingredientArray.push(item["ing1"]);
+    if (item["ing2"] && item["ing2"] != "-") ingredientArray.push(item["ing2"]);
+    if (item["ing3"] && item["ing3"] != "-") ingredientArray.push(item["ing3"]);
+    if (item["ing4"] && item["ing4"] != "-") ingredientArray.push(item["ing4"]);
+    if (item["ing5"] && item["ing5"] != "-") ingredientArray.push(item["ing5"]);
+    if (item["ing6"] && item["ing6"] != "-") ingredientArray.push(item["ing6"]);
 
     item.ingredientArray = ingredientArray;
     item.ingredientListString = ingredientArray.join(", ");
@@ -1482,7 +1516,6 @@ function isPremium(item) {
   );
 }
 
-
 function isTale(item) {
   return (item.location && item.location.includes('tale'));
 }
@@ -1581,6 +1614,22 @@ function isStandalone(item) {
   );
 }
 
+function isCraftable(item) {
+  var isCraftable =
+    (item.location && item.location.includes('crafting')) ||
+    (item.source && item.source.includes('Crafting'));
+
+  if (isCraftable) {
+    item.itemType = 'Crafted Furniture';
+    item.craftingCategory = 'Furniture'; // Refined Materials
+  }
+  return isCraftable;
+}
+
+function isStarPath(item) {
+  // TODO: add OR source contains the word starpath
+  return item.location && item.location.includes('starpath');
+}
 
 
 /*
