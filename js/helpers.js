@@ -40,16 +40,7 @@ function createUniverseLink(itemType, universe) {
 
   if (!universe || universe == '') {
     universe = 'XXXXX_UNIVERSE_XXXXX';
-    output +=
-      '<!--[[' +
-      itemType +
-      '#' +
-      universe +
-      '|' +
-      universe +
-      ']]--><!--[[' +
-      itemType +
-      '#Other|non-themed]]-->';
+    output +='<!--[[' + itemType + '#' + universe + '|' + universe + ']]--><!--[[' +itemType + '#Other|non-themed]]-->';
 
    //output +=`<!--[[${itemType}#${universe}|${universe}]]--><!--[[${itemType}#Other|non-themed]]-->`;
   } else if(universe == 'Character Dream Style') {
@@ -682,7 +673,7 @@ function insertCookingLink(input) {
     case 'xxxxx':
       return 'xxxxx';
     default: {
-      return 'meal'; // default use is placeholder meal text for new stub articles
+      return 'meal'; // meal // default use is placeholder meal text for new stub articles
       break;
     }
   }
@@ -713,7 +704,7 @@ function insertIngredientCategoryLink(input) {
     case 'xxxxx':
       return 'xxxxx';
     default: {
-      return 'meal'; // default use is placeholder meal text for new stub articles
+      return 'ingredient';// 'meal' // default use is placeholder meal text for new stub articles
       break;
     }
   }
@@ -789,12 +780,12 @@ function createInfoboxRecipe(item) {
 {{name|Crimson Eternal Poppies|2}}*/
     var output = '|recipe=';
     var ingredientArray = [];
-    if (item["ing1"] && item["ing1"] != "-") ingredientArray.push(wrapNameTemplate(item["ing1"]));
-    if (item["ing2"] && item["ing2"] != "-") ingredientArray.push(wrapNameTemplate(item["ing2"]));
-    if (item["ing3"] && item["ing3"] != "-") ingredientArray.push(wrapNameTemplate(item["ing3"]));
-    if (item["ing4"] && item["ing4"] != "-") ingredientArray.push(wrapNameTemplate(item["ing4"]));
-    if (item["ing5"] && item["ing5"] != "-") ingredientArray.push(wrapNameTemplate(item["ing5"]));
-    if (item["ing6"] && item["ing6"] != "-") ingredientArray.push(wrapNameTemplate(item["ing6"]));
+    if (item["ing1"] && item["ing1"] != "-") ingredientArray.push(wrapNameTemplate(item["ing1"], item["ing1qty"]));
+    if (item["ing2"] && item["ing2"] != "-") ingredientArray.push(wrapNameTemplate(item["ing2"], item["ing2qty"]));
+    if (item["ing3"] && item["ing3"] != "-") ingredientArray.push(wrapNameTemplate(item["ing3"], item["ing3qty"]));
+    if (item["ing4"] && item["ing4"] != "-") ingredientArray.push(wrapNameTemplate(item["ing4"], item["ing4qty"]));
+    if (item["ing5"] && item["ing5"] != "-") ingredientArray.push(wrapNameTemplate(item["ing5"], item["ing5qty"]));
+    if (item["ing6"] && item["ing6"] != "-") ingredientArray.push(wrapNameTemplate(item["ing6"], item["ing6qty"]));
     //item.ingredientArray = ingredientArray;
     output = ingredientArray.join("<br>\n");
 
@@ -876,8 +867,10 @@ function renderMeals(dataArray) {
     template += '\n|giftreward=\n|gridSize=\n|placement=<!--surfaces-->';
     template += '\n|ingredients=';
 
-    template += wrapComment('{{IngredientList | '+item.ingredientListString+' | addCategories }}', !collectionConfirmed);
+    //template += wrapComment('{{IngredientList | '+item.ingredientListString+' | addCategories }}', !collectionConfirmed);
+    template += '{{IngredientList | '+item.ingredientListString+' | addCategories }}';
     template += '\n}}';
+    template += '{{cleanup|Ingredients and ingredient order need verification}}';
     template += "\n'''%%name%%''' is a " + insertNumberWord(item.stars) + '' + insertCookingLink(item.category) + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
 
     template += '\n\n';
@@ -897,7 +890,7 @@ function renderMeals(dataArray) {
     template += "\n\n[[Cooking#Meals|Meals]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
 
     template += output_history(item);
-    template += '\n\n{{NavboxMeal|wishblossomranch}}';// {{NavboxMeal|storybookvale}} // {{NavboxMeal|eternityisle}}
+    template += '\n\n{{NavboxMeal|wishblossommountains}}';// {{NavboxMeal|storybookvale}} // {{NavboxMeal|eternityisle}}
     template +=
       '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
 
@@ -986,11 +979,11 @@ function generateGemTemplate(item) {
   template += '\n|placement=<!--surfaces-->';
   template += '\n|stackMax=';
   template += '\n}}';
-//  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in [[Everafter]] area of [[Wishblossom Ranch]]. ";
-  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in the [[%%biome%%]]. ";
+//  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in [[Everafter]] area of [[Wishblossom Mountains]]. "; 
+  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in all regions of [[%%biome%%]]. "; // in the [[%%biome%%]]. // in all regions of [[%%biome%%]].
   template += '';
   template += 'It can be used as a [[Crafting|crafting material]] to make items at a [[:Category:Crafting Stations|crafting station]]. ';
-  template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
+  template += '<!--It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. -->';
   template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Gems Collection|'+newExpansionCollection+' Gems Collection]].';
   template += ' ';
   template += "\n\n[[Mining#Gems|Gems]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
@@ -1029,7 +1022,7 @@ function generateFlowerTemplate(item) {
     template += '\n|stackMax=';
     template += '\n}}';
     //template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild<!--in '''REGION1''' and '''REGION2''' areas in [[BIOME1]]-->.";
-    template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild in the [[%%biome%%]].";
+    template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild in all regions of [[%%biome%%]]."; // wild in the [[%%biome%%]].";
     template += '';
     template += "\n\n<!--There are exactly ITEMCOUNT '''{{PAGENAME}}''' found in the [[%%biome%%]], and another-->Another flower of the same type and color will only appear after one has been picked. There is an [[Flowers#Flower Spawning|internal-game timer]] for this flower type which respawns<!-- one every 60 minutes-->, and it can take up to 2 hours to fully repopulate all of these flowers between both areas.";
     // line about beast flower shop? template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
@@ -1078,12 +1071,16 @@ function generateIngredientsTemplate(item) {
     if (!item.cookingType) {
       item.cookingType = '<!--Seafood/Fruit/Vegetables/Spices/Dairy and Oil/Grains/Protein-->';
     }
-    template += '\n|ingtype=%%cookingType%%';
+    //item.cookingType = '<!--Fish-->'; // temporary hack
+    template += '\n|ingtype=<!--%%cookingType%%-->'; //Vegetables, plural, on wiki - TODO FIX - MAKE SURE SHEET IN ALIGNMENT
     template += '\n|collection='+newExpansionCollection;
-    template += '\n|collectioncategory=<!--Fish/Seafood/Vegetables-->';
-    template += '\n|energy=';
+    if (!item.collectionType) {
+      item.collectionType = '<!--Fish/Seafood/Vegetables - remove if same as ingType-->'; // e.g. Crab, Squid... tODO OTHER EXAMPLES TO REFERENCE
+    }
+    template += '\n|collectioncategory=%%collectionType%%';
+    template += '\n|energy=%%energy%%';
     template += '\n|buyprice=';
-    template += '\n|sellprice=';
+    template += '\n|sellprice=%%sellprice%%';
     template += '\n|giftreward=';
     template += '\n<!--';
     if (item.cookingType == "Fish") {
@@ -1118,9 +1115,7 @@ function generateIngredientsTemplate(item) {
     template += '\n}}';
 
     if (item.cookingType == "Fish") {
-      //fishlogic
-      // '''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools--><!-- in all regions of [[BIOME]]-->.
-      template += "\n'''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools--> in the [[%%biome%%]].";
+      template += "\n'''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools--> in all regions of [[%%biome%%]]."; // in all regions of [[BIOME]] //  in the [[%%biome%%]].";
     }
     else {
       template += "\n'''%%name%%''' is a "+insertIngredientCategoryLink(item.cookingType)+" type [[Ingredients|ingredient]] used in [[cooking]].";
@@ -1139,12 +1134,12 @@ function generateIngredientsTemplate(item) {
       template += " After planting it takes XXXXX minutes to grow, and WATERINGCOUNT total waterings until YIELDCOUNT can be harvested.";
       template += '\n-->';
     }
-    template += '\n\nIt can be consumed to regain [[energy]], or used as an [[Ingredients|ingredient]] in [[Cooking#Meal Recipes|cooked meals]].';
+    template += '\n\n<!--It can be consumed to regain [[energy]], or used as an [[Ingredients|ingredient]] in [[Cooking#Meal Recipes|cooked meals]]. -->';
     if (item.cookingType == "Fish") {
-      template += ' Once collected it will be added to the [[:Category:'+newExpansionCollection+' Fish Collection|'+newExpansionCollection+' Fish Collection]].';
+      template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Fish Collection|'+newExpansionCollection+' Fish Collection]].';
     }
     else {
-      template += ' Once collected it will be added to the [[:Category:'+newExpansionCollection+' Ingredients Collection|'+newExpansionCollection+' Ingredients Collection]].';
+      template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Ingredients Collection|'+newExpansionCollection+' Ingredients Collection]].';
     }
     template += '\n ';
     template += "\n[[Ingredients]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
@@ -1166,7 +1161,7 @@ function generateIngredientsTemplate(item) {
     template += '\n| {{price|XXXXX}}';
     template += '\n| {{ItemRecipe | RECIPENAME }}';
     template += '\n|}';
-    template += '\n';
+    //template += '\n';
 
     //crafting recipes, quest objectives, quest recipes
     //template += insertRecipeDefaults(dataArray);
@@ -1239,7 +1234,7 @@ function renderCompanions(dataArray) {
     template += "\n|type=Companion";
     template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk-->;
     template += "\n|from=Feeding Critters";
-    template += "\n|found=in the '''Wishblossom Ranch''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
+    template += "\n|found=in the '''Wishblossom Mountains''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
     template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
     ////template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]], [[:Category:Spices|Spices & Herbs]], and [[:Category:Vegetables|Vegetables]] as they are defined on the Ingredients tab of the '''Collection Menu''' - e.g. [[Vanilla]] is included, and [[Seaweed]] is not. They will additionally eat Fruit grown from [[Crop Seeds|seeds]], i.e. [[Cosmic Figs]], [[Grapes]], [[Melon]], [[Pineapple]]-->";
     //template += "\n|likedFoods=[[:Category:Grains|Grains]] as they are defined on the '''Ingredients''' section of the '''Collection Menu''' (not as they are grouped at a [[:Category:Cooking Stations|Cooking Station]])";

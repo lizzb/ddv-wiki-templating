@@ -71,7 +71,7 @@ function output_type(item) {
   var output = '|type=%%itemType%%\n';
   // if  crafting then
   if (isCraftable(item)) {
-    output += '|craftingcategory=%%recipeCategory%%\n';//Furniture
+    output += '|craftingcategory=%%craftingCategory%%\n';//Furniture
   }
   return output;
 }
@@ -164,8 +164,8 @@ function output_collection(item) {
       item.collection = 'Storybook Vale';
       break;
     case 'WR':
-      //item.collection = wrapComment('Wishblossom Ranch', !collectionConfirmed);
-      item.collection = 'Wishblossom Ranch';
+      //item.collection = wrapComment('Wishblossom Mountains', !collectionConfirmed);
+      item.collection = 'Wishblossom Mountains';
       break;
     case 'Dream Style':
       item.collection = 'n/a - CHARACTER DREAM STYLE';
@@ -330,11 +330,12 @@ function updateAppropriateVersion(item) {
         break;
     }
   }
-  if (item.collection == "WR" || item.collection == "Wishblossom Ranch") {
+  if (item.collection.includes("WR") || item.collection.includes("WM") || item.collection == "Wishblossom Mountains") {
     switch(item.version) {
       //case "1.2":
       case "1.20":
       case "1.20.1":
+      case "1.20.2":
         item.version = "Expansion 3";
         break;
       default:
@@ -1104,12 +1105,9 @@ function output_itemIntro(item) {
   if (item.itemType == 'Clothing') {
     output += itemUseIntro_clothing;
   }
-  if (item.itemType == 'Furniture') {
+  if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
     if (item.location && item.location.includes('crafting')) {
-      output +=
-        ' piece of ' +
-        itemUseIntro +
-        ' [[Crafting#Furniture|craftable furniture]].';
+      output += ' piece of ' + itemUseIntro +' [[Crafting#Furniture|craftable furniture]].';
       //collectionStatus = collectionStatus_furnitureCrafted;
     } else {
       output += ' piece of ' + itemUseIntro + ' [[furniture]].';
@@ -1157,7 +1155,7 @@ function renderClothingFurnitureArticle(dataArray) {
         item.collection = 'Storybook Vale';
         break;
       case 'WR':
-        item.collection = 'Wishblossom Ranch';
+        item.collection = 'Wishblossom Mountains';
         break;
       default:
         break;
@@ -1358,7 +1356,7 @@ function generateStallTemplate(item) {
     template += '}}\n';
 
     template +=
-      "'''%%name%%''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to [[Goofy's Stall]] in any biome in [[Dreamlight Valley]], [[Eternity Isle]], [[Storybook Vale]], or [[Wishblossom Ranch]].";
+      "'''%%name%%''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to [[Goofy's Stall]] in any biome in [[Dreamlight Valley]], [[Eternity Isle]], [[Storybook Vale]], or [[Wishblossom Mountains]].";
 
     template += '\n\n' + generateBodyFromPremiumShop(item);
 
