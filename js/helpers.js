@@ -643,7 +643,7 @@ function renderPSBundles(dataArray) {
 
 
 function insertCookingLink(input) {
-  console.log("insertCookingLink called with: ", input)
+  //console.log("insertCookingLink called with: ", input)
   var output = '';
   switch (input) {
     case 'Appetizers':
@@ -690,6 +690,8 @@ function insertIngredientCategoryLink(input) {
       return '[[:Category:Dairy and Oil|any Dairy and Oil]]';
     case 'Sweets':
       return '[[:Category:Sweets|Sweet]]';
+    case 'Fish':
+      return '[[:Category:Fish|Fish]]';
     case 'Fruit':
       return '[[:Category:Fruit|Fruit]]';
     case 'Spices':
@@ -891,7 +893,8 @@ function renderMeals(dataArray) {
   dataArray.forEach(function (item) {
     templateMealArticle = '';
     // meal article template
-    templateMealArticle += '\n{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=';
+    //templateMealArticle += '\n{{stub}}';
+    templateMealArticle += '\n{{infobox\n|image=%%name%%.png\n|description=';
     //console.log(`isVersatileRecipe(item) && item.stars && item.stars == 5 ${isVersatileRecipe(item)} ${item.stars} `);
     if (!isVersatileRecipe(item) && item.stars && item.stars == 5) {
       //console.log(`${item.name} successfully triggered as non-versatile recipe with 5 stars.`);

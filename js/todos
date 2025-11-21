@@ -1,3 +1,5 @@
+- check for any templates in final rendered output (%%universe%%) and remove them
+
 Meal template todos
 - if only 2 items, don't add oxford comma
 - if collection confirmed, not ccommented out in itemrecipe
@@ -21,6 +23,21 @@ by combining [[:Category:Seafood|any Seafood]], [[Milk]], [[Potato]], and [[:Cat
 
 
 in both article and itemrecipe and... stuff -- Fruit
+
+{{name|Any Vegetable}}
+-->
+{{name|Vegetables|link=:Category:Vegetables{{!}}Any Vegetable}}
+
+
+|ingredients={{IngredientList | Any Vegetable | addCategories }}
+-->
+|ingredients={{IngredientList | Vegetables | addCategories }}
+
+
+It can be [[Cooking|cooked]] by ...[[Any Vegetable]]
+-->
+It can be [[Cooking|cooked]] by ...[[:Category:Vegetables|any Vegetables]].
+
 
 ===== PRIORITY =====
 todo:
