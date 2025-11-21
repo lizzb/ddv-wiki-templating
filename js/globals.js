@@ -12,7 +12,7 @@ var starPathName = "Witchful Thinking";
 var starPathToken = "brewtoken";
 
 // toggle to wrap in cleanup tag
-var collectionConfirmed = false;
+var collectionConfirmed = true;
 
 // whether or not to include filler copy pasta for furniture functions
 var functionsConfirmed = false;

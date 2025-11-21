@@ -1,4 +1,24 @@
+Meal template todos
+- if only 2 items, don't add oxford comma
+- if collection confirmed, not ccommented out in itemrecipe
+
+[[:Category:Sweets|any Sweet]] -- in the body of the meal article
+
+
 // Any Sweet in sheet needs conversion to {{name|Sweets|link=:Category:Sweets{{!}}Any Sweet}} - same for all versatile ingredients
+
+s [[:Category:Vegetables|Any Vegetable]
+
+
+|ingredients={{ingredient|Vegetables}}
+
+by using [[:Category:Vegetables|a Vegetable]]. O
+
+
+|ingredients={{IngredientList | Seafood, Milk, Potato, Vegetables | addCategories }}
+
+by combining [[:Category:Seafood|any Seafood]], [[Milk]], [[Potato]], and [[:Category:Vegetables|any Vegetable]]. 
+
 
 in both article and itemrecipe and... stuff -- Fruit
 

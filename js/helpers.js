@@ -643,6 +643,7 @@ function renderPSBundles(dataArray) {
 
 
 function insertCookingLink(input) {
+  console.log("insertCookingLink called with: ", input)
   var output = '';
   switch (input) {
     case 'Appetizers':
@@ -652,23 +653,25 @@ function insertCookingLink(input) {
       return '[[Cooking#Entrées|entrée meal]]';
     case 'Desserts':
       return '[[Cooking#Desserts|dessert meal]]';
-    case 'Dairy and Oil':
+    case 'Any Dairy and Oil':
       return '[[:Category:Dairy and Oil|any Dairy and Oil]]';
-    case 'Sweets':
+    case 'Any Sweet':
       return '[[:Category:Sweets|any Sweet]]';
-    case 'Fruit':
+    case 'Any Fruit':
       return '[[:Category:Fruit|any Fruit]]';
-    case 'Spices':
+    case 'Any Fish':
+      return '[[:Category:Fish|any Fish]]';
+    case 'Any Spice':
       return '[[:Category:Spices|any Spice]]';
-    case 'Seafood':
+    case 'Any Seafood':
       return '[[:Category:Seafood|any Seafood]]';
-    case 'Vegetables':
+    case 'Any Vegetables':
       return '[[:Category:Vegetables|any Vegetable]]';
-    case 'Grains':
+    case 'Any Grain':
       return '[[:Category:Grains|any Grain]]';
-    case 'Meat':
+    case 'Any Meat':
       return '[[:Category:Meats|any Meat]]';
-    case 'Protein':
+    case 'Any Protein':
       return '[[:Category:Protein|any Protein]]';
     case 'xxxxx':
       return 'xxxxx';
@@ -757,6 +760,11 @@ function isVersatileIngredient(ingName) {
       break;
     }
   }
+
+  // this will correctly detect, but breaks the functions??
+  if (ingName && ingName.includes("Any ")) {
+    return true;
+  } 
   return false;
 }
 
@@ -807,18 +815,38 @@ function renderMeals(dataArray) {
 
     item.ingredientArray = ingredientArray;
     item.ingredientListString = ingredientArray.join(", ");
+
+    item.ingredientListString = item.ingredientListString.replaceAll('Any Fish', 'Fish');
+    item.ingredientListString = item.ingredientListString.replaceAll('Any Fruit', 'Fruit');
+    item.ingredientListString = item.ingredientListString.replaceAll('Any Seafood', 'Seafood');
+    item.ingredientListString = item.ingredientListString.replaceAll('Any Spice', 'Spices');
+    item.ingredientListString = item.ingredientListString.replaceAll('Any Sweet', 'Sweets');
+    item.ingredientListString = item.ingredientListString.replaceAll('Any Vegetable', 'Vegetables');
+
+
+
     /*item.itemRecipeString = ingredientArray.forEach((ingredient) => {
       let sentence = `{{name|${ingredient}}}`;
     });*/
+
+    // create the ItemRecipe case output
     var tempArray = [];
     for (var i=0; i<ingredientArray.length; i++) {
-      tempArray[i] = '{{name|'+ingredientArray[i]+'}}';
+      if (isVersatileIngredient(tempArray[i])){
+        tempArray[i] = 'A VERSATILE INGREDIENT'; // is this happening? dont think so
+        console.log('temparray[i] = ', tempArray[i]);
+      }
+      else {
+        //tempArray[i] = '{{name|'+ingredientArray[i]+'}}';
+        tempArray[i] = wrapNameTemplate(ingredientArray[i]); // not strictly needed here since every quantity is 1
+      }
     }
     item.itemRecipeString = tempArray.join("<br>");
     var tempArray = [];
     for (var i=0; i<ingredientArray.length; i++) {
       // for versatile ingredients, add correct category link format
       if (isVersatileIngredient(ingredientArray[i])) {
+        console.log('detect versatile ingredient: ', ingredientArray[i]);
         tempArray[i] = insertCookingLink(ingredientArray[i]);
       }
       else {
@@ -826,16 +854,33 @@ function renderMeals(dataArray) {
       } 
     }
     item.articleListString = oxfordJoin(tempArray);
+    item.articleListString = item.articleListString.replaceAll('Any Fish', 'FISH REPLACED IN BODY TEXT');
+
+    //[[:Category:Vegetables|any Vegetable]]
 
     // meal switch statement template
     //template = '\n|%%name%%=<!--{{name|ING1NAME}}<br>{{name|ING2NAME}}<br>{{name|ING3NAME}}<br>{{name|ING4NAME}}<br>{{name|ING5NAME}}-->\n';
-    template = '\n|%%name%%=<!--'+item.itemRecipeString+'-->';
+    //template = '\n|%%name%%=<!--'+item.itemRecipeString+'-->';
+    // todo - make conditional with collectionconfirmed
+    template = '\n\t|%%name%%='+item.itemRecipeString+'';
     //template += '\n';
 
+    template = template.replaceAll('{{name|Any Fish}}', '{{name|Fish|link=:Category:Fish{{!}}Any Fish}}');
+    template = template.replaceAll('{{name|Any Fruit}}', '{{name|Fruit|link=:Category:Fruit{{!}}Any Fruit}}');
+    template = template.replaceAll('{{name|Any Grain}}', '{{name|Grains|link=:Category:Grains{{!}}Any Grain}}');
+    template = template.replaceAll('{{name|Any Seafood}}', '{{name|Seafood|link=:Category:Seafood{{!}}Any Seafood}}');
+    template = template.replaceAll('{{name|Any Spice}}', '{{name|Spices & Herbs|link=:Category:Spices{{!}}Any Spice}}');
+    template = template.replaceAll('{{name|Any Sweet}}', '{{name|Sweets|link=:Category:Sweets{{!}}Any Sweet}}');
+    template = template.replaceAll('{{name|Any Vegetable}}', '{{name|Vegetables|link=:Category:Vegetables{{!}}Any Vegetable}}');
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
   });
+
+
+  // todo: standardize this better, use different template vars maybe? only implemented 1/3 atm
+  var template = '';
+  var templateMealArticle = '';
 
 
 
@@ -844,36 +889,37 @@ function renderMeals(dataArray) {
   renderedHTML += '\n\n===== MEAL ARTICLES =====\n\n';
   delimiter = '\n\n\n-----------------------------\n\n\n';
   dataArray.forEach(function (item) {
-    template = '';
+    templateMealArticle = '';
     // meal article template
-    template += '\n{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=';
+    templateMealArticle += '\n{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=';
     //console.log(`isVersatileRecipe(item) && item.stars && item.stars == 5 ${isVersatileRecipe(item)} ${item.stars} `);
     if (!isVersatileRecipe(item) && item.stars && item.stars == 5) {
       //console.log(`${item.name} successfully triggered as non-versatile recipe with 5 stars.`);
       // If recipe is 5 stars and does NOT include versatile ingredients, do plural "Meals" instead of "Meal"
       // prevents "and more" on the energy display when rendered in infobox
-      template += '\n|type=Meals'; 
+      templateMealArticle += '\n|type=Meals'; 
     }
     else {
-      template += '\n|type=Meal'; 
+      templateMealArticle += '\n|type=Meal'; 
     }
     if (!item.category) { item.category = '<!--Appetizers/Entrées/Desserts-->'; }
-    template += '\n|category=%%category%%';
-    template += '\n|collection='+newExpansionCollection;
-    template += '\n|stars=%%stars%%';
-    template += '\n|energy=';
-    template += '\n|sellprice=';
-    //template += '\n|giftreward=\n|orderReward=\n|size=\n|placement=';
-    template += '\n|giftreward=\n|gridSize=\n|placement=<!--surfaces-->';
-    template += '\n|ingredients=';
+    templateMealArticle += '\n|category=%%category%%';
+    templateMealArticle += '\n|collection='+newExpansionCollection;
+    templateMealArticle += '\n|stars=%%stars%%';
+    templateMealArticle += '\n|energy=%%energy%%';
+    templateMealArticle += '\n|sellprice=%%sellprice%%';
+    //templateMealArticle += '\n|giftreward=\n|orderReward=\n|size=\n|placement=';
+    templateMealArticle += '\n|giftreward=\n|gridSize=\n|placement=<!--surfaces-->';
+    templateMealArticle += '\n|ingredients=';
 
     //template += wrapComment('{{IngredientList | '+item.ingredientListString+' | addCategories }}', !collectionConfirmed);
-    template += '{{IngredientList | '+item.ingredientListString+' | addCategories }}';
-    template += '\n}}';
-    template += '{{cleanup|Ingredients and ingredient order need verification}}';
-    template += "\n'''%%name%%''' is a " + insertNumberWord(item.stars) + '' + insertCookingLink(item.category) + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
+    templateMealArticle += '{{IngredientList | '+item.ingredientListString+' | addCategories }}';
+    templateMealArticle += '\n}}';
+    // todo - make this conditional with collectionconfirmed
+    //templateMealArticle += '{{cleanup|Ingredients and ingredient order need verification}}';
+    templateMealArticle += "\n'''%%name%%''' is a " + insertNumberWord(item.stars) + '' + insertCookingLink(item.category) + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
 
-    template += '\n\n';
+    templateMealArticle += '\n\n';
 
     var itemUseBody = '';
 
@@ -884,17 +930,16 @@ function renderMeals(dataArray) {
        itemUseBody= 'It can be [[Cooking|cooked]] by combining '+item.articleListString + '. ';
     }
 
-    template += wrapComment(itemUseBody, !collectionConfirmed);
-    template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Meals Collection|'+newExpansionCollection+' Meals Collection]].';
+    templateMealArticle += wrapComment(itemUseBody, !collectionConfirmed);
+    templateMealArticle += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Meals Collection|'+newExpansionCollection+' Meals Collection]].';
 
-    template += "\n\n[[Cooking#Meals|Meals]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
+    templateMealArticle += "\n\n[[Cooking#Meals|Meals]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
 
-    template += output_history(item);
-    template += '\n\n{{NavboxMeal|wishblossommountains}}';// {{NavboxMeal|storybookvale}} // {{NavboxMeal|eternityisle}}
-    template +=
-      '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
+    templateMealArticle += output_history(item);
+    templateMealArticle += '\n\n{{NavboxMeal|wishblossommountains}}';// {{NavboxMeal|storybookvale}} // {{NavboxMeal|eternityisle}}
+    templateMealArticle += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
 
-    renderedHTML += microTemplate(template, item);
+    renderedHTML += microTemplate(templateMealArticle, item);
     renderedHTML += delimiter;
   });
 
@@ -903,13 +948,18 @@ function renderMeals(dataArray) {
   delimiter = '';//no breaks between items, assumes already in correct category/alpha order
   dataArray.forEach(function (item) {
     template = '';
-    template =
-      '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}\n| {{stars|%%stars%%}}\n| <!--{{energy|XXXXX}}-->\n| <!--{{price|XXXXX}}-->\n| {{ItemRecipe | %%name%% }}';
+    //template = '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}\n| {{stars|%%stars%%}}\n| <!--{{energy|%%energy%%}}-->\n| <!--{{price|%%sellprice%%}}-->\n| {{ItemRecipe | %%name%% }}';
+    // todo - wrap this in conditional comments
+    template = '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}\n| {{stars|%%stars%%}}\n| {{energy|%%energy%%}}\n| {{price|%%sellprice%%}}\n| {{ItemRecipe | %%name%% }}';
+
     template += '\n| [['+newExpansionCollection+']]';
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
   });
+
+  // just in case, add thingy over e
+  renderedHTML = renderedHTML.replaceAll('ntree', 'ntrée');
 
   return renderedHTML;
 }
