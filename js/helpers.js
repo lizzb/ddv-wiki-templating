@@ -28,6 +28,7 @@ function microTemplate(templateStr, objData) {
   return templateStr;
 }
 
+// TODO: do NOT return true if universe is One Hundred.... because that uses an "a" not an "an"
 function isVowel(x) {
   return x == 'A' || x == 'E' || x == 'I' || x == 'O' || x == 'U';
 }
@@ -57,7 +58,7 @@ function createUniverseLink(itemType, universe) {
   ) {
     output += 'n unthemed';
   } else {
-    if (isVowel(universe.substr(0, 1))) {
+    if (universe!= "One Hundred and One Dalmatians" && isVowel(universe.substr(0, 1))) {
       output += 'n';
     }
     output += ' [[' + itemType + '#' + universe + '|' + universe + ']] themed';

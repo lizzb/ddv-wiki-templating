@@ -1,3 +1,71 @@
+
+- remove energy=-
+
+to fix: Ceiling --> Ceiling Decoration
+
+- insert body text for hanging from ceiling
+
+- remove (ceiling) or (wall) from gridsize
+
+- remove functions=Rug
+
+
+TODO - "ceiling" cateogory placeholder should be "ceiling decoration"
+
+
+todo:
+
+|functions=Cooking Station and body text
+
+- replace |functions=-
+
+TODO - "Welkum Family" Poster - not being properly escaped
+
+
+
+
+avilable - check for this typo on wiki *** todo
+
+
+
+
+
+todo - fixes for alpine spice rack - should have wall placement text
+
+
+TODO: CRAFTING TABLE LANGUAGE
+
+
+todo - if item has the word bed in teh title, use "bed", not "seating" in intro text
+TODO: remove  (wall) from placement value
+TODO: navbox furniture only has decor, not art
+
+TODO: replace [[Crafted Furniture#Other|non-themed]] with [[Furniture#Other|non-themed]]
+
+
+TODO - stack of party hats should fill the storeslots param with a value
+
+TODO - remove  (wall) from size
+
+
+Alpine Cottage Side Table -- TODO - body text for table in intro text not being generated
+
+TODO - Bay Window is not generating the "window" text in intro sentence = maybe whole thing is broken?
+
+Rough Cut Ranch Beam - TODO - and it can only be placed indoors text is not being added to body
+
+
+
+
+
+
+
+
+test case : Winter Pixie Outfit - adding comment wraps around collection in body text
+
+
+// TODO: do NOT return true if universe is One Hundred.... because that uses an "a" not an "an"
+
 - check for any templates in final rendered output (%%universe%%) and remove them
 
 Meal template todos

@@ -305,6 +305,14 @@ function output_history(item) {
 function updateAppropriateVersion(item) {
   if (!item.version) item.version = updateNumber;
 
+    switch(item.version) {
+      case "1.20.3":
+        item.version = "1.20"; // different wiki user-facing version
+        break;
+      default:
+        break;
+    }
+
   // Replace correct sheet version number with generalized version label for wiki history template
   if (item.collection == "EI" || item.collection == "Eternity Isle") {
     switch(item.version) {
@@ -330,7 +338,7 @@ function updateAppropriateVersion(item) {
         break;
     }
   }
-  if (item.collection.includes("WR") || item.collection.includes("WM") || item.collection == "Wishblossom Mountains") {
+  if (item.collection && (item.collection.includes("WR") || item.collection.includes("WM") || item.collection == "Wishblossom Mountains")) {
     switch(item.version) {
       //case "1.2":
       case "1.20":
@@ -341,6 +349,7 @@ function updateAppropriateVersion(item) {
       default:
         break;
     }
+
   }
 
 
@@ -594,7 +603,7 @@ function output_from(item) {
     case 'EI':
     case 'x - SV':
     case 'SV':
-    case 'WR':
+    case 'WM':
       if (showItemDebug) {
         console.log(item.name, ' is a scrooge item');
       }
@@ -895,6 +904,9 @@ function output_itemUsage(item) {
       case 'surfaces':
         output += ', and it can be placed either on the ground or on surfaces.';
         break;
+      case 'walls (indoor)':
+        output +=
+          ', and must be placed on a wall.';
       case 'walls':
         output +=
           ', and must be placed on a wall.'; /*TODO is this being hit? naboo decor..., naboo fireplace not triggering proper reaading of environment etc*/
@@ -1039,6 +1051,7 @@ function output_itemIntro(item) {
       itemUseBody =
         " Once it is placed in the world, the Player can '''Lounge''' on the object.";
       break;
+      // 2025.12.09 - TODO - investigate this
     /*case 'Table':
       itemUseIntro = 'table';
       itemUseBody =
@@ -1154,7 +1167,7 @@ function renderClothingFurnitureArticle(dataArray) {
       case 'SV':
         item.collection = 'Storybook Vale';
         break;
-      case 'WR':
+      case 'WM':
         item.collection = 'Wishblossom Mountains';
         break;
       default:
@@ -1570,6 +1583,11 @@ function jankyCleanup(originalRenderedHTML) {
   newStr = newStr.replaceAll('  ', ' ');
 
 
+  // for crafted furniture
+  newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');
+  
+
+
     // todo - substitute none collection text with untracked text
 
     // Global flag required when calling replaceAll with regex
@@ -1585,6 +1603,15 @@ function jankyCleanup(originalRenderedHTML) {
 
     // TODO - not sure why not working??? saying untehemed is redundant since accessories don't have universes
   newStr = newStr.replaceAll('is an unthemed piece of [[:Category:Accessories', 'is a piece of [[:Category:Accessories');
+
+
+  // NOT WORKING
+  newStr = newStr.replaceAll('\{\{inlineIcon\|\|iconOnly\}\}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
+
+  newStr = newStr.replaceAll('energy=-', 'energy=');
+  newStr = newStr.replaceAll('\n|functions=-', '');
+  //newStr = newStr.replaceAll('\n|functions=-', '\n|functions=none');
+  newStr = newStr.replaceAll('\n|functions=Rug', '');
 
   // todo: get rid of trailing space before line break
   return newStr;
