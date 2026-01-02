@@ -1,3 +1,26 @@
+todo: 
+
+ADD EVENT HANDLERS TO collectionconfirmed and functionsconfirmed checkboxes - right now you have to trigger a new templating by changing input or switching something else (like template radio)
+
+{{NavboxFurniture|misc.|general}} should be {{NavboxFurniture|misc|general}}
+
+{{NavboxFurniture|decor,seating|general}} should just be {{NavboxFurniture|seating|general}}
+
+remove line breaks without breaking parser input
+
+auto-add header and first column "Furniture" or "Clothing" - if possible...
+
+add gathering body text: It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport 3 random villagers to the location.
+
+fix untracked clothing/furniture body text: 
+
+Once collected it will not be added to the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more can not be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+
+generation for value: Cinderella Level 10 Quest (____) (post-quest mailbox reward)
+
+replace |functions=Light (Automatic) with |functions=Lighting (Automatic)
+
 
 - remove energy=-
 

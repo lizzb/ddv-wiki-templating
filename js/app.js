@@ -91,6 +91,8 @@ DataConverter.prototype.convert = function() {
         this.outputText = DataGridRenderer[this.outputDataType](t, i, r, this.indent, this.newLine);
         this.outputTextArea.val(u + this.outputText);
 
+        // TODO add onchange event handling for collectionConfirmed ad functionsConfirmed
+
 
         const jsonString = this.outputText;
         // convert to array of JSON objects with properties from formatted string

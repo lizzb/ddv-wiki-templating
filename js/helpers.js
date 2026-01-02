@@ -456,6 +456,9 @@ function lookupToken(starpath) {
     case 'Witchful Thinking':
       output = 'brewtoken';
       break;
+    case 'Winter Warmth':
+      output = 'waffletoken';
+      break;
     default:
       output = 'ORIGINALTOKENNAME';
   }

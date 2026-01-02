@@ -42,6 +42,12 @@ function renderParent(dataArray, templateType) {
       outputHTML = "Unsure what template generating function to use, templateType: ", templateType;
   }
 
+  // i really should do better event handling....
+  collectionConfirmed = $("#collectionConfirmedCB").prop("checked");
+  functionsConfirmed = $("#functionsConfirmedCB").prop("checked");
+
+  console.log(`collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
+
   // if a custom template is provided in the textarea, use that instead of the one specified by the function
   var inputTemplateValue = document.getElementById("template-input").value;
   if (inputTemplateValue) {
@@ -306,7 +312,7 @@ function updateAppropriateVersion(item) {
   if (!item.version) item.version = updateNumber;
 
     switch(item.version) {
-      case "1.20.3":
+      case "1.20.11":
         item.version = "1.20"; // different wiki user-facing version
         break;
       default:
@@ -1014,6 +1020,7 @@ function output_itemIntro(item) {
   }
   //'<!--Accessories, companions, tools, Gliders-->';
   
+  if (showItemDebug) { console.log("item.functions for ", item.name, ": ", item.functions); }
       
 
   switch (item.functions) {
