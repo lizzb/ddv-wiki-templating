@@ -459,6 +459,9 @@ function lookupToken(starpath) {
     case 'Winter Warmth':
       output = 'waffletoken';
       break;
+    case 'Paw-fect Romance':
+      output = 'pawprinttoken';
+      break;
     default:
       output = 'ORIGINALTOKENNAME';
   }
@@ -570,7 +573,7 @@ function renderPSBundles(dataArray) {
       item.psHistoricalTableRow =
         '|-\n| [[%%bundleName%% (Bundle)|%%bundleName%%]]\n| {{name|%%bundleName%%}}'; //+ psHistoricalTableRow_price;
       item.psBundleArticle =
-        '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%% Store.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%name%%\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=%%name%%\n|dates=\n* 2025-MM-DD - 2025-MM-DD\n}}\n\n==History==\n{{history|' +
+        '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%% Store.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%name%%\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=%%name%%\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' +
         item.version +
         '|Added}}\n\n{{NavboxPremiumBundle}}';
     } else {
@@ -592,7 +595,7 @@ function renderPSBundles(dataArray) {
         item.psBundleItemsString="";
       }*/
       item.psBundleArticle =
-        '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%%.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=\n|dates=\n* 2025-MM-DD - 2025-MM-DD\n}}\n\n==History==\n{{history|' +
+        '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%%.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' +
         item.version +
         '|Added}}\n\n{{NavboxPremiumBundle}}';
     }
@@ -1583,8 +1586,8 @@ function isHairstyle(item) {
 
 function isHouse(item) {
   var isHouse =
-    (item.name && item.name.includes('House')) ||
-    (item.category && item.category == 'House') ||
+    /*(item.name && item.name.includes('House')) ||*/ // TODO - make more robust, currently grabs furniture items iwth house in title
+    (item.category && item.category.includes('House')) ||
     (item.collection && item.collection.includes('House Dream Style'));
 
   if (isHouse) {
@@ -1609,6 +1612,7 @@ function isStall(item) {
 
 function isAccessory(item) {
   var result =  (
+    (item.collection && item.collection.includes('Accessory')) ||
     (item.universe && item.universe.includes('Accessory')) ||
     (item.name && item.name.includes('Accessory')) ||
     (item.name && item.name.includes('Handheld')) ||
@@ -1624,12 +1628,70 @@ function isAccessory(item) {
   return result;
 }
 
+// todo: isBuilding - Chez Remy, Plaza, Scrooge's Store
+function isBuilding(item) {
+  var isBuilding =
+    (item.collection && item.collection.includes('Building')) ||
+    //(item.name && item.name.includes('Building')) ||
+    (item.category && item.category.includes('Building'))  ||
+    (item.universe && item.universe.includes('Building'));
+
+    if (isBuilding) {
+    item.itemType = 'Dream Style';
+    //item.category = 'TODO - either remy, scrooge, or plaza';
+
+    if ((item.category && item.category.includes("Chez Remy")) || (item.name && item.name.includes("Chez Remy"))) {
+      item.category = "Chez Remy";
+    }
+    if ((item.category && item.category.includes("Scrooge's Store")) || (item.name && item.name.includes("Scrooge's Store"))) {
+      item.category = "Scrooge's Store";
+    }
+    // TODO - this is not robust enough, some items can contain the word plaza
+    if ((item.category && item.category.includes("Plaza")) || (item.name && item.name.includes("Plaza")) || (item.category && item.category.includes("Plaza Square")) || (item.name && item.name.includes("Plaza Square"))) {
+      item.category = "Plaza Square";
+    }
+    /*
+    XXXX_BUILDINGTYPE_XXXX = "Chez Remy"
+    XXXX_BUILDINGTYPE_XXXX = "Scrooge's Store"
+    XXXX_BUILDINGTYPE_XXXX = "Plaza Square"
+    */
+  }
+  return isBuilding;
+}
+
+function isCastle(item) {
+  var isCastle =
+    (item.collection && item.collection.includes('Castle')) ||
+    //(item.name && item.name.includes('Castle')) ||
+    (item.category && item.category.includes('Castle'))  ||
+    (item.universe && item.universe.includes('Castle'));
+
+  if (isCastle) {
+    item.itemType = 'Dream Style';
+    item.category = 'Dream Castle';
+  }
+  return isCastle;
+}
+
+function isVisitStation(item) {
+  var isVisitStation =
+    (item.collection && item.collection.includes('Visit Station')) ||
+    //(item.name && item.name.includes('Visit Station')) ||
+    (item.category && item.category.includes('Visit Station'))  ||
+    (item.universe && item.universe.includes('Visit Station'));
+
+  if (isVisitStation) {
+    item.itemType = 'Dream Style';
+    item.category = 'Valley Visit Station Skin';
+  }
+  return isVisitStation;
+}
 
 function isWishingWell(item) {
   var isWishingWell =
-    (item.name && item.name.includes('Wishing Well')) ||
-    (item.category && item.category == 'Well Skin') ||
     (item.collection && item.collection.includes('Well')) ||
+    (item.name && item.name.includes('Wishing Well')) ||
+    (item.category && item.category.includes('Well')) ||
     (item.universe && item.universe.includes('Well'));
 
   if (isWishingWell) {
@@ -1644,10 +1706,9 @@ function isCharacterDreamStyle(item) {
   
     // for chardreamstyles, itemType = Dream Style (originally Clothing from sheet, script overwrites), category = Character Dream Style, universe = Character Dream Style ...
   var isDreamStyle =
-    item.collection == 'n/a - CHARACTER DREAM STYLE' ||
-    (item.itemType == 'Clothing' &&
-      item.collection == 'Dream Style') ||
-    item.itemType == 'Dream Style';
+
+    // TODO: double check values used in sheet for character dream styles, category=Dream Style is not exclusive to character skins
+    item.collection == 'n/a - CHARACTER DREAM STYLE' || (item.itemType == 'Clothing' &&  item.collection == 'Dream Style');
 
   if (isDreamStyle) {
     item.itemType = 'Dream Style';

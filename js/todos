@@ -1,5 +1,68 @@
 todo: 
 
+
+todo: fix <!--<!-- in collection
+
+Garbage Can - why isn't this triggering scrooge template???
+
+
+, and must be placed on a wall.
+, and must be placed indoors, on a wall.
+
+
+
+|functions=Gathering (2)
+
+It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport 2 random villagers to the location.{{cleanup|Tidy up language and function values for all gathering objects}}
+
+
+
+Cupid Fountain - todo - check for consistency in "bare, unpaved" in sheet and on wiki, be sure to add text to the body of these articles
+
+
+
+TODO: issues with generating Monsters, Inc. Attraction - navbox remove punctuation, old size is in sheet, need to verify price and when changed
+
+
+
+todo - fix trigger for checking if name is included in the bundle, 
+[[Casita Wall Set (Bundle)|Casita Wall Set]] bundle - for Casita Wall
+
+
+
+|bonus=yes
+|tier=2
+|premium=yes
+
+from the Tier 2 Premium Bonus Rewards, which are available after all regular Star Path rewards have been collected.
+
+
+
+
+if a house is offered on the premium bonus rewards of a star path, it has to print the body text, not just use itemdescription template
+
+
+
+todo: templating for skins -- dream castle, buildings (chez remy, scrooge)
+
+
+todo: fix: (generated for dapper donald dream style)
+[[Dream Styles|Character Dream Style]] piece<!--/pair--> of <!--back/costume/dress/shoes--> [[clothing]]. that can be applied
+
+todo: add table in the intro line if there is valid surface area
+
+
+
+generating article body for wallpaper/flooring tha that has returned to the premium shop
+
+WallpaperFloorsDescription
+
+
+It was originally available to unlock and collect for a limited time during the [[xxxxxxx Star Path]] event using {{price|TOKENNUM|TOKENTYPE|showLabel}} from the Tier TIERNUM TIERPREMIUM Rewards. It later returned to the [[Premium Shop]] in the [[BUNDLENAME]] bundle for {{price|BUNDLEPRICE|moonstone|showLabel}}. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+
+Once collected it can be applied to rooms inside the [[Player's House]] using the [[Furniture menu]] inside the [[Inventory]].
+
+
 ADD EVENT HANDLERS TO collectionconfirmed and functionsconfirmed checkboxes - right now you have to trigger a new templating by changing input or switching something else (like template radio)
 
 {{NavboxFurniture|misc.|general}} should be {{NavboxFurniture|misc|general}}

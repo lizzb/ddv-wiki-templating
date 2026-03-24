@@ -85,13 +85,23 @@ function output_type(item) {
 // only useful for handling clothing/furniture
 function output_category(item) {
   if (!item.category) {
-    if (item.itemType == 'Clothing')
+    if (item.itemType == 'Clothing') {
       item.category =
         '<!--Accessories, Companions, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
-    else
-      item.category =
-        '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling, Trees, Rocks, Fencing, Attractions-->';
-  }
+    }
+
+    else if (isBuilding(item)) {
+      // this is probably sloppy, ohwell
+      item.category = item.category;
+    }
+    else {
+      // defaults to furniture
+      item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling, Trees, Rocks, Fencing, Attractions-->';
+    }
+      
+  }  
+  //////console.log(`${item.category} is the category for ${item.name}`);
+
   var output = '|category=%%category%%\n';
   return output;
 }
@@ -418,11 +428,21 @@ function output_navbox(item) {
     output = "{{NavboxDreamStyle|house}}";
   }
   if (isStall(item)) {
-    output = "{{NavboxDreamStyle|stalls}}";
+    output = "{{NavboxDreamStyle|stalls}}"; // Goofy's Stall
   }
   if (isWishingWell(item)) {
     output = '{{NavboxDreamStyle|wells}}';
   }
+  if (isBuilding(item)) {
+    output = '{{NavboxDreamStyle|building}}'; // Chez Remy, Scrooge's Store, Plaza Square
+  }
+  if (isCastle(item)) {
+    output = '{{NavboxDreamStyle|castle}}'; // Dream Castle
+  }
+  if (isVisitStation(item)) {
+    output = '{{NavboxDreamStyle|stalls}}'; // Valley Visit Station Skin
+  }
+
   if (isAccessory(item)) {
     // use accessories|general if no universe clear
     if(item.groupedUniverse == 'Other') {
@@ -434,7 +454,6 @@ function output_navbox(item) {
     }
     
   }
-
 
 
 
@@ -1266,11 +1285,23 @@ function renderClothingFurnitureArticle(dataArray) {
     if (isStall(item)) {
       //todo further
       template = generateStallTemplate(item);
+      // template = generateBuildingSkinTemplate(item);
     }
 
     if (isWishingWell(item)) {
       //todo further
       template = generateWishingWellTemplate(item);
+      // template = generateBuildingSkinTemplate(item);
+    }
+
+    if (isBuilding(item)) {
+      template = generateBuildingSkinTemplate(item);
+    }
+    if (isCastle(item)) {
+      template = generateBuildingSkinTemplate(item);
+    }
+    if (isVisitStation(item)) {
+      template = generateBuildingSkinTemplate(item);
     }
 
     
@@ -1360,6 +1391,140 @@ function generateHouseTemplate(item) {
 
   return template;
 }
+
+
+function generateBuildingSkinTemplate(item) {
+  template = ''; // 'TODO - generateBuildingSkinTemplate for '+item.name;
+  /*
+  XXXX_BUILDINGTYPE_XXXX = "Chez Remy" // "Scrooge's Store" // "Plaza Square"
+gridSize_Value = ""
+gridPlacement_Value = ""
+
+// Chez Remy, Scrooge's Store
+body_fullUpgradeText = ""
+-----------
+IF CASTLE
+XXXX_BUILDINGTYPE_XXXX = "Dream Castle"
+-----------
+IF VALLEY VISIT STATION
+XXXX_BUILDINGTYPE_XXXX = "Valley Visit Station Skin"
+
+-----------
+
+IF GOOFY STALL
+
+XXXX_BUILDINGTYPE_XXXX = "Goofy's Stall"
+
+gridSize_Value = "<!--16x8-->"
+gridPlacement_Value = "<!--bare-->"
+
+missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
+
+
+
+
+---------------------------------
+
+{{infobox
+|image=XXXX_ITEMNAME_XXX.png
+|type=Dream Style
+|category=XXXX_BUILDINGTYPE_XXXX
+|from=Premium Shop
+|bundleName=XXXX_BUNDLENAME_XXXX
+|bundlePrice=XXXX_BUNDLEPRICE_XXX
+|gridSize={{gridSize_Value}}
+|placement={{gridPlacement_Value}}
+}}
+---------------------------------
+*/
+
+  // TODO
+  if (isBuilding(item) || isCastle(item) || isVisitStation(item)) {
+    template +=
+      '{{infobox\n' +
+      output_image(item) +
+      output_type(item) +
+      output_category(item) +
+      output_from(item);
+    // also janky - hardcoding placeholder size and placement placeholders
+    template += '|gridSize=\n|placement=\n'; //<!--8x4-->\n|placement=<!--bare-->\n';
+    template += '}}\n';
+
+    var introLink, intro_buildingReplace, body_buildingReplace, body_pickupText;
+
+    // Default vals, override below if necessary - not sure tidiest way to handle this
+    /*var introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]";
+    var intro_buildingReplace = "[["+item.category+"]]";
+    var body_buildingReplace = "[["+item.category+"]]"; // XXXX_BUILDINGTYPE_XXXX / remy/scrooge / everything except plaza
+    var body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
+    */
+
+    console.log(`item category = ${item.category}`);
+
+    switch(item.category) {
+      case "Chez Remy":
+        introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]"; // remy/scrooge/plaza
+        intro_buildingReplace = "[["+item.category+"]]"; // remy/scrooge
+        body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style";
+        break;
+      case "Scrooge's Store":
+        introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]"; // remy/scrooge/plaza
+        intro_buildingReplace = "[["+item.category+"]]"; // remy/scrooge
+        body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style";
+        break;
+      case "Plaza Square":
+        console.log('got here with item.category = ', item.category);
+        introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]"; // remy/scrooge/plaza
+        intro_buildingReplace = "the square in the [[Plaza]] in [[Dreamlight Valley]]";
+        // plaza is only one with different val here, not a direct sub of name
+        body_pickupText = "selecting the [[Plaza|Plaza Square]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style"
+        break;
+      case "Dream Castle":
+        introLink = "[[Dream Styles#Dream Castle Dream Styles|Dream Castle Dream Style]]"; // castle
+        intro_buildingReplace = "the [[Dream Castle]] in [[Dreamlight Valley]]"; // castle
+        body_pickupText = "selecting the [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Castle Dream Style";
+        break;
+      case "Valley Visit Station Skin":
+        introLink = "[[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]]"; // valley visit 
+        intro_buildingReplace = "the [[Valley Visit Station]]"; // valley visit station
+        body_pickupText = "picking up the [[Valley Visit Station]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style";
+        break;
+      case "Goofy's Stall":
+        introLink = "[[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]]"; // goofy
+        intro_buildingReplace = "[["+item.category+"]] in any biome in any Village"; // goofy // [[Goofy's Stall]] in any biome in [[Dreamlight Valley]], [[Eternity Isle]], [[Storybook Vale]], or [[Wishblossom Mountains]].";
+        body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style";
+        break;
+      default:
+        introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]";
+        intro_buildingReplace = "[["+item.category+"]]";
+        body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
+        break;
+    }
+
+    //template += "'''%%name%%''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to 
+    template += "'''%%name%%''' is a "+introLink+" that can be applied to "+intro_buildingReplace+".";
+
+    template += '\n\n' + generateBodyFromPremiumShop(item);
+    // It is available to purchase from the [[Premium Shop]] in the [[XXXX_BUNDLENAME_XXXX]] bundle for {{price|XXXX_BUNDLEPRICE_XXX|moonstone|showlabel}}.
+
+    template += " It can be applied using the [[Furniture menu]] inside the Inventory by ";
+    template += body_pickupText + ".";
+    //template += " picking up [[Goofy's Stall]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style.";
+    
+    if (item.category == "Goofy's Stall") {
+      template += " Each [[Goofy's Stall]] must be fully upgraded to change its Dream Style.";
+      // body_fullUpgradeText = " Each [["+item.category+"]] must be fully upgraded to change its Dream Style." // goofy
+    }
+
+    template += output_history(item) + output_navbox(item);
+
+    //template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]'; // only for goofy? and wishing well?
+
+  }
+  return template;
+ 
+}
+
 
 function generateStallTemplate(item) {
   template = '';
