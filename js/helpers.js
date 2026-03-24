@@ -1605,7 +1605,8 @@ function isStall(item) {
     (item.universe && item.universe.includes('Stall')) ||
     (item.collection && item.collection.includes('Stall'))); 
   if (result) {
-    item.itemType = 'Stall';
+    item.itemType = 'Dream Style'; // 'Stall' - SOMEDAY CHANGE ON WIKI - should be Dream Style
+    item.category = "Goofy's Stall";
   }
   return result;
 }
@@ -1618,12 +1619,12 @@ function isAccessory(item) {
     (item.name && item.name.includes('Handheld')) ||
     (item.category && item.category == 'Accessory') ||
     (item.category && item.category == 'Accessories')); // do NOT catch Umbrella - not safe
-  if (result) {
+  /*if (result) {
     item.category = 'Accessories';
 
     // this was original location of groupedUniverse assignment
 
-  }
+  }*/
 
   return result;
 }
@@ -1636,26 +1637,8 @@ function isBuilding(item) {
     (item.category && item.category.includes('Building'))  ||
     (item.universe && item.universe.includes('Building'));
 
-    if (isBuilding) {
-    item.itemType = 'Dream Style';
-    //item.category = 'TODO - either remy, scrooge, or plaza';
+    // TODO - might need more thoroughness
 
-    if ((item.category && item.category.includes("Chez Remy")) || (item.name && item.name.includes("Chez Remy"))) {
-      item.category = "Chez Remy";
-    }
-    if ((item.category && item.category.includes("Scrooge's Store")) || (item.name && item.name.includes("Scrooge's Store"))) {
-      item.category = "Scrooge's Store";
-    }
-    // TODO - this is not robust enough, some items can contain the word plaza
-    if ((item.category && item.category.includes("Plaza")) || (item.name && item.name.includes("Plaza")) || (item.category && item.category.includes("Plaza Square")) || (item.name && item.name.includes("Plaza Square"))) {
-      item.category = "Plaza Square";
-    }
-    /*
-    XXXX_BUILDINGTYPE_XXXX = "Chez Remy"
-    XXXX_BUILDINGTYPE_XXXX = "Scrooge's Store"
-    XXXX_BUILDINGTYPE_XXXX = "Plaza Square"
-    */
-  }
   return isBuilding;
 }
 
@@ -1666,10 +1649,6 @@ function isCastle(item) {
     (item.category && item.category.includes('Castle'))  ||
     (item.universe && item.universe.includes('Castle'));
 
-  if (isCastle) {
-    item.itemType = 'Dream Style';
-    item.category = 'Dream Castle';
-  }
   return isCastle;
 }
 
@@ -1680,10 +1659,6 @@ function isVisitStation(item) {
     (item.category && item.category.includes('Visit Station'))  ||
     (item.universe && item.universe.includes('Visit Station'));
 
-  if (isVisitStation) {
-    item.itemType = 'Dream Style';
-    item.category = 'Valley Visit Station Skin';
-  }
   return isVisitStation;
 }
 
@@ -1694,10 +1669,6 @@ function isWishingWell(item) {
     (item.category && item.category.includes('Well')) ||
     (item.universe && item.universe.includes('Well'));
 
-  if (isWishingWell) {
-    item.itemType = 'Dream Style';
-    item.category = 'Well Skin';
-  }
   return isWishingWell;
 }
 
@@ -1705,7 +1676,7 @@ function isWishingWell(item) {
 function isCharacterDreamStyle(item) {
   
     // for chardreamstyles, itemType = Dream Style (originally Clothing from sheet, script overwrites), category = Character Dream Style, universe = Character Dream Style ...
-  var isDreamStyle =
+  var isDreamStyle = // IS SOMETHING WRONG HERE... 2026.03.24
 
     // TODO: double check values used in sheet for character dream styles, category=Dream Style is not exclusive to character skins
     item.collection == 'n/a - CHARACTER DREAM STYLE' || (item.itemType == 'Clothing' &&  item.collection == 'Dream Style');

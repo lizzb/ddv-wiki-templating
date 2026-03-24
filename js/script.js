@@ -89,17 +89,17 @@ function output_category(item) {
       item.category =
         '<!--Accessories, Companions, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
     }
-
-    else if (isBuilding(item)) {
-      // this is probably sloppy, ohwell
-      item.category = item.category;
-    }
     else {
       // defaults to furniture
       item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling, Trees, Rocks, Fencing, Attractions-->';
     }
       
   }  
+
+  if (isBuilding(item)) {
+      // this is probably sloppy, ohwell 
+      item.category = item.category;
+    }
   //////console.log(`${item.category} is the category for ${item.name}`);
 
   var output = '|category=%%category%%\n';
@@ -1201,6 +1201,35 @@ function renderClothingFurnitureArticle(dataArray) {
     }
     
 
+    // TODO... . THIS IS SFEELING A BIT JANKY
+    if (isCastle(item)) {
+        item.itemType = 'Dream Style';  
+        item.category = 'Dream Castle';
+    }
+    if (isBuilding(item)) {
+      item.itemType = 'Dream Style';
+
+      if ((item.category && item.category.includes("Chez Remy")) || (item.name && item.name.includes("Chez Remy"))) {
+        item.category = "Chez Remy";
+      }
+      if ((item.category && item.category.includes("Scrooge's Store")) || (item.name && item.name.includes("Scrooge's Store")) || (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Store"))) {
+        item.category = "Scrooge's Store";
+      }
+
+      // TODO - this is not robust enough, some items can contain the word plaza
+      if ((item.category && item.category.includes("Plaza")) || (item.name && item.name.includes("Plaza")) || (item.category && item.category.includes("Plaza Square")) || (item.name && item.name.includes("Plaza Square"))) {
+        item.category = "Plaza Square";
+      }
+    }
+    if (isVisitStation(item)) {
+      item.itemType = 'Dream Style';
+      item.category = 'Valley Visit Station Skin'; // TODO SOMEDAY - myabe change to Valley Visit Station
+    }
+    if (isWishingWell(item)) {
+      item.itemType = 'Dream Style';
+      item.category = 'Wishing Well';
+    }
+
     if (isHairstyle(item)) {
       item.category = 'Hairstyle';
     }
@@ -1284,14 +1313,14 @@ function renderClothingFurnitureArticle(dataArray) {
     }
     if (isStall(item)) {
       //todo further
-      template = generateStallTemplate(item);
-      // template = generateBuildingSkinTemplate(item);
+      ////template = generateStallTemplate(item);
+      template = generateBuildingSkinTemplate(item);
     }
 
     if (isWishingWell(item)) {
       //todo further
-      template = generateWishingWellTemplate(item);
-      // template = generateBuildingSkinTemplate(item);
+      ////template = generateWishingWellTemplate(item);
+      template = generateBuildingSkinTemplate(item);
     }
 
     if (isBuilding(item)) {
@@ -1439,7 +1468,7 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
 */
 
   // TODO
-  if (isBuilding(item) || isCastle(item) || isVisitStation(item)) {
+  if (isBuilding(item) || isCastle(item) || isVisitStation(item) || isWishingWell(item) || isStall(item)) {
     template +=
       '{{infobox\n' +
       output_image(item) +
@@ -1447,10 +1476,13 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
       output_category(item) +
       output_from(item);
     // also janky - hardcoding placeholder size and placement placeholders
-    template += '|gridSize=\n|placement=\n'; //<!--8x4-->\n|placement=<!--bare-->\n';
+    template += '|gridSize=\n|placement=\n'; //<!--8x4-->\n|placement=<!--bare-->\n'; // goofy's stall: gridSize=16x8
     template += '}}\n';
 
-    var introLink, intro_buildingReplace, body_buildingReplace, body_pickupText;
+    var introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]"; // default + remy/scrooge/plaza
+    var intro_buildingReplace = "[["+item.category+"]]"; // default + remy/scrooge
+
+    var body_buildingReplace, body_pickupText;
 
     // Default vals, override below if necessary - not sure tidiest way to handle this
     /*var introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]";
@@ -1459,22 +1491,14 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
     var body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
     */
 
-    console.log(`item category = ${item.category}`);
-
     switch(item.category) {
       case "Chez Remy":
-        introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]"; // remy/scrooge/plaza
-        intro_buildingReplace = "[["+item.category+"]]"; // remy/scrooge
         body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style";
         break;
-      case "Scrooge's Store":
-        introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]"; // remy/scrooge/plaza
-        intro_buildingReplace = "[["+item.category+"]]"; // remy/scrooge
+      case "Scrooge\'s Store":
         body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style";
         break;
       case "Plaza Square":
-        console.log('got here with item.category = ', item.category);
-        introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]"; // remy/scrooge/plaza
         intro_buildingReplace = "the square in the [[Plaza]] in [[Dreamlight Valley]]";
         // plaza is only one with different val here, not a direct sub of name
         body_pickupText = "selecting the [[Plaza|Plaza Square]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style"
@@ -1489,27 +1513,26 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
         intro_buildingReplace = "the [[Valley Visit Station]]"; // valley visit station
         body_pickupText = "picking up the [[Valley Visit Station]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style";
         break;
+      case "Wishing Well":
+        introLink = "[[Dream Styles#Well Dream Styles|Wishing Well Dream Style]]"; // wishing well
+        intro_buildingReplace = "[["+item.category+"]]s in any biome in any Village (except the singular primary Well per Village).<!--(except the large [[Plaza|Plaza Well]])-->{{cleanup|Concise language. - Library of Lore Well in SV, Plaza Well in DV, Docks Well in EI, Well in WM}}"; 
+        body_pickupText = "picking up a [[Wishing Well]], which enables an option to '''Replace''', and then choosing a replacement Well Dream Style";
+        break;
       case "Goofy's Stall":
         introLink = "[[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]]"; // goofy
         intro_buildingReplace = "[["+item.category+"]] in any biome in any Village"; // goofy // [[Goofy's Stall]] in any biome in [[Dreamlight Valley]], [[Eternity Isle]], [[Storybook Vale]], or [[Wishblossom Mountains]].";
         body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style";
         break;
       default:
-        introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]";
-        intro_buildingReplace = "[["+item.category+"]]";
         body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
         break;
     }
 
-    //template += "'''%%name%%''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to 
     template += "'''%%name%%''' is a "+introLink+" that can be applied to "+intro_buildingReplace+".";
 
     template += '\n\n' + generateBodyFromPremiumShop(item);
-    // It is available to purchase from the [[Premium Shop]] in the [[XXXX_BUNDLENAME_XXXX]] bundle for {{price|XXXX_BUNDLEPRICE_XXX|moonstone|showlabel}}.
 
-    template += " It can be applied using the [[Furniture menu]] inside the Inventory by ";
-    template += body_pickupText + ".";
-    //template += " picking up [[Goofy's Stall]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style.";
+    template += " It can be applied using the [[Furniture menu]] inside the Inventory by " + body_pickupText + ".";
     
     if (item.category == "Goofy's Stall") {
       template += " Each [[Goofy's Stall]] must be fully upgraded to change its Dream Style.";
@@ -1518,6 +1541,16 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
 
     template += output_history(item) + output_navbox(item);
 
+    switch(item.category) {
+      case "Wishing Well":
+      case "Goofy's Stall":
+        template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]';
+        break;
+      default:
+        body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
+        break;
+    }
+
     //template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]'; // only for goofy? and wishing well?
 
   }
@@ -1525,7 +1558,7 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
  
 }
 
-
+/*
 function generateStallTemplate(item) {
   template = '';
 
@@ -1583,6 +1616,7 @@ function generateWishingWellTemplate(item) {
   return template;
  
 }
+*/
 
 function generateCharacterDreamStyleTemplate(item) {
 
