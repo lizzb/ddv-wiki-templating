@@ -1,6 +1,85 @@
 todo: 
 
 
+todo - remove (wall) from size value from my parser
+
+
+TODO - use Photo Shoot Spotlight for example item rewarded during quest, lighting constant, and not tracked
+
+TODO - add parser generated articles for: - update wiki articles to match
+
+Cherry Blossom Plaza
+Cherry Blossom Chez Remy
+Scrooge McDuck's Cherry Blossom Store
+Cherry Blossom Dream Castle
+Cherry Blossom Goofy Stall
+Cherry Blossom Valley Visit Station
+Cherry Blossom Wishing Well
+
+TODO revisit Lucky Clover Archway template - in intro sentence arch vs event word priority? needs to be standardized with Lucky Shamrock Banner
+
+Lucky Shamrock Banner - TODO - revisit this page as an examlpe item for lighting object, seasonal crafting item
+
+
+TODO - add parser generated articles for Villager Houses? maybe? e.g. Lady and Tramp's House
+
+
+TOODO - {{NavboxFurniture|landscaping|general}} -- todo, make sure this generates for navbox if multiple categories, needs prioritization of categories
+
+todo: , and must be placed on a wall. --> , and must be placed indoors on a wall.
+
+, and must be placed indoors on a wall.
+
+TODO - Basic Ironwork Sign - touch of magic furniture
+
+
+TODO - article generation/standardization for premium/friendship items (pet houses) - e.g. Mochi's Cat House
+
+TODO - article generation for Cooking Station functionality items - e.g.  Brick Pizza Oven
+
+
+TODO - "Love Is in the Air" Hearts still doesnt render corrctly due to quotes
+
+
+TODO - standardize "floating" placement type
+
+
+SAMPLE ITEMS
+TODO - bonus star path item - Cast Iron Steam Vent - Interact/toggle animation
+
+Antique Camera -- TODO: work on article generation to match this, no collection, not tracked, cant buy more, given during? reward for? quest
+
+TODO - use Edwardian Chair and Curtains Set as example for outdoor gathering item rewarded during a quest - includes body gathering text
+
+Red Valentine Petals - use as sample reward from dreamlight village achievement
+
+TODO - 2026.03.25 - verify all update 21 recipes and crafting recipes added for quests etc, standardize coloring (cornflower blue for quest recipes), should i change sort to alpha or something...?
+
+
+
+feel kind of iffy about these for some reason: Saucery Extract, Uncooked Spaghetti Wall
+
+
+TODO - should it be functions=VFX for Green/Blue/Pink Fluttering Dragonflies? check bayou fireflies
+
+
+Golden Lady and Tramp Statue -- max did all, i fix body text slightly -- TODO review level 10 quest body text form here, mine vs max's
+
+TODO - {{NavboxFurniture|misc.|general}} -- remove . after misc
+
+
+TODO - saucery extract should be exporting type=Crafted Furniture, not type=Furniture, and also craftingcategory=Furniture
+
+
+todo: append ". Once it is placed in the world, the Player can '''Interact''' with the object to toggle the light on and off." for lighting objects
+
+
+Tropical Waterfalls - use this page as reference for kits, use landscaping in first sentence? idk?
+
+
+
+
+
 todo: fix <!--<!-- in collection
 
 Garbage Can - why isn't this triggering scrooge template???
