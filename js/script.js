@@ -1212,7 +1212,14 @@ function renderClothingFurnitureArticle(dataArray) {
       if ((item.category && item.category.includes("Chez Remy")) || (item.name && item.name.includes("Chez Remy"))) {
         item.category = "Chez Remy";
       }
-      if ((item.category && item.category.includes("Scrooge's Store")) || (item.name && item.name.includes("Scrooge's Store")) || (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Store"))) {
+      if (
+        (item.category && item.category.includes("Scrooge's Store")) ||
+        (item.category && item.category.includes("Scrooge's Shop")) ||
+        (item.name && item.name.includes("Scrooge's Store")) ||
+        (item.name && item.name.includes("Scrooge's Shop")) ||
+        (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Store")) ||
+        (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Shop"))
+        ) {
         item.category = "Scrooge's Store";
       }
 
