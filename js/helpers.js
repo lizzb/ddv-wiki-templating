@@ -122,6 +122,7 @@ function determineCharacterFromDreamStyle(itemName) {
     'Scrooge',
     'Maui',
     'Moana',
+    'Mike',
     'Mike Wazowski',
     'Sulley',
     'Mulan',
@@ -461,6 +462,9 @@ function lookupToken(starpath) {
       break;
     case 'Paw-fect Romance':
       output = 'pawprinttoken';
+      break;
+    case 'Elements of Nature':
+      output = 'leaftoken';
       break;
     default:
       output = 'ORIGINALTOKENNAME';
@@ -1590,12 +1594,15 @@ function isHouse(item) {
     (item.category && item.category.includes('House')) ||
     (item.collection && item.collection.includes('House Dream Style'));
 
+  // THIS ISNT CHANGING ANY VALUES
+  /*
   if (isHouse) {
     item.itemType = 'Player House';
     item.category = 'House';
 
     ///return false; // TODO HOUSE DETECTION - type=furniture category = house?-->itemType = house dream style, or dream style?. or check collection == House Dream Style
   }
+  */
   return isHouse;
 }
 
@@ -1604,10 +1611,6 @@ function isStall(item) {
   var result =  (
     (item.universe && item.universe.includes('Stall')) ||
     (item.collection && item.collection.includes('Stall'))); 
-  if (result) {
-    item.itemType = 'Dream Style'; // 'Stall' - SOMEDAY CHANGE ON WIKI - should be Dream Style
-    item.category = "Goofy's Stall";
-  }
   return result;
 }
 
@@ -1635,6 +1638,9 @@ function isBuilding(item) {
     (item.collection && item.collection.includes('Building')) ||
     //(item.name && item.name.includes('Building')) ||
     (item.category && item.category.includes('Building'))  ||
+    (item.category && item.category.includes('Chez Remy'))  ||
+    (item.category && item.category.includes('Plaza Square'))  ||
+    (item.category && item.category.includes('Scrooge\'s Store'))  ||
     (item.universe && item.universe.includes('Building'));
 
     // TODO - might need more thoroughness

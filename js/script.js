@@ -96,13 +96,13 @@ function output_category(item) {
       
   }  
 
-  if (isBuilding(item)) {
-      // this is probably sloppy, ohwell 
-      item.category = item.category;
-    }
   //////console.log(`${item.category} is the category for ${item.name}`);
 
   var output = '|category=%%category%%\n';
+
+  if (isBuilding(item) || isCastle(item) || isWishingWell(item) || isStall(item) || isVisitStation(item)) {
+    output = '|category=none\n'; // i use categories in my sheet and elsewhere in parser, but technically these items have no category
+  }
   return output;
 }
 
@@ -437,10 +437,10 @@ function output_navbox(item) {
     output = '{{NavboxDreamStyle|building}}'; // Chez Remy, Scrooge's Store, Plaza Square
   }
   if (isCastle(item)) {
-    output = '{{NavboxDreamStyle|castle}}'; // Dream Castle
+    output = '{{NavboxDreamStyle|building|castle}}'; // Dream Castle
   }
   if (isVisitStation(item)) {
-    output = '{{NavboxDreamStyle|stalls}}'; // Valley Visit Station Skin
+    output = '{{NavboxDreamStyle|visitstations}}'; // Valley Visit Station Skin
   }
 
   if (isAccessory(item)) {
@@ -1169,6 +1169,13 @@ function output_itemIntro(item) {
   return output;
 }
 
+
+function parseItem(item) {
+
+
+  return item;
+}
+
 /* ============= */
 function renderClothingFurnitureArticle(dataArray) {
   var renderedHTML = '';
@@ -1176,6 +1183,8 @@ function renderClothingFurnitureArticle(dataArray) {
 
   var delimiter = '\n\n\n-----------------------------\n\n\n';
   dataArray.forEach(function (item) {
+
+    // =*=*=*=*= PARSING ITEM START =*=*=*=*=
     // trying to troubleshoot why interpolation doesnt work for bundleName etc params
     if(!item) return;
     item.missingCategories = [];
@@ -1200,14 +1209,21 @@ function renderClothingFurnitureArticle(dataArray) {
         break;
     }
     
-
-    // TODO... . THIS IS SFEELING A BIT JANKY
+    // TODO... . THIS IS FEELING A BIT JANKY
     if (isCastle(item)) {
-        item.itemType = 'Dream Style';  
-        item.category = 'Dream Castle';
+      //in game: type=Dream Castle Skin, collection=none, category=none
+      item.itemType = 'Dream Castle Skin';
+      item.category = 'Dream Castle';
+      item.collection= 'none';
     }
+
     if (isBuilding(item)) {
-      item.itemType = 'Dream Style';
+      //console.log(`item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
+      //in game: type=Building Skin, collection=none, category=none
+      item.itemType = 'Building Skin';  
+      item.collection = 'none';
+
+      // category for these is technically 'none' in game, but these values are used in sheet and parser - overridden in output_category for article generation
 
       if ((item.category && item.category.includes("Chez Remy")) || (item.name && item.name.includes("Chez Remy"))) {
         item.category = "Chez Remy";
@@ -1227,14 +1243,23 @@ function renderClothingFurnitureArticle(dataArray) {
       if ((item.category && item.category.includes("Plaza")) || (item.name && item.name.includes("Plaza")) || (item.category && item.category.includes("Plaza Square")) || (item.name && item.name.includes("Plaza Square"))) {
         item.category = "Plaza Square";
       }
+
+      //console.log(`LOOP END: item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
+    }
+    if (isStall(item)) {
+      item.itemType = "Goofy's Stall Skin";
+      item.category = "Goofy's Stall"; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
+      item.collection = 'none';
     }
     if (isVisitStation(item)) {
-      item.itemType = 'Dream Style';
-      item.category = 'Valley Visit Station Skin'; // TODO SOMEDAY - myabe change to Valley Visit Station
+      item.itemType = 'Valley Visit Station Style';
+      item.category = 'Visit Station'; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
+      item.collection = 'Visit Station';
     }
     if (isWishingWell(item)) {
-      item.itemType = 'Dream Style';
-      item.category = 'Wishing Well';
+      item.itemType = 'Wishing Well Skin';
+      item.category = 'Wishing Well'; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
+      item.collection = 'Wishing Well';
     }
 
     if (isHairstyle(item)) {
@@ -1259,6 +1284,8 @@ function renderClothingFurnitureArticle(dataArray) {
       // None - Accessory (Aladdin) or None - Accessory
       item.universe = 'none';
     }
+
+    // =*=*=*=*= PARSING ITEM END =*=*=*=*=
 
     //make sure these are only called once
     var itemFrom = output_from(item);
@@ -1476,14 +1503,25 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
 
   // TODO
   if (isBuilding(item) || isCastle(item) || isVisitStation(item) || isWishingWell(item) || isStall(item)) {
+
     template +=
       '{{infobox\n' +
       output_image(item) +
       output_type(item) +
       output_category(item) +
+      output_collection(item) +
       output_from(item);
-    // also janky - hardcoding placeholder size and placement placeholders
-    template += '|gridSize=\n|placement=\n'; //<!--8x4-->\n|placement=<!--bare-->\n'; // goofy's stall: gridSize=16x8
+
+    if (isWishingWell(item)) {
+      template += '|gridSize=<!--12x12-->\n|placement=<!--bare-->\n';  
+    }
+    else if (isStall(item)) {
+      template += '|gridSize=<!--16x8-->\n|placement<!--bare-->=\n';  
+    }
+    else {
+      // also janky - hardcoding placeholder size and placement placeholders
+      template += '|gridSize=\n|placement=\n'; //<!--8x4-->\n|placement=<!--bare-->\n'; // goofy's stall: gridSize=16x8
+    }
     template += '}}\n';
 
     var introLink = "[[Dream Styles#Building Dream Styles|Building Dream Style]]"; // default + remy/scrooge/plaza
@@ -1515,7 +1553,7 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
         intro_buildingReplace = "the [[Dream Castle]] in [[Dreamlight Valley]]"; // castle
         body_pickupText = "selecting the [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Castle Dream Style";
         break;
-      case "Valley Visit Station Skin":
+      case "Visit Station":
         introLink = "[[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]]"; // valley visit 
         intro_buildingReplace = "the [[Valley Visit Station]]"; // valley visit station
         body_pickupText = "picking up the [[Valley Visit Station]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style";
@@ -1551,7 +1589,8 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
     switch(item.category) {
       case "Wishing Well":
       case "Goofy's Stall":
-        template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]';
+        // assuming these are always the same size/placement as the items they skin
+        //template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]';
         break;
       default:
         body_pickupText = "picking up [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
