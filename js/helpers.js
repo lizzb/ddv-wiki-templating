@@ -1589,20 +1589,14 @@ function isHairstyle(item) {
 }
 
 function isHouse(item) {
+
+  //console.log(`got into isHouse with item: name=${item.name}, itemType=${item.itemType}, category=${item.category}`);
+
   var isHouse =
     /*(item.name && item.name.includes('House')) ||*/ // TODO - make more robust, currently grabs furniture items iwth house in title
-    (item.category && item.category.includes('House')) ||
+    /* do NOT do this - if category is set to commented value this will flag true - (item.category && item.category.includes('House')) ||*/
     (item.collection && item.collection.includes('House Dream Style'));
 
-  // THIS ISNT CHANGING ANY VALUES
-  /*
-  if (isHouse) {
-    item.itemType = 'Player House';
-    item.category = 'House';
-
-    ///return false; // TODO HOUSE DETECTION - type=furniture category = house?-->itemType = house dream style, or dream style?. or check collection == House Dream Style
-  }
-  */
   return isHouse;
 }
 

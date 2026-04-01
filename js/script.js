@@ -594,6 +594,15 @@ function parseItemSource(item) {
     item.taleUniverse = result[1]; // tale value (universe)
   }
 
+  // ===== Craftable Event Item =====
+  if (isCraftable(item)) {
+    const string = item.source;
+    // Crafting (Lucky You!)
+    const regex = /Crafting \(([\w\W !]+)\)/;
+    const result = string.split(regex);
+    item.event = result[1]; // tale value (universe)
+  }
+
   item.itemSource = itemSource;
   item.itemFrom = itemFrom;
 
@@ -645,11 +654,29 @@ function output_from(item) {
     default:
       infoboxFrom = ''; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
       itemSource = 'SOURCE TODO.'; // crafting
-      if (isCraftable(item)) {
-        infoboxFrom = '|recipe='+createInfoboxRecipe(item)+'\n';
-        itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
-      }
+      break;
   }
+
+    if (isCraftable(item)) {
+
+      if (showItemDebug) {
+        console.log(item.name, ' is a craftable item');
+      }
+
+      infoboxFrom = '|recipe='+createInfoboxRecipe(item)+'\n';
+
+      if (item.event) {
+        // if regex Crafting \(([\w+\!]\)
+        itemSource = 'It can be crafted using using seasonal [[ingredients]] that are available during the [['+item.event+']] event at a [[:Category:Crafting Stations|Crafting Station]].'
+      }
+      else {
+        itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
+      } 
+    }
+
+
+  
+ 
 
   // quick hack
   if (infoboxFrom.includes('Scrooge')) {
@@ -851,6 +878,7 @@ function output_collectionStatus(item) {
 
   var clothingCollectionText =
     ' Once collected it will be added to the [[:Category: %%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]].';
+  // TODO 2026.04.01 - CLEANUP - may not be added to both? needs verification/detecting
   var craftingCollectionText =
     ' Once collected it will be added to both the [[:Category:%%collection%% Crafting Collection|%%collection%% Crafting Collection]] and the [[:Category:%%collection%% Furniture Sets Collection|%%collection%% Furniture Sets Collection]].';
   var furnitureCollectionText =
@@ -1042,18 +1070,22 @@ function output_itemIntro(item) {
   if (showItemDebug) { console.log("item.functions for ", item.name, ": ", item.functions); }
       
 
+    
   switch (item.functions) {
+    case 'Light (Constant)':
     case 'Lighting (Constant)':
       itemUseIntro = 'lighting';
-      itemUseBody = ''; // ....
+      itemUseBody = 'Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it.'; // ....
       break;
+    case 'Light (Automatic)':
     case 'Lighting (Automatic)':
       itemUseIntro = 'lighting';
-      itemUseBody = ''; // ....
+      itemUseBody = 'Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]].'; // ....
       break;
+    case 'Light':
     case 'Lighting':
       itemUseIntro = 'lighting';
-      itemUseBody = ''; // ....
+      itemUseBody = "Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off."; // ....
       break;
     case 'Arch':
       itemUseIntro = 'arch';
@@ -1069,13 +1101,11 @@ function output_itemIntro(item) {
       break;
     case 'Sit':
       itemUseIntro = 'seating'; //'<!--seating/bed-->';
-      itemUseBody =
-        " Once it is placed in the world, the Player can '''Sit''' on the object.";
+      itemUseBody = " Once it is placed in the world, the Player can '''Sit''' on the object.";
       break;
     case 'Lounge':
       itemUseIntro = 'seating';//'<!--seating/bed-->'; // sometimes this is bed... but should probs just display seating anyway, as bed has no intrinsic meaning
-      itemUseBody =
-        " Once it is placed in the world, the Player can '''Lounge''' on the object.";
+      itemUseBody = " Once it is placed in the world, the Player can '''Lounge''' on the object.";
       break;
       // 2025.12.09 - TODO - investigate this
     /*case 'Table':
@@ -1106,6 +1136,13 @@ function output_itemIntro(item) {
         itemUseBody = '';
       }
   }
+
+    // janky catch for more lighting objects - this is not robust!!!! cases where i've written extra info in the box
+    if (item.functions && item.functions.includes('Light')) {
+      itemUseIntro = 'lighting';
+      itemUseBody = "<!-- Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off. // the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
+    }
+
 
   // override default filler content for wallpaper and flooring, which don't use "function"
   if (isWallpaperFlooring(item)) {
