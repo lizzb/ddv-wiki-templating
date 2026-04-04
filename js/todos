@@ -19,7 +19,6 @@ Cherry Blossom Wishing Well
 
 TODO revisit Lucky Clover Archway template - in intro sentence arch vs event word priority? needs to be standardized with Lucky Shamrock Banner
 
-Lucky Shamrock Banner - TODO - revisit this page as an examlpe item for lighting object, seasonal crafting item
 
 
 TODO - add parser generated articles for Villager Houses? maybe? e.g. Lady and Tramp's House
@@ -45,7 +44,13 @@ TODO - "Love Is in the Air" Hearts still doesnt render corrctly due to quotes
 TODO - standardize "floating" placement type
 
 
-SAMPLE ITEMS
+==== SAMPLE ITEMS ====
+
+Lucky Shamrock Banner - TODO - revisit this page as an examlpe item for lighting object, seasonal crafting item
+
+"End of the Rainbow" Cauldron - TODO - revisit this page as example item with quotes in name, seasonal crafting item, only added to one collection, no universe
+
+
 TODO - bonus star path item - Cast Iron Steam Vent - Interact/toggle animation
 
 Antique Camera -- TODO: work on article generation to match this, no collection, not tracked, cant buy more, given during? reward for? quest
@@ -468,3 +473,63 @@ House star path bonus items
 Furniture from quest crafting unlock recipe surfaces lighting (wonderland candle)
 Furniture table with irregular surface shape - luxo table?
 Parse character universe and character
+
+
+
+
+
+--------------------------------------------------
+
+Volcanic Stove is a The Lion King themed piece of [[:Category:Cooking Stations|cooking station]] furniture.
+
+It functions as a [[:Category:Cooking Stations|cooking station]], and once placed it can be interacted with to make [[Cooking|meal recipes]].
+
+
+Once it is placed in the world, the Player can '''Interact''' with the object to toggle the fire on and off.
+
+
+'''Mochi's Cat House''' is a [[Furniture#Big Hero 6|Big Hero 6]] themed piece of [[:Category:Companion Home|companion house]] [[furniture]].
+
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], and it can only be placed outdoors. Once it is placed in the world, the Player can '''Interact''' with the item to select up to 4 [[Companions|companions]]. These companions will roam in the immediate area and interact with nearby Companion items.
+
+
+'''Cozy Companion Home''' is a [[Crafting#Functional_Items|functional item]] which can be [[Crafting|crafted]] using a [[:Category:Crafting_Stations|crafting station]].
+
+'''Bayou Companion Home''' is a [[The Princess and the Frog]] themed piece of [[Crafting#Furniture|craftable furniture]] that can be made using a [[:Category:Crafting_Stations|crafting station]]. 
+
+
+-----
+
+PREFERRED: (no links adjacent unless Other universe)
+'''xxxITEMNAMExxx''' is a [[Furniture#xxxUNIVERSExxx|xxxUNIVERSExxx]] themed [[:Category:Companion Home|companion house]] piece of [[furniture]].
+
+
+- no adjacent links that go to different places when avoidable
+--> we put the item type next to [[furniture/clothing]] in intro sentence of articles, but this is more important (and arguably those other articles should be linked text of type, but they aren't currently)
+- no need to say in intro sentence it is craftable or where it can be crafted - that's second paragraph, for source/obtain
+- remember first line will be read by google - use lower case capitalization for "normal" readability
+
+-----
+
+
+most articles do crafting/cooking station functionality in first sentence because users care about that
+
+
+Bayou Companion Home, Elegant Skunk House - craftable themed companion home unlocked by quest
+
+
+'''Elegant Skunk House''' is a [[Furniture#Other|non-themed]] [[:Category:Companion Home|companion house]] piece of [[Crafting#Furniture|craftable furniture]].
+
+
+TODO verify elegant skunk house universe
+
+
+
+'''North Pole Crafting Station''' is a [[Furniture#Other|non-themed]] piece of [[furniture]]. It functions as a [[:Category:Crafting Stations|crafting station]], and once placed it can be interacted with to make [[Crafting|crafted recipes]].
+
+
+
+'''Hanging Egg Chair''' is a [[Furniture#Other|non-themed]] piece of seating [[Crafting#Furniture|craftable furniture]].
+
+----------------------------------------

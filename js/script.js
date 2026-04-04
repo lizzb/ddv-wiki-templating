@@ -373,19 +373,139 @@ function updateAppropriateVersion(item) {
   return item;
 }
 
+/*
+const getHighestPriorityMatch = (str, priorities) => {
+  const values = str.split(",").map(s => s.trim());
+  return priorities.find(p => values.includes(p));
+};
+*/
+
+function output_prioritizedCategory(categoryVal) {
+
+  
+
+
+  /*
+  const str = "hello world";
+  const keywords = ["hello", "bye", "test"];
+
+  // case insensitive
+  const containsAny = keywords.some(k => str.toLowerCase().includes(k.toLowerCase()) );
+
+
+  console.log(containsAny); // true
+
+  // alt version
+  // const regex = new RegExp(keywords.join("|"));
+  // const containsAny = regex.test(str);
+
+  Why this is solid:
+
+  some() stops early (efficient)
+  Reads like plain English: “does some keyword match?”
+  Easy to extend or tweak
+
+  // one liner
+  const containsAny = (str, arr) => arr.some(s => str.includes(s));
+  */
+
+/*
+  const str = "Essentials, Lighting";
+  const priorities = ["Essentials", "Lighting", "Other"];
+
+  const match = priorities.find(p => str.includes(p));
+  // case insensitive
+  const match = priorities.find(p => str.toLowerCase().includes(p.toLowerCase()) );
+*/
+  // safe (avoid partial matches)
+  /*const match = priorities.find(p => {
+    const regex = new RegExp(`\\b${p}\\b`, "i");
+    return regex.test(str);
+  });*/
+  //console.log(match); // "Essentials"
+  /*
+  find() returns the first match → your list = priority ranking
+Stops early → efficient
+Very readable: “give me the first priority that appears”
+*/
+
+  var output = categoryVal;
+
+  if (categoryVal.includes("Essentials")) {
+    output = "Essentials";
+  }
+  if (categoryVal.includes("Lighting")) {
+    output = "Lighting";
+  }
+  if (categoryVal.includes("Decor")) {
+    output = "Decor";
+  }
+  if (categoryVal.includes("Misc.")) {
+    output = "Misc.";
+  }
+  if (categoryVal.includes("Wall")) {
+    output = "Wall";
+  }
+  if (categoryVal.includes("Electronics")) {
+    output = "Electronics";
+  }
+  if (categoryVal.includes("Storage")) {
+    output = "MISc.";
+  }
+  // TODO: i can tell this is inefficient so i only did it partially until refactored
+
+
+
+  // TODO - insert correct category for Other navboxes furniture categories
+  // verify prioritization of categories
+/*
+    IF(REGEXMATCH(categories, "Wallpaper"), 200,
+    IF(REGEXMATCH(categories, "Flooring"), 100,
+    IF(REGEXMATCH(categories, "Appliance"), 414,
+    IF(REGEXMATCH(categories, "Tables"), 396,
+    IF(REGEXMATCH(categories, "Beds"), 414,
+    IF(REGEXMATCH(categories, "Trimmings"), 378,
+    IF(REGEXMATCH(categories, "Essentials"), 360,
+    IF(REGEXMATCH(categories, "Attractions"), 630,
+    IF(REGEXMATCH(categories, "Decor"), 450,
+    IF(REGEXMATCH(categories, "Misc\."), 360,
+    IF(REGEXMATCH(categories, "Wall"), 360,
+    IF(REGEXMATCH(categories, "Electronics"), 324,
+    IF(REGEXMATCH(categories, "Storage"), 360,
+    IF(REGEXMATCH(categories, "Utilities"), 360,
+    IF(REGEXMATCH(categories, "Rugs"), 360,
+    IF(REGEXMATCH(categories, "Lighting"), 306,
+    IF(REGEXMATCH(categories, "Seating"), 270,
+    IF(REGEXMATCH(categories, "Art"), 306,
+    IF(REGEXMATCH(categories, "Foliage"), 324,
+    IF(REGEXMATCH(categories, "Landscaping"), 0,
+    */
+
+  var categoryValArray = categoryVal.split(",").map(s => s.trim());
+  var priorities = ["Wallpaper", "Flooring", "Appliance", "Seating", "Tables", "Beds", "Essentials", "Lighting", "Misc.", "Storage"];
+
+  const match = priorities.find(p => categoryValArray.includes(p)) || "";
+
+  return match.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
+
+
+  //return 'THIS IS WHERE A SINGLE CATEGORY WILL GO';
+  return output.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
+}
+
 function output_navbox(item) {
   var itemType = item.itemType;
   var universe = item.universe;
   var category = item.category;
 
   var genericNavClothing = '<!--{{NavboxClothing|back|nondisney}}-->';
-  var genericNavFurniture = '<!--{{NavboxFurniture|seating|general}}-->';
+  var genericNavFurniture = '<!--{{NavboxFurniture|seating|general}}-->'; // not sure if this will ever be used becase the default category is being set to a placeholder comment? 2026.04.01 check
   var disneyNavClothing = '<!--{{NavboxClothing|XXXXXXXX|disney}}-->';
   var disneyNavFurniture = '<!--{{NavboxFurniture|XXXXXXXX|disney}}-->';
 
   var output = '\n\n<!--NAVBOX-->';
 
-  // TODO - insert correct category for Other navboxes furniture categories
+  
 
   if (!universe || universe == '') {
     if (itemType == 'Clothing') {
@@ -398,12 +518,9 @@ function output_navbox(item) {
       // append s to match navbox naming
       category = 'Hairstyles';
     }
-    output = 
-      '{{Navbox' +
-      itemType +
-      '|' +
-      category.toLowerCase().trim().replace(/\s/g, '') +
-      '|general}}';
+    // Other universe items use their type in the navbox insteaad of their universe
+    //output = '{{Navbox' + itemType + '|' + category.toLowerCase().trim().replace(/\s/g, '') + '|general}}';
+    output = '{{Navbox' + itemType + '|' + output_prioritizedCategory(item.category) + '|general}}';
   } else {
     if (itemType == 'Clothing' || itemType == 'Furniture') {
       output =
@@ -456,8 +573,6 @@ function output_navbox(item) {
   }
 
 
-
-
   // TODO - need to group accessory items with their thematic unvierse even though they techncially don't have one
   output = '\n\n' + output;
   return output;
@@ -496,13 +611,14 @@ function parseItemSource(item) {
     item.level = result[1]; // player level
   }
 
+  // TODO: location == premium/friendship not working
   // ===== Friendship =====
-  if (item.location == 'friendship') {
+  if (item.location == 'friendship' || item.location == 'premium/friendship') {
     const string = item.source;
     const regex = /([\w\W ]+) Level (\d)/;
     const result = string.split(regex);
-    item.character = result[1]; // star path value
-    item.level = result[2]; // tile
+    item.character = result[1]; // friendship character
+    item.level = result[2]; // friendship level
   }
 
   // ===== Quest =====
@@ -596,11 +712,13 @@ function parseItemSource(item) {
 
   // ===== Craftable Event Item =====
   if (isCraftable(item)) {
-    const string = item.source;
+
+    console.log(item);
+    const string = item.source || ""; // error catching in case not defined, can't split something undefined
     // Crafting (Lucky You!)
     const regex = /Crafting \(([\w\W !]+)\)/;
     const result = string.split(regex);
-    item.event = result[1]; // tale value (universe)
+    item.event = result[1]; // Crafting (Event Name)
   }
 
   item.itemSource = itemSource;
@@ -667,7 +785,7 @@ function output_from(item) {
 
       if (item.event) {
         // if regex Crafting \(([\w+\!]\)
-        itemSource = 'It can be crafted using using seasonal [[ingredients]] that are available during the [['+item.event+']] event at a [[:Category:Crafting Stations|Crafting Station]].'
+        itemSource = 'It can be crafted using seasonal [[ingredients]] that are available during the [['+item.event+']] event at a [[:Category:Crafting Stations|Crafting Station]].'
       }
       else {
         itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
@@ -1119,6 +1237,18 @@ function output_itemIntro(item) {
       itemUseIntro = 'window';
       itemUseBody = ''; // " Once it is placed in the world, the object will let light through into the room, depending on the cardinal direction and time of day of the environment light source.
       break;
+    case 'Crafting Station':
+      itemUseIntro = '';
+      itemUseBody = '';
+      break;
+    case 'Cooking Station':
+      itemUseIntro = ''; 
+      itemUseBody = '';
+      break;
+    case 'Companion Home':
+      itemUseIntro = ''; 
+      itemUseBody = '';
+      break;
     // TODO - FIX THIS FXALITY
     /*case "-":
       // Data input must indicate "-" in functions cell - then don't include filler comments, regardless of value of functionsConfirmed
@@ -1136,6 +1266,31 @@ function output_itemIntro(item) {
         itemUseBody = '';
       }
   }
+
+/*
+
+-----
+
+It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport 2 random villagers to the location.
+It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport 4 random villagers to the location.
+
+-----
+
+
+...piece of [[furniture]] that functions as a [[:Category:Companion Home|companion home]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], and it can only be placed outdoors. Once it is placed in the world, the Player can '''Interact''' with the item to select up to 4 [[Companions|companions]]. These companions will roam in the immediate area and interact with nearby Companion items.
+
+
+-----
+
+...piece of [[furniture]] that functions as a [[:Category:Cooking Station|cooking station]].
+
+Once it is placed in the world, the Player can interact with ('''Use''') the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].
+Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].
+
+*/
+
 
     // janky catch for more lighting objects - this is not robust!!!! cases where i've written extra info in the box
     if (item.functions && item.functions.includes('Light')) {
@@ -1183,13 +1338,38 @@ function output_itemIntro(item) {
   }
   if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
     if (item.location && item.location.includes('crafting')) {
-      output += ' piece of ' + itemUseIntro +' [[Crafting#Furniture|craftable furniture]].';
+      output += ' piece of ' + itemUseIntro +' [[Crafting#Furniture|craftable furniture]]';
       //collectionStatus = collectionStatus_furnitureCrafted;
     } else {
-      output += ' piece of ' + itemUseIntro + ' [[furniture]].';
+      output += ' piece of ' + itemUseIntro + ' [[furniture]]';
       //collectionStatus = collectionStatus_furniture;
     }
+
+    // SO JANKY and repetitive but its working
+    if(item.functions && item.functions.includes('Cooking Station')) {
+      output += " that functions as a [[:Category:Cooking Station|cooking station]]";
+      itemUseBody = ' Once it is placed in the world, the Player can \'\'\'Use\'\'\' the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].';
+    }
+    if(item.functions && item.functions.includes('Crafting Station')) {
+      output += " that functions as a [[:Category:Crafting Station|crafting station]]";
+      itemUseBody = ' Once it is placed in the world, the Player can \'\'\'Use\'\'\' the item as a [[:Category:Crafting Stations|Crafting Station]] to make [[Crafting|crafting recipes]].';
+    }
+    if(item.functions && item.functions.includes('Gathering')) {
+      output += ""; //" that functions as a [[:Category:Gathering.....|....]]";
+      // TODO: detect and insert number of villagers from functions=Gathering (X)
+      var numVillagers = '2';
+      itemUseBody = ' It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport '+numVillagers+' random villagers to the location.';
+    }
+    if(item.functions && item.functions.includes('Companion Home')) {
+      output += "that functions as a [[:Category:Companion Home|companion home]]";
+      itemUseBody = ' Once it is placed in the world, the Player can \'\'\'Interact\'\'\' with the item to select up to 4 [[Companions|companions]]. These companions will roam in the immediate area and interact with nearby Companion items.';
+    }
+
+    output += ".";
   }
+
+
+
   
   if (isCharacterDreamStyle(item)) {
     //console.log(`item info for ${item.name}:   category: ${item.category}   universe: ${item.universe}    itemType: ${item.itemType}.    universe:${item.universe}`)
@@ -1197,9 +1377,10 @@ function output_itemIntro(item) {
   var uni = getCharacterUniverse(charProperName);
 
     itemUseIntro = ` that can be applied to the [[Dream Styles#${uni}|${uni}]] Character [[${charProperName}]].`;
-
-      output += itemUseIntro;
+    output += itemUseIntro;
   }
+
+  // i'm not sure how these assignments are actually working? is item a global object or something?
   item.itemUseIntro = itemUseIntro;
   item.itemUseBody = itemUseBody;
 
@@ -1641,66 +1822,6 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
  
 }
 
-/*
-function generateStallTemplate(item) {
-  template = '';
-
-  if (isStall(item)) {
-    template +=
-      '{{infobox\n' +
-      output_image(item) +
-      output_type(item) +
-      "|category=Goofy's Stall Skin\n" +
-      output_from(item);
-    // also janky - hardcoding placeholder size and placement placeholders
-    template += '|size=<!--8x4-->\n|placement=<!--bare-->\n';
-    template += '}}\n';
-
-    template +=
-      "'''%%name%%''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to [[Goofy's Stall]] in any biome in [[Dreamlight Valley]], [[Eternity Isle]], [[Storybook Vale]], or [[Wishblossom Mountains]].";
-
-    template += '\n\n' + generateBodyFromPremiumShop(item);
-
-    template +=
-      " It can be applied using the '''Furniture''' menu inside the Inventory by picking up [[Goofy's Stall]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style. Each [[Goofy's Stall]] must be fully upgraded to change its Dream Style.";
-    // this is a bit janky, auto add these categories always to wells rather than iterating through finding missing attribute values
-    template += output_history(item) + output_navbox(item);
-    template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]';
-  }
-  return template;
- 
-}
-
-function generateWishingWellTemplate(item) {
-  template = '';
-
-  if (isWishingWell(item)) {
-    template +=
-      '{{infobox\n' +
-      output_image(item) +
-      output_type(item) +
-      output_category(item) +
-      output_from(item);
-    // also janky - hardcoding placeholder size and placement placeholders
-    template += '|size=<!--6x6?-->\n|placement=<!--bare?-->\n';
-    template += '}}\n';
-
-    template +=
-      "'''%%name%%''' is a [[Dream Styles#Well Dream Styles|Wishing Well Dream Style]] that can be applied to [[Wishing Well]]s in any biome in any Village (except the singular primary Well per Village).<!--(except the large [[Plaza|Plaza Well]])-->{{cleanup|Concise language. - Library of Lore Well in SV, Plaza Well in DV, Docks Well in EI}}";
-
-    template += '\n\n' + generateBodyFromPremiumShop(item);
-
-    template +=
-      " It can be applied using the '''Furniture''' menu inside the Inventory by picking up a [[Wishing Well]], which enables an option to '''Replace''', and then choosing a replacement Well Dream Style.";
-    // this is a bit janky, auto add these categories always to wells rather than iterating through finding missing attribute values
-    template += output_history(item) + output_navbox(item);
-    template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]';
-  }
-  return template;
- 
-}
-*/
-
 function generateCharacterDreamStyleTemplate(item) {
 
   // TODO - returning bundle items should have both star path original token value in infobox AND bundle info
@@ -1858,10 +1979,13 @@ function jankyCleanup(originalRenderedHTML) {
     '[[:Category:Storybook Vale Clothing Sets Collection|Storybook Vale Clothing Sets Collection]]'
   );*/
 
-  newStr = newStr.replaceAll("timburton\'sthenightmarebeforechristmas",'nightmarebeforechristmas');
 
+  // navbox fixes
+  newStr = newStr.replaceAll("timburton\'sthenightmarebeforechristmas",'nightmarebeforechristmas');
   newStr = newStr.replaceAll('lilo&stitch', 'liloandstitch');
   newStr = newStr.replaceAll('mickey&friends', 'mickeyandfriends');
+  newStr = newStr.replaceAll('{{NavboxFurniture|wall-e|disney}}', '{{NavboxFurniture|walle|disney}}');
+
   newStr = newStr.replaceAll('\n|size=remove', '');
   newStr = newStr.replaceAll('\n|gridSize=remove', '');
 
@@ -1874,10 +1998,12 @@ function jankyCleanup(originalRenderedHTML) {
 
   // for crafted furniture
   newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');
-  
 
 
-    // todo - substitute none collection text with untracked text
+  // todo - substitute none collection text with untracked text
+
+  // It can be crafted using using seasonal [[ingredients]] that are available during the [[Lucky You!]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].
+  //[[Category:none Furniture Sets Collection]]
 
     // Global flag required when calling replaceAll with regex
   const regex = /Once collected it will be added to the \[\[\:Category: none ([\w]+) Sets Collection\|none ([\w]+) Sets Collection\]\]\./gi;

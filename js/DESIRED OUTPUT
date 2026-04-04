@@ -1,0 +1,1204 @@
+{{infobox
+|image="End of the Rainbow" Cauldron.png
+|type=Crafted Furniture
+|craftingcategory=Furniture
+|category=Decor
+|color=blue, green, red, yellow, orange, purple
+|tags=Quirky, Outdoors
+|collection=Dreamlight Valley
+|traits=Lavish, Playful, Strong, Wondrous
+|universe=none
+|recipe=''{{name|Four-Leaf Clover|10}}''<br>
+{{name|Iron Ingot|10}}<br>
+{{name|Gold Ingot|20}}
+|gridSize=4x4<!--Rainbow/cloud portion does not seem to have collision detection-->
+|placement=default
+|environment=outdooronly
+|functions=<!--Sparkling VFX (Constant)-->
+}}
+'''"End of the Rainbow" Cauldron''' is an unthemed piece of event [[Crafting#Furniture|craftable furniture]].
+
+It can be crafted at a [[:Category:Crafting_Stations|crafting station]] using seasonal [[ingredients]] that are available during the [[Lucky You!]] event. Once collected it will be added to the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]. When placed, there is a large sparkling rainbow and a cloud which is connected to it.
+
+==History==
+{{history|1.15|Added}}
+
+{{NavboxCrafting}}
+
+
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Pastel Egg Cooking Station.png
+|type=Crafted Furniture
+|craftingcategory=Functional Items
+|category=Essentials, Utilities
+|color=pink, yellow
+|tags=Cute, Traditional, Kitchen, Outdoors
+|collection=Dreamlight Valley
+|traits=Lavish, Playful, Strong, Wondrous
+|universe=Other
+|gridSize=6x4
+|placement=default
+|recipe=''{{name|Fishy Green Egg|15}}''<br>
+''{{name|Purple Spring Egg|5}}''<br>
+{{name|Onyx}}
+|functions=Cooking Station
+}}
+'''Pastel Egg Cooking Station''' is a [[Furniture#Other|non-themed]] piece of [[Crafting|craftable furniture]] that functions as a [[:Category:Cooking Station|cooking station]].
+
+It can be crafted using seasonal [[ingredients]] that are available during the [[Eggstravaganza]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]. Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].
+
+==History==
+{{history|1.21|Added}}
+
+{{NavboxCrafting}}
+
+[[Category:Dreamlight Valley Furniture Sets Collection]]
+
+
+-----------------------------
+
+
+{{infobox
+|image=Winter Crystal Crafting Station.png
+|type=Furniture
+|category=Essentials
+|buyprice=7040
+|color=blue, brown
+|tags=<!--The Night Show, -->Elegant, Rec Room, Outdoors
+|collection=Dreamlight Valley
+|traits=Lavish, Calm, Strong, Wondrous
+|universe=Other
+|from=The Frost & Fairies Star Path
+|tier=2
+|premium=no
+|eventTokens=10
+|gridSize=10x4
+|placement=default
+|functions=Crafting Station<!-- also Lighting (Automatic) from lamp-->
+}}
+'''Winter Crystal Crafting Station''' is a [[Furniture#Other|non-themed]] piece of [[furniture]]. It functions as a [[:Category:Crafting Stations|crafting station]], and once placed it can be interacted with to make [[Crafting|crafted recipes]].
+
+It was available to unlock and collect for a limited time during [[The Frost & Fairies Star Path]] event using {{price|10|icecrystaltoken|showLabel}} from the Tier 2 Rewards. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]].
+
+{{alternateColors | Winter Pine Crafting Station }}
+
+==History==
+{{history|1.14|Added}}
+{{history|1.14|Changed price from ''6400'' to ''7040''}} {{cleanup|according to my notes, this happened in 1.14.3 - needs verification}}
+
+{{NavboxFurniture|essentials|general}}
+
+
+
+
+
+-----------------------------
+
+
+{{infobox
+|name=Bonfire Pit
+|image=Bonfire Pit (2).png
+|type=Furniture
+|category=Misc.
+|craftingcategory=Furniture
+|buyprice=24000
+|color=blue, brown, purple
+|tags=Traditional, Outdoors
+|collection=Storybook Vale
+|traits=Simple, Playful, Strong, Wondrous
+|universe=Other
+|from={{quest|Collateral Damage|friendship=Maleficent|level=7}}
+|gridSize=20x20*<!--DIMENSIONS NOT FILLED-->
+|placement=default
+|environment=outdooronly
+|recipe={{name|Gold Ingot|3}}<br>
+{{name|Marble|10}}<br>
+{{name|Stone|50}}<br>
+{{name|Coal Ore|15}}<br>
+(During [[Collateral Damage]] only)
+|functions=Gathering (2)
+}}
+'''Bonfire Pit''' is a [[Furniture#Other|non-themed]] piece of <!--gathering--> [[furniture]].
+
+It is crafted during the [[Maleficent]] level 7 friendship quest [[Collateral Damage]], but cannot be crafted again after that quest. The bonfire placed during the quest will remain after the quest is complete. It can be picked up, and once collected it will be added to the [[:Category:Storybook Vale Furniture Sets Collection|Storybook Vale Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], and it can only be placed outdoors.
+
+It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport 2 random villagers to the location.
+
+==Quest Objectives==
+{{Objectives|header|name=Bonfire Pit}}
+{{ObjectivesRow|{{quest|Collateral Damage|friendship=Maleficent|level=7}}|1|Place in [[The Bind]].}}
+{{Objectives|footer}}
+
+==History==
+{{history|Expansion 2-2|Added}}
+
+{{NavboxFurniture|misc|general}}
+
+
+
+
+-----------------------------
+
+
+{{Infobox
+|image=Bonfire Pit.png				
+|type=Crafted Furniture
+|craftingcategory=Furniture
+|category=Misc.
+|color=black, yellow, orange
+|tags=Traditional, Outdoors
+|collection=Dreamlight Valley
+|traits=Simple, Calm, Strong, Familiar
+|universe=Other
+|recipe={{name|Roasted Marshmallows|15}}<br>
+{{name|Hardwood|50}}<br>
+{{name|Stone|50}}<br>
+{{name|Coal Ore|10}}
+|gridSize=12x8*<!--DIMENSIONS NOT FILLED-->
+|placement=default
+|functions=Gathering (4)
+}}
+'''Bonfire Pit''' is a non-themed piece of [[Crafting#Furniture|craftable furniture]] which can be constructed using seasonal meals available during the [[Summer Sizzle]] event. 
+
+It can be crafted and collected using a [[:Category:Crafting Stations|Crafting Station]]. It can be positioned and placed using furniture placement mode. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+
+It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport 4 random villagers to the location.
+
+==History==
+{{history|1.12|Added}}
+
+{{NavboxCrafting}}
+[[Category: Dreamlight Valley Furniture Sets Collection]]
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Camping House.png
+|type=Houses
+|category=Player House
+|universe=Dreamlight Valley
+|from=Premium Shop
+|bundleName=Triangle House Bundle
+|bundlePrice=3000
+|gridSize=36x32*<!--DIMENSIONS NOT FILLED-->
+|placement=
+}}
+{{ItemDescription
+|Camping House
+|type=House Dream Style
+|universe=Other
+|from=Premium Shop
+|bundleName=Triangle House Bundle
+|bundlePrice=3000
+}}
+
+{{relatedItems | Rustic Wooden Chair }}
+
+==History==
+{{history|1.12|Added}}
+
+{{NavboxDreamStyle|house}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Goofy's Bayou Stall.png
+|type=Goofy's Stall Skin
+|category=none
+|collection=none
+|from=Premium Shop
+|bundleName=Goofy's Bayou Stall (Bundle){{!}}Goofy's Bayou Stall
+|bundlePrice=1200
+|gridSize=<!--16x8-->
+|placement=<!--bare-->
+}}
+'''Goofy's Bayou Stall''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to [[Goofy's Stall]] in any biome in any Village.
+
+It is available to purchase from the [[Premium Shop]] in the [[Goofy's Bayou Stall (Bundle)|Goofy's Bayou Stall]] bundle for {{price|1200|moonstone|showLabel}}. It can be applied using the [[Furniture menu]] inside the Inventory by picking up [[Goofy's Stall]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style. Each [[Goofy's Stall]] must be fully upgraded to change its Dream Style.
+
+==History==
+{{history|1.12|Added}}
+
+{{NavboxDreamStyle|stalls}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Desert Oasis Well.png
+|type=Wishing Well Skin
+|category=none
+|collection=Wishing Well
+|from=Premium Shop
+|bundleName=Desert Oasis Well (Bundle){{!}}Desert Oasis Well
+|bundlePrice=1200
+|gridSize=<!--12x12-->
+|placement=<!--bare-->
+}}
+'''Desert Oasis Well''' is a [[Dream Styles#Well Dream Styles|Wishing Well Dream Style]] that can be applied to [[Wishing Well]]s in any biome in any Village (except the singular primary Well per Village).<!--(except the large [[Plaza|Plaza Well]])-->{{cleanup|Concise language. - Library of Lore Well in SV, Plaza Well in DV, Docks Well in EI, Well in WM}}.
+
+It is available to purchase from the [[Premium Shop]] in the [[Desert Oasis Well (Bundle)|Desert Oasis Well]] bundle for {{price|1200|moonstone|showLabel}}. It can be applied using the [[Furniture menu]] inside the Inventory by picking up a [[Wishing Well]], which enables an option to '''Replace''', and then choosing a replacement Well Dream Style.
+
+==History==
+{{history|1.15|Added}}
+
+{{NavboxDreamStyle|wells}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Halloween Castle.png
+|type=Dream Castle Skin
+|category=none
+|collection=none
+|from=Premium Shop
+|bundleName=Halloween Castle (Bundle){{!}}Halloween Castle
+|bundlePrice=3500
+|gridSize=
+|placement=
+}}
+'''Halloween Castle''' is a [[Dream Styles#Dream Castle Dream Styles|Dream Castle Dream Style]] that can be applied to the [[Dream Castle]] in [[Dreamlight Valley]].
+
+It is available to purchase from the [[Premium Shop]] in the [[Halloween Castle (Bundle)|Halloween Castle]] bundle for {{price|3500|moonstone|showLabel}}. It can be applied using the [[Furniture menu]] inside the Inventory by selecting the [[Dream Castle]], which enables an option to '''Replace''', and then choosing a replacement Dream Castle Dream Style.
+
+==History==
+{{history|1.19|Added}}
+
+{{NavboxDreamStyle|building|castle}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Scrooge McDuck's Holiday Shop.png
+|type=Building Skin
+|category=none
+|collection=none
+|from=Premium Shop
+|bundleName=Deluxe Winter Holiday Building Set
+|bundlePrice=3500
+|gridSize=
+|placement=
+}}
+'''Scrooge McDuck's Holiday Shop''' is a [[Dream Styles#Building Dream Styles|Building Dream Style]] that can be applied to [[Scrooge's Store]].
+
+It is available to purchase from the [[Premium Shop]] in the [[Deluxe Winter Holiday Building Set]] bundle for {{price|3500|moonstone|showLabel}}. It can be applied using the [[Furniture menu]] inside the Inventory by picking up [[Scrooge's Store]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style.
+
+==History==
+{{history|1.20.2|Added}}
+
+{{NavboxDreamStyle|building}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Cherry Blossom Valley Visit Station.png
+|type=Valley Visit Station Style
+|category=none
+|collection=Visit Station
+|from=Premium Shop
+|bundleName=Deluxe Springtime Valley Decoration Set
+|bundlePrice=3000
+|gridSize=
+|placement=
+}}
+'''Cherry Blossom Valley Visit Station''' is a [[Dream Styles#Stall Dream Styles|Goofy's Stall Dream Style]] that can be applied to the [[Valley Visit Station]].
+
+It is available to purchase from the [[Premium Shop]] in the [[Deluxe Springtime Valley Decoration Set]] bundle for {{price|3000|moonstone|showLabel}}. It can be applied using the [[Furniture menu]] inside the Inventory by picking up the [[Valley Visit Station]], which enables an option to '''Replace''', and then choosing a replacement Stall Dream Style.
+
+==History==
+{{history|1.21|Added}}
+
+{{NavboxDreamStyle|visitstations}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Tropical Wood Floor — Corner.png
+|type=Crafted Furniture
+|craftingcategory=Furniture
+|category=Misc., Paths
+|color=brown
+|tags=Rustic, Outdoors
+|collection=Eternity Isle
+|traits=Simple, Calm, Strong, Familiar
+|universe=Other
+|recipe=
+|gridSize=10x8
+|placement=underneath
+|environment=outdooronly
+}}
+'''Tropical Wood Floor — Corner''' is a [[Furniture#Other|non-themed]] piece of [[Crafting#Furniture|craftable furniture]].
+
+It can be crafted using a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:Eternity Isle Crafting Collection|Eternity Isle Crafting Collection]] and the [[:Category:Eternity Isle Furniture Sets Collection|Eternity Isle Furniture Sets Collection]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], and it can only be placed outdoors.
+
+{{relatedItems | Tropical Wood Floor}}
+
+==History==
+{{history|1.21|Added}}
+
+{{NavboxCrafting|eternityisle}}
+
+[[Category:Eternity Isle Furniture Sets Collection]]
+
+
+
+
+
+-----------------------------
+
+
+{{infobox
+|image="An Apple a Day" Bowl.png
+|type=Furniture
+|category=Decor, Misc.
+|buyprice=450
+|color=blue, red
+|tags=Casual, Rustic, Kitchen, Living Room
+|collection=Dreamlight Valley
+|traits=Simple, Calm, Strong, Familiar
+|universe=Mickey & Friends
+|from=Scrooge's Store
+|storeSlots=table 4
+|gridSize=2x2
+|placement=surfaces
+}}
+'''"An Apple a Day" Bowl''' is a [[Furniture#Mickey_&_Friends|Mickey & Friends]] themed piece of [[furniture]].
+
+It has a chance to be available for purchase as rotating stock from [[Scrooge's Store]]. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], and it can be placed either on the ground or on surfaces.
+
+==History==
+{{history|1.0|Added}}
+{{history|1.3|Updated image}}
+{{history|1.10|Price increased from ''360'' to ''450''}}
+
+{{NavboxFurniture|mickeyandfriends|disney}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Dalmatian Dog House.png
+|type=Furniture
+|category=Essentials, Decor
+|buyprice=10000
+|color=green, red, gray
+|tags=Outdoors, Cute, Bold
+|collection=Dreamlight Valley
+|traits=Lavish, Playful, Strong, Familiar
+|universe=One Hundred and One Dalmatians
+|reward={{Friendship|Lucky|5}}
+|gridSize=8x10
+|placement=default
+|environment=outdooronly
+|functions=Companion Home<!--Also Lighting (Automatic) (window)-->
+}}
+'''Dalmatian Dog House''' is a [[Furniture#One Hundred and One Dalmatians|One Hundred and One Dalmatians]] themed piece of [[furniture]].
+
+It is automatically awarded after reaching [[Friendship]] level 5 with [[Lucky]], and once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store|Scrooge]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], and it can only be placed outdoors. Once it is placed in the world, the Player can '''Interact''' with the item to select up to 4 [[Companions|companions]]. These companions will roam in the immediate area and interact with nearby Companion items.
+
+==History==
+{{history|1.18|Added}}
+{{history|1.21|Environment changed from indoor and outdoor to ''Outdoor only''}}
+
+{{NavboxFurniture|onehundredandonedalmatians|disney}}
+
+
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Pan Flute.png
+|type=Furniture
+|category=Decor, Misc., Wall
+|buyprice=1125
+|color=brown, gray
+|tags=Traditional, Casual, Rec Room, Living Room
+|collection=Dreamlight Valley
+|traits=Simple, Playful, Delicate, Familiar
+|universe=Peter Pan
+|from=Scrooge's Store
+|storeSlots=wall
+|gridSize=2x2
+|placement=walls
+|environment=indooronly
+}}
+'''Pan Flute''' is a [[Furniture#Peter Pan|Peter Pan]] themed piece of [[furniture]].
+
+It has a chance to be available for purchase as rotating stock from [[Scrooge's Store]] after the completing the quest [[The Music's on the Walls]]. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], and must be placed indoors on a wall.
+
+==History==
+{{history|1.17|Added}}
+
+{{NavboxFurniture|peterpan|disney}}
+
+
+
+
+
+-----------------------------
+
+
+{{Infobox
+|image=Display Pillar.png
+|type=Crafted Furniture
+|craftingcategory=Furniture
+|category=Decor, Tables
+|color=white, yellow
+|tags=Elegant, Rustic, Outdoors
+|collection=none
+|traits=Lavish, Calm, Strong, Wondrous
+|universe=The Lion King
+|recipe={{name|Orange & Red Marsh Milkweed}}<br>
+{{name|White Bell Flower|3}}<br>
+{{name|White & Red Hydrangea|3}}<br>
+{{name|Citrine|3}}<br>
+{{name|Emerald|4}}<br>
+(Yields 4)
+|gridSize=2x2
+|surfaceArea=1x1
+|placement=default
+|unlockquest={{quest|Fine Arts for Warthogs|friendship=Pumbaa|level=4}}
+}}
+'''Display Pillar''' is a [[Furniture#The Lion King|The Lion King]] themed piece of table [[Crafting#Furniture|craftable furniture]].
+
+During [[Pumbaa]]'s level 4 [[friendship]] quest [[Fine Arts for Warthogs]] 4 of these are given by [[Scrooge McDuck]], and after that quest it can be crafted using a [[:Category:Crafting_Stations|crafting station]]. Once collected it will not be added to the [[:Category:Untracked Crafting Collection|Crafting Collection]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]].
+
+==Quest Objectives==
+{{Objectives|header}}
+{{ObjectivesRow|{{quest|Fine Arts for Warthogs|friendship=Pumbaa|level=4}}|4|Place in the Valley.}}
+{{Objectives|footer}}
+
+==History==
+{{history|1.13|Added}}
+
+{{NavboxCrafting|dreamlightvalley}}
+
+
+
+
+
+-----------------------------
+
+
+{{Infobox
+|image=Bayou Companion Home.png				
+|type=Crafted Furniture
+|craftingcategory=Functional Items
+|category=Essentials, Misc.
+|color=yellow, brown
+|tags=Rustic, Outdoors
+|collection=Dreamlight Valley
+|traits=Simple, Calm, Strong, Familiar
+|universe=The Princess and the Frog
+|unlockquest={{quest|Little Louis's Big Break|friendship=Tiana|level=4}}
+|recipe={{name|Hardwood|15}}<br>
+{{name|Blue Marsh Milkweed|5}}<br>
+{{name|Orange & Red Marsh Milkweed}}<br>
+{{name|Clay|10}}<br>
+{{name|Okra Seed}}
+|gridSize=6x6
+|placement=default
+|environment=outdooronly
+|functions=Companion Home
+}}
+'''Bayou Companion Home''' is a [[The Princess and the Frog]] themed piece of [[Crafting#Furniture|craftable furniture]] that can be made using a [[:Category:Crafting_Stations|crafting station]]. 
+
+It required to craft during [[Tiana|Tiana's]] level 4 [[friendship]] quest [[Little Louis's Big Break]], and after crafting during that quest the recipe will be permanently unlocked.<!--It will not be available in Crafting Recipes prior to the relevant quest step.-->
+
+It can be positioned and placed using furniture placement mode. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+
+Once placed the Player can '''Interact''' with the item to select up to 4 [[Companions|companions]].<!--In-game label: Select up to 4 companions--> These companions will roam in the immediate area and interact with nearby Companion items.
+
+{{alternateColors | Cozy Companion Home,Tropical Companion Home }}
+
+{{relatedItems | Flying Companion Feeder, Fuzzy Friend Companion Dish, Playful Companion Pinwheel, Pixar Companion Ball}}
+
+==Quest Objectives==
+{{Objectives|header}}
+{{ObjectivesRow|{{quest|Little Louis's Big Break|friendship=Tiana|level=4}}|1|Craft and place in the [[Glade of Trust]].}}
+{{Objectives|footer}}
+
+==History==
+{{history|1.12|Added}}
+
+{{NavboxCrafting}}
+
+[[Category:Dreamlight Valley Furniture Sets Collection]]
+
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Elegant Chaise.png
+|type=Furniture
+|category=Beds, Utilities
+|buyprice=4600
+|color=blue, green, yellow
+|tags=Elegant, Traditional, Bedroom, Living Room, Outdoors
+|collection=Dreamlight Valley
+|traits=Lavish, Calm, Strong, Wondrous
+|universe=Aladdin
+|reward={{Friendship|Jasmine|5}}
+|gridSize=6x12
+|placement=default
+|functions=Sit
+}}
+'''Elegant Chaise''' is an [[Furniture#Aladdin|Aladdin]] themed piece of seating [[furniture]].
+
+It is automatically rewarded after reaching [[Jasmine#Friendship Rewards|Friendship Level 5]] with [[Jasmine]]. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]. Once it is placed in the world, the Player can '''Sit''' on the object.
+
+{{relatedItems | Agrabah Palace Bench, Royal Vanity, Royal Vanity Bench, Royal Vanity Stool }}
+
+==History==
+{{history|1.15|Added}}
+
+{{NavboxFurniture|aladdin|disney}}
+
+
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Brainy Bed.png
+|type=Furniture
+|category=Essentials, Beds
+|buyprice=9200
+|color=blue, brown
+|tags=Elegant, Traditional, Bedroom
+|collection=Dreamlight Valley
+|traits=Lavish, Calm, Strong, Familiar
+|universe=Monsters, Inc.
+|from=Scrooge's Store
+|storeSlots=upper sides<!--up L-->
+|DSChestItem=2
+|gridSize=6x12
+|placement=default
+|functions=Lounge
+}}
+'''Brainy Bed''' is a [[Furniture#Monsters, Inc.|Monsters, Inc.]] themed piece of bed [[furniture]].
+
+It can be positioned and placed using furniture placement mode. It is available to purchase from [[Scrooge's Store]], and once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store|Scrooge]].
+
+==History==
+{{history|1.0|Added}}
+
+{{NavboxFurniture|monstersinc|disney}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Enchanted Castle Oil Lamp.png
+|type=Furniture
+|category=Decor, Misc.
+|buyprice=3000
+|color=yellow, orange, gray
+|tags=Elegant, Traditional, Outdoors, Rec Room
+|collection=Dreamlight Valley
+|traits=Simple, Calm, Strong, Wondrous
+|universe=Beauty and the Beast
+|from=Scrooge's Store
+|storeSlots=table 1
+|DSChestItem=1
+|gridSize=2x2
+|placement=default
+|functions=Lighting (Constant)
+}}
+'''Enchanted Castle Oil Lamp''' is a [[Furniture#Beauty and the Beast|Beauty and the Beast]] themed piece of [[furniture]].
+
+It can be positioned and placed using furniture placement mode. It is available to purchase from [[Scrooge's Store]], and once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store|Scrooge]].
+
+==History==
+{{history|1.7|Added}}
+{{history|1.10|Price increased from ''2400'' to ''3000''}}
+
+{{NavboxFurniture|beautyandthebeast|disney}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Spacecraft Porthole.png
+|type=Furniture
+|category=Trimmings, Windows, Wall
+|buyprice=16800
+|color=blue, white
+|tags=Futuristic, Rec Room, Bedroom, Living Room
+|collection=Dreamlight Valley
+|traits=Lavish, Playful, Strong, Wondrous
+|universe=WALL-E
+|from=Scrooge's Store
+|storeSlots=wall
+|DSChestItem=3
+|gridSize=4x18*<!--DIMENSIONS NOT FILLED--><!--(8 above, 4 below)-->
+|placement=walls
+|environment=indooronly
+|functions=Window
+}}
+'''Spacecraft Porthole''' is a [[Furniture#WALL-E|WALL-E]] themed piece of window [[furniture]].
+
+It can be positioned and placed using furniture placement mode. It is available to purchase from [[Scrooge's Store]], and once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store|Scrooge]].
+
+==History==
+{{history|1.0|Added. Does not display space background as in image.}}
+{{history|1.4|Visual effects fixed. It does display space background as in image.}}
+{{history|1.5|Visual effects fixed when displaying in Scrooge's Store.}}
+{{history|1.9|Store slot changed from ''Lower Quad Front Left'' to ''Upper Wall Mount''. }}
+{{history|1.10|Price increased from ''16000'' to ''16800''}}
+
+{{NavboxFurniture|walle|disney}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=Luxo Umbrella Table.png
+|width=180px
+|type=Furniture
+|category=Misc.
+|buyprice=480
+|color=blue, red, white, yellow
+|tags=Casual, Traditional, Outdoors
+|collection=Dreamlight Valley
+|traits=Lavish, Calm, Strong, Wondrous
+|universe=Disney
+|from=A Day at Disney Star Path
+|tier=5
+|premium=yes
+|eventTokens=15
+|bundleName=Toy Story Land Set
+|bundlePrice=2000
+|gridSize=8x8*<!--DIMENSIONS NOT FILLED-->
+|surfaceArea=2 slots
+|placement=default
+|environment=outdooronly
+}}
+'''Luxo Umbrella Table''' is a [[Furniture#Disney|Disney]] themed piece of table [[furniture]].
+
+It was originally available to unlock and collect during the [[A Day at Disney Star Path]] event using {{price|15|dayatdisneytoken|showLabel}} from the Tier 5 Premium Rewards. It later returned to the [[Premium Shop]] in the [[Toy Story Land Set]] bundle for {{price|2000|moonstone|showLabel}}. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], it can only be placed outdoors, and other objects can be placed upon its <!--2 slot--> surface area.
+
+==History==
+{{history|1.10|Added}}
+
+{{NavboxFurniture|disney|disney}}
+
+
+
+-----------------------------
+
+
+{{infobox
+|image=.png
+|type=Star Path - A Day at Disney - 5D - T5 Premium (15 tokens)"
+|category=<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling, Trees, Rocks, Fencing, Attractions-->
+|buyprice=
+|color=<!--OPTIONS: blue, green, red, pink, white, black, yellow, orange, brown, purple, gray-->
+|tags=<!--xxx, xxx, xxx-->
+|collection=default (outdoor)
+|traits=<!--Lavish/Simple, Calm/Playful, Delicate/Strong, Familiar/Wondrous-->
+|universe=starpath - adad
+|gridSize=<!--WxD*<!--DIMENSIONS NOT FILLED-->
+|placement=<!--default-->
+}}
+'''''' is a [[Star Path - A Day at Disney - 5D - T5 Premium (15 tokens)"#starpath - adad|starpath - adad]] themed
+
+SOURCE TODO. Once collected it will be added to the [[:Category:default (outdoor) Star Path - A Day at Disney - 5D - T5 Premium (15 tokens)" Sets Collection|default (outdoor) Star Path - A Day at Disney - 5D - T5 Premium (15 tokens)" Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]].
+
+==History==
+{{history|4x4 (not full)|Added}}
+
+<!--{{NavboxClothing|XXXXXXXX|disney}}--><!--{{NavboxFurniture|XXXXXXXX|disney}}-->
+
+[[Category: Missing Price]] [[Category: Missing Tags]] [[Category: Missing Traits]] [[Category: Missing Size]] [[Category: Missing Placement]]
+
+
+-----------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+============ Premium Bundle Navbox ============
+
+'''[[%%bundleName%%]]''' • 
+
+
+'''[[Triangle House Bundle]]''' • 
+
+
+'''[[Goofy's Bayou Stall (Bundle)|Goofy's Bayou Stall]]''' •
+
+
+'''[[Desert Oasis Well (Bundle)|Desert Oasis Well]]''' •
+
+
+'''[[Halloween Castle (Bundle)|Halloween Castle]]''' •
+
+
+'''[[Deluxe Winter Holiday Building Set]]''' • 
+
+
+'''[[Deluxe Springtime Valley Decoration Set]]''' • 
+
+
+'''[[Toy Story Land Set]]''' • 
+
+
+
+
+============ Premium Bundle Top Table ============
+
+| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row 1 right-->
+
+
+| [[File:Triangle House Bundle.png|450px|right|link=Triangle House Bundle]]<!--row 1 right-->
+
+
+| [[File:Goofy's Bayou Stall Store.png|450px|right|link=Goofy's Bayou Stall (Bundle)]]<!--row 1 right-->
+
+
+| [[File:Desert Oasis Well Store.png|450px|right|link=Desert Oasis Well (Bundle)]]<!--row 1 right-->
+
+
+| [[File:Halloween Castle Store.png|450px|right|link=Halloween Castle (Bundle)]]<!--row 1 right-->
+
+
+| [[File:Deluxe Winter Holiday Building Set.png|450px|right|link=Deluxe Winter Holiday Building Set]]<!--row 1 right-->
+
+
+| [[File:Deluxe Springtime Valley Decoration Set.png|450px|right|link=Deluxe Springtime Valley Decoration Set]]<!--row 1 right-->
+
+
+| [[File:Toy Story Land Set.png|450px|right|link=Toy Story Land Set]]<!--row 1 right-->
+
+
+
+
+============ Premium Bundle Page Listing ============
+
+File:%%bundleName%%.png|'''[[%%bundleName%%]]'''|link=%%bundleName%%
+
+
+File:Triangle House Bundle.png|'''[[Triangle House Bundle]]'''|link=Triangle House Bundle
+
+
+File:Goofy's Bayou Stall Store.png|'''[[Goofy's Bayou Stall (Bundle)|Goofy's Bayou Stall]]'''|link=Goofy's Bayou Stall (Bundle)
+
+
+File:Desert Oasis Well Store.png|'''[[Desert Oasis Well (Bundle)|Desert Oasis Well]]'''|link=Desert Oasis Well (Bundle)
+
+
+File:Halloween Castle Store.png|'''[[Halloween Castle (Bundle)|Halloween Castle]]'''|link=Halloween Castle (Bundle)
+
+
+File:Deluxe Winter Holiday Building Set.png|'''[[Deluxe Winter Holiday Building Set]]'''|link=Deluxe Winter Holiday Building Set
+
+
+File:Deluxe Springtime Valley Decoration Set.png|'''[[Deluxe Springtime Valley Decoration Set]]'''|link=Deluxe Springtime Valley Decoration Set
+
+
+File:Toy Story Land Set.png|'''[[Toy Story Land Set]]'''|link=Toy Story Land Set
+
+
+
+============ Premium Bundle Historical Table ============
+
+|-
+| [[%%bundleName%%]]
+|
+{{name|}}<br>
+{{name|An Apple a Day}}<br>
+{{name|Bayou Companion Home}}<br>
+{{name|Bonfire Pit}}<br>
+{{name|Bonfire Pit (2)}}<br>
+{{name|Brainy Bed}}<br>
+{{name|Dalmatian Dog House}}<br>
+{{name|Display Pillar}}<br>
+{{name|Elegant Chaise}}<br>
+{{name|Enchanted Castle Oil Lamp}}<br>
+{{name|End of the Rainbow}}<br>
+{{name|Luxo Umbrella Table}}<br>
+{{name|Pan Flute}}<br>
+{{name|Pastel Egg Cooking Station}}<br>
+{{name|Spacecraft Porthole}}<br>
+{{name|Tropical Wood Floor — Corner}}<br>
+{{name|Winter Crystal Crafting Station}}<br>
+| {{price|%%bundlePrice%%|moonstone}}
+
+
+|-
+| [[Triangle House Bundle]]
+|
+| {{price|3000|moonstone}}
+
+
+|-
+| [[Goofy's Bayou Stall (Bundle)|Goofy's Bayou Stall]]
+| {{name|Goofy's Bayou Stall}}
+| {{price|1200|moonstone}}
+
+
+|-
+| [[Desert Oasis Well (Bundle)|Desert Oasis Well]]
+| {{name|Desert Oasis Well}}
+| {{price|1200|moonstone}}
+
+
+|-
+| [[Halloween Castle (Bundle)|Halloween Castle]]
+| {{name|Halloween Castle}}
+| {{price|3500|moonstone}}
+
+
+|-
+| [[Deluxe Winter Holiday Building Set]]
+|
+| {{price|3500|moonstone}}
+
+
+|-
+| [[Deluxe Springtime Valley Decoration Set]]
+|
+| {{price|3000|moonstone}}
+
+
+|-
+| [[Toy Story Land Set]]
+|
+| {{price|2000|moonstone}}
+
+
+============ Bundle Article ============
+
+{{infobox
+|name=%%bundleName%%
+|image=%%bundleName%%.png
+|width=350px
+|type=Premium Bundle
+|category=Crafted Furniture
+|from=Premium Shop
+|sellprice={{price|%%bundlePrice%%|moonstone}}
+|items=,An Apple a Day,Bayou Companion Home,Bonfire Pit,Bonfire Pit (2),Brainy Bed,Dalmatian Dog House,Display Pillar,Elegant Chaise,Enchanted Castle Oil Lamp,End of the Rainbow,Luxo Umbrella Table,Pan Flute,Pastel Egg Cooking Station,Spacecraft Porthole,Tropical Wood Floor — Corner,Winter Crystal Crafting Station<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->
+}}
+{{BundleDescription
+|%%bundleName%%
+|type=Premium Bundle
+|category=Crafted Furniture
+|from=Premium Shop
+|bundlePrice=%%bundlePrice%%
+|items=
+|dates=
+* 2026-MM-DD - 2026-MM-DD
+}}
+
+==History==
+{{history|1.15|Added}}
+
+{{NavboxPremiumBundle}}
+
+----------------------------------------------------------
+
+{{infobox
+|name=Triangle House Bundle
+|image=Triangle House Bundle.png
+|width=350px
+|type=Premium Bundle
+|category=Furniture
+|from=Premium Shop
+|sellprice={{price|3000|moonstone}}
+|items=Camping House<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->
+}}
+{{BundleDescription
+|Triangle House Bundle
+|type=Premium Bundle
+|category=Furniture
+|from=Premium Shop
+|bundlePrice=3000
+|items=
+|dates=
+* 2026-MM-DD - 2026-MM-DD
+}}
+
+==History==
+{{history|1.12|Added}}
+
+{{NavboxPremiumBundle}}
+
+----------------------------------------------------------
+
+{{infobox
+|name=Goofy's Bayou Stall
+|image=Goofy's Bayou Stall Store.png
+|width=350px
+|type=Premium Bundle
+|category=Goofy's Stall Skin
+|from=Premium Shop
+|sellprice={{price|1200|moonstone}}
+|items=Goofy's Bayou Stall
+}}
+{{BundleDescription
+|Goofy's Bayou Stall
+|type=Premium Bundle
+|category=Goofy's Stall Skin
+|from=Premium Shop
+|bundlePrice=1200
+|items=Goofy's Bayou Stall
+|dates=
+* 2026-MM-DD - 2026-MM-DD
+}}
+
+==History==
+{{history|1.12|Added}}
+
+{{NavboxPremiumBundle}}
+
+----------------------------------------------------------
+
+{{infobox
+|name=Desert Oasis Well
+|image=Desert Oasis Well Store.png
+|width=350px
+|type=Premium Bundle
+|category=Wishing Well Skin
+|from=Premium Shop
+|sellprice={{price|1200|moonstone}}
+|items=Desert Oasis Well
+}}
+{{BundleDescription
+|Desert Oasis Well
+|type=Premium Bundle
+|category=Wishing Well Skin
+|from=Premium Shop
+|bundlePrice=1200
+|items=Desert Oasis Well
+|dates=
+* 2026-MM-DD - 2026-MM-DD
+}}
+
+==History==
+{{history|1.15|Added}}
+
+{{NavboxPremiumBundle}}
+
+----------------------------------------------------------
+
+{{infobox
+|name=Halloween Castle
+|image=Halloween Castle Store.png
+|width=350px
+|type=Premium Bundle
+|category=Dream Castle Skin
+|from=Premium Shop
+|sellprice={{price|3500|moonstone}}
+|items=Halloween Castle
+}}
+{{BundleDescription
+|Halloween Castle
+|type=Premium Bundle
+|category=Dream Castle Skin
+|from=Premium Shop
+|bundlePrice=3500
+|items=Halloween Castle
+|dates=
+* 2026-MM-DD - 2026-MM-DD
+}}
+
+==History==
+{{history|1.19|Added}}
+
+{{NavboxPremiumBundle}}
+
+----------------------------------------------------------
+
+{{infobox
+|name=Deluxe Winter Holiday Building Set
+|image=Deluxe Winter Holiday Building Set.png
+|width=350px
+|type=Premium Bundle
+|category=Building Skin
+|from=Premium Shop
+|sellprice={{price|3500|moonstone}}
+|items=Scrooge McDuck's Holiday Shop<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->
+}}
+{{BundleDescription
+|Deluxe Winter Holiday Building Set
+|type=Premium Bundle
+|category=Building Skin
+|from=Premium Shop
+|bundlePrice=3500
+|items=
+|dates=
+* 2026-MM-DD - 2026-MM-DD
+}}
+
+==History==
+{{history|1.20.2|Added}}
+
+{{NavboxPremiumBundle}}
+
+----------------------------------------------------------
+
+{{infobox
+|name=Deluxe Springtime Valley Decoration Set
+|image=Deluxe Springtime Valley Decoration Set.png
+|width=350px
+|type=Premium Bundle
+|category=Valley Visit Station Style
+|from=Premium Shop
+|sellprice={{price|3000|moonstone}}
+|items=Cherry Blossom Valley Visit Station<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->
+}}
+{{BundleDescription
+|Deluxe Springtime Valley Decoration Set
+|type=Premium Bundle
+|category=Valley Visit Station Style
+|from=Premium Shop
+|bundlePrice=3000
+|items=
+|dates=
+* 2026-MM-DD - 2026-MM-DD
+}}
+
+==History==
+{{history|1.21|Added}}
+
+{{NavboxPremiumBundle}}
+
+----------------------------------------------------------
+
+{{infobox
+|name=Toy Story Land Set
+|image=Toy Story Land Set.png
+|width=350px
+|type=Premium Bundle
+|category=Furniture
+|from=Premium Shop
+|sellprice={{price|2000|moonstone}}
+|items=Luxo Umbrella Table<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->
+}}
+{{BundleDescription
+|Toy Story Land Set
+|type=Premium Bundle
+|category=Furniture
+|from=Premium Shop
+|bundlePrice=2000
+|items=
+|dates=
+* 2026-MM-DD - 2026-MM-DD
+}}
+==History==
+{{history|1.10|Added}}
+{{NavboxPremiumBundle}}
+

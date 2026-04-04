@@ -1,0 +1,31 @@
+RAW INPUT:
+
+
+
+itemType	collection	version	versionRemoved	obtainable	ID	sheetOrder	universe	limited	speculated	Subgroup	name	category	tagsConfirmed	tags	color	traits	Checklist	verified	buyprice	MSCost	source	placement	size	W	L	functions	npcInterest	location	inStore	DSChestItem
+Furniture	--	1.15			40003750	20.1476	none				"End of the Rainbow" Cauldron	Decor		Quirky, Outdoors	blue, green, red, yellow, orange, purple	Lavish, Playful, Strong, Wondrous	FALSE	2025.03.10 - 1b	n/a		Crafting (Lucky You!)	default (outdoor)	2x2	4	4	VFX (Constant)		crafting		
+Furniture	DV	1.21				20.0728	Other				Pastel Egg Cooking Station	Essentials, Utilities			pink, yellow	Lavish, Playful, Strong, Wondrous	FALSE	2026.04.01 - 3a	n/a		Crafting (Eggstravaganza)	default	4x6	4	6	Cooking Station, small steam animation		crafting		
+Furniture	DV	1.14.3		--	40003500	20.1456	Other	Limited Time			Winter Crystal Crafting Station	Essentials	yes - added	<!--The Night Show, -->Elegant, Rec Room, Outdoors	blue, brown	Lavish, Calm, Strong, Wondrous	FALSE	2024.12.04 - 1e	6400-->7040		Star Path - Frost & Fairies - 2D - T3 (10 tokens)	default	5x2	10	4	Crafting Station (Use), Lighting (Automatic)		starpath - frost		
+Furniture	SV	1.17.11			40003110	20.0205	Other				Bonfire Pit (2)	Misc.	yes	Traditional, Outdoors	blue, brown, purple	Simple, Playful, Strong, Wondrous	FALSE	2025.07.14 - 2a	24000		Maleficent Level 7 Quest (Collateral Damage) (during)	default (outdoor)	10x10 (not full)	20	20	Gathering		quest		
+Furniture	DV	1.12		x	40003110	20.0206	Other	Seasonal		end of summer	Bonfire Pit	Misc.			black, yellow, orange	Simple, Calm, Strong, Familiar	FALSE	2024.09.04 - 4	n/a		Crafting (Summer Sizzle)					Gathering (4)		crafting		
+Furniture	House Dream Style	1.12		x	20500048	100.010	Other	Premium			Camping House	House					FALSE	2024.09.04 - 6	3000 M	3000	Premium Bundle - Triangle House Bundle (3000 M)					-		premium		
+Furniture	Goofy's Stall	1.12		x	170100004	100.121	none (Stall)	Premium			Goofy's Bayou Stall	Goofy's Stall	--	--	--	--	FALSE		1200 M	1200	Premium Bundle - Goofy's Bayou Stall (1200 M)	goofy's stall				-		premium		
+Furniture	Wishing Well	1.15		x	170200010	100.142	none (Well)	Premium			Desert Oasis Well	Wishing Well	--	--	--	--	FALSE	2025.03.25 - 1h	1200 M	1200	Premium Bundle - Desert Oasis Well (1200 M)	well	-	-	-	-		premium		
+Furniture	Dream Castle	1.19			170300008	100.008	none (Dream Castle)	Premium			Halloween Castle	Dream Castle Skin	--	--	--	--	FALSE	2025.10.07 - 1g	3500 M	3500	Premium Bundle - Halloween Castle (3500 M)	castle						premium		
+Furniture	Building	1.20.2			170200043	100.006	none (Scrooge's Store)				Scrooge McDuck's Holiday Shop	Scrooge's Store	--	--	--	--	FALSE	2025.12.02 - xxxx		dupe	Premium Bundle - Deluxe Winter Holiday Building Set (3500 M)	scrooge's store						premium		
+Furniture	Visit Station	1.21				100.129	none (Visit Station)				Cherry Blossom Valley Visit Station	Visit Station	--	--	--	--	FALSE	2026.02.17 - 1e	-	3000	Premium Bundle - Deluxe Springtime Valley Decoration Set (3000 M)	visit station						premium		
+Furniture	EI	1.21				20.1018	Other				Tropical Wood Floor — Corner	Misc., Paths		Rustic, Outdoors	brown	Simple, Calm, Strong, Familiar	FALSE	2026.02.16 - 1a	n/a		Crafting	under (outdoor)	10x8	10	8	Rug		crafting		
+Furniture	DV	1.0		x	40000048	17.001	Mickey & Friends			maf - bowl	"An Apple a Day" Bowl	Decor, Misc.	yes	Casual, Rustic, Kitchen, Living Room	blue, red	Simple, Calm, Strong, Familiar	FALSE	2022.12.08	450		Store	surfaces	1x1	2	2	-		table 4	x	
+Furniture	DV	1.18			40004525	21.002	One Hundred and One Dalmatians	Premium			Dalmatian Dog House	Essentials, Decor	yes	Outdoors, Cute, Bold	green, red, gray	Lavish, Playful, Strong, Familiar	FALSE	2025.09.03 - 1a	10000		Lucky Level 5	default (outdoor)	8x10	8	10	Companion Home, Light (automatic) (window)		premium/friendship		
+Furniture	DV	1.17			40004262	21.207	Peter Pan				Pan Flute	Decor, Misc., Wall	yes	Traditional, Casual, Rec Room, Living Room	brown, gray	Simple, Playful, Delicate, Familiar	FALSE	2025.06.22 TT (21 TT) - z	1125		Store - only after Peter Pan Realm quest (The Music's On the Walls)	wall (indoor)	1x1 (wall)	2	2	-		wall - L	x - C	
+Furniture	--	1.13		x	40002937	25.062	The Lion King				Display Pillar	Decor, Tables		Elegant, Rustic, Outdoors	white, yellow	Lavish, Calm, Strong, Wondrous	FALSE	2024.11.07 - 1	n/a		Crafting after Pumbaa Level 4 Quest (Fine Arts for Warthogs) (during) - 4 given	default	1x1	2	2	Table - 1x1		quest/crafting		
+Furniture	DV	1.12		x	40003256	27.001	The Princess and the Frog				Bayou Companion Home	Essentials, Misc.		Rustic, Outdoors	yellow, brown	Simple, Calm, Strong, Familiar	FALSE	2024.09.06 - 1	n/a		Crafting after Tiana Level 4 quest (Little Louis's Big Break) (unlocked during or after?)	default (outdoor)	3x3	6	6	Companion Home		quest/crafting		
+Furniture	DV	1.15			40003776	1.111	Aladdin				Elegant Chaise	Beds, Utilities	yes	Elegant, Traditional, Bedroom, Living Room, Outdoors	blue, green, yellow	Lavish, Calm, Strong, Wondrous	FALSE	2025.03.07 - 1a	4600		Jasmine Level 5	default	3x6	6	12	Sit		friendship		
+Furniture	DV	1.0		x	40000514	19.004	Monsters, Inc.				Brainy Bed	Essentials, Beds	yes	Elegant, Traditional, Bedroom	blue, brown	Lavish, Calm, Strong, Familiar	FALSE	2022.12.19	9200		Store	default	3x6	6	12	Lounge		Size 3	x	2
+Furniture	DV	1.7		x	40001982	2.016	Beauty and the Beast				Enchanted Castle Oil Lamp	Decor, Misc.	yes - added	Elegant, Traditional, Outdoors, Rec Room	yellow, orange, gray	Simple, Calm, Strong, Wondrous	FALSE	2023.09.17	3000		Store	default	1x1	2	2	Light (Constant)		table 1	x	1
+Furniture	DV	1.0		x	40000280	31.034	WALL-E				Spacecraft Porthole	Trimmings, Windows, Wall	yes	Futuristic, Rec Room, Bedroom, Living Room	blue, white	Lavish, Playful, Strong, Wondrous	FALSE	2022.12.19	16800		Store	wall (indoor)	2x9 (4 above, 2 below)	4	18	Window		wall - R	x	3
+Furniture	DV	1.10		x	40002806	7.054	Disney	Premium Limited Time-->Premium	Bundle - 1.17.12/1.18	toy story land set	Luxo Umbrella Table	Misc.	yes	Casual, Traditional, Outdoors	blue, red, white, yellow	Lavish, Calm, Strong, Wondrous	FALSE	2024.05.02 - 2	480	dupe	"Premium Bundle - Toy Story Land Set (2000 M) [___ M]
+Star Path - A Day at Disney - 5D - T5 Premium (15 tokens)"	default (outdoor)	4x4 (not full)	8	8	Table - 2 slots		starpath - adad		
+
+
+
