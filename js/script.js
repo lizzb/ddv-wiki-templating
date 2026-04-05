@@ -281,6 +281,7 @@ function parseSizePlacementEnv(item) {
   if (item.size && item.size.includes('(not full)')) {
     item.size = item.size.split(' ')[0] + '*<!--DIMENSIONS NOT FILLED-->';
   }
+
   if (item.placement && item.placement.includes('(outdoor)')) {
     item.placement = item.placement.split(' ')[0]; // todo - more robust logic
     item.environment = 'outdooronly';
@@ -291,10 +292,20 @@ function parseSizePlacementEnv(item) {
     //item.placement = "";
     item.environment = '';
   }
+
   // **** todo. if either of these, also get rid of surfaceArea
-  if (item.placement == 'wall') item.placement = 'walls';
-  if (item.placement == 'ceiling') item.placement = 'ceilings';
+  if (item.placement == 'wall') item.placement = 'walls'; // TODO: also remove (wall) from gridSize value
+  if (item.placement == 'ceiling') item.placement = 'ceilings'; // TODO: also remove (wall) from gridSize value
   if (item.placement == 'under') item.placement = 'underneath';
+
+  // this is sloppy and weak, consolidate - also double check that not overwriting indoor or outdoor content
+  if (item.size && item.size.includes('(wall)')) {
+    item.size = item.size.replaceAll('(wall)','');
+    //item.placement = 'walls'; // think this should already be set, so it's redundant?
+  } else if (item.size && item.size.includes('(ceiling)')) {
+    item.size = item.size.replaceAll('(ceiling)','');
+    //item.placement = 'ceilings'; // think this should already be set, so it's redundant?
+  }
 
   // override for wallpaper, flooring |placement=wallpaper|environment=indooronly
   if (isWallpaperFlooring(item)) {
@@ -302,6 +313,7 @@ function parseSizePlacementEnv(item) {
     item.placement = 'wallpaper'; // flooring
     item.environment = 'indooronly';
   }
+  
 
   return item;
 }
@@ -572,13 +584,22 @@ function output_navbox(item) {
     
   }
 
-
   // TODO - need to group accessory items with their thematic unvierse even though they techncially don't have one
   output = '\n\n' + output;
+
+  // navbox fixes - need to make a more robust regex for comma, period, ampersand removal
+  var newStr = output;
+  newStr = newStr.replaceAll("timburton\'sthenightmarebeforechristmas",'nightmarebeforechristmas');
+  newStr = newStr.replaceAll('lilo&stitch', 'liloandstitch');
+  newStr = newStr.replaceAll('mickey&friends', 'mickeyandfriends');
+  newStr = newStr.replaceAll('{{NavboxFurniture|monsters,inc.|disney}}', '{{NavboxFurniture|monstersinc|disney}}');
+  newStr = newStr.replaceAll('{{NavboxFurniture|wall-e|disney}}', '{{NavboxFurniture|walle|disney}}');
+  output = newStr;
+
   return output;
 
   //item.universe = 'none';
-    // None - Accessory (Aladdin) or None - Accessory
+  // None - Accessory (Aladdin) or None - Accessory
 }
 
 function output_missingCategories(item) {
@@ -634,48 +655,62 @@ function parseItemSource(item) {
   // ===== Star Path =====
   if ( isStarPath(item)) {
 
-    const string = item.source;
-    const regex = /Star Path \- ([\w\W ]+) \- (\d\w) \- T(\d)( Premium)? \((\d+) tokens\)/;
-    const result = string.split(regex);
-    item.starpath = result[1]; // star path value
-    item.tile = result[2]; // tile
-    item.tier = result[3]; // tier
-    item.premiumInline = result[4]; // "' Premium' or nothing"
-    item.eventtokens = result[5]; // event token item cost
+    /*
+    var item = {};
+    item.source = "Star Path - Garden of Whimsy - B2C - Bonus Items (25 tokens)";
+    item.source = "Star Path - Paw-fect Romance - 4A - T4 Premium (70 tokens)";
+    item.source = "Star Path - Frost & Fairies - 1D - T1 (8 tokens)";
+    parseStarPathData(item);
+    */
+    /*
+    Star Path - Garden of Whimsy - B2C - Bonus Items (25 tokens)
+    Star Path - Paw-fect Romance - 4A - T4 Premium (70 tokens)
+    Star Path - Frost & Fairies - 1D - T1 (8 tokens)
+    */
 
+    const string = item.source;
+    const regex = /^Star Path - (.+?) - ([A-Z0-9]+) - (?:(?:T(\d))(?: Premium)?|Bonus Items) \((\d+) tokens\)$/;
+    const match = string.match(regex);
+
+    if (!match) {
+      console.log("FAILED TO PARSE ITEM SOURCE:", string);
+      return item;
+    }
+
+    item.starpath = match[1]; // star path name
+    item.tile = match[2]; // tile
+    item.eventtokens = Number(match[4]); // event token item cost
+
+    // ✅ FIX: tier fallback to tile (B2C → 2)
+    if (match[3]) {
+      item.tier = Number(match[3]);
+    } else {
+      const tileMatch = item.tile.match(/\d/);
+      item.tier = tileMatch ? Number(tileMatch[0]) : null;
+    }
+
+    // derived flags (don’t overcomplicate regex)
+    item.premium = /Premium|Bonus Items/.test(string) ? "yes" : "no";
+    item.bonus = /Bonus/.test(string) ? "yes" : "no";
+
+    item.premiumInline = "";
+    if (item.premium == "yes") {
+      item.premiumInline = " Premium";
+    }
+
+    item.bonusInline = "";
+    if (item.bonus == "yes") {
+      item.bonusInline = " Bonus";
+    }
+
+    /*
     // 2025.09.30 - if these are being set correctly, then why are they coming up undefined later....
     //console.log(`item.starpath: ${item.starpath}`);
     //console.log(`item.eventtokens: ${item.eventtokens}`);
     //console.log(item);
     // maybe getting overridden later? also the editor is lagging...
-
-    if (!item.premiumInline) {
-      item.premium = 'no';
-      item.premiumInline = '';
-    } else {
-      item.premium = 'yes';
-    }
-
-
-    /* === if this is uncommented the normal star path stuff. breaks, this needs further testing - 2025.09.30
-    const string2 = item.source;
-    //Star Path - Retro Roadtrip - B1A - Bonus Items (55 tokens)
-    const regex2 = /Star Path \- ([\w\W ]+) \- B(\d)(\w) - Bonus Items \((\d+) tokens\)/;
-    const result2 = string2.split(regex2);
-    item.starpath = result2[1]; // star path value
-    item.tile = result2[2] + result2[3]; // tile, e.g. 1A
-    item.tier = result2[2]; // tier
-    item.premiumInline = " Premium Bonus";
-    item.eventtokens = result2[4]; // event token item cost
-
     */
   }
-
-  
-
-
-  //from the Tier 2 Premium Bonus Rewards
-  // , which were available after all regular Star Path rewards have been collected.
 
   // ===== Premium Item (may include returning Star Path) =====
   if (isPremium(item)) {
@@ -712,8 +747,6 @@ function parseItemSource(item) {
 
   // ===== Craftable Event Item =====
   if (isCraftable(item)) {
-
-    console.log(item);
     const string = item.source || ""; // error catching in case not defined, can't split something undefined
     // Crafting (Lucky You!)
     const regex = /Crafting \(([\w\W !]+)\)/;
@@ -861,25 +894,29 @@ function output_from(item) {
 
     //infoboxFrom = "|from="+item.starpath+"\n|tier=%%tier%%\n|premium=%%premium%%\n|eventTokens='+item.eventtokens+'";
     // **** TODO: why isnt microtemplating working for this?
-    infoboxFrom = `|from=${item.starpath} Star Path\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
+    infoboxFrom = `|from=${item.starpath} Star Path`;
+    if (item.isBonus == "yes") {
+      infoboxFrom += `\n|bonus=${item.isBonus}`;
+    }
+    
+    infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
 
     // not sure why interpolation isnt working TODO -- why did interpolation stop working 2025.04.23
     // not sure why it was ever working before to show correct star path, this might be being overridden somewhere for returning sp furniture
-    itemSource =
-      'It was available to unlock and collect for a limited time during the ' +
-      '[[' +
-      item.starpath +
-      ' Star Path]] event using {{price|' + item.eventtokens + "|" +
-      lookupToken(item.starpath) +
-      '|showLabel}} from the Tier ' +
-      item.tier +
-      item.premiumInline +
-      ' Rewards.';
+    itemSource = `It was available to unlock and collect for a limited time during the [[${item.starpath}  Star Path]] event using {{price|${item.eventtokens}|` +
+      lookupToken(item.starpath) + `|showLabel}} from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
+
+    if (item.bonus == "yes") {
+      itemSource += ", which were available after all regular Star Path rewards have been collected";
+    }
+    itemSource += ".";
+  
 
     // CURRENT STAR PATH
     if (item.starpath == starPathName) {
       // current tense
-      itemSource = itemSource.replaceAll('It was available', 'It is available');
+      itemSource = itemSource.replaceAll('was available', 'is available');
+      itemSource = itemSource.replaceAll('were available', 'are available');
     }
   }
 
@@ -1033,7 +1070,6 @@ function output_collectionStatus(item) {
   if (isWallpaperFlooring(item)) {
         collectionText = "sdsdfasdfads Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
       }
-
 
   // todo  - move untracked logic here instead
 
@@ -1214,7 +1250,7 @@ function output_itemIntro(item) {
       itemUseBody = ''; // " Once it is placed in the world, the object will have constant fountain animation and sound effects.
       break;
     case 'Rug':
-      itemUseIntro = 'rug';
+      itemUseIntro = ''; //'rug'; many "under" items aren't considered rugs - i'll keep it in my sheet but not output to wiki
       itemUseBody = ''; //
       break;
     case 'Sit':
@@ -1292,6 +1328,7 @@ Once it is placed in the world, the Player can '''Use''' the item as a [[:Catego
 */
 
 
+    // TODO: this is overriding any values set above, need to fix
     // janky catch for more lighting objects - this is not robust!!!! cases where i've written extra info in the box
     if (item.functions && item.functions.includes('Light')) {
       itemUseIntro = 'lighting';
@@ -1734,11 +1771,11 @@ missingCategories = "[[Category:Missing Size]] [[Category:Missing Placement]]"
       template += '|gridSize=<!--12x12-->\n|placement=<!--bare-->\n';  
     }
     else if (isStall(item)) {
-      template += '|gridSize=<!--16x8-->\n|placement<!--bare-->=\n';  
+      template += '|gridSize=<!--16x8-->\n|placement=<!--bare-->\n';  
     }
     else {
       // also janky - hardcoding placeholder size and placement placeholders
-      template += '|gridSize=\n|placement=\n'; //<!--8x4-->\n|placement=<!--bare-->\n'; // goofy's stall: gridSize=16x8
+      template += '|gridSize=\n|placement=\n';
     }
     template += '}}\n';
 
@@ -1979,13 +2016,6 @@ function jankyCleanup(originalRenderedHTML) {
     '[[:Category:Storybook Vale Clothing Sets Collection|Storybook Vale Clothing Sets Collection]]'
   );*/
 
-
-  // navbox fixes
-  newStr = newStr.replaceAll("timburton\'sthenightmarebeforechristmas",'nightmarebeforechristmas');
-  newStr = newStr.replaceAll('lilo&stitch', 'liloandstitch');
-  newStr = newStr.replaceAll('mickey&friends', 'mickeyandfriends');
-  newStr = newStr.replaceAll('{{NavboxFurniture|wall-e|disney}}', '{{NavboxFurniture|walle|disney}}');
-
   newStr = newStr.replaceAll('\n|size=remove', '');
   newStr = newStr.replaceAll('\n|gridSize=remove', '');
 
@@ -1995,6 +2025,9 @@ function jankyCleanup(originalRenderedHTML) {
   // main culprit of double space is itemUseIntro
   newStr = newStr.replaceAll('  ', ' ');
 
+
+  // TODO: double check this in output - need to make functions value streamlining more robust, and not here
+  newStr = newStr.replaceAll('Light \(Constant\)', 'Lighting \(Constant\)');
 
   // for crafted furniture
   newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');

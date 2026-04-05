@@ -446,7 +446,7 @@ function lookupToken(starpath) {
       output = 'tranquiltoken';
       break;
     case 'Garden of Whimsy':
-      output = 'whimsytoken';
+      output = 'pocketwatchtoken';
       break;
     case 'Adventures in Never Land':
       output = 'compasstoken';
