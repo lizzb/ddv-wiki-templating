@@ -1,9 +1,79 @@
 todo: 
 
+- remove energy=-
+
+- replace |functions=-
+
+- remove functions=Rug
+
+to fix: Ceiling --> Ceiling Decoration
+
+- insert body text for hanging from ceiling
+
+- remove (ceiling) or (wall) from gridsize
+
+
+TODO - "ceiling" cateogory placeholder should be "ceiling decoration"
+
+
+todo: ", and must be placed on a wall." --> ", and must be placed indoors on a wall." OR ", and must be placed indoors, on a wall." (comma or no?)
+
+
+, and must be placed on a wall.
+, and must be placed indoors, on a wall.
+
+
+todo: fix <!--<!-- in collection
+
+if a house is offered on the premium bonus rewards of a star path, it has to print the body text, not just use itemdescription template
+
+
+todo - fix trigger for checking if name is included in the bundle, 
+[[Casita Wall Set (Bundle)|Casita Wall Set]] bundle - for Casita Wall
+
+
+
+|functions=Gathering (2) -- need to parse this to extract number of Villagers
+
+It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport 2 random villagers to the location.{{cleanup|Tidy up language and function values for all gathering objects}}
+
+
+
+
+verify:
 TODO - add mike  to character switch loop
-
 todo - remove (wall) from size value from my parser
+TODO - {{NavboxFurniture|landscaping|general}} -- todo, make sure this generates for navbox if multiple categories, needs prioritization of categories
+|functions=Cooking Station and body text
+TODO - article generation for Cooking Station functionality items - e.g.  Brick Pizza Oven
+todo: templating for skins -- dream castle, buildings (chez remy, scrooge)
 
+|bonus=yes
+|tier=2
+|premium=yes
+
+from the Tier 2 Premium Bonus Rewards, which are available after all regular Star Path rewards have been collected.
+
+TODO - {{NavboxFurniture|misc.|general}} -- remove . after misc
+
+replace |functions=Light (Automatic) with |functions=Lighting (Automatic)
+
+
+=================
+
+
+TODO - add parser generated articles for Villager Houses? maybe? e.g. Lady and Tramp's House
+
+TODO - article generation/standardization for premium/friendship items (pet houses) - e.g. Mochi's Cat House
+
+TODO - "Love Is in the Air" Hearts still doesnt render corrctly due to quotes
+
+TODO - standardize "floating" placement type
+
+
+==== SAMPLE ITEMS ====
+
+TODO - "Welkum Family" Poster - not being properly escaped
 
 TODO - use Photo Shoot Spotlight for example item rewarded during quest, lighting constant, and not tracked
 
@@ -19,32 +89,7 @@ Cherry Blossom Wishing Well
 
 TODO revisit Lucky Clover Archway template - in intro sentence arch vs event word priority? needs to be standardized with Lucky Shamrock Banner
 
-
-
-TODO - add parser generated articles for Villager Houses? maybe? e.g. Lady and Tramp's House
-
-
-TOODO - {{NavboxFurniture|landscaping|general}} -- todo, make sure this generates for navbox if multiple categories, needs prioritization of categories
-
-todo: , and must be placed on a wall. --> , and must be placed indoors on a wall.
-
-, and must be placed indoors on a wall.
-
-TODO - Basic Ironwork Sign - touch of magic furniture
-
-
-TODO - article generation/standardization for premium/friendship items (pet houses) - e.g. Mochi's Cat House
-
-TODO - article generation for Cooking Station functionality items - e.g.  Brick Pizza Oven
-
-
-TODO - "Love Is in the Air" Hearts still doesnt render corrctly due to quotes
-
-
-TODO - standardize "floating" placement type
-
-
-==== SAMPLE ITEMS ====
+TODO - Basic Ironwork Sign - touch of magic furniture sample
 
 Lucky Shamrock Banner - TODO - revisit this page as an examlpe item for lighting object, seasonal crafting item
 
@@ -71,8 +116,6 @@ TODO - should it be functions=VFX for Green/Blue/Pink Fluttering Dragonflies? ch
 
 Golden Lady and Tramp Statue -- max did all, i fix body text slightly -- TODO review level 10 quest body text form here, mine vs max's
 
-TODO - {{NavboxFurniture|misc.|general}} -- remove . after misc
-
 
 TODO - saucery extract should be exporting type=Crafted Furniture, not type=Furniture, and also craftingcategory=Furniture
 
@@ -84,51 +127,25 @@ Tropical Waterfalls - use this page as reference for kits, use landscaping in fi
 
 
 
-
-
-todo: fix <!--<!-- in collection
-
 Garbage Can - why isn't this triggering scrooge template???
 
 
-, and must be placed on a wall.
-, and must be placed indoors, on a wall.
 
 
 
-|functions=Gathering (2)
-
-It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport 2 random villagers to the location.{{cleanup|Tidy up language and function values for all gathering objects}}
 
 
+
+
+
+TO CHECK IN SHEET/WIKI: ==========
 
 Cupid Fountain - todo - check for consistency in "bare, unpaved" in sheet and on wiki, be sure to add text to the body of these articles
-
-
 
 TODO: issues with generating Monsters, Inc. Attraction - navbox remove punctuation, old size is in sheet, need to verify price and when changed
 
 
 
-todo - fix trigger for checking if name is included in the bundle, 
-[[Casita Wall Set (Bundle)|Casita Wall Set]] bundle - for Casita Wall
-
-
-
-|bonus=yes
-|tier=2
-|premium=yes
-
-from the Tier 2 Premium Bonus Rewards, which are available after all regular Star Path rewards have been collected.
-
-
-
-
-if a house is offered on the premium bonus rewards of a star path, it has to print the body text, not just use itemdescription template
-
-
-
-todo: templating for skins -- dream castle, buildings (chez remy, scrooge)
 
 
 todo: fix: (generated for dapper donald dream style)
@@ -167,38 +184,13 @@ Once collected it will not be added to the [[:Category:Untracked Furniture Sets 
 
 generation for value: Cinderella Level 10 Quest (____) (post-quest mailbox reward)
 
-replace |functions=Light (Automatic) with |functions=Lighting (Automatic)
 
 
-- remove energy=-
-
-to fix: Ceiling --> Ceiling Decoration
-
-- insert body text for hanging from ceiling
-
-- remove (ceiling) or (wall) from gridsize
-
-- remove functions=Rug
-
-
-TODO - "ceiling" cateogory placeholder should be "ceiling decoration"
 
 
 todo:
 
-|functions=Cooking Station and body text
-
-- replace |functions=-
-
-TODO - "Welkum Family" Poster - not being properly escaped
-
-
-
-
 avilable - check for this typo on wiki *** todo
-
-
-
 
 
 todo - fixes for alpine spice rack - should have wall placement text
@@ -279,6 +271,9 @@ It can be [[Cooking|cooked]] by ...[[:Category:Vegetables|any Vegetables]].
 
 
 ===== PRIORITY =====
+
+- implement: automatic diff against an output file using a sample input file
+
 todo:
 - house and stall articles worked on 2025.10.05
 - add returning star path item category
@@ -296,7 +291,6 @@ escape quotes in bundle and item names --> i think the problem is in using mr da
 - create: glider template
 
 - verify: if = under, change to underneath. if = ceiling, change to ceilings. if = wall, change to walls for placement values
-
 
 - escape quotes in item names
 
