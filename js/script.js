@@ -902,13 +902,13 @@ function output_from(item) {
   //Star Path - Elements of Nature - TILE - Vault (__ tokens)
 
   if (item.returning) {
-    itemSource = originallySPtext + inlineBundleLink_default + ` bundle for {{price|${tem.bundlePrice}|moonstone|showLabel}}.`;
+    itemSource = originallySPtext + inlineBundleLink_default + ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
   }
   if (item.name == item.bundleName) {
     if (item.returning)
-      itemSource = originallySPtext + inlineBundleLink_standalone + ` bundle for {{price|${tem.bundlePrice}|moonstone|showLabel}}.`;
+      itemSource = originallySPtext + inlineBundleLink_standalone + ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
     else
-      itemSource = 'It is available to purchase from the [[Premium Shop]] in the ' + inlineBundleLink_standalone + ` bundle for {{price|${tem.bundlePrice}|moonstone|showLabel}}.`;
+      itemSource = 'It is available to purchase from the [[Premium Shop]] in the ' + inlineBundleLink_standalone + ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
   }
 
   // TODO: It later returned to the Vault Rewards of the [[STARPATH]] event and will be/was available to unlock after MONTH DAY, 2026.
