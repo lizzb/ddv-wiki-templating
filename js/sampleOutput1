@@ -246,7 +246,7 @@ It can be positioned and placed using the [[Furniture menu]] inside the [[Invent
 |placement=default
 |functions=Cooking Station<!--, VFX (small steam animation)-->
 }}
-'''Pastel Egg Cooking Station''' is a [[Furniture#Other|non-themed]] piece of [[Crafting|craftable furniture]] that functions as a [[:Category:Cooking Station|cooking station]].
+'''Pastel Egg Cooking Station''' is a [[Furniture#Other|non-themed]] piece of [[Crafting|craftable furniture]] that functions as a [[:Category:Cooking Stations|cooking station]].
 
 It can be crafted using seasonal [[ingredients]] that are available during the [[Eggstravaganza]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
 
@@ -281,18 +281,19 @@ It can be positioned and placed using the [[Furniture menu]] inside the [[Invent
 |placement=default
 |functions=Crafting Station
 }}
-'''Summer Crafting Station''' is a [[Furniture#Other|non-themed]] piece of [[Crafting#Furniture|craftable furniture]] that functions as a [[:Category:Crafting Station|crafting station]].
+'''Summer Crafting Station''' is a [[Furniture#Other|non-themed]] piece of [[Crafting#Furniture|craftable furniture]] that functions as a [[:Category:Crafting Stations|crafting station]].
 
-It can be crafted using seasonal [[ingredients]] that are available during the [[Summer Sizzle]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+The crafting recipe is unlocked after using a [[Summer Crafting Station Recipe|recipe book]] send through in-game mail during [[Summer Sizzle|the event]]. It can be crafted using seasonal [[ingredients]] that are available during the [[Summer Sizzle]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
 
 It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]. Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Crafting Stations|Crafting Station]] to make [[Crafting|crafting recipes]].
 
 ==History==
 {{history|1.17|Added}}
 
-{{NavboxCrafting|dreamlightvalley}}
+{{NavboxCrafting}}
 
 [[Category:Dreamlight Valley Furniture Sets Collection]]
+
 
 
 

@@ -688,6 +688,10 @@ function parseItemSource(item) {
     item.event = result[1]; // Crafting (Event Name)
   }
 
+  // TODO: detect if in-game recipe is required from source
+  // todo: item.recipeSource = 
+  // TODO: The crafting recipe is unlocked after using a [[Summer Crafting Station Recipe|recipe book]] send through in-game mail during [[Summer Sizzle|the event]].
+
   item.itemSource = itemSource;
   item.itemFrom = itemFrom;
 
@@ -1283,12 +1287,12 @@ function output_itemIntro(item) {
 
     // SO JANKY and repetitive but its working
     if (item.functions && item.functions.includes('Cooking Station')) {
-      output += " that functions as a [[:Category:Cooking Station|cooking station]]";
+      output += " that functions as a [[:Category:Cooking Stations|cooking station]]";
       itemUseBody = " Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].";
       //itemUseBody = " Once it is placed in the world, the Player can interact with ('''Use''') the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].";
     }
     if (item.functions && item.functions.includes('Crafting Station')) {
-      output += " that functions as a [[:Category:Crafting Station|crafting station]]";
+      output += " that functions as a [[:Category:Crafting Stations|crafting station]]";
       itemUseBody = " Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Crafting Stations|Crafting Station]] to make [[Crafting|crafting recipes]].";
     }
     if (item.functions && item.functions.includes('Gathering')) {
