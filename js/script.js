@@ -90,7 +90,7 @@ function output_category(item) {
         '<!--Accessories, Companions, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
     } else {
       // defaults to furniture
-      item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
+      item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
     }
 
   }
@@ -384,58 +384,19 @@ function updateAppropriateVersion(item) {
   return item;
 }
 
-/*
-const getHighestPriorityMatch = (str, priorities) => {
-  const values = str.split(",").map(s => s.trim());
-  return priorities.find(p => values.includes(p));
-};
-*/
-
 
 // TODO - insert correct category for Other navboxes furniture categories
 function output_prioritizedCategory(categoryVal) {
 
-  /*
-  const str = "hello world";
-  const keywords = ["hello", "bye", "test"];
-
-  // version 1: case insensitive
-  const containsAny = keywords.some(k => str.toLowerCase().includes(k.toLowerCase()) );
-  console.log(containsAny); // true
-
-  // version 2
-  // const regex = new RegExp(keywords.join("|"));
-  // const containsAny = regex.test(str);
-
-  // Why this is solid: some() stops early (efficient) / Reads like plain English: “does some keyword match?” / Easy to extend or tweak
-
-  // version 3: one liner
-  const containsAny = (str, arr) => arr.some(s => str.includes(s));
-  */
-
-  /*
-  const str = "Essentials, Lighting";
-  const priorities = ["Essentials", "Lighting", "Other"];
-  //basic
-  const match = priorities.find(p => str.includes(p));
-  // case insensitive
-  const match = priorities.find(p => str.toLowerCase().includes(p.toLowerCase()) );
-  // safe (avoid partial matches)
-  const match = priorities.find(p => { const regex = new RegExp(`\\b${p}\\b`, "i"); return regex.test(str);});
-  */
   var output = categoryVal;
 
   // TODO: verify prioritization of categories
   //Wallpaper, Flooring, Appliance, TAbles, Beds, Trimmings, Essentials, Attractions, Decor, Misc., Wall, Electronics, Storage, Utilities, Rugs, Lighting, Seating, Art, Foliage, Landscaping
   // i think a few are missing, fences, paths, rocks...
 
-  var categoryValArray = categoryVal.split(",").map(s => s.trim());
-  var priorities = ["Wallpaper", "Flooring", "Appliance", "Seating", "Tables", "Beds", "Essentials", "Lighting", "Misc.", "Storage"];
+  var prioritizedFurnitureCategories = ["Wallpaper", "Flooring", "Appliance", "Seating", "Tables", "Beds", "Essentials", "Lighting", "Misc.", "Storage"];
 
-
-  // find() returns the first match → your list = priority ranking. Stops early → efficient. Very readable: “give me the first priority that appears”
-  const match = priorities.find(p => categoryValArray.includes(p)) || "";
-  output = match;
+  output = getFirstCategoryMatch(categoryVal, prioritizedFurnitureCategories);
 
   return output.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
 }
@@ -546,6 +507,31 @@ function output_missingCategories(item) {
 function parseItemUsage(item) {
   return item;
 }
+
+// preparation for allowing to copy/paste directly from sheet without leading Clothing/Furniture column
+function parseItemType(item) {
+  if (showItemDebug) {
+    console.log(`item.itemType of ${item.name} = ${item.itemType}`);
+  }
+  // do nothing if itemType already came from imported data
+  if (item.itemType) return item;
+
+  var allClothingCategories = ["Companions", "Tools", "Hats", "Masks", "Glasses", "Earrings", "Neckwear", "Coats", "Tops", "Back", "Bracelets", "Gloves", "Pants", "Shorts", "Skirts", "Hose Socks", "Shoes", "Dresses", "Costumes", "Gliders"];
+  var allFurnitureCategories = ["House", "Essentials", "Decor", "Trimmings", "Tables", "Beds", "Seating", "Storage", "Appliance", "Electronics", "Utilities", "Art", "Lighting", "Foliage", "Rugs", "Misc.", "Floors", "Windows", "Landscaping", "Wall", "Ceiling Decorations", "Trees", "Rocks", "Fencing", "Attractions"]; // TODO: Ceiling Textures
+
+  if (item.category) {
+    // returns highest priority match, but doesn't actually matter what the match is, just that something matched
+  if (getFirstCategoryMatch(item.category, allClothingCategories)) {
+    item.itemType = "Clothing";
+  }
+  if (getFirstCategoryMatch(item.category, allFurnitureCategories)) {
+    item.itemType = "Furniture";
+  }
+  }
+  
+  return item;
+}
+
 
 // Set other item properties based on the value of item.location - parsing and interpreting logic
 function parseItemSource(item) {
@@ -1348,6 +1334,7 @@ function renderClothingFurnitureArticle(dataArray) {
     if (!item) return;
     item.missingCategories = [];
 
+    item = parseItemType(item);
     item = parseItemSource(item);
     item = parseSizePlacementEnv(item);
 

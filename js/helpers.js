@@ -727,7 +727,15 @@ function insertIngredientCategoryLink(input) {
   return output;
 }
 
+//const str = "hello world testing";
+//const keywords = ["hello", "bye", "test"];
 
+// function includesFromArray
+function getFirstCategoryMatch(input, priorityStringArray) {
+  const values = input.split(",").map(s => s.trim());
+  return priorityStringArray.find(p => values.includes(p));
+  // const containsAny = (str, arr) => arr.some(s => str.includes(s));
+};
 
 
 function oxfordJoin(arr) {
@@ -1750,3 +1758,47 @@ function generateHairstyleTemplate(item) {
   return template;
 }
 */
+
+
+/*
+const getHighestPriorityMatch = (str, priorities) => {
+  const values = str.split(",").map(s => s.trim());
+  return priorities.find(p => values.includes(p));
+};
+*/
+
+function getFirstCategoryMatch(categoryVal, prioritizedCategoryArray) {
+    /*
+  const str = "hello world";
+  const keywords = ["hello", "bye", "test"];
+
+  // version 1: case insensitive
+  const containsAny = keywords.some(k => str.toLowerCase().includes(k.toLowerCase()) );
+  console.log(containsAny); // true
+
+  // version 2
+  // const regex = new RegExp(keywords.join("|"));
+  // const containsAny = regex.test(str);
+
+  // Why this is solid: some() stops early (efficient) / Reads like plain English: “does some keyword match?” / Easy to extend or tweak
+
+  // version 3: one liner
+  const containsAny = (str, arr) => arr.some(s => str.includes(s));
+  */
+
+  /*
+  const str = "Essentials, Lighting";
+  const priorities = ["Essentials", "Lighting", "Other"];
+  //basic
+  const match = priorities.find(p => str.includes(p));
+  // case insensitive
+  const match = priorities.find(p => str.toLowerCase().includes(p.toLowerCase()) );
+  // safe (avoid partial matches)
+  const match = priorities.find(p => { const regex = new RegExp(`\\b${p}\\b`, "i"); return regex.test(str);});
+  */
+
+  var categoryValArray = categoryVal.split(",").map(s => s.trim());
+
+  // find() returns the first match → your list = priority ranking. Stops early → efficient. Very readable: “give me the first priority that appears”
+  return prioritizedCategoryArray.find(p => categoryValArray.includes(p)) || "";
+};

@@ -1,5 +1,11 @@
 todo: 
 
+- detect line breaks in cell input and replace them with a newline character so as not to break the parsing
+
+- add line number display to the textarea input to help with troubleshooting
+
+- auto-add column itemType of furniture or clothing
+
 - remove energy=-
 
 - replace |functions=-
