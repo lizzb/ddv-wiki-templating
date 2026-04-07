@@ -1275,81 +1275,158 @@ function renderIngredients(dataArray) {
 }
 
 
-function renderCompanions(dataArray) {
-  // Create stub articles for quest items
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
-    template = '';
-    template += "{{stub}}";
-    template += "\n{{Infobox";
-    template += "\n|image=%%name%%.png";
-    template += "\n|type=Companions";
-    template += "\n|category=Animal Companions, Critter";
-    template += "\n|collection="+newExpansionCollection;
-    template += "\n|hangout=<!--Flowers/Ore/Fruit-->";
-    template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk-->;
-    template += "\n|found={{name|%%biome%%}}"; //<br>(%%region%%)";
-    template += "\n|favfood=<!--{{name|FAV1}}<br>{{name|FAV2}}-->";
-    template += "\n|likedfoods=<!--{{inlineIcon|Gems|link=Mining#Gems}}{{inlineIcon|Grains|link=:Category:Grains}}-->";
+function determineCritterType(itemName) {
+  return "TODO - determineCritterType";
+}
+
+function isCompanion(item) {
+  return "TODO - determineCritterType";
+
+  var isCompanion =
+    //(item.collection && item.collection.includes('Companion')) ||
+    //(item.name && item.name.includes('Castle')) ||
+    //(item.universe && item.universe.includes('Companion') ||
+    (item.category && item.category.includes('Companion'));
+
+  return isCompanion;
+}
+
+function generateCompanionTemplate(item) {
+
+  var isCritter = false; // TODO: LOGIC FOR THIS
+  template = '';
+
+  if (true) {
+    item.critterType = determineCritterType(item.name);
+
+    //template += "{{stub}}";
+    template += '{{infobox\n';
+    template += output_image(item); // template += '\n|image=%%name%%.png';
+    template += output_type(item); // "\n|type=Companions"; // PLURAL Companions
+    template += "|category=<!--Animal/Notable Companions"; //output_category(item); // Animal Companions / Notable Companions
+    if (isCritter) { template += ", Critter"; }
+    template += "-->\n";
+    template += output_collection(item);  // Dreamlight Valley
+    template += output_universe(item);
+    template += '|critterType=<!--Capybara-->\n';
+    template += '|hangout=<!--Flowers-->';
+
+    template += '\n'+output_from(item);
+
+     if (isCritter) {
+      template += "\n|from=Feeding Critters";
+      template += "\n|found=in the '''Wishblossom Mountains''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
+      template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
+      ////template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]], [[:Category:Spices|Spices & Herbs]], and [[:Category:Vegetables|Vegetables]] as they are defined on the Ingredients tab of the '''Collection Menu''' - e.g. [[Vanilla]] is included, and [[Seaweed]] is not. They will additionally eat Fruit grown from [[Crop Seeds|seeds]], i.e. [[Cosmic Figs]], [[Grapes]], [[Melon]], [[Pineapple]]-->";
+      //template += "\n|likedFoods=[[:Category:Grains|Grains]] as they are defined on the '''Ingredients''' section of the '''Collection Menu''' (not as they are grouped at a [[:Category:Cooking Stations|Cooking Station]])";
+      template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
+      template += "\n|numFeedings=<!--(%%numFeedings%%)--><!--three <!--(3)-->";
+      template += "\n|critterCollection="+newExpansionCollection;
+      template += "\n|hangout=<!--[[Mining#Resources|Ore]] / [[Foraging#Flowers{{!}}Flowers]]-->";
+      template += "\n}}";
+    }
+
+    if (isCritter) {
+      template += "\n{{CritterSchedule";
+      template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
+      template += "\n|sunday=TBA";
+      template += "\n|monday=TBA";
+      template += "\n|tuesday=TBA";
+      template += "\n|wednesday=TBA";
+      template += "\n|thursday=TBA";
+      template += "\n|friday=TBA";
+      template += "\n|saturday=TBA";
+      template += "\n}}<!--";
+      template += "\n";
+      template += "\n==Yield==";
+      template += "\n{| class=wikitable id='recipe-table'";
+      template += '\n!style="" | Food Type';
+      template += '\n!style="" | Item';
+      template += '\n!style="" | Possible Rewards';
+      template += "\n|-";
+      template += "\n| Favorite";
+      template += "\n| TBA";
+      template += "\n|";
+      //template += "\nTBA";
+      template += "\n{{name|Dream Shard|2}}<br>";
+      template += "\n{{name|Memory Shard}}<br>";
+      template += "\n{{name|Motif Bag}}";
+      template += "\n|-";
+      template += "\n| Liked";
+      template += "\n| TBA";
+      template += "\n|";
+      //template += "\nTBA";
+      template += "\n{{name|Dream Shard}}<br>";
+      template += "\n{{name|Memory Shard}}<br>";
+      template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
+      template += "\n|}-->";
+      template += "\n{{cleanup|Missing Love and Like rewards}}";
+      template += "\n";
+    }
+
+    template += '}}\n'; // END OF INFOBOX
+    //template += `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`;
+
+    template += '\n{{ItemDescription';
+    template += '\n|%%name%%';
+    template += '\n|type=Companion'; // SINGULAR Companion, not plural
+    template += '\n|critterType=<!--Goose/Bee/Skunk/Sunbird/Capybara-->\n';
+    template += output_from(item);
+    //template += '\n|from=Premium Shop';
+    //template += '\n|bundleName=XXX_COMPANIONNAME_XXX (Bundle){{!}}XXX_COMPANIONNAME_XXX';
+    //template += '\n|bundlePrice=XXX_BUNDLEPRICE_XXX';
+    template += '|critterCollection=%%collection%%';
+    template += '\n|hangout=<!--[[Foraging#Flowers{{!}}Flowers]]-->';
+    template += '\n}}';
+
+
+    var introLink = "premium [[Companions#Event Companions|event companion]]";
+    var introSecondary = " which was available during the [[Pixar Fest Star Path]]";
+
+    template += "'''%%name%%''' is a " + introLink + introSecondary + ".";
+    template += '\n\n' + generateBodyFromPremiumShop(item);
+
     /*
-    template += "\n|likedfoods=<!--{{inlineIcon|Gems|link=Mining#Gems}}{{inlineIcon|Grains|link=:Category:Grains}}<br>";
-    template += "\n{{inlineIcon|Spices & Herbs|link=:Category:Spices}}*<br>";
-    template += "\n{{inlineIcon|Vegetables|link=:Category:Vegetables}}*<br><--Refers to the Grains, Spices & Herbs, and Vegetables Ingredient Categories as defined in the '''Collection Menu''', not while Cooking - e.g. no Seaweed, includes Vanilla.--*''(Collection Menu Categorization)''<br>";
-    template += "\n{{inlineIcon|Fruit}} grown from [[Crop Seeds|seeds]]-->";
+    It was originally available to unlock and collect during the [[Pixar Fest Star Path]] event
+    using {{price|40|pixartoken|showLabel}} from the Tier 1 Premium Rewards.
+    It later returned to the [[Premium Shop]] in the [[IncrediSquirrel (Bundle)|IncrediSquirrel]] bundle
+    for {{price|2000|moonstone|showLabel}}.
+
+    Once collected it will be added to the [[:Category:Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]].
+
+*/
+    //template += " It can be applied using the [[Furniture menu]] inside the Inventory by " + body_pickupText + ".";
+
+    template += "It can be equipped using the [[Wardrobe menu]] inside the [[Inventory]], under the '''Companions''' category.";
+    template += " Once equipped, it will follow the Player as they move between Biomes and wander nearby.";
+    template += " It can collect [[Foraging]] resources near to the player, and after reaching [[friendship]] level 4 it can has a chance to produce bonus [[Foraging]] resources when gathering.";
+    template += " Companions can also be photographed in unique poses using [[Phone#Photo Mode|Photo Mode]], or housed in a [[:Category:Companion Home|Companion Home]].";
+
+
+    /*
+
+    var intro_buildingReplace = "[["+item.category+"]]";
+    var body_buildingReplace = "[["+item.category+"]]"; // XXXX_BUILDINGTYPE_XXXX / remy/scrooge / everything except plaza
+    var body_pickupText = "picking up a/the [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
+
+    intro_buildingReplace = "the [[Valley Visit Station]]"; // valley visit station
+    intro_buildingReplace = "[[" + item.category + "]]s in any biome in any Village (except the singular primary Well per Village).<!--(except the large [[Plaza|Plaza Well]])-->{{cleanup|Concise language. - Library of Lore Well in SV, Plaza Well in DV, Docks Well in EI, Well in WM}}";
+
+
+
+    template += "'''%%name%%''' is a " + introLink + " that can be applied to " + intro_buildingReplace + ".";
+    template += '\n\n' + generateBodyFromPremiumShop(item);
+    template += " It can be applied using the [[Furniture menu]] inside the Inventory by " + body_pickupText + ".";
+
+
+    
+
+
+
     */
-    template += "\n|minfeedings=<!--%%numFeedings%%-->";
-    template += "\n}}";
-    template += "\n{{ItemDescription";
-    template += "\n|%%name%%";
-    template += "\n|type=Companion";
-    template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk-->;
-    template += "\n|from=Feeding Critters";
-    template += "\n|found=in the '''Wishblossom Mountains''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
-    template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
-    ////template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]], [[:Category:Spices|Spices & Herbs]], and [[:Category:Vegetables|Vegetables]] as they are defined on the Ingredients tab of the '''Collection Menu''' - e.g. [[Vanilla]] is included, and [[Seaweed]] is not. They will additionally eat Fruit grown from [[Crop Seeds|seeds]], i.e. [[Cosmic Figs]], [[Grapes]], [[Melon]], [[Pineapple]]-->";
-    //template += "\n|likedFoods=[[:Category:Grains|Grains]] as they are defined on the '''Ingredients''' section of the '''Collection Menu''' (not as they are grouped at a [[:Category:Cooking Stations|Cooking Station]])";
-    template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
-    template += "\n|critterCollection="+newExpansionCollection;
-    template += "\n|hangout=<!--[[Mining#Resources|Ore]] / [[Foraging#Flowers{{!}}Flowers]]-->";
-    template += "\n|numFeedings=<!--(%%numFeedings%%)--><!--three <!--(3)-->}}";
-    template += "\n";
-    template += "\n{{CritterSchedule";
-    template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
-    template += "\n|sunday=TBA";
-    template += "\n|monday=TBA";
-    template += "\n|tuesday=TBA";
-    template += "\n|wednesday=TBA";
-    template += "\n|thursday=TBA";
-    template += "\n|friday=TBA";
-    template += "\n|saturday=TBA";
-    template += "\n}}<!--";
-    template += "\n";
-    template += "\n==Yield==";
-    template += "\n{| class=wikitable id='recipe-table'";
-    template += '\n!style="" | Food Type';
-    template += '\n!style="" | Item';
-    template += '\n!style="" | Possible Rewards';
-    template += "\n|-";
-    template += "\n| Favorite";
-    template += "\n| TBA";
-    template += "\n|";
-    //template += "\nTBA";
-    template += "\n{{name|Dream Shard|2}}<br>";
-    template += "\n{{name|Memory Shard}}<br>";
-    template += "\n{{name|Motif Bag}}";
-    template += "\n|-";
-    template += "\n| Liked";
-    template += "\n| TBA";
-    template += "\n|";
-    //template += "\nTBA";
-    template += "\n{{name|Dream Shard}}<br>";
-    template += "\n{{name|Memory Shard}}<br>";
-    template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
-    template += "\n|}-->";
-    template += "\n{{cleanup|Missing Love and Like rewards}}";
-    template += "\n";
+
+    
+    template += '\n{{cleanup|Uncomment when confirmed --';
     template += "\n==Friendship Rewards==";
     template += "\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.";
     template += "\n{| class=wikitable id='recipe-table'";
@@ -1358,7 +1435,7 @@ function renderCompanions(dataArray) {
     template += "\n!Name";
     template += "\n!Type";
     template += "\n|-";
-    template += "\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->";
+    template += "\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Ingredients|Ingredient]] / [[Foraging#Flowers|Flower]]-->";
     template += "\n|-";
     template += "\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]";
     template += "\n|-";
@@ -1366,10 +1443,80 @@ function renderCompanions(dataArray) {
     template += "\n|-";
     template += "\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]";
     template += "\n|}";
+    template += "\n}}";
+    
+
+    template += output_history(item) + output_navbox(item);
+
+    //template += '\n\n[[Category:Missing xxxxx]]';
+
+    if (isCritter) {
+      template += "\n__noTOC__"; // TODO: do not include for premium?
+    }
+  }
+
+  return template;
+}
+
+
+
+function generateCompanionTemplateOriginal(item) {
+
+    var isCritter = true;
+
+    template = '';
+    template += "{{stub}}";
+    template += "\n{{Infobox";
+    template += "\n|image=%%name%%.png";
+    template += "\n|type=Companions";
+    template += "\n|category=Animal Companions"
+
+    if (isCritter) { template += ", Critter"; }
+
+    template += "\n|collection="+newExpansionCollection;
+    template += "\n|hangout=<!--Flowers/Ore/Fruit-->";
+    template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk/Sunbird/Capybara/Squirrel-->;
+
+    if (isCritter) { 
+      template += "\n|found={{name|%%biome%%}}"; //<br>(%%region%%)";
+      template += "\n|favfood=<!--{{name|FAV1}}<br>{{name|FAV2}}-->";
+      template += "\n|likedfoods=<!--{{inlineIcon|Gems|link=Mining#Gems}}{{inlineIcon|Grains|link=:Category:Grains}}-->";
+      /*
+      template += "\n|likedfoods=<!--{{inlineIcon|Gems|link=Mining#Gems}}{{inlineIcon|Grains|link=:Category:Grains}}<br>";
+      template += "\n{{inlineIcon|Spices & Herbs|link=:Category:Spices}}*<br>";
+      template += "\n{{inlineIcon|Vegetables|link=:Category:Vegetables}}*<br><--Refers to the Grains, Spices & Herbs, and Vegetables Ingredient Categories as defined in the '''Collection Menu''', not while Cooking - e.g. no Seaweed, includes Vanilla.--*''(Collection Menu Categorization)''<br>";
+      template += "\n{{inlineIcon|Fruit}} grown from [[Crop Seeds|seeds]]-->";
+      */
+      template += "\n|minfeedings=<!--%%numFeedings%%-->";
+    }
+    
+    template += "\n}}";
+
+    template += "\n{{ItemDescription";
+    template += "\n|%%name%%";
+    template += "\n|type=Companion";
+    template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk/Sunbird/Capybara-->;
+    
+   //remmoved stuff
+
 
     template += output_history(item);
     template += "\n\n{{NavboxCompanion}}";
-    template += "\n__noTOC__";
+    
+  
+    return template;
+}
+
+
+
+function renderCompanions(dataArray) {
+  // Create stub articles for critter items
+  var renderedHTML = '';
+  var delimiter = '';
+  delimiter = '\n\n\n-----------------------------\n\n\n';
+  dataArray.forEach(function (item) {
+
+    template = generateCompanionTemplateOriginal(item);
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;

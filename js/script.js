@@ -476,7 +476,10 @@ function output_navbox(item) {
       // use universe|disney if disney universe
       output = `{{Navbox${item.itemType}|${item.groupedUniverse.toLowerCase().trim().replace(/\s/g, '')}|disney}}`;
     }
+  }
 
+  if (isCompanion(item)) {
+    output = '{{NavboxCompanion}}';
   }
 
   // TODO - need to group accessory items with their thematic unvierse even though they techncially don't have one
@@ -676,7 +679,7 @@ function parseItemSource(item) {
 
   // TODO: detect if in-game recipe is required from source
   // todo: item.recipeSource = 
-  // TODO: The crafting recipe is unlocked after using a [[Summer Crafting Station Recipe|recipe book]] send through in-game mail during [[Summer Sizzle|the event]].
+  // TODO: The crafting recipe is unlocked after using a [[XXX_RECIPEITEMNAME_XXX|recipe book]] send through in-game mail during [[XXX_EVENTNAME_XXX|the event]].
 
   item.itemSource = itemSource;
   item.itemFrom = itemFrom;
@@ -1363,6 +1366,13 @@ function renderClothingFurnitureArticle(dataArray) {
       item.collection = 'none';
     }
 
+    if (isCompanion(item)) {
+      //in game: type=Companions, collection=<<>>, category=<<>>
+      item.itemType = 'Companions';
+      //item.category = item.category;
+      //item.collection = 'Dreamlight Valley'; // item.collection
+    }
+
     if (isBuilding(item)) {
       //console.log(`item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
       //in game: type=Building Skin, collection=none, category=none
@@ -1491,17 +1501,11 @@ function renderClothingFurnitureArticle(dataArray) {
       template = generateHouseTemplate(item);
     }
     if (isStall(item)) {
-      //todo further
-      ////template = generateStallTemplate(item);
       template = generateBuildingSkinTemplate(item);
     }
-
     if (isWishingWell(item)) {
-      //todo further
-      ////template = generateWishingWellTemplate(item);
       template = generateBuildingSkinTemplate(item);
     }
-
     if (isBuilding(item)) {
       template = generateBuildingSkinTemplate(item);
     }
@@ -1510,6 +1514,9 @@ function renderClothingFurnitureArticle(dataArray) {
     }
     if (isVisitStation(item)) {
       template = generateBuildingSkinTemplate(item);
+    }
+    if (isCompanion(item)) {
+      template = generateCompanionTemplate(item);
     }
 
 
