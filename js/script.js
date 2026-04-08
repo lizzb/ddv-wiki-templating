@@ -809,7 +809,9 @@ function output_from(item) {
   // ========== 5 CHECK IF FROM STARPATH (either returning or current)==========
 
   // EXAMPLE: "source":"Star Path - Lovely Monsters - 3E - T3 (25 tokens)\nPremium Bundle - Monster Plushies (1200 M) [___ M]"
-  if (item.location && item.location.includes('starpath')) {
+  //item.location && item.location.includes('starpath') ||  item.source && item.source.includes('Star Path')
+
+  if (isStarPath(item)) {
     if (showItemDebug) {
       console.log(item.name, ' is/was a star path item');
     }
@@ -843,6 +845,7 @@ function output_from(item) {
       itemSource = itemSource.replaceAll('was available', 'is available');
       itemSource = itemSource.replaceAll('were available', 'are available');
     }
+
   }
 
   // ========== 6 CHECK IF PREMIUM ITEM (may include returning starpath) ==========
@@ -880,6 +883,7 @@ function output_from(item) {
     }
 
     infoboxFrom += '\n|bundlePrice=' + item.bundlePrice;
+
   }
 
   // value of collection should already be changed from DV-->Dreamlight Valley by some other collection function from the infobox
@@ -928,7 +932,8 @@ function output_from(item) {
   }
 
   item.infoboxFrom = infoboxFrom;
-  item.itemSource = itemSource;
+  item.itemSource = itemSource; // TODO: i think this is being reverted to an empty string?
+
   var output = '%%infoboxFrom%%\n';
   return output;
 }
@@ -938,8 +943,9 @@ function generateFrom_Crafting(item) {
 }
 
 
-
 function output_itemSource(item) {
+
+  // TODO - pull logging into here for premium, star path, star path returning to premium, etc
   var output = '%%itemSource%%';
   return '\n\n' + output;
 }
@@ -987,6 +993,7 @@ function output_collectionStatus(item) {
   }
   //console.log(`${item.name} iswallpaperflooring? ${isWallpaperFlooring(item)}`)
   if (isWallpaperFlooring(item)) {
+    // TODO: wallpaper/flooirng can't be reordered
     collectionText = "sdsdfasdfads Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
   }
 
@@ -1533,25 +1540,26 @@ function renderClothingFurnitureArticle(dataArray) {
 function generateBodyFromPremiumShop(item) {
   // TODO - this is repeated content, need to make a function for generating premium shop items and detecting standalone link vs not
 
-  //console.log("item from inside generateBodyFromPremiumShop", item);
-
   var template = '';
-  // item.standalone is not yet defined here!!! -- i think it is now
-  //console.log(`${item.name} -- is standalone? (use fx) -- ${isStandalone(item)}`);
-  //template = 'It is available to purchase from the [[Premium Shop]] in the [[%%bundleName%%]] bundle for {{price|%%bundlePrice%%|moonstone|showLabel}}.';
-  template =
-    `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
 
-  // 2025.08.19 this is not catching, item.standalone isn't defined yet
-  // this is catching... sometimes??
-  if (isStandalone(item)) {
+  if (isPremium(item)) {
+    // item.standalone is not yet defined here!!! -- i think it is now
+    //console.log(`${item.name} -- is standalone? (use fx) -- ${isStandalone(item)}`);
+    //template = 'It is available to purchase from the [[Premium Shop]] in the [[%%bundleName%%]] bundle for {{price|%%bundlePrice%%|moonstone|showLabel}}.';
     template =
-      'It is available to purchase from the [[Premium Shop]] in the ' +
-      '[[' + item.bundleName + ' (Bundle)|' + item.bundleName + ']]' +
-      ' bundle for {{price|' + item.bundlePrice + '|moonstone|showLabel}}.';
-    //template = `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName} (Bundle)|${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
-  }
+      `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
 
+    // 2025.08.19 this is not catching, item.standalone isn't defined yet
+    // this is catching... sometimes??
+    if (isStandalone(item)) {
+      template =
+        'It is available to purchase from the [[Premium Shop]] in the ' +
+        '[[' + item.bundleName + ' (Bundle)|' + item.bundleName + ']]' +
+        ' bundle for {{price|' + item.bundlePrice + '|moonstone|showLabel}}.';
+      //template = `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName} (Bundle)|${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
+    }
+  }
+  
   return template;
 }
 
@@ -1857,6 +1865,11 @@ function jankyCleanup(originalRenderedHTML) {
     '[[:Category:Storybook Vale Clothing Sets Collection|Storybook Vale Clothing Sets Collection]]'
   );*/
 
+  newStr = newStr.replaceAll(
+  '[[:Category: <!--Dreamlight Valley--> Companions Collection|<!--Dreamlight Valley--> Companions Collection]]',
+  '[[:Category: Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]]',
+  );
+
   newStr = newStr.replaceAll('\n|size=remove', '');
   newStr = newStr.replaceAll('\n|gridSize=remove', '');
 
@@ -1906,6 +1919,9 @@ function jankyCleanup(originalRenderedHTML) {
   newStr = newStr.replaceAll('\n|functions=-', '');
   //newStr = newStr.replaceAll('\n|functions=-', '\n|functions=none');
   newStr = newStr.replaceAll('\n|functions=Rug', '');
+
+
+  newStr = newStr.replaceAll('|universe=(unknown)','|universe=<!--(unknown)-->'); // introduced by companions
 
   // todo: get rid of trailing space before line break
   return newStr;

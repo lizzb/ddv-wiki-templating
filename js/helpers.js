@@ -1306,11 +1306,10 @@ function generateCompanionTemplate(item) {
     template += "|category=<!--Animal/Notable Companions"; //output_category(item); // Animal Companions / Notable Companions
     if (isCritter) { template += ", Critter"; }
     template += "-->\n";
+    template += '|critterType=<!--Capybara-->\n';
     template += output_collection(item);  // Dreamlight Valley
     template += output_universe(item);
-    template += '|critterType=<!--Capybara-->\n';
     template += '|hangout=<!--Flowers-->';
-
     template += '\n'+output_from(item);
 
      if (isCritter) {
@@ -1364,7 +1363,7 @@ function generateCompanionTemplate(item) {
       template += "\n";
     }
 
-    template += '}}\n'; // END OF INFOBOX
+    template += '}}'; // END OF INFOBOX
     //template += `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`;
 
     template += '\n{{ItemDescription';
@@ -1376,30 +1375,39 @@ function generateCompanionTemplate(item) {
     //template += '\n|bundleName=XXX_COMPANIONNAME_XXX (Bundle){{!}}XXX_COMPANIONNAME_XXX';
     //template += '\n|bundlePrice=XXX_BUNDLEPRICE_XXX';
     template += '|critterCollection=%%collection%%';
-    template += '\n|hangout=<!--[[Foraging#Flowers{{!}}Flowers]]-->';
+    template += '\n|hangout=<!--[[Foraging]] / [[Foraging#Flowers{{!}}Flowers]]-->';
     template += '\n}}';
 
-
+    // is a limited time premium [[Companions#Event Companions|event companion]]
+    // is a premium [[Companions#Premium Companions|companion]].
     var introLink = "premium [[Companions#Event Companions|event companion]]";
-    var introSecondary = " which was available during the [[Pixar Fest Star Path]]";
+    var introSecondary = ""; // TODO?: " which was available during the [[Pixar Fest Star Path]]";
 
-    template += "'''%%name%%''' is a " + introLink + introSecondary + ".";
+    template += '\n'+"'''%%name%%''' is a " + introLink + introSecondary + ".";
     template += '\n\n' + generateBodyFromPremiumShop(item);
+
+    // TODO - why is the star path body text not generating??
 
     /*
     It was originally available to unlock and collect during the [[Pixar Fest Star Path]] event
     using {{price|40|pixartoken|showLabel}} from the Tier 1 Premium Rewards.
     It later returned to the [[Premium Shop]] in the [[IncrediSquirrel (Bundle)|IncrediSquirrel]] bundle
     for {{price|2000|moonstone|showLabel}}.
+    */
 
-    Once collected it will be added to the [[:Category:Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]].
 
-*/
-    //template += " It can be applied using the [[Furniture menu]] inside the Inventory by " + body_pickupText + ".";
-
-    template += "It can be equipped using the [[Wardrobe menu]] inside the [[Inventory]], under the '''Companions''' category.";
+    var companionCollectionText = ' Once collected it will be added to the [[:Category: %%collection%% %%itemType%% Collection|%%collection%% %%itemType%% Collection]].';
+    
+    companionCollectionText = ' Once collected it will be added to the [[:Category:Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]].';
+    template += companionCollectionText;
+    
+    template += "\n\nIt can be equipped using the [[Wardrobe menu]] inside the [[Inventory]], under the '''Companions''' category.";
     template += " Once equipped, it will follow the Player as they move between Biomes and wander nearby.";
-    template += " It can collect [[Foraging]] resources near to the player, and after reaching [[friendship]] level 4 it can has a chance to produce bonus [[Foraging]] resources when gathering.";
+    template += " It can collect";
+    template += "<!-- [[Foraging#Flowers|Flowers]] / [[Foraging]]-->";
+    template += " resources near to the player, and after reaching [[friendship]] level 4 it can has a chance to produce bonus ";
+    template += "<!-- [[Foraging]]-->"
+    template+= " resources when gathering.";
     template += " Companions can also be photographed in unique poses using [[Phone#Photo Mode|Photo Mode]], or housed in a [[:Category:Companion Home|Companion Home]].";
 
 
@@ -1412,17 +1420,9 @@ function generateCompanionTemplate(item) {
     intro_buildingReplace = "the [[Valley Visit Station]]"; // valley visit station
     intro_buildingReplace = "[[" + item.category + "]]s in any biome in any Village (except the singular primary Well per Village).<!--(except the large [[Plaza|Plaza Well]])-->{{cleanup|Concise language. - Library of Lore Well in SV, Plaza Well in DV, Docks Well in EI, Well in WM}}";
 
-
-
     template += "'''%%name%%''' is a " + introLink + " that can be applied to " + intro_buildingReplace + ".";
     template += '\n\n' + generateBodyFromPremiumShop(item);
     template += " It can be applied using the [[Furniture menu]] inside the Inventory by " + body_pickupText + ".";
-
-
-    
-
-
-
     */
 
     
@@ -1867,8 +1867,10 @@ function isCraftable(item) {
 }
 
 function isStarPath(item) {
-  // TODO: add OR source contains the word starpath
-  return item.location && item.location.includes('starpath');
+  var isStarPath = 
+    item.location && item.location.includes('starpath') ||
+    item.source && item.source.includes('Star Path');
+  return  isStarPath;
 }
 
 
