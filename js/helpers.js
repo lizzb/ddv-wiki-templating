@@ -1411,22 +1411,6 @@ function generateCompanionTemplate(item) {
     template += "<!-- [[Foraging]]-->"
     template+= " resources when gathering.";
     template += " Companions can also be photographed in unique poses using [[Phone#Photo Mode|Photo Mode]], or housed in a [[:Category:Companion Home|Companion Home]].";
-
-
-    /*
-
-    var intro_buildingReplace = "[["+item.category+"]]";
-    var body_buildingReplace = "[["+item.category+"]]"; // XXXX_BUILDINGTYPE_XXXX / remy/scrooge / everything except plaza
-    var body_pickupText = "picking up a/the [["+item.category+"]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
-
-    intro_buildingReplace = "the [[Valley Visit Station]]"; // valley visit station
-    intro_buildingReplace = "[[" + item.category + "]]s in any biome in any Village (except the singular primary Well per Village).<!--(except the large [[Plaza|Plaza Well]])-->{{cleanup|Concise language. - Library of Lore Well in SV, Plaza Well in DV, Docks Well in EI, Well in WM}}";
-
-    template += "'''%%name%%''' is a " + introLink + " that can be applied to " + intro_buildingReplace + ".";
-    template += '\n\n' + generateBodyFromPremiumShop(item);
-    template += " It can be applied using the [[Furniture menu]] inside the Inventory by " + body_pickupText + ".";
-    */
-
     
     template += '\n{{cleanup|Uncomment when confirmed --';
     template += "\n==Friendship Rewards==";
@@ -1831,19 +1815,31 @@ function isWishingWell(item) {
 
 // this may also be catching wishing wells? need to investigate
 function isCharacterDreamStyle(item) {
+
+  //category: Character Dream Style   universe: Character Dream Style    itemType: Dream Style.    universe:Character Dream Style
   
-    // for chardreamstyles, itemType = Dream Style (originally Clothing from sheet, script overwrites), category = Character Dream Style, universe = Character Dream Style ...
-  var isDreamStyle = // IS SOMETHING WRONG HERE... 2026.03.24
+  // for chardreamstyles, itemType = Dream Style (originally Clothing from sheet, script overwrites), category = Character Dream Style, universe = Character Dream Style ...
+  // IS SOMETHING WRONG HERE... 2026.03.24
+  // TODO: double check values used in sheet for character dream styles, category=Dream Style is not exclusive to character skins
+  
+  // why is this broken...
+  var isDreamStyle = 
+    (item.collection == 'n/a - CHARACTER DREAM STYLE') ||
+    (item.itemType == 'Clothing' &&  item.collection == 'Dream Style') ||
+    (item.category == 'Character Dream Style') ||
+    (item.universe == 'Character Dream Style') ||
+    (item.category && item.category.includes('Character')) ||
+    (item.universe && item.universe.includes('Character'));
 
-    // TODO: double check values used in sheet for character dream styles, category=Dream Style is not exclusive to character skins
-    item.collection == 'n/a - CHARACTER DREAM STYLE' || (item.itemType == 'Clothing' &&  item.collection == 'Dream Style');
-
+    // this will not do anything
+    /*
   if (isDreamStyle) {
     item.itemType = 'Dream Style';
     item.category = 'Character Dream Style';
 
     //item.universe = 'Character Dream Style'; this will overwrite the infobox value if set here
   }
+  */
   return isDreamStyle;
 }
 

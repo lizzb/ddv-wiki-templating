@@ -180,7 +180,7 @@ function output_collection(item) {
       item.collection = 'Wishblossom Mountains';
       break;
     case 'Dream Style':
-      item.collection = 'n/a - CHARACTER DREAM STYLE';
+      item.collection = 'remove'; //'n/a - CHARACTER DREAM STYLE';
       break;
     case 'Well':
       item.collection = 'n/a - WELL';
@@ -391,10 +391,9 @@ function output_prioritizedCategory(categoryVal) {
   var output = categoryVal;
 
   // TODO: verify prioritization of categories
-  //Wallpaper, Flooring, Appliance, TAbles, Beds, Trimmings, Essentials, Attractions, Decor, Misc., Wall, Electronics, Storage, Utilities, Rugs, Lighting, Seating, Art, Foliage, Landscaping
   // i think a few are missing, fences, paths, rocks...
 
-  var prioritizedFurnitureCategories = ["Wallpaper", "Flooring", "Appliance", "Seating", "Tables", "Beds", "Essentials", "Lighting", "Misc.", "Storage"];
+  var prioritizedFurnitureCategories = ["Wallpaper", "Flooring", "Attractions", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Landscaping", "Foliage", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings"];
 
   output = getFirstCategoryMatch(categoryVal, prioritizedFurnitureCategories);
 
@@ -585,6 +584,7 @@ function parseItemSource(item) {
     /*
     // Sample values
     var item = {};
+    Premium Bundle - Garden Teapot House (____ M) // Star Path - Garden of Whimsy - B3A - Bonus Items (150 tokens)
     item.source = "Star Path - Garden of Whimsy - B2C - Bonus Items (25 tokens)";
     item.source = "Star Path - Paw-fect Romance - 4A - T4 Premium (70 tokens)";
     item.source = "Star Path - Frost & Fairies - 1D - T1 (8 tokens)";
@@ -625,6 +625,8 @@ function parseItemSource(item) {
     if (item.bonus == "yes") {
       item.bonusInline = " Bonus";
     }
+
+    //console.log(`Various item props for source ${item.source}:   ===  item.premium: ${item.premium} item.premiumInline: ${item.premiumInline}   item.bonus: ${item.bonus}  item.bonusInline: ${item.bonusInline}   `)
 
     /*
     // 2025.09.30 - if these are being set correctly, then why are they coming up undefined later....
@@ -822,19 +824,23 @@ function output_from(item) {
     //infoboxFrom = "|from="+item.starpath+"\n|tier=%%tier%%\n|premium=%%premium%%\n|eventTokens='+item.eventtokens+'";
     // **** TODO: why isnt microtemplating working for this?
     infoboxFrom = `|from=${item.starpath} Star Path`;
-    if (item.isBonus == "yes") {
-      infoboxFrom += `\n|bonus=${item.isBonus}`;
+    if (item.bonus == "yes") {
+      infoboxFrom += `\n|bonus=${item.bonus}`;
     }
-
     infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
+
+    if (showItemDebug) {
+      console.log(`Various item props for source ${item.source}:   ===  item.premium: ${item.premium} item.premiumInline: ${item.premiumInline}   item.bonus: ${item.bonus}  item.bonusInline: ${item.bonusInline}   `)
+
+    }
 
     // not sure why interpolation isnt working TODO -- why did interpolation stop working 2025.04.23
     // not sure why it was ever working before to show correct star path, this might be being overridden somewhere for returning sp furniture
-    itemSource = `It was available to unlock and collect for a limited time during the [[${item.starpath}  Star Path]] event using {{price|${item.eventtokens}|` +
+    itemSource = `It was available to unlock and collect for a limited time during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` +
       lookupToken(item.starpath) + `|showLabel}} from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
 
     if (item.bonus == "yes") {
-      itemSource += ", which were available after all regular Star Path rewards have been collected";
+      itemSource += ", which were available after all regular Star Path rewards had been collected";
     }
     itemSource += ".";
 
@@ -844,13 +850,13 @@ function output_from(item) {
       // current tense
       itemSource = itemSource.replaceAll('was available', 'is available');
       itemSource = itemSource.replaceAll('were available', 'are available');
+      itemSource = itemSource.replaceAll('had been', 'have been');
     }
 
   }
 
   // ========== 6 CHECK IF PREMIUM ITEM (may include returning starpath) ==========
 
-  console.log("we are at check level 6 with item: ", item.name);
   if (isPremium(item)) {
     if (showItemDebug) {
       console.log(item.name, ' is a premium item');
@@ -866,7 +872,11 @@ function output_from(item) {
 
     // item is a returning star path item to premium shop
     if (item.returning) {
-      infoboxFrom = `|from=${item.starpath} Star Path\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
+      infoboxFrom = `|from=${item.starpath} Star Path`;
+      if (item.bonus == "yes") {
+        infoboxFrom += `\n|bonus=${item.bonus}`;
+      }
+      infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
     } else {
       // item is a premium shop only, not a returning star path item
       infoboxFrom = `|from=Premium Shop`;
@@ -891,10 +901,21 @@ function output_from(item) {
   // not sure why interpolation stopped working here as well..2025.08.18
   var inlineBundleLink_default = `[[${item.bundleName}]]`;
   var inlineBundleLink_standalone = `[[${item.bundleName} (Bundle)|${item.bundleName}]]`;
-  var tokenLookup = lookupToken(item.starpath);
 
-  var originallySPtext = `It was originally available to unlock and collect during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` +
-    tokenLookup + `|showLabel}} from the Tier ${item.tier} ${item.premiumInline} Rewards. It later returned to the [[Premium Shop]] in the `;
+
+  var originallySPtext = `It was originally available to unlock and collect `;
+  ////originallySPtext = `for a limited time `;
+  originallySPtext += `during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` + lookupToken(item.starpath) + `|showLabel}}`;
+  originallySPtext += ` from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
+  if (item.bonus == "yes") {
+      originallySPtext += ", which were available after all regular Star Path rewards have been collected";
+    }
+  originallySPtext += `.`;
+  originallySPtext += ` It later returned to the [[Premium Shop]] in the `;
+
+
+  // TODO: It later returned to the Vault Rewards of the [[STARPATH]] event and will be/was available to unlock after MONTH DAY, 2026.
+  // insert before premium bundle (if relevant)
 
   //Star Path - Elements of Nature - TILE - Vault (__ tokens)
 
@@ -908,8 +929,7 @@ function output_from(item) {
       itemSource = 'It is available to purchase from the [[Premium Shop]] in the ' + inlineBundleLink_standalone + ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
   }
 
-  // TODO: It later returned to the Vault Rewards of the [[STARPATH]] event and will be/was available to unlock after MONTH DAY, 2026.
-  // insert before premium bundle (if relevant)
+
 
 
   // todo: tale/crafting
@@ -1137,6 +1157,8 @@ function output_itemIntro(item) {
       break;
     case 'Character':
     case 'Character Dream Style':
+      // this case does not seem to be catching?
+      //console.log("we got here");
       itemUseIntro_clothing = '';
       break;
     default:
@@ -1148,7 +1170,15 @@ function output_itemIntro(item) {
     console.log("item.functions for ", item.name, ": ", item.functions);
   }
 
-
+  /*// no idea why this isn't being caught in switch above
+  if (isCharacterDreamStyle(item)) {
+    itemUseIntro_clothing = '';
+  }*/
+  /*console.log(item);
+  console.log( `item category is ${item.category} and the itemUseIntro_clothing was set to : ${itemUseIntro_clothing}`)
+  if (item.category == 'Character Dream Style') {
+    console.log("we got here 2");
+  }*/
 
   switch (item.functions) {
     case 'Light (Constant)':
@@ -1305,9 +1335,8 @@ function output_itemIntro(item) {
     output += ".";
   }
 
-
-
-
+  //console.log(`item info for ${item.name}:   category: ${item.category}   universe: ${item.universe}    itemType: ${item.itemType}.    universe:${item.universe}`)
+  
   if (isCharacterDreamStyle(item)) {
     //console.log(`item info for ${item.name}:   category: ${item.category}   universe: ${item.universe}    itemType: ${item.itemType}.    universe:${item.universe}`)
     var charProperName = determineCharacterFromDreamStyle(item.name);
@@ -1372,6 +1401,14 @@ function renderClothingFurnitureArticle(dataArray) {
       item.category = 'Dream Castle';
       item.collection = 'none';
     }
+
+    // not entirely sure why uncommenting this breaks stuff
+    /*
+    if (isCharacterDreamStyle) {
+      item.itemType = 'Dream Style';
+      item.category = 'Character Dream Style';
+      item.universe = 'Character Dream Style';
+    }*/
 
     if (isCompanion(item)) {
       //in game: type=Companions, collection=<<>>, category=<<>>
@@ -1576,12 +1613,16 @@ function generateHouseTemplate(item) {
       output_universe(item) +
       output_from(item) +
       output_sizePlacementEnv(item) +
-      '}}\n' +
-      '{{ItemDescription\n|%%name%%\n|type=House Dream Style\n|universe=%%universe%%';
+      '}}\n';
+
+
+    // === ItemDescription template for house
+    var itemDescriptionTemplate = '';
+
+    itemDescriptionTemplate += '{{ItemDescription\n|%%name%%\n|type=House Dream Style\n|universe=%%universe%%';
 
     if (item.tier) {
-      item.itemFrom =
-        '|from=' + item.starpath + ' Star Path|tier=' + item.tier + '|premium=%%premium%%|eventTokens=' + item.eventtokens + '';
+      item.itemFrom = '\n|from=' + item.starpath + ' Star Path\n|tier=' + item.tier + '\n|premium=%%premium%%\n|eventTokens=' + item.eventtokens + '';
     }
 
     // todo - theese 3 params (from, bundleName, bundlePrice) are repeated in wayyyy too many places
@@ -1594,12 +1635,35 @@ function generateHouseTemplate(item) {
     }
     item.itemFrom += addText;
 
-    template +=
-      item.itemFrom +
-      '\n}}';
+    itemDescriptionTemplate += item.itemFrom + '\n}}';
 
-    template += output_history(item) + output_navbox(item);
-    template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]';
+    /*
+    template += itemIntro; //output_itemIntro(item);
+    template += itemSource; //output_itemSource(item);
+    template += collectionStatus; //output_collectionStatus(item);
+    template += itemUsage; //output_itemUsage(item);
+    */
+    // === Actual article text body template for house
+
+    //template += itemDescriptionTemplate;
+
+    template += ''; // It was available to unlock and collect for a limited time during [[Garden of Whimsy Star Path]] event using {{price|150|tranquiltoken|showLabel}} from the Tier 3 Premium Bonus Rewards, which were available after all regular rewards have been collected.
+
+    //template += output_itemIntro(item);
+    template += `'''${item.name}''' is a [[Dream Styles#House Dream Styles|House Dream Style]] that can be applied to the [[Player's House]].`;
+
+    template += output_itemSource(item);
+    //template += output_collectionStatus(item);
+
+    //template += output_itemUsage(item);
+    template += "\n\nIt can be applied using the [[Furniture menu]] inside the Inventory by picking up the [[Player's House]], which enables an option to '''Replace''', and then choosing a replacement House Dream Style. The Player's House must be fully upgraded to change its Dream Style. It can be also be placed in the Valley as an [[Dream_Styles#Placing Additional House Dream Styles|additional House]].";
+
+    // template += output_relatedItems(item);
+    template += output_history(item);
+    template += output_navbox(item);
+
+    // template += output_missingCategories(item);
+    template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]'; 
   }
 
   return template;
@@ -1869,6 +1933,10 @@ function jankyCleanup(originalRenderedHTML) {
   '[[:Category: <!--Dreamlight Valley--> Companions Collection|<!--Dreamlight Valley--> Companions Collection]]',
   '[[:Category: Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]]',
   );
+  newStr = newStr.replaceAll(
+  '<!--<!--Dreamlight Valley-->-->',
+  '<!--Dreamlight Valley-->',
+  );
 
   newStr = newStr.replaceAll('\n|size=remove', '');
   newStr = newStr.replaceAll('\n|gridSize=remove', '');
@@ -1895,6 +1963,10 @@ function jankyCleanup(originalRenderedHTML) {
 
   // It can be crafted using using seasonal [[ingredients]] that are available during the [[Lucky You!]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].
   //[[Category:none Furniture Sets Collection]]
+
+  // character dream style
+  newStr = newStr.replaceAll("Once collected it will be added to the [[:Category:remove Dream Style Sets Collection|remove Dream Style Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "");
+
 
   // Global flag required when calling replaceAll with regex
   // do not think this is working - 2026.04.05
