@@ -543,20 +543,20 @@ function parseItemType(item) {
 // Set other item properties based on the value of item.location - parsing and interpreting logic
 function parseItemSource(item) {
 
+  if (!item.source) return item; // Failsafe for undefined sources
   //if (!item.location) item.location = "";
 
   var itemSource = '';
   var itemFrom = '';
-  //console.log(item);
-
 
   // not tested
   // ===== Player Level =====
   if (item.location == 'level') {
     const string = item.source;
     const regex = /Level (\d+)/;
-    const result = string.split(regex);
-    item.level = result[1]; // player level
+    const match = string.split(regex);
+    // Safely captures the first group
+    if (match) { item.level = match[1]; } // player level  
   }
 
   // TODO: location == premium/friendship not working
@@ -579,24 +579,20 @@ function parseItemSource(item) {
     item.level = result[2]; // friendship level
     item.quest = result[3]; // quest name
   }
+
   // ===== Star Path =====
   if (isStarPath(item)) {
-
     /*
+    // Sample values
     var item = {};
     item.source = "Star Path - Garden of Whimsy - B2C - Bonus Items (25 tokens)";
     item.source = "Star Path - Paw-fect Romance - 4A - T4 Premium (70 tokens)";
     item.source = "Star Path - Frost & Fairies - 1D - T1 (8 tokens)";
     parseStarPathData(item);
     */
-    /*
-    Star Path - Garden of Whimsy - B2C - Bonus Items (25 tokens)
-    Star Path - Paw-fect Romance - 4A - T4 Premium (70 tokens)
-    Star Path - Frost & Fairies - 1D - T1 (8 tokens)
-    */
 
     const string = item.source;
-    const regex = /^Star Path - (.+?) - ([A-Z0-9]+) - (?:(?:T(\d))(?: Premium)?|Bonus Items) \((\d+) tokens\)$/;
+    const regex = /Star Path - (.+?) - ([A-Z0-9]+) - (?:(?:T(\d))(?: Premium)?|Bonus Items) \((\d+) tokens\)/;
     const match = string.match(regex);
 
     if (!match) {
@@ -854,6 +850,7 @@ function output_from(item) {
 
   // ========== 6 CHECK IF PREMIUM ITEM (may include returning starpath) ==========
 
+  console.log("we are at check level 6 with item: ", item.name);
   if (isPremium(item)) {
     if (showItemDebug) {
       console.log(item.name, ' is a premium item');
@@ -887,7 +884,6 @@ function output_from(item) {
     }
 
     infoboxFrom += '\n|bundlePrice=' + item.bundlePrice;
-
   }
 
   // value of collection should already be changed from DV-->Dreamlight Valley by some other collection function from the infobox
@@ -897,7 +893,7 @@ function output_from(item) {
   var inlineBundleLink_standalone = `[[${item.bundleName} (Bundle)|${item.bundleName}]]`;
   var tokenLookup = lookupToken(item.starpath);
 
-  var originallySPtext = `It was originally available to unlock and collect during the [[${item.starpath} Star Path]] event using {{price|$(item.eventtokens}|` +
+  var originallySPtext = `It was originally available to unlock and collect during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` +
     tokenLookup + `|showLabel}} from the Tier ${item.tier} ${item.premiumInline} Rewards. It later returned to the [[Premium Shop]] in the `;
 
   //Star Path - Elements of Nature - TILE - Vault (__ tokens)
