@@ -10,19 +10,19 @@ function renderParent(dataArray, templateType) {
 
   var outputHTML = '';
   switch (templateType) {
-    case "spDuties":
-      outputHTML = renderSPDuties(dataArray);
-      break;
-    case "spRewards":
-      outputHTML = renderSPRewardTable(dataArray);
-      break;
-    case "questItems":
-      outputHTML = renderQuestItems(dataArray);
-      break;
-    case "meals":
-      outputHTML = renderMeals(dataArray);
-      break;
-    case "ingredients":
+  case "spDuties":
+    outputHTML = renderSPDuties(dataArray);
+    break;
+  case "spRewards":
+    outputHTML = renderSPRewardTable(dataArray);
+    break;
+  case "questItems":
+    outputHTML = renderQuestItems(dataArray);
+    break;
+  case "meals":
+    outputHTML = renderMeals(dataArray);
+    break;
+  case "ingredients":
       outputHTML = renderIngredients(dataArray); //"Ingredient template missing";
       break;
     case "companions":
@@ -40,19 +40,19 @@ function renderParent(dataArray, templateType) {
       break;
     default:
       outputHTML = "Unsure what template generating function to use, templateType: ", templateType;
-  }
+    }
 
   // i really should do better event handling....
-  collectionConfirmed = $("#collectionConfirmedCB").prop("checked");
-  functionsConfirmed = $("#functionsConfirmedCB").prop("checked");
+    collectionConfirmed = $("#collectionConfirmedCB").prop("checked");
+    functionsConfirmed = $("#functionsConfirmedCB").prop("checked");
 
-  console.log(`collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
+    console.log(`collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
 
   // if a custom template is provided in the textarea, use that instead of the one specified by the function
-  var inputTemplateValue = document.getElementById("template-input").value;
-  if (inputTemplateValue) {
-    outputHTML = renderVariableTemplate(dataArray, inputTemplateValue);
-  }
+    var inputTemplateValue = document.getElementById("template-input").value;
+    if (inputTemplateValue) {
+      outputHTML = renderVariableTemplate(dataArray, inputTemplateValue);
+    }
   // Set the value
   //document.getElementById("template-input").value = "New content for the textarea.";
   //%%name%%: %%type%%
@@ -60,23 +60,23 @@ function renderParent(dataArray, templateType) {
   //outputHTML += renderUpdatedFlooring(flooring);
   //outputHTML += renderClothingFurnitureArticle(flooring);
 
-  return outputHTML;
-}
+    return outputHTML;
+  }
 
 
 
-function output_image(item) {
-  var output = '|image=' + item.name + '.png\n';
-  if (item.itemType == 'Clothing' && !isAccessory(item))
-    output += '|image_m=' + item.name + '_m.png\n';
-  return output;
-}
+  function output_image(item) {
+    var output = '|image=' + item.name + '.png\n';
+    if (item.itemType == 'Clothing' && !isAccessory(item))
+      output += '|image_m=' + item.name + '_m.png\n';
+    return output;
+  }
 
-function output_type(item) {
+  function output_type(item) {
   //console.log("type, itemtype, craftingcategory", item.type, item.itemType, item.craftingcategory, item.category)
-  var output = '|type=%%itemType%%\n';
+    var output = '|type=%%itemType%%\n';
   // if  crafting then
-  if (isCraftable(item)) {
+    if (isCraftable(item)) {
     output += '|craftingcategory=%%craftingCategory%%\n'; //Furniture
   }
   return output;
@@ -87,7 +87,7 @@ function output_category(item) {
   if (!item.category) {
     if (item.itemType == 'Clothing') {
       item.category =
-        '<!--Accessories, Companions, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
+      '<!--Accessories, Companions, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
     } else {
       // defaults to furniture
       item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
@@ -132,7 +132,7 @@ function output_buyprice(item) {
 function output_color(item) {
   if (!item.color && !(isHairstyle(item) || isAccessory(item)))
     item.color =
-    '<!--OPTIONS: blue, green, red, pink, white, black, yellow, orange, brown, purple, gray-->';
+  '<!--OPTIONS: blue, green, red, pink, white, black, yellow, orange, brown, purple, gray-->';
   // Hairstyles/Accessories have no color
 
   var output = '|color=%%color%%\n';
@@ -161,9 +161,9 @@ function output_collection(item) {
   // TODO - think calling this at wrong time, some values entering are <!--Dreamlight Valley-->
   // TODO - since item isnt the thing returned from this function, nothing happens below
   switch (item.collection) {
-    case 'Tracked Wall':
-    case 'Tracked Floor':
-    case 'DV':
+  case 'Tracked Wall':
+  case 'Tracked Floor':
+  case 'DV':
     case 'Dreamlight Valley': // still not sure why this is getting fed sometimes, must be modified somewhere
       item.collection = wrapComment('Dreamlight Valley', !collectionConfirmed);
       break;
@@ -207,7 +207,7 @@ function output_traits(item) {
   if (!item.traits && !(isHairstyle(item) || isAccessory(item))) {
     item.missingCategories.push('[[Category: Missing Traits]]');
     item.traits =
-      '<!--Lavish/Simple, Calm/Playful, Delicate/Strong, Familiar/Wondrous-->';
+    '<!--Lavish/Simple, Calm/Playful, Delicate/Strong, Familiar/Wondrous-->';
   }
   // Hairstyles/Accessories have no traits
 
@@ -335,25 +335,25 @@ function updateAppropriateVersion(item) {
   if (!item.version) item.version = updateNumber;
 
   switch (item.version) {
-    case "1.20.11":
+  case "1.20.11":
       item.version = "1.20"; // different wiki user-facing version
       break;
     default:
       break;
-  }
+    }
 
   // Replace correct sheet version number with generalized version label for wiki history template
-  if (item.collection == "EI" || item.collection == "Eternity Isle") {
-    switch (item.version) {
+    if (item.collection == "EI" || item.collection == "Eternity Isle") {
+      switch (item.version) {
       case "1.8":
         item.version = "Expansion 1-1";
         break;
       default:
         break;
+      }
     }
-  }
-  if (item.collection == "SV" || item.collection == "Storybook Vale") {
-    switch (item.version) {
+    if (item.collection == "SV" || item.collection == "Storybook Vale") {
+      switch (item.version) {
       case "1.14.1":
         item.version = "Expansion 2-1";
         break;
@@ -365,10 +365,10 @@ function updateAppropriateVersion(item) {
         break;
       default:
         break;
+      }
     }
-  }
-  if (item.collection && (item.collection.includes("WR") || item.collection.includes("WM") || item.collection == "Wishblossom Mountains")) {
-    switch (item.version) {
+    if (item.collection && (item.collection.includes("WR") || item.collection.includes("WM") || item.collection == "Wishblossom Mountains")) {
+      switch (item.version) {
       //case "1.2":
       case "1.20":
       case "1.20.1":
@@ -377,35 +377,35 @@ function updateAppropriateVersion(item) {
         break;
       default:
         break;
+      }
     }
+
+
+    return item;
   }
 
 
-  return item;
-}
-
-
 // TODO - insert correct category for Other navboxes furniture categories
-function output_prioritizedCategory(categoryVal) {
+  function output_prioritizedCategory(categoryVal) {
 
-  var output = categoryVal;
+    var output = categoryVal;
 
   // TODO: verify prioritization of categories
   // i think a few are missing, fences, paths, rocks...
 
-  var prioritizedFurnitureCategories = ["Wallpaper", "Flooring", "Attractions", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Landscaping", "Foliage", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings"];
+    var prioritizedFurnitureCategories = ["Wallpaper", "Flooring", "Attractions", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Landscaping", "Foliage", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings"];
 
-  output = getFirstCategoryMatch(categoryVal, prioritizedFurnitureCategories);
+    output = getFirstCategoryMatch(categoryVal, prioritizedFurnitureCategories);
 
-  return output.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
-}
+    return output.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
+  }
 
-function output_navbox(item) {
-  var itemType = item.itemType;
-  var universe = item.universe;
-  var category = item.category;
+  function output_navbox(item) {
+    var itemType = item.itemType;
+    var universe = item.universe;
+    var category = item.category;
 
-  var genericNavClothing = '<!--{{NavboxClothing|back|nondisney}}-->';
+    var genericNavClothing = '<!--{{NavboxClothing|back|nondisney}}-->';
   var genericNavFurniture = '<!--{{NavboxFurniture|seating|general}}-->'; // not sure if this will ever be used becase the default category is being set to a placeholder comment? 2026.04.01 check
   var disneyNavClothing = '<!--{{NavboxClothing|XXXXXXXX|disney}}-->';
   var disneyNavFurniture = '<!--{{NavboxFurniture|XXXXXXXX|disney}}-->';
@@ -431,11 +431,11 @@ function output_navbox(item) {
   } else {
     if (itemType == 'Clothing' || itemType == 'Furniture') {
       output =
-        '{{Navbox' +
-        itemType +
-        '|' +
-        universe.toLowerCase().trim().replace(/\s/g, '') +
-        '|disney}}';
+      '{{Navbox' +
+      itemType +
+      '|' +
+      universe.toLowerCase().trim().replace(/\s/g, '') +
+      '|disney}}';
     } else output = disneyNavClothing + disneyNavFurniture;
   }
   if (isCraftable(item)) {
@@ -527,15 +527,74 @@ function parseItemType(item) {
 
   if (item.category) {
     // returns highest priority match, but doesn't actually matter what the match is, just that something matched
-  if (getFirstCategoryMatch(item.category, allClothingCategories)) {
-    item.itemType = "Clothing";
-  }
-  if (getFirstCategoryMatch(item.category, allFurnitureCategories)) {
-    item.itemType = "Furniture";
-  }
+    if (getFirstCategoryMatch(item.category, allClothingCategories)) {
+      item.itemType = "Clothing";
+    }
+    if (getFirstCategoryMatch(item.category, allFurnitureCategories)) {
+      item.itemType = "Furniture";
+    }
   }
   
   return item;
+}
+
+
+// TODO: clean this up - but at least it's centralized now
+// isStarpath(item) =true comes here, then isPremium
+function generateReturningPremiumStarPathBodyText(item) {
+  var output = "";
+
+  // TODO - checking for if its a returning item - sometimes this is catching regular premium items
+  var output = `It was `;
+  // premium items that have returned to the star path
+  if (isPremium(item)) {
+    output += `originally `;
+  }
+  output += `available to unlock and collect `;
+  if (!isPremium(item)) {
+    output += `for a limited time `;
+  }
+  output += `during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` + lookupToken(item.starpath) + `|showLabel}}`;
+  output += ` from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
+    //itemSource = `It was available to unlock and collect for a limited time during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` + lookupToken(item.starpath) + `|showLabel}} from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
+  if (item.bonus == "yes") {
+    output += ", which were available after all regular Star Path rewards have been collected";
+  }
+  output += `.`;
+
+
+  var inlineBundleLink = `[[${item.bundleName}]]`;
+
+  // item is a standalone item premium bundle
+  if (item.returning || item.name == item.bundleName) {
+    inlineBundleLink = `[[${item.bundleName} (Bundle)|${item.bundleName}]]`;
+  }
+
+  if (isPremium(item)) {
+    output += ` It later returned to the [[Premium Shop]] in the ` + inlineBundleLink;
+
+    output +=  ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
+  }
+
+  // strengthen regular premium bundle logic....
+  if (isPremium(item) && !isStarPath(item)) {
+    output = 'It is available to purchase from the [[Premium Shop]] in the ' + inlineBundleLink;
+    output +=  ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
+  }
+
+  //Star Path - Elements of Nature - TILE - Vault (__ tokens)
+  // TODO: It later returned to the Vault Rewards of the [[STARPATH]] event and will be/was available to unlock after MONTH DAY, 2026.
+  // insert before premium bundle (if relevant)
+
+  // CURRENT STAR PATH tense adjustments
+  if (item.starpath == starPathName) {
+      // current tense
+    output = output.replaceAll('was available', 'is available');
+    output = output.replaceAll('were available', 'are available');
+    output = output.replaceAll('had been', 'have been');
+  }
+
+  return output;
 }
 
 
@@ -626,8 +685,6 @@ function parseItemSource(item) {
       item.bonusInline = " Bonus";
     }
 
-    //console.log(`Various item props for source ${item.source}:   ===  item.premium: ${item.premium} item.premiumInline: ${item.premiumInline}   item.bonus: ${item.bonus}  item.bonusInline: ${item.bonusInline}   `)
-
     /*
     // 2025.09.30 - if these are being set correctly, then why are they coming up undefined later....
     //console.log(`item.starpath: ${item.starpath}`);
@@ -714,20 +771,20 @@ function output_from(item) {
   var itemSource_scroogeDefault = "It has a chance to be available for purchase as rotating stock from [[Scrooge's Store]]";
 
   switch (item.inStore) {
-    case 'EI':
-    case 'x - SV':
-    case 'SV':
-    case 'WM':
-      if (showItemDebug) {
-        console.log(item.name, ' is a scrooge item');
-      }
-      itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']].';
-      infoboxFrom += "|from=Scrooge's Store (" + item.collection + ")\n|storeSlots=";
-      break;
-    case 'x':
-      if (showItemDebug) {
-        console.log(item.name, ' is a scrooge item');
-      }
+  case 'EI':
+  case 'x - SV':
+  case 'SV':
+  case 'WM':
+    if (showItemDebug) {
+      console.log(item.name, ' is a scrooge item');
+    }
+    itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']].';
+    infoboxFrom += "|from=Scrooge's Store (" + item.collection + ")\n|storeSlots=";
+    break;
+  case 'x':
+    if (showItemDebug) {
+      console.log(item.name, ' is a scrooge item');
+    }
       itemSource = itemSource_scroogeDefault + '.'; // default to basic scrooge text
       infoboxFrom = "|from=Scrooge's Store\n|storeSlots="; // default to basic scrooge params
       break;
@@ -735,39 +792,39 @@ function output_from(item) {
       infoboxFrom = ''; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
       itemSource = 'SOURCE TODO.'; // crafting
       break;
-  }
-
-  if (isCraftable(item)) {
-
-    if (showItemDebug) {
-      console.log(item.name, ' is a craftable item');
     }
 
-    infoboxFrom = '|recipe=' + createInfoboxRecipe(item) + '\n';
+    if (isCraftable(item)) {
 
-    if (item.event) {
+      if (showItemDebug) {
+        console.log(item.name, ' is a craftable item');
+      }
+
+      infoboxFrom = '|recipe=' + createInfoboxRecipe(item) + '\n';
+
+      if (item.event) {
       // if regex Crafting \(([\w+\!]\)
-      itemSource = 'It can be crafted using seasonal [[ingredients]] that are available during the [[' + item.event + ']] event at a [[:Category:Crafting Stations|Crafting Station]].'
-    } else {
-      itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
+        itemSource = 'It can be crafted using seasonal [[ingredients]] that are available during the [[' + item.event + ']] event at a [[:Category:Crafting Stations|Crafting Station]].'
+      } else {
+        itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
+      }
     }
-  }
 
 
 
 
   // quick hack
-  if (infoboxFrom.includes('Scrooge')) {
-    item.missingCategories.push('[[Category: Missing Store Slot]]');
-  }
+    if (infoboxFrom.includes('Scrooge')) {
+      item.missingCategories.push('[[Category: Missing Store Slot]]');
+    }
 
   // ========== 3 CHECK IF FROM friendship ==========
-  if (item.location == 'friendship') {
-    if (showItemDebug) {
-      console.log(item.name, ' is a friendship reward item', item.source);
-    }
+    if (item.location == 'friendship') {
+      if (showItemDebug) {
+        console.log(item.name, ' is a friendship reward item', item.source);
+      }
     // source should have already been parsed in parseItemSource
-    itemSource =
+      itemSource =
       'It is automatically rewarded after reaching [[' +
       item.character +
       '#Friendship Rewards|Friendship Level ' +
@@ -776,18 +833,18 @@ function output_from(item) {
       item.character +
       ']].';
 
-    infoboxFrom =
+      infoboxFrom =
       '|reward={{Friendship|' + item.character + '|' + item.level + '}}';
-  }
-
-  // ========== 4 CHECK IF FROM quest ==========
-  if (item.location == 'quest') {
-    if (showItemDebug) {
-      console.log(item.name, ' is a quest reward item', item.source);
     }
 
+  // ========== 4 CHECK IF FROM quest ==========
+    if (item.location == 'quest') {
+      if (showItemDebug) {
+        console.log(item.name, ' is a quest reward item', item.source);
+      }
+
     // source should have already been parsed in parseItemSource
-    itemSource =
+      itemSource =
       'It is automatically rewarded after reaching [[' +
       item.character +
       '#Friendship Rewards|Friendship Level ' +
@@ -798,7 +855,7 @@ function output_from(item) {
       item.quest +
       ']].';
 
-    infoboxFrom =
+      infoboxFrom =
       '|reward={{quest|' +
       item.quest +
       '|friendship=' +
@@ -806,152 +863,105 @@ function output_from(item) {
       '|level=' +
       item.level +
       '}}';
-  }
+    }
 
   // ========== 5 CHECK IF FROM STARPATH (either returning or current)==========
 
   // EXAMPLE: "source":"Star Path - Lovely Monsters - 3E - T3 (25 tokens)\nPremium Bundle - Monster Plushies (1200 M) [___ M]"
   //item.location && item.location.includes('starpath') ||  item.source && item.source.includes('Star Path')
 
-  if (isStarPath(item)) {
-    if (showItemDebug) {
-      console.log(item.name, ' is/was a star path item');
-    }
+    if (isStarPath(item)) {
+      if (showItemDebug) {
+        console.log(item.name, ' is/was a star path item');
+      }
 
     // source should have already been parsed in parseItemSource
-    // properties: starpath, tile, tier, premiumInline-->"yes" or "no", eventtokens
+    // properties: starpath, tile, tier, premium, premiumInline-->"yes" or "no", eventtokens, bonus, bonusInline
 
-    //infoboxFrom = "|from="+item.starpath+"\n|tier=%%tier%%\n|premium=%%premium%%\n|eventTokens='+item.eventtokens+'";
-    // **** TODO: why isnt microtemplating working for this?
-    infoboxFrom = `|from=${item.starpath} Star Path`;
-    if (item.bonus == "yes") {
-      infoboxFrom += `\n|bonus=${item.bonus}`;
+      infoboxFrom = `|from=${item.starpath} Star Path`;
+      if (item.bonus == "yes") {
+        infoboxFrom += `\n|bonus=${item.bonus}`;
+      }
+      infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
+
+      if (showItemDebug) {
+        console.log(`Various item props for source ${item.source}:   ===  item.premium: ${item.premium} item.premiumInline: ${item.premiumInline}   item.bonus: ${item.bonus}  item.bonusInline: ${item.bonusInline}   `)
+
+      }
+
+      var itemSource = generateReturningPremiumStarPathBodyText(item);
+
     }
-    infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
-
-    if (showItemDebug) {
-      console.log(`Various item props for source ${item.source}:   ===  item.premium: ${item.premium} item.premiumInline: ${item.premiumInline}   item.bonus: ${item.bonus}  item.bonusInline: ${item.bonusInline}   `)
-
-    }
-
-    // not sure why interpolation isnt working TODO -- why did interpolation stop working 2025.04.23
-    // not sure why it was ever working before to show correct star path, this might be being overridden somewhere for returning sp furniture
-    itemSource = `It was available to unlock and collect for a limited time during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` +
-      lookupToken(item.starpath) + `|showLabel}} from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
-
-    if (item.bonus == "yes") {
-      itemSource += ", which were available after all regular Star Path rewards had been collected";
-    }
-    itemSource += ".";
-
-
-    // CURRENT STAR PATH
-    if (item.starpath == starPathName) {
-      // current tense
-      itemSource = itemSource.replaceAll('was available', 'is available');
-      itemSource = itemSource.replaceAll('were available', 'are available');
-      itemSource = itemSource.replaceAll('had been', 'have been');
-    }
-
-  }
 
   // ========== 6 CHECK IF PREMIUM ITEM (may include returning starpath) ==========
 
-  if (isPremium(item)) {
-    if (showItemDebug) {
-      console.log(item.name, ' is a premium item');
-    }
+    if (isPremium(item)) {
+      if (showItemDebug) {
+        console.log(item.name, ' is a premium item');
+      }
 
     // source should have already been parsed in parseItemSource
     // properties: bundleName, bundlePrice, also adjusted for placeholder vals
-    itemSource = generateBodyFromPremiumShop(item);
+      itemSource = generateBodyFromPremiumShop(item);
 
     // ****TODO - why isn't microtemplating working here? ***********
     //infoboxFrom = '|from=Premium Shop' + '\n|bundleName=%%bundleName%%\n|bundlePrice=%%bundlePrice%%';
     // REFACTORED PORTION REMOVED
 
     // item is a returning star path item to premium shop
-    if (item.returning) {
-      infoboxFrom = `|from=${item.starpath} Star Path`;
-      if (item.bonus == "yes") {
-        infoboxFrom += `\n|bonus=${item.bonus}`;
-      }
-      infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
-    } else {
+      if (item.returning) {
+        infoboxFrom = `|from=${item.starpath} Star Path`;
+        if (item.bonus == "yes") {
+          infoboxFrom += `\n|bonus=${item.bonus}`;
+        }
+        infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
+      } else {
       // item is a premium shop only, not a returning star path item
-      infoboxFrom = `|from=Premium Shop`;
-    }
+        infoboxFrom = `|from=Premium Shop`;
+      }
 
     // standalone item
-    if (item.standalone) {
-      if (showItemDebug) {
-        console.log('ITEM IS STANDALONE:  ', item.name);
-      }
-      infoboxFrom += `\n|bundleName=${item.bundleName} (Bundle){{!}}${item.bundleName}`;
-    } else {
+      if (item.standalone) {
+        if (showItemDebug) {
+          console.log('ITEM IS STANDALONE:  ', item.name);
+        }
+        infoboxFrom += `\n|bundleName=${item.bundleName} (Bundle){{!}}${item.bundleName}`;
+      } else {
       // item is part of a premium set, NOT standalone
-      infoboxFrom += `\n|bundleName=${item.bundleName}`;
-    }
+        infoboxFrom += `\n|bundleName=${item.bundleName}`;
+      }
 
-    infoboxFrom += '\n|bundlePrice=' + item.bundlePrice;
-  }
+      infoboxFrom += '\n|bundlePrice=' + item.bundlePrice;
+    }
 
   // value of collection should already be changed from DV-->Dreamlight Valley by some other collection function from the infobox
 
-  // not sure why interpolation stopped working here as well..2025.08.18
-  var inlineBundleLink_default = `[[${item.bundleName}]]`;
-  var inlineBundleLink_standalone = `[[${item.bundleName} (Bundle)|${item.bundleName}]]`;
 
-
-  var originallySPtext = `It was originally available to unlock and collect `;
-  ////originallySPtext = `for a limited time `;
-  originallySPtext += `during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` + lookupToken(item.starpath) + `|showLabel}}`;
-  originallySPtext += ` from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
-  if (item.bonus == "yes") {
-      originallySPtext += ", which were available after all regular Star Path rewards have been collected";
-    }
-  originallySPtext += `.`;
-  originallySPtext += ` It later returned to the [[Premium Shop]] in the `;
-
-
-  // TODO: It later returned to the Vault Rewards of the [[STARPATH]] event and will be/was available to unlock after MONTH DAY, 2026.
-  // insert before premium bundle (if relevant)
-
-  //Star Path - Elements of Nature - TILE - Vault (__ tokens)
-
-  if (item.returning) {
-    itemSource = originallySPtext + inlineBundleLink_default + ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
-  }
-  if (item.name == item.bundleName) {
-    if (item.returning)
-      itemSource = originallySPtext + inlineBundleLink_standalone + ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
-    else
-      itemSource = 'It is available to purchase from the [[Premium Shop]] in the ' + inlineBundleLink_standalone + ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
-  }
+    itemSource = generateReturningPremiumStarPathBodyText(item);
 
 
 
 
   // todo: tale/crafting
   // ========== 7 CHECK IF FROM tale ==========
-  if (isTale(item)) {
+    if (isTale(item)) {
 
-    if (showItemDebug) {
-      console.log('item.taleUniverse: ', item.taleUniverse);
-    }
+      if (showItemDebug) {
+        console.log('item.taleUniverse: ', item.taleUniverse);
+      }
     // parseitemsource should have provided item.taleUniverse
-    itemSource =
+      itemSource =
       'It can be collected as a reward after reordering the [[Snippets#Lorekeeper Tales|' +
       item.taleUniverse +
       ' Lorekeeper Tale]].';
-    if (showItemDebug) {
-      console.log(itemSource);
+      if (showItemDebug) {
+        console.log(itemSource);
+      }
+
+      infoboxFrom = '|from=Lorekeeper Tale';
     }
 
-    infoboxFrom = '|from=Lorekeeper Tale';
-  }
-
-  item.infoboxFrom = infoboxFrom;
+    item.infoboxFrom = infoboxFrom;
   item.itemSource = itemSource; // TODO: i think this is being reverted to an empty string?
 
   var output = '%%infoboxFrom%%\n';
@@ -977,12 +987,12 @@ function output_collectionStatus(item) {
   /* 2025.04.23 - WHY DID THESE STOP INTERPOLATING */
 
   var clothingCollectionText =
-    ' Once collected it will be added to the [[:Category: %%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]].';
+  ' Once collected it will be added to the [[:Category: %%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]].';
   // TODO 2026.04.01 - CLEANUP - may not be added to both? needs verification/detecting
   var craftingCollectionText =
-    ' Once collected it will be added to both the [[:Category:%%collection%% Crafting Collection|%%collection%% Crafting Collection]] and the [[:Category:%%collection%% Furniture Sets Collection|%%collection%% Furniture Sets Collection]].';
+  ' Once collected it will be added to both the [[:Category:%%collection%% Crafting Collection|%%collection%% Crafting Collection]] and the [[:Category:%%collection%% Furniture Sets Collection|%%collection%% Furniture Sets Collection]].';
   var furnitureCollectionText =
-    " Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
+  " Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
 
   //var clothingNoCollectionText = ' Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].';
 
@@ -1032,7 +1042,7 @@ function output_itemUsage(item) {
 
   if (item.itemType == 'Clothing') {
     output +=
-      'It can be equipped using the [[Wardrobe menu]] inside the [[Inventory]]';
+    'It can be equipped using the [[Wardrobe menu]] inside the [[Inventory]]';
 
 
 
@@ -1049,23 +1059,23 @@ function output_itemUsage(item) {
 
     // item.itemType is not Clothing, so furniture or crafted furniture -- NO reevaluate....
     output +=
-      'It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]';
+    'It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]';
     switch (item.placement) {
-      case 'surfaces':
-        output += ', and it can be placed either on the ground or on surfaces.';
-        break;
-      case 'walls (indoor)':
-        output +=
-          ', and must be placed on a wall.';
-      case 'walls':
-        output +=
+    case 'surfaces':
+      output += ', and it can be placed either on the ground or on surfaces.';
+      break;
+    case 'walls (indoor)':
+      output +=
+      ', and must be placed on a wall.';
+    case 'walls':
+      output +=
           ', and must be placed on a wall.'; /*TODO is this being hit? naboo decor..., naboo fireplace not triggering proper reaading of environment etc*/
-        break;
-      case 'wall-mounted':
-        output += ', and must be placed against a wall.';
-        break;
-      default:
-        output += '';
+      break;
+    case 'wall-mounted':
+      output += ', and must be placed against a wall.';
+      break;
+    default:
+      output += '';
     }
 
     if (item.environment == 'outdooronly') {
@@ -1080,7 +1090,7 @@ function output_itemUsage(item) {
     // item.functions.includes('Table') || item.surfaceArea
     if (item.surfaceArea) {
       output +=
-        ', and other objects can be placed upon its ' +
+      ', and other objects can be placed upon its ' +
         item.surfaceArea + //'<!--WxD -->' +
         ' surface area.';
     } // ***** TODO - use case where we know its a table but either don't know surface area or the surface area is weirdly shaped, so leave it generic - check number of spaces
@@ -1109,60 +1119,60 @@ function output_itemIntro(item) {
   var itemUseBody = '';
 
   switch (item.category) {
-    case 'Gloves':
-    case 'Glasses':
-    case 'Earrings':
-    case 'Pants':
-    case 'Shoes':
-    case 'Shorts':
-      itemUseIntro_clothing = ' pair of ' + item.category.toLowerCase() + ' [[clothing]].';
-      break;
-    case 'Hose Socks':
-      itemUseIntro_clothing = ' pair of ' + 'socks' + ' [[clothing]].';
-      break;
-    case 'Back':
-      itemUseIntro_clothing = ' piece of ' + 'back' + ' [[clothing]].';
-      break;
-    case 'Bracelets':
-      itemUseIntro_clothing = ' piece of ' + 'bracelet' + ' [[clothing]].';
-      break;
-    case 'Coats':
-      itemUseIntro_clothing = ' piece of ' + 'coat' + ' [[clothing]].';
-      break;
-    case 'Costumes':
-      itemUseIntro_clothing = ' piece of ' + 'costume' + ' [[clothing]].';
-      break;
-    case 'Dresses':
-      itemUseIntro_clothing = ' piece of ' + 'dress' + ' [[clothing]].';
-      break;
-    case 'Hats':
-      itemUseIntro_clothing = ' piece of ' + 'hat' + ' [[clothing]].';
-      break;
-    case 'Masks':
-      itemUseIntro_clothing = ' piece of ' + 'mask' + ' [[clothing]].';
-      break;
-    case 'Neckwear':
-      itemUseIntro_clothing = ' piece of ' + 'neckwear' + ' [[clothing]].';
-      break;
-    case 'Skirts':
-      itemUseIntro_clothing = ' piece of ' + 'skirt' + ' [[clothing]].';
-      break;
-    case 'Tops':
-      itemUseIntro_clothing = ' piece of ' + 'top' + ' [[clothing]].';
-    case 'Hairstyle':
-      itemUseIntro_clothing = ' piece of ' + '[[:Category:Hairstyle|hairstyle]]' + ' [[clothing]].';
-      break;
-    case 'Accessories':
-      itemUseIntro_clothing = ' piece of ' + '[[:Category:Accessories|accessory]]' + ' [[clothing]].';
-      break;
-    case 'Character':
-    case 'Character Dream Style':
+  case 'Gloves':
+  case 'Glasses':
+  case 'Earrings':
+  case 'Pants':
+  case 'Shoes':
+  case 'Shorts':
+    itemUseIntro_clothing = ' pair of ' + item.category.toLowerCase() + ' [[clothing]].';
+    break;
+  case 'Hose Socks':
+    itemUseIntro_clothing = ' pair of ' + 'socks' + ' [[clothing]].';
+    break;
+  case 'Back':
+    itemUseIntro_clothing = ' piece of ' + 'back' + ' [[clothing]].';
+    break;
+  case 'Bracelets':
+    itemUseIntro_clothing = ' piece of ' + 'bracelet' + ' [[clothing]].';
+    break;
+  case 'Coats':
+    itemUseIntro_clothing = ' piece of ' + 'coat' + ' [[clothing]].';
+    break;
+  case 'Costumes':
+    itemUseIntro_clothing = ' piece of ' + 'costume' + ' [[clothing]].';
+    break;
+  case 'Dresses':
+    itemUseIntro_clothing = ' piece of ' + 'dress' + ' [[clothing]].';
+    break;
+  case 'Hats':
+    itemUseIntro_clothing = ' piece of ' + 'hat' + ' [[clothing]].';
+    break;
+  case 'Masks':
+    itemUseIntro_clothing = ' piece of ' + 'mask' + ' [[clothing]].';
+    break;
+  case 'Neckwear':
+    itemUseIntro_clothing = ' piece of ' + 'neckwear' + ' [[clothing]].';
+    break;
+  case 'Skirts':
+    itemUseIntro_clothing = ' piece of ' + 'skirt' + ' [[clothing]].';
+    break;
+  case 'Tops':
+    itemUseIntro_clothing = ' piece of ' + 'top' + ' [[clothing]].';
+  case 'Hairstyle':
+    itemUseIntro_clothing = ' piece of ' + '[[:Category:Hairstyle|hairstyle]]' + ' [[clothing]].';
+    break;
+  case 'Accessories':
+    itemUseIntro_clothing = ' piece of ' + '[[:Category:Accessories|accessory]]' + ' [[clothing]].';
+    break;
+  case 'Character':
+  case 'Character Dream Style':
       // this case does not seem to be catching?
       //console.log("we got here");
-      itemUseIntro_clothing = '';
-      break;
-    default:
-      itemUseIntro_clothing = ' piece<!--/pair--> of <!--back/costume/dress/shoes--> [[clothing]].';
+    itemUseIntro_clothing = '';
+    break;
+  default:
+    itemUseIntro_clothing = ' piece<!--/pair--> of <!--back/costume/dress/shoes--> [[clothing]].';
   }
   //'<!--Accessories, companions, tools, Gliders-->';
 
@@ -1181,9 +1191,9 @@ function output_itemIntro(item) {
   }*/
 
   switch (item.functions) {
-    case 'Light (Constant)':
-    case 'Lighting (Constant)':
-      itemUseIntro = 'lighting';
+  case 'Light (Constant)':
+  case 'Lighting (Constant)':
+    itemUseIntro = 'lighting';
       itemUseBody = 'Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it.'; // ....
       break;
     case 'Light (Automatic)':
@@ -1249,35 +1259,35 @@ function output_itemIntro(item) {
     default:
       itemUseIntro = '<!--seating/gathering/lighting/window/table/rug-->'; // TODO - this isn't catching
       itemUseBody =
-        "<!--, and it can be placed either on the ground or on surfaces.--><!--, and must be placed on/against a wall.--><!--, and it can only be placed outdoors.--><!--, and other objects can be placed upon its WxD surface area.--><!-- Once it is placed in the world, the Player can '''Sit/Lounge''' on the object.--><!--Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light /and sound/animation/ on and off.-->";
+      "<!--, and it can be placed either on the ground or on surfaces.--><!--, and must be placed on/against a wall.--><!--, and it can only be placed outdoors.--><!--, and other objects can be placed upon its WxD surface area.--><!-- Once it is placed in the world, the Player can '''Sit/Lounge''' on the object.--><!--Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light /and sound/animation/ on and off.-->";
       // TODO - modify data input so that items without functions are a "-" value, then detect that
       // if item is returning we know its functions already
       if (functionsConfirmed || item.returning) {
         itemUseIntro = '';
         itemUseBody = '';
       }
-  }
+    }
 
 
   // TODO: this is overriding any values set above, need to fix
   // janky catch for more lighting objects - this is not robust!!!! cases where i've written extra info in the box
-  if (item.functions && item.functions.includes('Light')) {
-    itemUseIntro = 'lighting';
-    itemUseBody = "<!-- Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off. // the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
-  }
+    if (item.functions && item.functions.includes('Light')) {
+      itemUseIntro = 'lighting';
+      itemUseBody = "<!-- Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off. // the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
+    }
 
 
   // override default filler content for wallpaper and flooring, which don't use "function"
-  if (isWallpaperFlooring(item)) {
+    if (isWallpaperFlooring(item)) {
     //console.log('DETECTED WALLPAPER/FLOORING FOR ', item.name);
 
     // TODO - these are not catching 2025.08.19
-    if (
-      item.name.includes('Wallpaper') ||
-      item.category == 'Wallpaper' ||
-      item.category == 'Trim - Wallpaper'
-    ) {
-      itemUseIntro = 'wallpaper';
+      if (
+        item.name.includes('Wallpaper') ||
+        item.category == 'Wallpaper' ||
+        item.category == 'Trim - Wallpaper'
+        ) {
+        itemUseIntro = 'wallpaper';
       itemUseBody = 'wallpaperflooring.';
     }
     if (
@@ -1286,42 +1296,42 @@ function output_itemIntro(item) {
       item.category == 'Flooring' ||
       (item.category && item.category.includes('Flooring')) ||
       (item.category && item.category == 'Trim - Flooring')
-    ) {
+      ) {
       itemUseIntro = 'flooring';
-      itemUseBody = 'wallpaperflooring.';
-    }
+    itemUseBody = 'wallpaperflooring.';
   }
+}
   // Once collected it can be applied to rooms inside the [[Player's House]] using the [[Furniture menu]] inside the [[Inventory]].
 
   //console.log('VALUES OF ITEMUSEINTRO AND ITEMUSEBODY',itemUseIntro, itemUseBody, "and category=", item.category)
 
-  var output = '';
-  output += "'''" + item.name + "'''";
-  output += createUniverseLink(item.itemType, item.universe);
+var output = '';
+output += "'''" + item.name + "'''";
+output += createUniverseLink(item.itemType, item.universe);
 
-  if (item.itemType == 'Clothing') {
-    output += itemUseIntro_clothing;
-  }
-  if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
-    if (item.location && item.location.includes('crafting')) {
-      output += ' piece of ' + itemUseIntro + ' [[Crafting#Furniture|craftable furniture]]';
+if (item.itemType == 'Clothing') {
+  output += itemUseIntro_clothing;
+}
+if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
+  if (item.location && item.location.includes('crafting')) {
+    output += ' piece of ' + itemUseIntro + ' [[Crafting#Furniture|craftable furniture]]';
       //collectionStatus = collectionStatus_furnitureCrafted;
-    } else {
-      output += ' piece of ' + itemUseIntro + ' [[furniture]]';
+  } else {
+    output += ' piece of ' + itemUseIntro + ' [[furniture]]';
       //collectionStatus = collectionStatus_furniture;
-    }
+  }
 
     // SO JANKY and repetitive but its working
-    if (item.functions && item.functions.includes('Cooking Station')) {
-      output += " that functions as a [[:Category:Cooking Stations|cooking station]]";
-      itemUseBody = " Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].";
+  if (item.functions && item.functions.includes('Cooking Station')) {
+    output += " that functions as a [[:Category:Cooking Stations|cooking station]]";
+    itemUseBody = " Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].";
       //itemUseBody = " Once it is placed in the world, the Player can interact with ('''Use''') the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].";
-    }
-    if (item.functions && item.functions.includes('Crafting Station')) {
-      output += " that functions as a [[:Category:Crafting Stations|crafting station]]";
-      itemUseBody = " Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Crafting Stations|Crafting Station]] to make [[Crafting|crafting recipes]].";
-    }
-    if (item.functions && item.functions.includes('Gathering')) {
+  }
+  if (item.functions && item.functions.includes('Crafting Station')) {
+    output += " that functions as a [[:Category:Crafting Stations|crafting station]]";
+    itemUseBody = " Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Crafting Stations|Crafting Station]] to make [[Crafting|crafting recipes]].";
+  }
+  if (item.functions && item.functions.includes('Gathering')) {
       output += ""; //" that functions as a [[:Category:Gathering.....|....]]";
       // TODO: detect and insert number of villagers from functions=Gathering (X)
       var numVillagers = '2';
@@ -1378,20 +1388,20 @@ function renderClothingFurnitureArticle(dataArray) {
     item = parseSizePlacementEnv(item);
 
     switch (item.collection) {
-      case 'DV':
-        item.collection = 'Dreamlight Valley';
-        break;
-      case 'EI':
-        item.collection = 'Eternity Isle';
-        break;
-      case 'SV':
-        item.collection = 'Storybook Vale';
-        break;
-      case 'WM':
-        item.collection = 'Wishblossom Mountains';
-        break;
-      default:
-        break;
+    case 'DV':
+      item.collection = 'Dreamlight Valley';
+      break;
+    case 'EI':
+      item.collection = 'Eternity Isle';
+      break;
+    case 'SV':
+      item.collection = 'Storybook Vale';
+      break;
+    case 'WM':
+      item.collection = 'Wishblossom Mountains';
+      break;
+    default:
+      break;
     }
 
     // TODO... . THIS IS FEELING A BIT JANKY
@@ -1435,19 +1445,19 @@ function renderClothingFurnitureArticle(dataArray) {
         (item.name && item.name.includes("Scrooge's Shop")) ||
         (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Store")) ||
         (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Shop"))
-      ) {
+        ) {
         item.category = "Scrooge's Store";
-      }
+    }
 
       // TODO - this is not robust enough, some items can contain the word plaza
-      if ((item.category && item.category.includes("Plaza")) || (item.name && item.name.includes("Plaza")) || (item.category && item.category.includes("Plaza Square")) || (item.name && item.name.includes("Plaza Square"))) {
-        item.category = "Plaza Square";
-      }
+    if ((item.category && item.category.includes("Plaza")) || (item.name && item.name.includes("Plaza")) || (item.category && item.category.includes("Plaza Square")) || (item.name && item.name.includes("Plaza Square"))) {
+      item.category = "Plaza Square";
+    }
 
       //console.log(`LOOP END: item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
-    }
-    if (isStall(item)) {
-      item.itemType = "Goofy's Stall Skin";
+  }
+  if (isStall(item)) {
+    item.itemType = "Goofy's Stall Skin";
       item.category = "Goofy's Stall"; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
       item.collection = 'none';
     }
@@ -1524,7 +1534,7 @@ function renderClothingFurnitureArticle(dataArray) {
 
     if (item.returning) {
       var returningItemTemplate =
-        itemFrom + '\n' + itemIntro + itemSource + collectionStatus + itemUsage;
+      itemFrom + '\n' + itemIntro + itemSource + collectionStatus + itemUsage;
       // TODO - collection confirmed ONLY for returning items, do not impact global setting collectionConfirmed
       template = returningItemTemplate;
     }
@@ -1568,7 +1578,7 @@ function renderClothingFurnitureArticle(dataArray) {
     renderedHTML += delimiter;
   });
 
-  return jankyCleanup(renderedHTML);
+return jankyCleanup(renderedHTML);
 }
 
 
@@ -1584,20 +1594,20 @@ function generateBodyFromPremiumShop(item) {
     //console.log(`${item.name} -- is standalone? (use fx) -- ${isStandalone(item)}`);
     //template = 'It is available to purchase from the [[Premium Shop]] in the [[%%bundleName%%]] bundle for {{price|%%bundlePrice%%|moonstone|showLabel}}.';
     template =
-      `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
+  `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
 
     // 2025.08.19 this is not catching, item.standalone isn't defined yet
     // this is catching... sometimes??
-    if (isStandalone(item)) {
-      template =
-        'It is available to purchase from the [[Premium Shop]] in the ' +
-        '[[' + item.bundleName + ' (Bundle)|' + item.bundleName + ']]' +
-        ' bundle for {{price|' + item.bundlePrice + '|moonstone|showLabel}}.';
+  if (isStandalone(item)) {
+    template =
+    'It is available to purchase from the [[Premium Shop]] in the ' +
+    '[[' + item.bundleName + ' (Bundle)|' + item.bundleName + ']]' +
+    ' bundle for {{price|' + item.bundlePrice + '|moonstone|showLabel}}.';
       //template = `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName} (Bundle)|${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
-    }
   }
-  
-  return template;
+}
+
+return template;
 }
 
 function generateHouseTemplate(item) {
@@ -1605,15 +1615,15 @@ function generateHouseTemplate(item) {
   if (isHouse(item)) {
     template = '';
     template +=
-      '{{infobox\n' +
-      output_image(item) +
+    '{{infobox\n' +
+    output_image(item) +
       /*output_type(item) +
       output_category(item) + Player House */
-      "|type=Houses\n|category=Player House\n" +
-      output_universe(item) +
-      output_from(item) +
-      output_sizePlacementEnv(item) +
-      '}}\n';
+    "|type=Houses\n|category=Player House\n" +
+    output_universe(item) +
+    output_from(item) +
+    output_sizePlacementEnv(item) +
+    '}}\n';
 
 
     // === ItemDescription template for house
@@ -1676,12 +1686,12 @@ function generateBuildingSkinTemplate(item) {
   if (isBuilding(item) || isCastle(item) || isVisitStation(item) || isWishingWell(item) || isStall(item)) {
 
     template +=
-      '{{infobox\n' +
-      output_image(item) +
-      output_type(item) +
-      output_category(item) +
-      output_collection(item) +
-      output_from(item);
+    '{{infobox\n' +
+    output_image(item) +
+    output_type(item) +
+    output_category(item) +
+    output_collection(item) +
+    output_from(item);
 
     if (isWishingWell(item)) {
       template += '|gridSize=<!--12x12-->\n|placement=<!--bare-->\n';
@@ -1706,18 +1716,18 @@ function generateBuildingSkinTemplate(item) {
     */
 
     switch (item.category) {
-      case "Chez Remy":
-        body_pickupText = "picking up [[" + item.category + "]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style";
-        break;
-      case "Scrooge\'s Store":
-        body_pickupText = "picking up [[" + item.category + "]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style";
-        break;
-      case "Plaza Square":
-        intro_buildingReplace = "the square in the [[Plaza]] in [[Dreamlight Valley]]";
+    case "Chez Remy":
+      body_pickupText = "picking up [[" + item.category + "]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style";
+      break;
+    case "Scrooge\'s Store":
+      body_pickupText = "picking up [[" + item.category + "]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style";
+      break;
+    case "Plaza Square":
+      intro_buildingReplace = "the square in the [[Plaza]] in [[Dreamlight Valley]]";
         // plaza is only one with different val here, not a direct sub of name
-        body_pickupText = "selecting the [[Plaza|Plaza Square]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style"
-        break;
-      case "Dream Castle":
+      body_pickupText = "selecting the [[Plaza|Plaza Square]], which enables an option to '''Replace''', and then choosing a replacement Building Dream Style"
+      break;
+    case "Dream Castle":
         introLink = "[[Dream Styles#Dream Castle Dream Styles|Dream Castle Dream Style]]"; // castle
         intro_buildingReplace = "the [[Dream Castle]] in [[Dreamlight Valley]]"; // castle
         body_pickupText = "selecting the [[" + item.category + "]], which enables an option to '''Replace''', and then choosing a replacement Dream Castle Dream Style";
@@ -1740,22 +1750,22 @@ function generateBuildingSkinTemplate(item) {
       default:
         body_pickupText = "picking up [[" + item.category + "]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
         break;
-    }
+      }
 
-    template += "'''%%name%%''' is a " + introLink + " that can be applied to " + intro_buildingReplace + ".";
+      template += "'''%%name%%''' is a " + introLink + " that can be applied to " + intro_buildingReplace + ".";
 
-    template += '\n\n' + generateBodyFromPremiumShop(item);
+      template += '\n\n' + generateBodyFromPremiumShop(item);
 
-    template += " It can be applied using the [[Furniture menu]] inside the Inventory by " + body_pickupText + ".";
+      template += " It can be applied using the [[Furniture menu]] inside the Inventory by " + body_pickupText + ".";
 
-    if (item.category == "Goofy's Stall") {
-      template += " Each [[Goofy's Stall]] must be fully upgraded to change its Dream Style.";
+      if (item.category == "Goofy's Stall") {
+        template += " Each [[Goofy's Stall]] must be fully upgraded to change its Dream Style.";
       // body_fullUpgradeText = " Each [["+item.category+"]] must be fully upgraded to change its Dream Style." // goofy
-    }
+      }
 
-    template += output_history(item) + output_navbox(item);
+      template += output_history(item) + output_navbox(item);
 
-    switch (item.category) {
+      switch (item.category) {
       case "Wishing Well":
       case "Goofy's Stall":
         // assuming these are always the same size/placement as the items they skin
@@ -1764,25 +1774,25 @@ function generateBuildingSkinTemplate(item) {
       default:
         body_pickupText = "picking up [[" + item.category + "]], which enables an option to '''Replace''', and then choosing a replacement Dream Style";
         break;
-    }
+      }
 
     //template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]]'; // only for goofy? and wishing well?
 
+    }
+    return template;
+
   }
-  return template;
 
-}
-
-function generateCharacterDreamStyleTemplate(item) {
+  function generateCharacterDreamStyleTemplate(item) {
 
   // TODO - returning bundle items should have both star path original token value in infobox AND bundle info
   // item = parseItemSource(item);
 
   // tODO - fix output_from(item) function, not outputting BOTH premium bunle info and star path info for returning items
 
-  if (isCharacterDreamStyle(item)) {
-    var charProperName = determineCharacterFromDreamStyle(item.name);
-    item.appliedto = charProperName;
+    if (isCharacterDreamStyle(item)) {
+      var charProperName = determineCharacterFromDreamStyle(item.name);
+      item.appliedto = charProperName;
     item.universe = getCharacterUniverse(charProperName); //getCharacterUniverse(item.appliedTo); didnt work? -- chekc item.appliedto
 
     template = '';
@@ -1799,42 +1809,42 @@ function generateCharacterDreamStyleTemplate(item) {
       */
     // for some reason type was populating with Dream Style not Character Dream Style -- too lazy to fix everything atm
     template +=
-      `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`
+  `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`
 
     // this could be more elegant.... usually use the itemdescription, unless it is a returning starpath item
-    if (item.returning) {
-      template += "THIS IS A RETURNING SP ITEM - should use regular article generation";
-    } else {
-      template +=
-        '{{ItemDescription\n|%%name%%\n|type=Character Dream Style\n|character=%%appliedto%%\n|universe=%%universe%%';
-      if (item.tier) {
-        item.itemFrom +=
-          '\n|from=' + item.starpath + ' Star Path\n|tier=' + item.tier + '\n|premium=%%premium%%\n|eventTokens=' + item.eventtokens + '';
-      }
-
-      // todo - theese 3 params (from, bundleName, bundlePrice) are repeated in wayyyy too many places
-      var addText = '';
-      if (item.bundleName) {
-        addText =
-          '\n|from=Premium Shop\n|bundleName=%%bundleName%%\n|bundlePrice=%%bundlePrice%%';
-      }
-      if (item.bundleName == item.name) {
-        addText =
-          '\n|from=Premium Shop\n|bundleName=%%bundleName%% (Bundle){{!}}%%bundleName%%\n|bundlePrice=%%bundlePrice%%';
-      }
-      item.itemFrom += addText;
-
-      template +=
-        item.itemFrom +
-        '\n}}';
+  if (item.returning) {
+    template += "THIS IS A RETURNING SP ITEM - should use regular article generation";
+  } else {
+    template +=
+    '{{ItemDescription\n|%%name%%\n|type=Character Dream Style\n|character=%%appliedto%%\n|universe=%%universe%%';
+    if (item.tier) {
+      item.itemFrom +=
+      '\n|from=' + item.starpath + ' Star Path\n|tier=' + item.tier + '\n|premium=%%premium%%\n|eventTokens=' + item.eventtokens + '';
     }
 
-    template += output_history(item) + output_navbox(item);
+      // todo - theese 3 params (from, bundleName, bundlePrice) are repeated in wayyyy too many places
+    var addText = '';
+    if (item.bundleName) {
+      addText =
+      '\n|from=Premium Shop\n|bundleName=%%bundleName%%\n|bundlePrice=%%bundlePrice%%';
+    }
+    if (item.bundleName == item.name) {
+      addText =
+      '\n|from=Premium Shop\n|bundleName=%%bundleName%% (Bundle){{!}}%%bundleName%%\n|bundlePrice=%%bundlePrice%%';
+    }
+    item.itemFrom += addText;
+
+    template +=
+    item.itemFrom +
+    '\n}}';
   }
 
+  template += output_history(item) + output_navbox(item);
+}
 
 
-  return template;
+
+return template;
 }
 
 function generateWallpaperFloorsDescriptionTemplate(item) {
@@ -1852,32 +1862,32 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
   if (isWallpaperFlooring(item)) {
     template = '';
     template +=
-      '{{infobox\n' +
-      output_image(item) +
-      output_type(item) +
-      output_category(item) +
-      output_buyprice(item) +
-      output_color(item) +
-      output_tags(item) +
-      output_collection(item) +
-      output_traits(item) +
-      output_universe(item) +
-      output_from(item) +
-      output_sizePlacementEnv(item) +
-      '}}\n' +
-      '{{WallpaperFloorsDescription|wftype=%%category%%|universe=%%universe%%';
+    '{{infobox\n' +
+    output_image(item) +
+    output_type(item) +
+    output_category(item) +
+    output_buyprice(item) +
+    output_color(item) +
+    output_tags(item) +
+    output_collection(item) +
+    output_traits(item) +
+    output_universe(item) +
+    output_from(item) +
+    output_sizePlacementEnv(item) +
+    '}}\n' +
+    '{{WallpaperFloorsDescription|wftype=%%category%%|universe=%%universe%%';
 
     // todo: check for player level
     //console.log("item character,",item.character)
 
     if (item.character) {
       item.itemFrom =
-        '|from=Friendship|character=%%character%%|level=%%level%%';
+      '|from=Friendship|character=%%character%%|level=%%level%%';
     }
 
     if (item.tier) {
       item.itemFrom =
-        '|from=' + item.starpath + ' Star Path|tier=' + item.tier + '|premium=%%premium%%|eventTokens=' + item.eventtokens + '';
+      '|from=' + item.starpath + ' Star Path|tier=' + item.tier + '|premium=%%premium%%|eventTokens=' + item.eventtokens + '';
     }
 
     if (item.inStore) {
@@ -1885,8 +1895,8 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     }
 
     template +=
-      item.itemFrom +
-      '|collection=%%collection%%';
+    item.itemFrom +
+    '|collection=%%collection%%';
 
     /* THIS DOESN'T WORK
     // this is not perfect, given that in my sheet everything before 1.5 is set to 1.5
@@ -1895,23 +1905,23 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     }
     */
     template += '}}' +
-      output_history(item) +
-      output_navbox(item) +
+    output_history(item) +
+    output_navbox(item) +
       output_missingCategories(item); // removed output_itemUsage(item) - need to capture returning SP item language
     // todo - missing collection still being added to outer space wallpaper
-  }
+    }
 
   // if collection = Untracked/Tracked Floor/Wall or versionAdded < 1.5
   // append |preUpdate5=yes}}
 
-  return template;
-}
+    return template;
+  }
 
 
 
-function jankyCleanup(originalRenderedHTML) {
-  var newStr = originalRenderedHTML;
-  newStr = newStr.replaceAll('=null', '=');
+  function jankyCleanup(originalRenderedHTML) {
+    var newStr = originalRenderedHTML;
+    newStr = newStr.replaceAll('=null', '=');
   /*newStr = newStr.replaceAll(
     '[[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]]',
     '[[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]]'
@@ -1929,34 +1939,38 @@ function jankyCleanup(originalRenderedHTML) {
     '[[:Category:Storybook Vale Clothing Sets Collection|Storybook Vale Clothing Sets Collection]]'
   );*/
 
-  newStr = newStr.replaceAll(
-  '[[:Category: <!--Dreamlight Valley--> Companions Collection|<!--Dreamlight Valley--> Companions Collection]]',
-  '[[:Category: Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]]',
-  );
-  newStr = newStr.replaceAll(
-  '<!--<!--Dreamlight Valley-->-->',
-  '<!--Dreamlight Valley-->',
-  );
+    newStr = newStr.replaceAll(
+      '[[:Category: <!--Dreamlight Valley--> Companions Collection|<!--Dreamlight Valley--> Companions Collection]]',
+      '[[:Category: Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]]',
+      );
+    newStr = newStr.replaceAll(
+      '<!--<!--Dreamlight Valley-->-->',
+      '<!--Dreamlight Valley-->',
+      );
 
-  newStr = newStr.replaceAll('\n|size=remove', '');
-  newStr = newStr.replaceAll('\n|gridSize=remove', '');
+    newStr = newStr.replaceAll("{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}",
+      "{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}"
+      );
+
+    newStr = newStr.replaceAll('\n|size=remove', '');
+    newStr = newStr.replaceAll('\n|gridSize=remove', '');
 
   // need to figure out why for crafted items theres extra space?
-  newStr = newStr.replaceAll('\n\n|gridSize', '\n|gridSize');
+    newStr = newStr.replaceAll('\n\n|gridSize', '\n|gridSize');
 
   // main culprit of double space is itemUseIntro
-  newStr = newStr.replaceAll('  ', ' ');
+    newStr = newStr.replaceAll('  ', ' ');
 
 
   // TODO: double check this in output - need to make functions value streamlining more robust, and not here
-  newStr = newStr.replaceAll('Light \(Constant\)', 'Lighting \(Constant\)');
-  newStr = newStr.replaceAll('Light \(Automatic\)', 'Lighting \(Automatic\)');
-  newStr = newStr.replaceAll('Cooking Station \(Use\)', 'Cooking Station');
-  newStr = newStr.replaceAll('Crafting Station \(Use\)', 'Crafting Station');
+    newStr = newStr.replaceAll('Light \(Constant\)', 'Lighting \(Constant\)');
+    newStr = newStr.replaceAll('Light \(Automatic\)', 'Lighting \(Automatic\)');
+    newStr = newStr.replaceAll('Cooking Station \(Use\)', 'Cooking Station');
+    newStr = newStr.replaceAll('Crafting Station \(Use\)', 'Crafting Station');
 
 
   // for crafted furniture
-  newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');
+    newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');
 
 
   // todo - substitute none collection text with untracked text
@@ -1965,14 +1979,14 @@ function jankyCleanup(originalRenderedHTML) {
   //[[Category:none Furniture Sets Collection]]
 
   // character dream style
-  newStr = newStr.replaceAll("Once collected it will be added to the [[:Category:remove Dream Style Sets Collection|remove Dream Style Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "");
+    newStr = newStr.replaceAll("Once collected it will be added to the [[:Category:remove Dream Style Sets Collection|remove Dream Style Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "");
 
 
   // Global flag required when calling replaceAll with regex
   // do not think this is working - 2026.04.05
-  const regex = /Once collected it will be added to the \[\[\:Category: none ([\w]+) Sets Collection\|none ([\w]+) Sets Collection\]\]\./gi;
+    const regex = /Once collected it will be added to the \[\[\:Category: none ([\w]+) Sets Collection\|none ([\w]+) Sets Collection\]\]\./gi;
   // todo - should move this into output_collection function
-  newStr = newStr.replaceAll(regex, 'Once collected it will not be added to the [[:Category:Untracked $1 Sets Collection|$2 Sets Collection]].');
+    newStr = newStr.replaceAll(regex, 'Once collected it will not be added to the [[:Category:Untracked $1 Sets Collection|$2 Sets Collection]].');
 
   // TODO replace (\w),(\w) with $1, $2 for psBundleItems fix
 
@@ -1981,16 +1995,16 @@ function jankyCleanup(originalRenderedHTML) {
   // TODO replace (\w),(\w) with $1, $2 for psBundleItems fix
 
   // TODO - not sure why not working??? saying untehemed is redundant since accessories don't have universes
-  newStr = newStr.replaceAll('is an unthemed piece of [[:Category:Accessories', 'is a piece of [[:Category:Accessories');
+    newStr = newStr.replaceAll('is an unthemed piece of [[:Category:Accessories', 'is a piece of [[:Category:Accessories');
 
 
   // NOT WORKING
-  newStr = newStr.replaceAll('\{\{inlineIcon\|\|iconOnly\}\}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
+    newStr = newStr.replaceAll('\{\{inlineIcon\|\|iconOnly\}\}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
 
-  newStr = newStr.replaceAll('energy=-', 'energy=');
-  newStr = newStr.replaceAll('\n|functions=-', '');
+    newStr = newStr.replaceAll('energy=-', 'energy=');
+    newStr = newStr.replaceAll('\n|functions=-', '');
   //newStr = newStr.replaceAll('\n|functions=-', '\n|functions=none');
-  newStr = newStr.replaceAll('\n|functions=Rug', '');
+    newStr = newStr.replaceAll('\n|functions=Rug', '');
 
 
   newStr = newStr.replaceAll('|universe=(unknown)','|universe=<!--(unknown)-->'); // introduced by companions
