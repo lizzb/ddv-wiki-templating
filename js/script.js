@@ -490,8 +490,12 @@ function output_navbox(item) {
   newStr = newStr.replaceAll("timburton\'sthenightmarebeforechristmas", 'nightmarebeforechristmas');
   newStr = newStr.replaceAll('lilo&stitch', 'liloandstitch');
   newStr = newStr.replaceAll('mickey&friends', 'mickeyandfriends');
+  newStr = newStr.replaceAll('abug\'slife', 'abugslife');
   newStr = newStr.replaceAll('{{NavboxFurniture|monsters,inc.|disney}}', '{{NavboxFurniture|monstersinc|disney}}');
   newStr = newStr.replaceAll('{{NavboxFurniture|wall-e|disney}}', '{{NavboxFurniture|walle|disney}}');
+  
+
+
   output = newStr;
 
   return output;
@@ -1298,7 +1302,7 @@ function output_itemIntro(item) {
       itemUseBody = ' It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport ' + numVillagers + ' random villagers to the location.';
     }
     if (item.functions && item.functions.includes('Companion Home')) {
-      output += "that functions as a [[:Category:Companion Home|companion home]]";
+      output += " that functions as a [[:Category:Companion Home|companion home]]";
       itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the item to select up to 4 [[Companions|companions]]. These companions will roam in the immediate area and interact with nearby Companion items.";
     }
 

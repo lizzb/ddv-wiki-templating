@@ -1,5 +1,51 @@
 todo: 
 
+
+todo: fix this output for a floor texture
+
+
+|gridSize=--
+|placement=<!--default-->
+
+comparison:
+
+|placement=wallpaper
+|environment=indooronly
+
+
+fix decor items having empty navbox
+
+TODO: navbox not working for clothing general
+
+todo: missing colors not being added correctly for clothing? maybe also furniture?
+
+
+why is this genreating : <!--<!--Dreamlight Valley-->-->
+
+why is appliance being generated?
+
+
+
+
+
+
+todo: fix {{NavboxFurniture|appliance|general}} - for willow tree?
+
+TODO: from scrooges store and
+
+
+MISSING: |from=Scrooge's Store
+|storeSlots=lower
+
+must be placed indoors on a wall *******
+
+
+Utilities preference before misc before decor
+
+
+todo: Natural Wood Wall Shelf -- check how functions generate for specifying no table/surfacearea
+
+
 - detect line breaks in cell input and replace them with a newline character so as not to break the parsing
 
 - add line number display to the textarea input to help with troubleshooting

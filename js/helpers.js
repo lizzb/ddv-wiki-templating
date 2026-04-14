@@ -464,7 +464,7 @@ function lookupToken(starpath) {
       output = 'pawprinttoken';
       break;
     case 'Elements of Nature':
-      output = 'leaftoken';
+      output = 'earthtoken';
       break;
     default:
       output = 'ORIGINALTOKENNAME';
@@ -1280,6 +1280,8 @@ function determineCritterType(itemName) {
 }
 
 function isCompanion(item) {
+  // TEMPORARY FOR UPDATE DAY
+  return false;
   return "TODO - determineCritterType";
 
   var isCompanion =

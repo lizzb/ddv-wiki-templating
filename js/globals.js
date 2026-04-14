@@ -9,7 +9,7 @@ var newExpansionCollection = "Wishblossom Mountains";
 
 var starPathNameShort = "Elements of Nature";
 var starPathName = "Elements of Nature";
-var starPathToken = "leaftoken";
+var starPathToken = "earthtoken";
 
 // toggle to wrap in cleanup tag
 var collectionConfirmed = $("#collectionConfirmedCB").prop("checked"); //true;
