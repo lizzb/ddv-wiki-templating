@@ -1,5 +1,56 @@
 todo: 
 
+premiumshopobj: Angelic Wings
+
+todo: if TBA_XXX for cost placeholder is <3 characters, add mroe characters to ensure uniqueness
+
+It is automatically rewarded after reaching [[Mochi#Friendship Rewards|Friendship Level 5]] with [[Mochi]], which is available to purchase from the [[Premium Shop]] in the [[Mochi (Bundle)|Mochi]] bundle for {{price|3000|moonstone|showLabel}}.
+
+
+clothing category is duplicated in tags
+
+
+
+{{infobox
+|name=MEGABUNDLE_NAME
+|image=MEGABUNDLE_NAME.png
+|width=350px
+|type=Premium Bundle
+|category=Mega Bundle
+|from=Premium Shop
+|sellprice={{price|TBA_PRICE|moonstone}}
+|items=
+}}
+{{BundleDescription
+|MEGABUNDLE_NAME
+|type=Premium Bundle
+|category=Mega Bundle
+|from=Premium Shop
+|bundlePrice=TBA_PRICE
+|items=
+|itemgallery=
+{{Gallery|ITEM_COUNTSINGLE|caption='''[[ITEM_COUNTSINGLE]]'''|link=ITEM_COUNTSINGLE}}
+{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}
+|dates=
+* TBA<!--YYYY-MM-DD - YYYY-MM-DD-->{{cleanup|Need dates}}
+}}
+
+==History==
+{{history|VERSION|Added}}
+
+{{NavboxPremiumBundle}}
+
+TODO: bb-8 headband generated wrong leading text.
+
+todo: garden party daisy intro sentence
+'''Garden Party Daisy''' is a [[Dream Styles|Character Dream Style]] piece<!--/pair--> of <!--back/costume/dress/shoes--> [[clothing]]. that can be applied to the [[Dream Styles#Mickey & Friends|Mickey & Friends]] Character [[Daisy]].
+
+
+{{NavboxClothing||general}}
+
+
+navboxfurniture|appliance
+
 
 todo: fix this output for a floor texture
 
