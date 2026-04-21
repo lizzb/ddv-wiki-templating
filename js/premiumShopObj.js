@@ -1,4 +1,9 @@
 var premiumBundles = {
+	"Angelic Wings": {
+		"linked_name": "Angelic Wings (Bundle)|Angelic Wings",
+		"contentsString": "{{name|Angelic Wings}}",
+		"priceString": "{{price|1750|moonstone}}"
+	},
 	"Leafy Cottage House": {
 		"linked_name": "Leafy Cottage House (Bundle)|Leafy Cottage House",
 		"contentsString": "{{name|Leafy Cottage House}}",
@@ -326,7 +331,7 @@ var premiumBundles = {
 	},
 	"Hopps' Hay Maze Kit": {
 		"linked_name": "Hopps' Hay Maze Kit",
-		"contentsString": "{{name|Hopps' Hay Maze Banner|4}}\n{{name|Hopps' Hay Maze Banner (2)|link=Hopps' Hay Maze Banner (2){{!}}Hopps' Hay Maze Banner|4}}\n{{name|Hopps' Carrot Hay Maze Wall|4}}\n{{name|Hopps' Carrot Hay Maze Triple|4}}\n{{name|Hopps' Carrot Hay Maze Corner|4}}\n{{name|Hopps' Carrot Hay Maze Single|4}}\n{{name|Hopps' Hay Maze Wall|4}}\n{{name|Hopps' Hay Maze Double|4}}\n{{name|Hopps' Hay Maze Single|4}}\n{{name|Hopps' Hay Maze Thin Triple Stack|4}}\n{{name|Hopps' Hay Maze Triple Stack|4}}\n{{name|Hopps' Hay Maze Corner|4}}\n{{name|Hopps' Hay Maze Low Wall|4}}\n{{name|Hopps' Hay Maze Brick|4}}\n{{name|Hopps' Hay Maze Cubic Bale|4}}",
+		"contentsString": "{{name|Hopps' Hay Maze Banner|4}}\n{{name|Hopps' Hay Maze Sign|4}}\n{{name|Hopps' Carrot Hay Maze Wall|4}}\n{{name|Hopps' Carrot Hay Maze Triple|4}}\n{{name|Hopps' Carrot Hay Maze Corner|4}}\n{{name|Hopps' Carrot Hay Maze Single|4}}\n{{name|Hopps' Hay Maze Wall|4}}\n{{name|Hopps' Hay Maze Double|4}}\n{{name|Hopps' Hay Maze Single|4}}\n{{name|Hopps' Hay Maze Thin Triple Stack|4}}\n{{name|Hopps' Hay Maze Triple Stack|4}}\n{{name|Hopps' Hay Maze Corner|4}}\n{{name|Hopps' Hay Maze Low Wall|4}}\n{{name|Hopps' Hay Maze Brick|4}}\n{{name|Hopps' Hay Maze Cubic Bale|4}}",
 		"priceString": "{{price|2000|moonstone}}"
 	},
 	"Minty Set": {
