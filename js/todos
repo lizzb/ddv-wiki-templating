@@ -1,8 +1,11 @@
 todo: 
 
-premiumshopobj: Angelic Wings
+
+Premium Bundle - Railway Station Set (____ M) (xX)
+
 
 todo: if TBA_XXX for cost placeholder is <3 characters, add mroe characters to ensure uniqueness
+- doublecheck bundle abbreviations for uniqueness
 
 It is automatically rewarded after reaching [[Mochi#Friendship Rewards|Friendship Level 5]] with [[Mochi]], which is available to purchase from the [[Premium Shop]] in the [[Mochi (Bundle)|Mochi]] bundle for {{price|3000|moonstone|showLabel}}.
 
@@ -144,7 +147,7 @@ It has a special gathering function. When the player stands beside it will highl
 
 
 verify:
-TODO - add mike  to character switch loop
+TODO - add mike to character switch loop
 todo - remove (wall) from size value from my parser
 TODO - {{NavboxFurniture|landscaping|general}} -- todo, make sure this generates for navbox if multiple categories, needs prioritization of categories
 |functions=Cooking Station and body text

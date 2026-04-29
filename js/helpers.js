@@ -1845,9 +1845,9 @@ function isCharacterDreamStyle(item) {
 
 function isStandalone(item) {
   //item isnt parsed yet, below wont work?  not sure
+
   return (
-    item.name == item.bundleName ||
-    (item.source && item.source.includes('Premium Bundle - ' + item.name)) ||
+    (item.name == item.bundleName && (item.source && item.source.includes('Premium Bundle - ' + item.name))) ||
     item.standalone
   );
 }
