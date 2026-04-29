@@ -338,77 +338,77 @@ function updateAppropriateVersion(item) {
 
   // different wiki user-facing version values than actual
   switch (item.version) {
-    case "1.14.3":
-        item.version = "1.14";
-        break;
-    case "1.20.11":
-      item.version = "1.20";
+  case "1.14.3":
+    item.version = "1.14";
+    break;
+  case "1.20.11":
+    item.version = "1.20";
+    break;
+  default:
+    break;
+  }
+
+  // Replace correct sheet version number with generalized version label for wiki history template
+  if (item.collection == "EI" || item.collection == "Eternity Isle") {
+    switch (item.version) {
+    case "1.8":
+      item.version = "Expansion 1-1";
       break;
     default:
       break;
     }
-
-  // Replace correct sheet version number with generalized version label for wiki history template
-    if (item.collection == "EI" || item.collection == "Eternity Isle") {
-      switch (item.version) {
-      case "1.8":
-        item.version = "Expansion 1-1";
-        break;
-      default:
-        break;
-      }
+  }
+  if (item.collection == "SV" || item.collection == "Storybook Vale") {
+    switch (item.version) {
+    case "1.14.1":
+      item.version = "Expansion 2-1";
+      break;
+    case "1.17.11":
+      item.version = "Expansion 2-2";
+      break;
+    default:
+      break;
     }
-    if (item.collection == "SV" || item.collection == "Storybook Vale") {
-      switch (item.version) {
-      case "1.14.1":
-        item.version = "Expansion 2-1";
-        break;
-      case "1.17.11":
-        item.version = "Expansion 2-2";
-        break;
-      default:
-        break;
-      }
-    }
-    if (item.collection && (item.collection.includes("WR") || item.collection.includes("WM") || item.collection == "Wishblossom Mountains")) {
-      switch (item.version) {
+  }
+  if (item.collection && (item.collection.includes("WR") || item.collection.includes("WM") || item.collection == "Wishblossom Mountains")) {
+    switch (item.version) {
       //case "1.2":
-      case "1.20":
-      case "1.20.1":
-      case "1.20.2":
-        item.version = "Expansion 3";
-        break;
-      default:
-        break;
-      }
+    case "1.20":
+    case "1.20.1":
+    case "1.20.2":
+      item.version = "Expansion 3";
+      break;
+    default:
+      break;
     }
-
-
-    return item;
   }
 
 
-// TODO - insert correct category for Other navboxes furniture categories
-  function output_prioritizedCategory(categoryVal) {
+  return item;
+}
 
-    var output = categoryVal;
+
+// TODO - insert correct category for Other navboxes furniture categories
+function output_prioritizedCategory(categoryVal) {
+
+  var output = categoryVal;
 
   // TODO: verify prioritization of categories
   // i think a few are missing, fences, paths, rocks...
 
-    var prioritizedFurnitureCategories = ["Wallpaper", "Flooring", "Attractions", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Landscaping", "Foliage", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings"];
+  var prioritizedFurnitureCategories = ["Wallpaper", "Flooring", "Attractions", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Landscaping", "Foliage", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings"];
 
-    output = getFirstCategoryMatch(categoryVal, prioritizedFurnitureCategories);
+  output = getFirstCategoryMatch(categoryVal, prioritizedFurnitureCategories);
 
-    return output.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
-  }
+  return output.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
+}
 
-  function output_navbox(item) {
-    var itemType = item.itemType;
-    var universe = item.universe;
-    var category = item.category;
+function output_navbox(item) {
+  var itemType = item.itemType;
+  var universe = item.universe;
+  var category = item.category;
 
-    var genericNavClothing = '<!--{{NavboxClothing|back|nondisney}}-->';
+  var genericNavClothing = '<!--{{NavboxClothing|back|nondisney}}-->';
   var genericNavFurniture = '<!--{{NavboxFurniture|seating|general}}-->'; // not sure if this will ever be used becase the default category is being set to a placeholder comment? 2026.04.01 check
   var disneyNavClothing = '<!--{{NavboxClothing|XXXXXXXX|disney}}-->';
   var disneyNavFurniture = '<!--{{NavboxFurniture|XXXXXXXX|disney}}-->';
@@ -495,8 +495,6 @@ function updateAppropriateVersion(item) {
   newStr = newStr.replaceAll('abug\'slife', 'abugslife');
   newStr = newStr.replaceAll('{{NavboxFurniture|monsters,inc.|disney}}', '{{NavboxFurniture|monstersinc|disney}}');
   newStr = newStr.replaceAll('{{NavboxFurniture|wall-e|disney}}', '{{NavboxFurniture|walle|disney}}');
-  
-
 
   output = newStr;
 
@@ -583,9 +581,14 @@ function generateReturningPremiumStarPathBodyText(item) {
     output +=  ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
   }
 
+
   //Star Path - Elements of Nature - TILE - Vault (__ tokens)
   // TODO: It later returned to the Vault Rewards of the [[STARPATH]] event and will be/was available to unlock after MONTH DAY, 2026.
   // insert before premium bundle (if relevant)
+  // TODO: It later returned to the Vault Rewards of the [[STARPATH]] event.
+  // It later returned as a Vault Reward in the [[Elements of Nature Star Path]].
+
+  //|from=ORIGINALSP Star Path\n|vaultreward=NEWSP Star Path
 
   // CURRENT STAR PATH tense adjustments
   if (item.starpath == starPathName) {
@@ -651,9 +654,63 @@ function parseItemSource(item) {
     item.quest = result[3]; // quest name
   }
 
+  // GOLD STANDARD - 
+  // After reaching [[Pocahontas#Friendship Rewards|Friendship Level 10]] with [[Pocahontas]] and progressing through the quest [[A Raccoon's Return]],
+  // it is placed in the Valley
+  // it is given to be placed on [[Dazzle Beach]]
+  // and will remain placed after the quest is completed. It is automatically collected during the quest. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+
+
   // Pocahontas Level 4 quest (Working Together) (reward)
   // Pocahontas Level 10 quest (A Raccoon's Return) (during)
   // Crafting after Tiana Level 4 quest (Little Louis's Big Break) (unlocked during or after?)
+  // It required to craft during [[Tiana|Tiana's]] level 4 [[friendship]] quest [[Little Louis's Big Break]], and after crafting during that quest the recipe will be permanently unlocked.<!--It will not be available in Crafting Recipes prior to the relevant quest step.-->
+  //  It can be collected during and crafted after completing the quest Home is Where the Art Is.
+
+  // Fox and Raccoon Sculpture
+  // Display Pillar
+  // Romantic Arch
+  // Lost Boys Audition Sign
+  // Harmonious Screen
+  // The [[Lost Boys Audition Sign (2)|Lost Boys Audition Sign]] which is crafted and placed during the quest [[The New Lost Boys]] will not remain in the valley after the quest is complete, but the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted after the quest it will be unlocked in both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+  // It can be [[Crafting|crafted]] at a [[:Category:Crafting_Stations|Crafting Station]] during the quest, and after the quest is complete it will remain in the Valley and the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted it will not be added to the [[:Category:Untracked Crafting Collection|Crafting Collection]].
+  // It can be [[Crafting|crafted]] at a [[:Category:Crafting_Stations|Crafting Station]] during the quest, and after the quest is complete it will remain in the Valley and the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted it will not be added to the [[:Category:Untracked Crafting Collection|Crafting Collection]].
+  // The '''Wonderland Candles''' crafted and placed during the quest will remain in the valley after the quest is complete, and the [[Crafting|crafting recipe]] will be permanently unlocked. It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] or [[:Category:Untracked Crafting Collection|Crafting Collection]], and more cannot be ordered from [[Scrooge's Store|Scrooge]].
+  // During [[Pumbaa]]'s level 4 [[friendship]] quest [[Fine Arts for Warthogs]] 4 of these are given by [[Scrooge McDuck]], and after that quest it can be crafted using a [[:Category:Crafting_Stations|crafting station]]. Once collected it will not be added to the [[:Category:Untracked Crafting Collection|Crafting Collection]].
+  // Icy Counter
+  // After the quest is complete the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]], and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+  // It can be positioned and placed using furniture placement mode. It can be crafted and collected using a [[:Category:Crafting_Stations|crafting station]] during the quest, and after completing the quest the recipe will remain in the crafting menu. Once collected it is not tracked in either the '''Crafting Collection''' or '''Furniture Colletion'''.
+
+// Ariel's Crafting Station
+
+  /*
+  '''Flowery Wishblossom Garden''' is a [[Furniture#Snow White|Snow White]] themed piece of crafted furniture which is unlocked after completing [[Snow White]]'s level 10 [[friendship]] quest [[The Wishblossom Fair]].
+
+It can be crafted using a [[:Category:Crafting Stations|Crafting Station]] after the quest has been completed. Once collected it will be added to both the [[:Category:Wishblossom Mountains Crafting Collection|Wishblossom Mountains Crafting Collection]] and the [[:Category:Wishblossom Mountains Furniture Sets Collection|Wishblossom Mountains Furniture Sets Collection]].
+
+*/
+  /*
+  '''Modular Dragon Body''' is a [[Furniture#Mulan|Mulan]] themed piece of [[Crafting#Furniture|craftable furniture]].
+
+The crafting recipe for it is unlocked after completing the quest [[The Guardian Party]]. The [[Modular Dragon Body (2)|furniture item]] which is crafted during that quest with same name and appearance has different attributes and will appear as a separate entry inside Inventory.
+
+It can be positioned and placed using furniture placement mode. It can be crafted using a [[:Category:Crafting_Stations|crafting station]], and once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+*/
+  // Saucery extract
+  /*
+  '''Saucery Extract''' is a [[Furniture#Lady_and_the_Tramp|Lady and the Tramp]] themed piece of [[Crafting#Furniture|craftable furniture]] which is unlocked during the [[Lady#Friendship Quests|Lady]] quest [[A Curious Dish]].
+
+It is given by [[Lady]] as a reward after completing the [[friendship]] quest [[A Curious Dish]], and after collecting the recipe will be unlocked and it can be crafted using a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+*/
+  // blank sandwich board - all over the place
+  /*
+  '''Blank Sandwich Board''' is a [[The Princess and the Frog]] themed piece of [[Crafting#Furniture|craftable furniture]] that can be made using a [[:Category:Crafting_Stations|crafting station]]. 
+
+A similar quest item, [[Sandwich Board]], requiring the same materials is [[Crafting|crafted]] during [[Tiana|Tiana's]] level 7 [[friendship]] quest [[Dreamlight Gastronomy]], and after crafting that item the recipe will be permanently unlocked.
+
+It can be positioned and placed using furniture placement mode. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+*/
+
 
   // ===== Star Path =====
   if (isStarPath(item)) {
@@ -803,20 +860,25 @@ function output_from(item) {
     if (showItemDebug) {
       console.log(item.name, ' is a scrooge item');
     }
-    itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']].';
     infoboxFrom += "|from=Scrooge's Store (" + item.collection + ")\n|storeSlots=";
+    itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']].';
     break;
+
   case 'x':
     if (showItemDebug) {
       console.log(item.name, ' is a scrooge item');
     }
-      itemSource = itemSource_scroogeDefault + '.'; // basic scrooge text
       infoboxFrom = "|from=Scrooge's Store\n|storeSlots="; // basic scrooge params
+      itemSource = itemSource_scroogeDefault + '.'; // basic scrooge text
       break;
-  case 'x - C':
-    if (showItemDebug) {
-      console.log(item.name, ' is a scrooge item that is conditional');
-    }
+
+    case 'x - C':
+      if (showItemDebug) {
+        console.log(item.name, ' is a scrooge item that is conditional');
+      }
+      infoboxFrom = "|from=Scrooge's Store\n|storeSlots=";
+      itemSource = itemSource_scroogeDefault + ` under certain conditions. `;
+
       // TODO - more conditional statements
       if (item.character) {
         itemSource = itemSource_scroogeDefault + ` after [[${item.character}]] has joined the Valley. `;
@@ -824,9 +886,8 @@ function output_from(item) {
       if (item.quest) {
         itemSource = itemSource_scroogeDefault + ` after completing the quest [[${item.quest}]]. `;
       }
-
-      infoboxFrom = "|from=Scrooge's Store\n|storeSlots=";
       break;
+
     default:
       infoboxFrom = '<!--TODO-->'; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
       itemSource = 'SOURCE TODO.'; // crafting
@@ -849,59 +910,39 @@ function output_from(item) {
       }
     }
 
-  // quick hack
-    if (infoboxFrom.includes('Scrooge')) {
-      item.missingCategories.push('[[Category: Missing Store Slot]]');
+
+    // hacky - populate storeslots sorta
+    switch (item.location) {
+      case "table 1":
+      case "table 2":
+      case "table 3":
+      case "table 4":
+        infoboxFrom = infoboxFrom.replaceAll('storeSlots=', 'storeSlots='+item.location);
+        break;
+      default:
+        // quick hack because i don't have store slots tracked in sheet
+        // TODO - i DO track table slots and trim, that could be accounted for
+        // could also look at the size value and give defaults like lower, upper, etc
+        if (infoboxFrom.includes('Scrooge')) {
+          infoboxFrom = infoboxFrom.replaceAll('storeSlots=', 'storeSlots=<!--upper/lower-->');
+          item.missingCategories.push('[[Category: Missing Store Slot]]');
+        }
+        break;
     }
 
-  // ========== 3 CHECK IF FROM friendship ==========
-    if (item.location == 'friendship') {
-      if (showItemDebug) {
-        console.log(item.name, ' is a friendship reward item', item.source);
-      }
-    // source should have already been parsed in parseItemSource
-      itemSource =
-      'It is automatically rewarded after reaching [[' +
-      item.character +
-      '#Friendship Rewards|Friendship Level ' +
-      item.level +
-      ']] with [[' +
-      item.character +
-      ']].';
-
-      infoboxFrom =
-      '|reward={{Friendship|' + item.character + '|' + item.level + '}}';
-    }
-
-  // ========== 4 CHECK IF FROM quest ==========
+  // ========== 3 CHECK IF FROM quest ==========
     if (item.location == 'quest') {
       if (showItemDebug) {
         console.log(item.name, ' is a quest reward item', item.source);
       }
 
-    // source should have already been parsed in parseItemSource
-      itemSource =
-      'It is automatically rewarded after reaching [[' +
-      item.character +
-      '#Friendship Rewards|Friendship Level ' +
-      item.level +
-      ']] with [[' +
-      item.character +
-      ']] and completing the quest [[' +
-      item.quest +
-      ']].';
+      // source should have already been parsed in parseItemSource
+      itemSource = `It is automatically rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and completing the quest [[${item.quest}]].`;
 
-      infoboxFrom =
-      '|reward={{quest|' +
-      item.quest +
-      '|friendship=' +
-      item.character +
-      '|level=' +
-      item.level +
-      '}}';
+      infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
     }
 
-  // ========== 5 CHECK IF FROM STARPATH (either returning or current)==========
+  // ========== 4 CHECK IF FROM STARPATH (either returning or current)==========
 
   // EXAMPLE: "source":"Star Path - Lovely Monsters - 3E - T3 (25 tokens)\nPremium Bundle - Monster Plushies (1200 M) [___ M]"
   //item.location && item.location.includes('starpath') ||  item.source && item.source.includes('Star Path')
@@ -929,22 +970,18 @@ function output_from(item) {
 
     }
 
-  // ========== 6 CHECK IF PREMIUM ITEM (may include returning starpath) ==========
+  // ========== 5 CHECK IF PREMIUM ITEM (may include returning starpath) ==========
 
     if (isPremium(item)) {
       if (showItemDebug) {
         console.log(item.name, ' is a premium item');
       }
 
-    // source should have already been parsed in parseItemSource
-    // properties: bundleName, bundlePrice, also adjusted for placeholder vals
+      // source should have already been parsed in parseItemSource
+      // properties: bundleName, bundlePrice, also adjusted for placeholder vals
       itemSource = generateBodyFromPremiumShop(item);
 
-    // ****TODO - why isn't microtemplating working here? ***********
-    //infoboxFrom = '|from=Premium Shop' + '\n|bundleName=%%bundleName%%\n|bundlePrice=%%bundlePrice%%';
-    // REFACTORED PORTION REMOVED
-
-    // item is a returning star path item to premium shop
+      // item is a returning star path item to premium shop
       if (item.returning) {
         infoboxFrom = `|from=${item.starpath} Star Path`;
         if (item.bonus == "yes") {
@@ -963,21 +1000,34 @@ function output_from(item) {
         }
         infoboxFrom += `\n|bundleName=${item.bundleName} (Bundle){{!}}${item.bundleName}`;
       } else {
-      // item is part of a premium set, NOT standalone
+        // item is part of a premium set, NOT standalone
         infoboxFrom += `\n|bundleName=${item.bundleName}`;
       }
 
-      infoboxFrom += '\n|bundlePrice=' + item.bundlePrice;
-
+      infoboxFrom += `\n|bundlePrice=${item.bundlePrice}`;
       itemSource = generateReturningPremiumStarPathBodyText(item);
     }
 
-  // value of collection should already be changed from DV-->Dreamlight Valley by some other collection function from the infobox
+    // value of collection should already be changed from DV-->Dreamlight Valley by some other collection function from the infobox
 
-    //itemSource = generateReturningPremiumStarPathBodyText(item);
+    // ========== 6 CHECK IF FROM friendship ==========
+    if (item.location == 'friendship' || item.location == 'premium/friendship') {
+      if (showItemDebug) {
+        console.log(item.name, ' is a friendship reward item', item.source);
+      }
 
+      // source should have already been parsed in parseItemSource
+      infoboxFrom = `|reward={{Friendship|${item.character}|${item.level}}}`;
 
-
+      itemSource = `It is automatically rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
+      if (item.location == 'premium/friendship') {
+        // this is a bit of a hack - assuming that the bundle will be a standalone item named after the companion - will need manual refining
+        itemSource += `, which is available to purchase from the [[Premium Shop]] in the [[${item.bundleName} (Bundle)|${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}`;
+      }
+      itemSource += `.`;
+      
+      // TODO: PREMIUM + FRIENDSHIP ITEMS
+    }
 
   // todo: tale/crafting
   // ========== 7 CHECK IF FROM tale ==========
@@ -986,19 +1036,14 @@ function output_from(item) {
       if (showItemDebug) {
         console.log('item.taleUniverse: ', item.taleUniverse);
       }
-    // parseitemsource should have provided item.taleUniverse
-      itemSource =
-      'It can be collected as a reward after reordering the [[Snippets#Lorekeeper Tales|' +
-      item.taleUniverse +
-      ' Lorekeeper Tale]].';
-      if (showItemDebug) {
-        console.log(itemSource);
-      }
 
       infoboxFrom = '|from=Lorekeeper Tale';
+      // parseitemsource should have provided item.taleUniverse
+      itemSource = `It can be collected as a reward after reordering the [[Snippets#Lorekeeper Tales| ${item.taleUniverse} Lorekeeper Tale]].`;
     }
 
-    item.infoboxFrom = infoboxFrom;
+  // Assign values created in this function to the item object -- but these won't actually be saved i dont think? not sure when the microtemplating actually happens
+  item.infoboxFrom = infoboxFrom;
   item.itemSource = itemSource; // TODO: i think this is being reverted to an empty string?
 
   var output = '%%infoboxFrom%%\n';
@@ -1099,19 +1144,17 @@ function output_itemUsage(item) {
     'It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]';
 
     switch (item.placement) {
-      case 'surfaces':
-        output += ', and it can be placed either on the ground or on surfaces.';
-        break;
-      case 'walls (indoor)':
-        output +=
-        ', and must be placed indoors on a wall.';
-      case 'walls':
-        output +=
-            ', and must be placed on a wall.'; /*TODO is this being hit? naboo decor..., naboo fireplace not triggering proper reaading of environment etc*/
-        break;
-      case 'wall-mounted':
-        output += ', and must be placed indoors against a wall.';
-        break;
+    case 'surfaces':
+      output += ', and it can be placed either on the ground or on surfaces.';
+      break;
+    case 'walls (indoor)':
+    case 'walls': // expected value at this point
+      output +=
+            ', and must be placed indoors on a wall.'; /*TODO is this being hit? naboo decor..., naboo fireplace not triggering proper reaading of environment etc*/
+      break;
+    case 'wall-mounted':
+      output += ', and must be placed indoors against a wall.';
+      break;
       case 'ceiling (indoor)': // correct value from sheet
       case 'ceilings': // should be converted to this value by this point
       case 'ceilings (indoor)':
@@ -1119,14 +1162,14 @@ function output_itemUsage(item) {
         ', and must be placed indoors from the ceiling.';
       default:
         output += '';
-    }
+      }
 
-    if (item.environment == 'outdooronly') {
-      output += ', and it can only be placed outdoors.';
-    }
+      if (item.environment == 'outdooronly') {
+        output += ', and it can only be placed outdoors.';
+      }
 
-    if (item.functions && item.functions.includes('Table - ')) {
-      item.surfaceArea = '' + item.functions.split(' - ')[1];
+      if (item.functions && item.functions.includes('Table - ')) {
+        item.surfaceArea = '' + item.functions.split(' - ')[1];
       item.functions = ''; // in wiki Table isn't a function, just my sheet
     }
 
@@ -1386,7 +1429,7 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
     }
     if (item.functions && item.functions.includes('Companion Home')) {
       output += " that functions as a [[:Category:Companion Home|companion home]]";
-      itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the item to select up to 4 [[Companions|companions]]. These companions will roam in the immediate area and interact with nearby Companion items.";
+      itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the item to select up to 4 [[Companions|companions]]. These companions will roam in the immediate area and interact with nearby [[:Category:Companion Interest|Companion items]].";
     }
 
     output += ".";
@@ -1649,11 +1692,7 @@ function generateBodyFromPremiumShop(item) {
     // 2025.08.19 this is not catching, item.standalone isn't defined yet
     // this is catching... sometimes??
   if (isStandalone(item)) {
-    template =
-    'It is available to purchase from the [[Premium Shop]] in the ' +
-    '[[' + item.bundleName + ' (Bundle)|' + item.bundleName + ']]' +
-    ' bundle for {{price|' + item.bundlePrice + '|moonstone|showLabel}}.';
-      //template = `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName} (Bundle)|${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
+    template =`It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName} (Bundle)|${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
   }
 }
 
@@ -1962,6 +2001,20 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
   function jankyCleanup(originalRenderedHTML) {
     var newStr = originalRenderedHTML;
     newStr = newStr.replaceAll('=null', '=');
+
+    /*
+    [[:Category: <!--Eternity Isle--> Companions Collection|<!--Eternity Isle--> Companions Collection]]
+
+<!--<!--Dreamlight Valley-->-->
+
+[[:Category:<!--Storybook Vale--> Furniture Sets Collection|<!--Storybook Vale--> Furniture Sets Collection]]
+
+[[:Category: <!--Dreamlight Valley dont change--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]]
+*/
+
+
+
+
   /*newStr = newStr.replaceAll(
     '[[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]]',
     '[[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]]'
@@ -1979,6 +2032,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     '[[:Category:Storybook Vale Clothing Sets Collection|Storybook Vale Clothing Sets Collection]]'
   );*/
 
+    /*
     newStr = newStr.replaceAll(
       '[[:Category: <!--Dreamlight Valley--> Companions Collection|<!--Dreamlight Valley--> Companions Collection]]',
       '[[:Category: Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]]',
@@ -1994,9 +2048,25 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll("g{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: <!--Dreamlight Valley--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]].}}",
       "{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: Dreamlight Valley Clothing Sets Collection|Dreamlight Valley Clothing Sets Collection]].}}"
       );
+      */
 
 
-    newStr = newStr.replaceAll('\n|size=remove', '');
+    // AI assist
+    // <!-- ... --> is matched literally
+    // \\s* handles any stray spaces inside the comment
+    // (${keywords}) captures only the phrases you care about
+    // $1 replaces the entire comment with just the captured keyword
+    const keywords = "Dreamlight Valley|Storybook Vale|Eternity Isle";
+    const regex2 = new RegExp(`<!--\\s*(${keywords})\\s*-->`, 'gi');
+
+    newStr = newStr.replace(regex2, '$1');
+    // remove extra spaces
+    newStr = newStr.replace(/\[\[:Category:\s+/g, '[[:Category:');
+    //document.getElementById('test').value = newStr;
+
+
+
+
     newStr = newStr.replaceAll('\n|size=remove', '');
     newStr = newStr.replaceAll('\n|gridSize=remove', '');
 
@@ -2006,8 +2076,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     // main culprit of double space is itemUseIntro
     newStr = newStr.replaceAll('  ', ' ');
 
-   //newStr = newStr.replaceAll('|placement=indoor (wall)', '|placement=walls\n|environment=indooronly');
-
+    //newStr = newStr.replaceAll('|placement=indoor (wall)', '|placement=walls\n|environment=indooronly');
 
     // TODO: double check this in output - need to make functions value streamlining more robust, and not here
     newStr = newStr.replaceAll('Light \(Constant\)', 'Lighting \(Constant\)');
@@ -2016,16 +2085,15 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('Crafting Station \(Use\)', 'Crafting Station');
 
 
-  // for crafted furniture
+    // for crafted furniture
     newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');
 
+    // todo - substitute none collection text with untracked text
 
-  // todo - substitute none collection text with untracked text
+    // It can be crafted using using seasonal [[ingredients]] that are available during the [[Lucky You!]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].
+    //[[Category:none Furniture Sets Collection]]
 
-  // It can be crafted using using seasonal [[ingredients]] that are available during the [[Lucky You!]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].
-  //[[Category:none Furniture Sets Collection]]
-
-  // character dream style
+    // character dream style
     newStr = newStr.replaceAll("Once collected it will be added to the [[:Category:remove Dream Style Sets Collection|remove Dream Style Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "");
 
 
