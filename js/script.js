@@ -282,6 +282,8 @@ function parseSizePlacementEnv(item) {
     item.size = item.size.split(' ')[0] + '*<!--DIMENSIONS NOT FILLED-->';
   }
 
+  //newStr = newStr.replaceAll('|placement=indoor (wall)', '|placement=walls\n|environment=indooronly');
+
   if (item.placement && item.placement.includes('(outdoor)')) {
     item.placement = item.placement.split(' ')[0]; // todo - more robust logic
     item.environment = 'outdooronly';
@@ -334,9 +336,13 @@ function output_history(item) {
 function updateAppropriateVersion(item) {
   if (!item.version) item.version = updateNumber;
 
+  // different wiki user-facing version values than actual
   switch (item.version) {
-  case "1.20.11":
-      item.version = "1.20"; // different wiki user-facing version
+    case "1.14.3":
+        item.version = "1.14";
+        break;
+    case "1.20.11":
+      item.version = "1.20";
       break;
     default:
       break;
@@ -356,9 +362,6 @@ function updateAppropriateVersion(item) {
       switch (item.version) {
       case "1.14.1":
         item.version = "Expansion 2-1";
-        break;
-      case "1.14.3":
-        item.version = "1.14";
         break;
       case "1.17.11":
         item.version = "Expansion 2-2";
@@ -556,7 +559,6 @@ function generateReturningPremiumStarPathBodyText(item) {
   }
   output += `during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` + lookupToken(item.starpath) + `|showLabel}}`;
   output += ` from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
-    //itemSource = `It was available to unlock and collect for a limited time during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` + lookupToken(item.starpath) + `|showLabel}} from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
   if (item.bonus == "yes") {
     output += ", which were available after all regular Star Path rewards have been collected";
   }
@@ -566,13 +568,12 @@ function generateReturningPremiumStarPathBodyText(item) {
   var inlineBundleLink = `[[${item.bundleName}]]`;
 
   // item is a standalone item premium bundle
-  if (item.returning || item.name == item.bundleName) {
+  if (item.returning && item.name == item.bundleName) {
     inlineBundleLink = `[[${item.bundleName} (Bundle)|${item.bundleName}]]`;
   }
 
   if (isPremium(item)) {
     output += ` It later returned to the [[Premium Shop]] in the ` + inlineBundleLink;
-
     output +=  ` bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
   }
 
@@ -627,6 +628,18 @@ function parseItemSource(item) {
     item.level = result[2]; // friendship level
   }
 
+
+  // ===== Scrooge - Conditional =====
+  // Store - after unlocking Pocahontas
+  // Store - only after Peter Pan Realm Quest (The Music's On the Walls)
+  if (item.inStore) {
+    const string = item.source;
+    //console.log(`item.source inside item.inStore ${item.inStore} / ${item.source}`);
+    const regex = /Store - after unlocking ([\w\W ]+)/;
+    const result = string.split(regex);
+    item.character = result[1]; // friendship character - TODO - need to catch more conditions, e.g. quests
+  }
+
   // ===== Quest =====
   if (item.location == 'quest') {
     const string = item.source;
@@ -637,6 +650,10 @@ function parseItemSource(item) {
     item.level = result[2]; // friendship level
     item.quest = result[3]; // quest name
   }
+
+  // Pocahontas Level 4 quest (Working Together) (reward)
+  // Pocahontas Level 10 quest (A Raccoon's Return) (during)
+  // Crafting after Tiana Level 4 quest (Little Louis's Big Break) (unlocked during or after?)
 
   // ===== Star Path =====
   if (isStarPath(item)) {
@@ -663,7 +680,7 @@ function parseItemSource(item) {
     item.tile = match[2]; // tile
     item.eventtokens = Number(match[4]); // event token item cost
 
-    // ✅ FIX: tier fallback to tile (B2C → 2)
+    // AI: tier fallback to tile (B2C → 2)
     if (match[3]) {
       item.tier = Number(match[3]);
     } else {
@@ -705,6 +722,10 @@ function parseItemSource(item) {
     item.bundleName = result[1];
     item.bundlePrice = result[2];
 
+    // TODO - multiple item count eg (x3) - ignore
+    // TODO - both mega bundle and premium bundle
+    // Premium Bundle - Swirling Leaves Set (1250 M) (x3) // Premium Bundle - Mega Bundle - Colors of Nature Bundle (6600 M) (x1)
+
     if (showItemDebug) {
       console.log(item.bundleName, ' contains the item: ', item.name);
     }
@@ -714,6 +735,7 @@ function parseItemSource(item) {
 
     if (item.bundlePrice == '____') {
       item.bundlePrice = 'XXX___XXX';
+      // TODO - MAKE THIS MORE ROBUST IN CASE TOO SHORT/NOT UNIQUE
       item.bundlePrice = 'TBA_' + getFirstLetters(item.bundleName);
     }
   }
@@ -770,6 +792,9 @@ function output_from(item) {
 
   var itemSource_scroogeDefault = "It has a chance to be available for purchase as rotating stock from [[Scrooge's Store]]";
 
+  // TODO - items from default scrooge catalog
+  // It is one of the items available by default to order from [[Scrooge's Catalog]], and is also available to purchase from [[Scrooge's Store]]. 
+
   switch (item.inStore) {
   case 'EI':
   case 'x - SV':
@@ -785,11 +810,25 @@ function output_from(item) {
     if (showItemDebug) {
       console.log(item.name, ' is a scrooge item');
     }
-      itemSource = itemSource_scroogeDefault + '.'; // default to basic scrooge text
-      infoboxFrom = "|from=Scrooge's Store\n|storeSlots="; // default to basic scrooge params
+      itemSource = itemSource_scroogeDefault + '.'; // basic scrooge text
+      infoboxFrom = "|from=Scrooge's Store\n|storeSlots="; // basic scrooge params
+      break;
+  case 'x - C':
+    if (showItemDebug) {
+      console.log(item.name, ' is a scrooge item that is conditional');
+    }
+      // TODO - more conditional statements
+      if (item.character) {
+        itemSource = itemSource_scroogeDefault + ` after [[${item.character}]] has joined the Valley. `;
+      }
+      if (item.quest) {
+        itemSource = itemSource_scroogeDefault + ` after completing the quest [[${item.quest}]]. `;
+      }
+
+      infoboxFrom = "|from=Scrooge's Store\n|storeSlots=";
       break;
     default:
-      infoboxFrom = ''; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
+      infoboxFrom = '<!--TODO-->'; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
       itemSource = 'SOURCE TODO.'; // crafting
       break;
     }
@@ -809,9 +848,6 @@ function output_from(item) {
         itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
       }
     }
-
-
-
 
   // quick hack
     if (infoboxFrom.includes('Scrooge')) {
@@ -889,7 +925,7 @@ function output_from(item) {
 
       }
 
-      var itemSource = generateReturningPremiumStarPathBodyText(item);
+      itemSource = generateReturningPremiumStarPathBodyText(item);
 
     }
 
@@ -932,12 +968,13 @@ function output_from(item) {
       }
 
       infoboxFrom += '\n|bundlePrice=' + item.bundlePrice;
+
+      itemSource = generateReturningPremiumStarPathBodyText(item);
     }
 
   // value of collection should already be changed from DV-->Dreamlight Valley by some other collection function from the infobox
 
-
-    itemSource = generateReturningPremiumStarPathBodyText(item);
+    //itemSource = generateReturningPremiumStarPathBodyText(item);
 
 
 
@@ -1060,22 +1097,28 @@ function output_itemUsage(item) {
     // item.itemType is not Clothing, so furniture or crafted furniture -- NO reevaluate....
     output +=
     'It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]';
+
     switch (item.placement) {
-    case 'surfaces':
-      output += ', and it can be placed either on the ground or on surfaces.';
-      break;
-    case 'walls (indoor)':
-      output +=
-      ', and must be placed on a wall.';
-    case 'walls':
-      output +=
-          ', and must be placed on a wall.'; /*TODO is this being hit? naboo decor..., naboo fireplace not triggering proper reaading of environment etc*/
-      break;
-    case 'wall-mounted':
-      output += ', and must be placed against a wall.';
-      break;
-    default:
-      output += '';
+      case 'surfaces':
+        output += ', and it can be placed either on the ground or on surfaces.';
+        break;
+      case 'walls (indoor)':
+        output +=
+        ', and must be placed indoors on a wall.';
+      case 'walls':
+        output +=
+            ', and must be placed on a wall.'; /*TODO is this being hit? naboo decor..., naboo fireplace not triggering proper reaading of environment etc*/
+        break;
+      case 'wall-mounted':
+        output += ', and must be placed indoors against a wall.';
+        break;
+      case 'ceiling (indoor)': // correct value from sheet
+      case 'ceilings': // should be converted to this value by this point
+      case 'ceilings (indoor)':
+        output +=
+        ', and must be placed indoors from the ceiling.';
+      default:
+        output += '';
     }
 
     if (item.environment == 'outdooronly') {
@@ -1108,7 +1151,7 @@ function output_itemUsage(item) {
   }
 
   // janky - create full sentence with environment
-  output = output.replace(', and it can only be placed outdoors.,', ', it can only be placed outdoors, and');
+  output = output.replace(', and it can only be placed outdoors\.\,', ', it can only be placed outdoors, ');
 
 
   return output;
@@ -1194,21 +1237,25 @@ function output_itemIntro(item) {
   case 'Light (Constant)':
   case 'Lighting (Constant)':
     itemUseIntro = 'lighting';
-      itemUseBody = 'Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it.'; // ....
+      itemUseBody = ' Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it.'; // ....
       break;
     case 'Light (Automatic)':
     case 'Lighting (Automatic)':
       itemUseIntro = 'lighting';
-      itemUseBody = 'Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]].'; // ....
+      itemUseBody = ' Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]].'; // ....
       break;
     case 'Light':
     case 'Lighting':
       itemUseIntro = 'lighting';
-      itemUseBody = "Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off."; // ....
+      itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off."; // ....
       break;
     case 'Arch':
       itemUseIntro = 'arch';
       itemUseBody = ''; // " Once it is placed in the world, the Player can walk underneath and through the object."
+      break;
+    case 'Fireplace':
+      itemUseIntro = 'fireplace';
+      itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the object to toggle it on and off."; // it vs its fire?
       break;
     case 'Fountain':
       itemUseIntro = 'fountain';
@@ -1533,10 +1580,13 @@ function renderClothingFurnitureArticle(dataArray) {
     template += output_missingCategories(item);
 
     if (item.returning) {
-      var returningItemTemplate =
-      itemFrom + '\n' + itemIntro + itemSource + collectionStatus + itemUsage;
+      // previously used partial template to distinguish returning items, changed to full template
+      /*
+      var returningItemTemplate = itemFrom + '\n' + itemIntro + itemSource + collectionStatus + itemUsage;
+
       // TODO - collection confirmed ONLY for returning items, do not impact global setting collectionConfirmed
       template = returningItemTemplate;
+      */
     }
 
     if (isWallpaperFlooring(item)) {
@@ -1796,17 +1846,6 @@ function generateBuildingSkinTemplate(item) {
     item.universe = getCharacterUniverse(charProperName); //getCharacterUniverse(item.appliedTo); didnt work? -- chekc item.appliedto
 
     template = '';
-    /*template +=
-      '{{infobox\n' +
-      output_image(item) +
-      '|width=225px\n' +
-      output_type(item) +
-      '|appliedto=%%appliedto%%' +
-      '\n|universe=%%universe%%' +
-      '\n' +
-      output_from(item) +
-      '}}\n';
-      */
     // for some reason type was populating with Dream Style not Character Dream Style -- too lazy to fix everything atm
     template +=
   `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`
@@ -1881,21 +1920,22 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     //console.log("item character,",item.character)
 
     if (item.character) {
-      item.itemFrom =
+      item.itemSource =
       '|from=Friendship|character=%%character%%|level=%%level%%';
     }
 
+    // Note: this is building the WallpaperFloorsDescription, not hte infobox params - no line breaks
     if (item.tier) {
-      item.itemFrom =
+      item.itemSource =
       '|from=' + item.starpath + ' Star Path|tier=' + item.tier + '|premium=%%premium%%|eventTokens=' + item.eventtokens + '';
     }
 
     if (item.inStore) {
-      item.itemFrom = "|from=Scrooge's Store";
+      item.itemSource = "|from=Scrooge's Store";
     }
 
     template +=
-    item.itemFrom +
+    item.itemSource +
     '|collection=%%collection%%';
 
     /* THIS DOESN'T WORK
@@ -1957,16 +1997,19 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
 
     newStr = newStr.replaceAll('\n|size=remove', '');
+    newStr = newStr.replaceAll('\n|size=remove', '');
     newStr = newStr.replaceAll('\n|gridSize=remove', '');
 
-  // need to figure out why for crafted items theres extra space?
+    // need to figure out why for crafted items theres extra space?
     newStr = newStr.replaceAll('\n\n|gridSize', '\n|gridSize');
 
-  // main culprit of double space is itemUseIntro
+    // main culprit of double space is itemUseIntro
     newStr = newStr.replaceAll('  ', ' ');
 
+   //newStr = newStr.replaceAll('|placement=indoor (wall)', '|placement=walls\n|environment=indooronly');
 
-  // TODO: double check this in output - need to make functions value streamlining more robust, and not here
+
+    // TODO: double check this in output - need to make functions value streamlining more robust, and not here
     newStr = newStr.replaceAll('Light \(Constant\)', 'Lighting \(Constant\)');
     newStr = newStr.replaceAll('Light \(Automatic\)', 'Lighting \(Automatic\)');
     newStr = newStr.replaceAll('Cooking Station \(Use\)', 'Cooking Station');
