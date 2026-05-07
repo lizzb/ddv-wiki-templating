@@ -14,6 +14,45 @@ It is automatically rewarded after reaching [[Mochi#Friendship Rewards|Friendshi
 
 clothing category is duplicated in tags
 
+todo: check 4-15 to 4-22 bundle histories
+
+
+* 2026-04-22 - 2026-04-29
+
+* 2026-04-22 - 2026-04-29 (10% off: {{price|1575|moonstone}})
+
+
+note on the celstial items that the thumbnail was not an animated model
+
+<textarea style="width: 400px; height: 400px;" id="test">
+  
+  [[:Category: <!--Eternity Isle--> Companions Collection|<!--Eternity Isle--> Companions Collection]]
+
+<!--<!--Dreamlight Valley-->-->
+
+[[:Category:<!--Storybook Vale--> Furniture Sets Collection|<!--Storybook Vale--> Furniture Sets Collection]]
+
+[[:Category: <!--Dreamlight Valley dont change--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]]
+
+</textarea>
+
+
+
+// <!-- ... --> is matched literally
+// \\s* handles any stray spaces inside the comment
+// (${keywords}) captures only the phrases you care about
+// $1 replaces the entire comment with just the captured keyword
+
+var newStr = document.getElementById("test").value;
+
+const keywords = "Dreamlight Valley|Storybook Vale|Eternity Isle";
+const regex = new RegExp(`<!--\\s*(${keywords})\\s*-->`, 'gi');
+
+newStr = newStr.replace(regex, '$1');
+// remove extra spaces
+newStr = newStr.replace(/\[\[:Category:\s+/g, '[[:Category:');
+document.getElementById('test').value = newStr;
+
 
 
 {{infobox

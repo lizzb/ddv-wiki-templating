@@ -1871,6 +1871,14 @@ function isStarPath(item) {
   return  isStarPath;
 }
 
+function isQuestItem(item) {
+  var isQuestItem = 
+    item.location && item.location.includes('quest') ||
+    item.source && item.source.includes(' quest ') ||
+    item.source && item.source.includes(' Quest ');
+  return isQuestItem;
+}
+
 
 /*
 // THIS IS NOT BEING CALLED

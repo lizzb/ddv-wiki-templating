@@ -36,7 +36,7 @@ function renderParent(dataArray, templateType) {
       break;
     case "clothingFurniture":
       outputHTML = renderClothingFurnitureArticle(dataArray);
-      outputHTML += renderPSBundles(dataArray);
+      //outputHTML += renderPSBundles(dataArray);
       break;
     default:
       outputHTML = "Unsure what template generating function to use, templateType: ", templateType;
@@ -644,28 +644,68 @@ function parseItemSource(item) {
   }
 
   // ===== Quest =====
-  if (item.location == 'quest') {
+  if (isQuestItem(item)) {
     const string = item.source;
+
+    /*    
+    // ORIGINAL
     // Note: capital Q in quest source value
     const regex = /([\w\W ]+) Level (\d+) Quest \(([\w\W ]+)\) \(reward\)/;
     const result = string.split(regex);
     item.character = result[1]; //character value
     item.level = result[2]; // friendship level
     item.quest = result[3]; // quest name
+    */
+
+    // Regex breakdown:
+    // ^(.+?)           -> Captures Character (Lazy match until "Level")
+    // Level (\d+)      -> Captures Level digits
+    // \s+[Qq]uest\s+   -> Matches "Quest" or "quest" with surrounding whitespace
+    // \((.+?)\)        -> Captures Quest Name inside parentheses
+    // \s+\(            -> Matches the space and opening paren for reward info
+    // (?:(\d+)\s+)?    -> OPTIONAL: Captures digits if they exist (qtyRewarded)
+    // (.+?)            -> Captures the text (whenRewarded)
+    // \)/              -> Matches the closing paren
+    
+    const regex = /^(.+?) Level (\d+)\s+[Qq]uest\s+\((.+?)\)\s+\((?:(\d+)\s+)?(.+?)\)/;
+    const match = string.match(regex);
+
+    if (match) {
+      item.character = match[1].trim(); // character value
+      item.level = match[2]; // friendship level
+      item.quest = match[3].trim(); // quest name
+      
+      // Capture the quantity (default to 1 if not specified)
+      item.qtyRewarded = match[4] ? match[4] : "1";
+      
+      // Capture the "when" and clean up any trailing "?" as requested
+      item.whenRewarded = match[5].replace(/\?$/, "").trim();
+    } else {
+      console.warn("Failed to parse quest source:", string);
+    }
   }
 
   // GOLD STANDARD - 
-  // After reaching [[Pocahontas#Friendship Rewards|Friendship Level 10]] with [[Pocahontas]] and progressing through the quest [[A Raccoon's Return]],
+  // After reaching [[CHARACTERNAME#Friendship Rewards|Friendship Level FRIENDSHIPLEVEL]] with [[CHARACTERNAME]] and progressing through the quest [[QUESTNAME]],
   // it is placed in the Valley
   // it is given to be placed on [[Dazzle Beach]]
-  // and will remain placed after the quest is completed. It is automatically collected during the quest. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+  // and will remain placed after the quest is completed.
+  // It is automatically collected during the quest.
+  // Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
 
+  /*
+  Pocahontas Level 4 quest (Working Together) (reward)
+  Pocahontas Level 4 quest (Working Together) (pick up after completed)
+  Cinderella Level 10 Quest (The Friendship Ball) (post-quest mailbox reward)
+  Cinderella Level 2 quest (Cinderella's Custom Creation) (reward)
+  Tramp Level 2 Quest (Not Your Average Squeaky Toy) (during?)
+  Pocahontas Level 10 quest (A Raccoon's Return) (4 during)
+  Pocahontas Level 10 Quest (A Raccoon's Return) (during)
+  */
 
-  // Pocahontas Level 4 quest (Working Together) (reward)
-  // Pocahontas Level 10 quest (A Raccoon's Return) (during)
   // Crafting after Tiana Level 4 quest (Little Louis's Big Break) (unlocked during or after?)
   // It required to craft during [[Tiana|Tiana's]] level 4 [[friendship]] quest [[Little Louis's Big Break]], and after crafting during that quest the recipe will be permanently unlocked.<!--It will not be available in Crafting Recipes prior to the relevant quest step.-->
-  //  It can be collected during and crafted after completing the quest Home is Where the Art Is.
+  // It can be collected during and crafted after completing the quest Home is Where the Art Is.
 
   // Fox and Raccoon Sculpture
   // Display Pillar
@@ -681,35 +721,40 @@ function parseItemSource(item) {
   // After the quest is complete the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]], and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
   // It can be positioned and placed using furniture placement mode. It can be crafted and collected using a [[:Category:Crafting_Stations|crafting station]] during the quest, and after completing the quest the recipe will remain in the crafting menu. Once collected it is not tracked in either the '''Crafting Collection''' or '''Furniture Colletion'''.
 
-// Ariel's Crafting Station
+  // Ariel's Crafting Station
 
   /*
   '''Flowery Wishblossom Garden''' is a [[Furniture#Snow White|Snow White]] themed piece of crafted furniture which is unlocked after completing [[Snow White]]'s level 10 [[friendship]] quest [[The Wishblossom Fair]].
 
-It can be crafted using a [[:Category:Crafting Stations|Crafting Station]] after the quest has been completed. Once collected it will be added to both the [[:Category:Wishblossom Mountains Crafting Collection|Wishblossom Mountains Crafting Collection]] and the [[:Category:Wishblossom Mountains Furniture Sets Collection|Wishblossom Mountains Furniture Sets Collection]].
+  It can be crafted using a [[:Category:Crafting Stations|Crafting Station]] after the quest has been completed.
+  Once collected it will be added to both the [[:Category:${collection} Crafting Collection|${collection} Crafting Collection]] and the [[:Category:${collection} Furniture Sets Collection|${collection} Furniture Sets Collection]].
 
-*/
+  */
   /*
   '''Modular Dragon Body''' is a [[Furniture#Mulan|Mulan]] themed piece of [[Crafting#Furniture|craftable furniture]].
 
-The crafting recipe for it is unlocked after completing the quest [[The Guardian Party]]. The [[Modular Dragon Body (2)|furniture item]] which is crafted during that quest with same name and appearance has different attributes and will appear as a separate entry inside Inventory.
+  The crafting recipe for it is unlocked after completing the quest [[The Guardian Party]].
+  The [[Modular Dragon Body (2)|furniture item]] which is crafted during that quest with same name and appearance has different attributes and will appear as a separate entry inside Inventory.
 
-It can be positioned and placed using furniture placement mode. It can be crafted using a [[:Category:Crafting_Stations|crafting station]], and once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
-*/
+  It can be positioned and placed using furniture placement mode.
+  It can be crafted using a [[:Category:Crafting_Stations|crafting station]], and once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+  */
   // Saucery extract
   /*
   '''Saucery Extract''' is a [[Furniture#Lady_and_the_Tramp|Lady and the Tramp]] themed piece of [[Crafting#Furniture|craftable furniture]] which is unlocked during the [[Lady#Friendship Quests|Lady]] quest [[A Curious Dish]].
 
-It is given by [[Lady]] as a reward after completing the [[friendship]] quest [[A Curious Dish]], and after collecting the recipe will be unlocked and it can be crafted using a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
-*/
+  It is given by [[Lady]] as a reward after completing the [[friendship]] quest [[A Curious Dish]], and after collecting the recipe will be unlocked and it can be crafted using a [[:Category:Crafting Stations|Crafting Station]].
+  Once collected it will be added to both the [[:Category:${collection} Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:${collection} Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
+  */
   // blank sandwich board - all over the place
   /*
   '''Blank Sandwich Board''' is a [[The Princess and the Frog]] themed piece of [[Crafting#Furniture|craftable furniture]] that can be made using a [[:Category:Crafting_Stations|crafting station]]. 
 
-A similar quest item, [[Sandwich Board]], requiring the same materials is [[Crafting|crafted]] during [[Tiana|Tiana's]] level 7 [[friendship]] quest [[Dreamlight Gastronomy]], and after crafting that item the recipe will be permanently unlocked.
+  A similar quest item, [[Sandwich Board]], requiring the same materials is [[Crafting|crafted]] during [[Tiana|Tiana's]] level 7 [[friendship]] quest [[Dreamlight Gastronomy]], and after crafting that item the recipe will be permanently unlocked.
 
-It can be positioned and placed using furniture placement mode. Once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
-*/
+  It can be positioned and placed using furniture placement mode.
+  Once collected it will be added to both the [[:Category:${collection} Crafting Collection|${collection} Crafting Collection]] and the [[:Category:${collection} Furniture Sets Collection|${collection} Furniture Sets Collection]].
+  */
 
 
   // ===== Star Path =====
@@ -894,6 +939,12 @@ function output_from(item) {
       break;
     }
 
+    // try to give things a default scrooge store article text
+    if (item.source && item.source.includes('Store')) {
+      itemSource = itemSource_scroogeDefault + '. '
+    }
+
+
     if (isCraftable(item)) {
 
       if (showItemDebug) {
@@ -931,7 +982,7 @@ function output_from(item) {
     }
 
   // ========== 3 CHECK IF FROM quest ==========
-    if (item.location == 'quest') {
+    if (isQuestItem(item)) {
       if (showItemDebug) {
         console.log(item.name, ' is a quest reward item', item.source);
       }
@@ -2102,6 +2153,9 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     const regex = /Once collected it will be added to the \[\[\:Category: none ([\w]+) Sets Collection\|none ([\w]+) Sets Collection\]\]\./gi;
   // todo - should move this into output_collection function
     newStr = newStr.replaceAll(regex, 'Once collected it will not be added to the [[:Category:Untracked $1 Sets Collection|$2 Sets Collection]].');
+
+    // todo: Once collected it will not be added to the [[:Category:Untracked..... vs it is not tracked?
+    newStr = newStr.replaceAll("Once collected it will be added to the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].");
 
   // TODO replace (\w),(\w) with $1, $2 for psBundleItems fix
 
