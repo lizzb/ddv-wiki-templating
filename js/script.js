@@ -935,7 +935,7 @@ function output_from(item) {
 
     default:
       infoboxFrom = '<!--TODO-->'; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
-      itemSource = 'SOURCE TODO.'; // crafting
+      itemSource = 'SOURCE TODO.' + '<!--'+item.source+'-->'; // crafting
       break;
     }
 
