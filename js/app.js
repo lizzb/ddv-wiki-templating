@@ -91,7 +91,7 @@ DataConverter.prototype.convert = function() {
         this.outputText = DataGridRenderer[this.outputDataType](t, i, r, this.indent, this.newLine);
         this.outputTextArea.val(u + this.outputText);
 
-        // TODO add onchange event handling for collectionConfirmed ad functionsConfirmed
+        // TODO add onchange event handling for priceConfirmed, tagsConfirmed, collectionConfirmed, functionsConfirmed
 
 
         const jsonString = this.outputText;
@@ -104,7 +104,7 @@ DataConverter.prototype.convert = function() {
 };
 DataConverter.prototype.insertSampleData = function(dataName) {  
 
-	// 
+	// COMMENCE RANDOM SAMPLE DATA
 
   	var outputString = "";
   	if (dataName == "spDuties") {

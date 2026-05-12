@@ -35,30 +35,26 @@ function renderParent(dataArray, templateType) {
       outputHTML = renderFlowers(dataArray);
       break;
     case "clothingFurniture":
-      outputHTML = renderClothingFurnitureArticle(dataArray);
-      //outputHTML += renderPSBundles(dataArray);
+      outputHTML += renderPSBundles(dataArray);
+      outputHTML += renderClothingFurnitureArticle(dataArray);
       break;
     default:
       outputHTML = "Unsure what template generating function to use, templateType: ", templateType;
     }
 
-  // i really should do better event handling....
+    // i really should do better event handling....
+    priceConfirmed = $("#priceConfirmedCB").prop("checked");
+    tagsConfirmed = $("#tagsConfirmedCB").prop("checked");
     collectionConfirmed = $("#collectionConfirmedCB").prop("checked");
     functionsConfirmed = $("#functionsConfirmedCB").prop("checked");
 
-    console.log(`collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
+    console.log(`priceConfirmed = ${priceConfirmed}, tagsConfirmed = ${tagsConfirmed}, collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
 
   // if a custom template is provided in the textarea, use that instead of the one specified by the function
     var inputTemplateValue = document.getElementById("template-input").value;
     if (inputTemplateValue) {
       outputHTML = renderVariableTemplate(dataArray, inputTemplateValue);
     }
-  // Set the value
-  //document.getElementById("template-input").value = "New content for the textarea.";
-  //%%name%%: %%type%%
-
-  //outputHTML += renderUpdatedFlooring(flooring);
-  //outputHTML += renderClothingFurnitureArticle(flooring);
 
     return outputHTML;
   }
@@ -112,15 +108,18 @@ function output_buyprice(item) {
     output = '';
   }
 
-  // Possibly crafting
+  // Possibly crafting input values from sheet
   if (isCraftable(item) || item.buyprice == 'n/a' || item.buyprice == '-') {
     output = '';
   }
 
-  // TODO - fix this logic
-  if (output != '' && !item.buyprice) {
+  // TODO - fix this logic for second half
+  if (!priceConfirmed || (output != '' && !item.buyprice) ) {
     item.missingCategories.push('[[Category: Missing Price]]');
   }
+
+  // TODO - conditionals to prevent |buyprice=<!--null--> as output
+  item.buyprice = wrapComment(item.buyprice, !priceConfirmed);
 
   // not sure this is still required
   //const regex = /\n\|buyprice=\d\d [tT]okens/gi;
@@ -130,25 +129,36 @@ function output_buyprice(item) {
 }
 
 function output_color(item) {
-  if (!item.color && !(isHairstyle(item) || isAccessory(item)))
-    item.color =
-  '<!--OPTIONS: blue, green, red, pink, white, black, yellow, orange, brown, purple, gray-->';
   // Hairstyles/Accessories have no color
+  if (!item.color && !(isHairstyle(item) || isAccessory(item))) {
+    item.color = '<!--OPTIONS: blue, green, red, pink, white, black, yellow, orange, brown, purple, gray-->';
+    item.missingCategories.push('[[Category: Missing Colors]]');
+  }  
 
   var output = '|color=%%color%%\n';
   return output;
 }
 
 function output_tags(item) {
+
+  if (!tagsConfirmed) {
+    item.missingCategories.push('[[Category: Missing Tags]]');
+  }
   if (!item.tags && !(isHairstyle(item) || isAccessory(item))) {
     item.missingCategories.push('[[Category: Missing Tags]]');
     item.tags = '<!--xxx, xxx, xxx-->';
   }
   if (isHairstyle(item)) {
+    // Hairstyles/Accessories have no tags
     item.tags = 'Hairstyle';
   }
-  // Hairstyles/Accessories have no tags
+  if (isAccessory(item)) {
+    // Hairstyles/Accessories have no tags
+    item.tags = '';
+  }
 
+  item.tags = wrapComment(item.tags, !tagsConfirmed);
+  
   var output = '|tags=%%tags%%\n';
   return output;
 }
@@ -323,6 +333,7 @@ function parseSizePlacementEnv(item) {
 // TODO: output related items alphabetically for premium bundle items
 function output_relatedItems(item) {
   var output = '';
+  console.log(`RELATED ITEMS: ${item.relatedItems}`);
   //output = '\n<!--\n{{relatedItems | xxx, xxx, xxx}}\n-->\n';
   return output;
 }
@@ -565,8 +576,8 @@ function generateReturningPremiumStarPathBodyText(item) {
 
   var inlineBundleLink = `[[${item.bundleName}]]`;
 
-  // item is a standalone item premium bundle
-  if (item.returning && item.name == item.bundleName) {
+  // item is a standalone item premium bundle - returning or not
+  if (item.name == item.bundleName) {
     inlineBundleLink = `[[${item.bundleName} (Bundle)|${item.bundleName}]]`;
   }
 
@@ -991,6 +1002,13 @@ function output_from(item) {
       itemSource = `It is automatically rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and completing the quest [[${item.quest}]].`;
 
       infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
+
+      if (item.source && item.source.includes('Quest - ')) {
+        // if source in format of "Quest - CHARACTER Level X (QUESTNAME)",
+        // then it came directly from reporter data, not sheet
+        // so use more general language
+        itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
+      }
     }
 
   // ========== 4 CHECK IF FROM STARPATH (either returning or current)==========
@@ -1808,7 +1826,8 @@ function generateHouseTemplate(item) {
     //template += output_itemUsage(item);
     template += "\n\nIt can be applied using the [[Furniture menu]] inside the Inventory by picking up the [[Player's House]], which enables an option to '''Replace''', and then choosing a replacement House Dream Style. The Player's House must be fully upgraded to change its Dream Style. It can be also be placed in the Valley as an [[Dream_Styles#Placing Additional House Dream Styles|additional House]].";
 
-    // template += output_relatedItems(item);
+    // Occasionally house bundles include furniture
+    template += output_relatedItems(item);
     template += output_history(item);
     template += output_navbox(item);
 
@@ -2053,6 +2072,8 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     var newStr = originalRenderedHTML;
     newStr = newStr.replaceAll('=null', '=');
 
+    newStr = newStr.replaceAll('buyprice=<!--null-->', 'buyprice=');
+
     /*
     [[:Category: <!--Eternity Isle--> Companions Collection|<!--Eternity Isle--> Companions Collection]]
 
@@ -2064,23 +2085,32 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 */
 
 
+  /*
+  // check for with or without leading space in first line
+  XXX = "Dreamlight Valley"
+  YYY = "Furniture Sets"
+  newStr = newStr.replaceAll(
+    '[[:Category:<!--XXX--> YYY Collection|<!--XXX--> YYY Collection]]',
+    '[[:Category:XXX YYY Collection|XXX YYY Collection]]'
+  );
+  XXX = "Dreamlight Valley"
+  YYY = "Clothing Sets"
+  newStr = newStr.replaceAll(
+    '[[:Category: <!--XXX--> YYY Collection|<!--XXX--> YYY Collection]]',
+    '[[:Category:XXX YYY Collection|XXX YYY Collection]]'
+  );
 
-
-  /*newStr = newStr.replaceAll(
-    '[[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]]',
-    '[[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]]'
-  );
+  XXX = "Storybook Vale"
+  YYY = "Furniture Sets"
   newStr = newStr.replaceAll(
-    '[[:Category: <!--Dreamlight Valley--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]]',
-    '[[:Category:Dreamlight Valley Clothing Sets Collection|Dreamlight Valley Clothing Sets Collection]]'
+    '[[:Category:<!--XXX--> YYY Collection|<!--XXX--> YYY Collection]]',
+    '[[:Category:XXX YYY Collection|XXX YYY Collection]]'
   );
+  XXX = "Storybook Vale"
+  YYY = "Clothing Sets"
   newStr = newStr.replaceAll(
-    '[[:Category:<!--Storybook Vale--> Furniture Sets Collection|<!--Storybook Vale--> Furniture Sets Collection]]',
-    '[[:Category:Storybook Vale Furniture Sets Collection|Storybook Vale Furniture Sets Collection]]'
-  );
-  newStr = newStr.replaceAll(
-    '[[:Category: <!--Storybook Vale--> Clothing Sets Collection|<!--Storybook Vale--> Clothing Sets Collection]]',
-    '[[:Category:Storybook Vale Clothing Sets Collection|Storybook Vale Clothing Sets Collection]]'
+    '[[:Category: <!--XXX--> YYY Collection|<!--XXX--> YYY Collection]]',
+    '[[:Category:XXX YYY Collection|XXX YYY Collection]]'
   );*/
 
     /*

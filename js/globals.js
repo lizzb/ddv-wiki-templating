@@ -14,8 +14,13 @@ var starPathToken = "earthtoken";
 // toggle to wrap in cleanup tag
 var collectionConfirmed = $("#collectionConfirmedCB").prop("checked"); //true;
 
+// toggle for wrapping in comments in infobox
+var priceConfirmed = $("#priceConfirmedCB").prop("checked"); //true;
+var tagsConfirmed = $("#tagsConfirmedCB").prop("checked"); //true;
+
 // whether or not to include filler copy pasta for furniture functions
 var functionsConfirmed = $("#functionsConfirmedCB").prop("checked"); //true;
+
 
 // whether to console print out source of item as detected
 var showItemDebug = false; 

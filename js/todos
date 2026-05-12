@@ -1,5 +1,12 @@
 todo: 
 
+
+TODO
+- FIX: misc navbox link not correclty generating (paper whirlwind, shooting star) - Misc
+- FIX: standalone bundle body link not correctly generating (paper whirlwind)
+- ADD: ability to comment out price on output
+- ADD: ability to comment out tags on output
+
 Premium Bundle AND Mega Bundle
 (x3) - quantities in source (ignore)
 
@@ -312,7 +319,7 @@ It was originally available to unlock and collect for a limited time during the 
 Once collected it can be applied to rooms inside the [[Player's House]] using the [[Furniture menu]] inside the [[Inventory]].
 
 
-ADD EVENT HANDLERS TO collectionconfirmed and functionsconfirmed checkboxes - right now you have to trigger a new templating by changing input or switching something else (like template radio)
+ADD EVENT HANDLERS TO collectionconfirmed, tagsconfirmed, priceconfirmed, functionsconfirmed checkboxes - right now you have to trigger a new templating by changing input or switching something else (like template radio)
 
 {{NavboxFurniture|misc.|general}} should be {{NavboxFurniture|misc|general}}
 
