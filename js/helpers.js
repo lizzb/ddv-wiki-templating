@@ -506,7 +506,7 @@ function parseUniqueBundles(dataArray) {
 
   dataArray.forEach(function (item) {
     const searchItem = item.bundleName;
-    //item = parseItemSource(item); // Item source already parsed for infobox
+    //item = parseItemSource(item); // Item source already parsed for infobox, shouldnt be necessary here ... but think logic flow is wonky
     const foundObject = resultArray.find(
       (obj) => obj.bundleName === searchItem
     );
@@ -531,9 +531,7 @@ function parseUniqueBundles(dataArray) {
     bundleObj.psBundleItems.sort(); // alpha sort each bundle's items
   });
 
-  //console.log(resultArray);
-
-  // resultArray is array of bundleobjects with bundleName, bundlePrice... but it also has a bunch of superfluous values??? need to investigate
+  // resultArray is array of bundleobjects with bundleName, bundlePrice, psBundleItems, bundleType, version
   return resultArray;
 }
 
@@ -561,6 +559,7 @@ function renderPSBundles(dataArray) {
   // iterate through all furniture/clothing/companion/whatever items
   // assign item.standalone variable
   // is this looping necessary? YES to define item.standalone per item - but needs to be cleaned up, redundant
+  // otherwise think i also get duplicate bundles?
   // in previous versions i assigned the correct templates to the items themselves so that PS bundle printout could be per-item (table, listing, bundle article grouped together) vs per-template (all tables, all listings, all bundle articles grouped together)
   dataArray.forEach(function (item) {
     // assigns item.standalone, among other values
