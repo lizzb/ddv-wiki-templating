@@ -520,7 +520,10 @@ function parseUniqueBundles(dataArray) {
       // **** TODO - single-item bundles seem to have duplicate values??? or perhaps just using the wrong template - also not including one of the items in multi-item bundles??
       item.psBundleItems = [];
       item.psBundleItems.push(item.name);
-      resultArray.push(item);
+      //resultArray.push(item);
+
+      // default the bundle object type to whatever the first item itemType was, as well as whatever its version is - which is NOT robust for returning items - TODO
+      resultArray.push( {bundleName: item.bundleName, bundlePrice: item.bundlePrice, psBundleItems: item.psBundleItems, bundleType: item.itemType, version:item.version } );
     }
   });
   //console.log(resultArray);
@@ -528,9 +531,9 @@ function parseUniqueBundles(dataArray) {
     bundleObj.psBundleItems.sort(); // alpha sort each bundle's items
   });
 
-  console.log(resultArray);
+  //console.log(resultArray);
 
-  // resultArray is array of bundleobjects with bundleName, bundlePrice... but it also has a bunch of superfluous values???
+  // resultArray is array of bundleobjects with bundleName, bundlePrice... but it also has a bunch of superfluous values??? need to investigate
   return resultArray;
 }
 
@@ -553,15 +556,18 @@ function renderPSBundles(dataArray) {
   var psPageListing = '';
   var psHistoricalTableRow = '';
   var psBundleArticle = '';
-  var psBundleTables = psBundleNavbox + '\n\n' + psTopTable + '\n\n' + psPageListing + '\n\n' + psHistoricalTableRow;
 
-    // iterate through all furniture/clothing/whatever items
-    // and for some reason put the templates on the items themselves??
+  
+  // iterate through all furniture/clothing/companion/whatever items
+  // assign item.standalone variable
+  // is this looping necessary? YES to define item.standalone per item - but needs to be cleaned up, redundant
+  // in previous versions i assigned the correct templates to the items themselves so that PS bundle printout could be per-item (table, listing, bundle article grouped together) vs per-template (all tables, all listings, all bundle articles grouped together)
   dataArray.forEach(function (item) {
-    console.log(`${item.name} - inside render PS Bundles`);
+    // assigns item.standalone, among other values
     item = parseItemSource(item);
     renderedHTML += '\n\n';
-    // TODO - this doesnt seem to be catching
+    
+    //console.log(`item.standalone before loop: ${item.name}:  ${item.standalone}`)
     if (item.name == item.bundleName) {
       if (showItemDebug) { console.log(item.bundleName, ' IS A STANDALONE ITEM'); }
       // don't think this assignment will leave this function since modified dataArray is not passed out of function, a different one is
@@ -570,90 +576,107 @@ function renderPSBundles(dataArray) {
       item.standalone = false;
       if (showItemDebug) { console.log('psBundleItems: ', item.psBundleItems); }
     }
+    //console.log(`item.standalone after loop: ${item.name}:  ${item.standalone}`)
   });
-  // any modified values from above will apply
+
+  // get unique bundles with populated items from input array
   bundleArray = parseUniqueBundles(dataArray);
-  console.log(`${bundleArray} - inside render PS Bundles`);
 
+  var tempTemplate = '';
 
-  renderedHTML += '\n\n============ Premium Bundle Navbox ============\n\n';
+  tempTemplate = '';
+  psBundleNavbox += '\n\n============ Premium Bundle Navbox ============\n\n';
   bundleArray.forEach(function (item) {
-    if (item.standalone) {
-      item.psBundleNavbox = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
+    console.log(`${item.name}`, item)
+    if (isSingleItemBundle(item)) {
+      tempTemplate = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
     }
     else {
-      item.psBundleNavbox = "'''[[%%bundleName%%]]''' • ";
+      tempTemplate = "'''[[%%bundleName%%]]''' • ";
     }
-    renderedHTML += microTemplate(item.psBundleNavbox, item) + '\n\n\n';
+    psBundleNavbox += microTemplate(tempTemplate, item) + '\n\n\n';
   });
 
-
-  renderedHTML += '\n\n============ Premium Bundle Top Table ============\n\n';
+  tempTemplate = '';
+  psTopTable += '\n\n============ Premium Bundle Top Table ============\n\n';
   bundleArray.forEach(function (item) {
-    if (item.standalone) {
-      item.psTopTable = '| [[File:%%bundleName%% Store.png|450px|right|link=%%bundleName%% (Bundle)]]<!--row X leftright-->';
+    if (isSingleItemBundle(item)) {
+      tempTemplate = '| [[File:%%bundleName%% Store.png|450px|right|link=%%bundleName%% (Bundle)]]<!--row X leftright-->';
     }
     else {
-      item.psTopTable = '| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row x leftright-->';
+      tempTemplate = '| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row x leftright-->';
     }
-    renderedHTML += microTemplate(item.psTopTable, item) + '\n\n\n';
+    psTopTable += microTemplate(tempTemplate, item) + '\n\n\n';
   });
 
-
-  renderedHTML +='\n\n============ Premium Bundle Page Listing ============\n\n';
+  tempTemplate = '';
+  psPageListing +='\n\n============ Premium Bundle Page Listing ============\n\n';
   bundleArray.forEach(function (item) {
-    if (item.standalone) {
-      item.psPageListing = "File:%%bundleName%% Store.png|'''[[%%bundleName%% (Bundle)|%%bundleName%%]]'''|link=%%bundleName%% (Bundle)";
+    if (isSingleItemBundle(item)) {
+      tempTemplate = "File:%%bundleName%% Store.png|'''[[%%bundleName%% (Bundle)|%%bundleName%%]]'''|link=%%bundleName%% (Bundle)";
     }
     else {
-      item.psPageListing = "File:%%bundleName%%.png|'''[[%%bundleName%%]]'''|link=%%bundleName%%";
+      tempTemplate = "File:%%bundleName%%.png|'''[[%%bundleName%%]]'''|link=%%bundleName%%";
     }
-    renderedHTML += microTemplate(item.psPageListing, item) + '\n\n\n';
+    psPageListing += microTemplate(tempTemplate, item) + '\n\n\n';
   });
 
 
   // ****TODO FIX currently rendering dupes of standalone items in historical table - fixed?
   // ****TODO FIX currently not listing all items in the bundle -- think fixed?
-  renderedHTML += '\n\n============ Premium Bundle Historical Table ============\n\n';
+  psHistoricalTableRow += '\n\n============ Premium Bundle Historical Table ============\n\n';
   bundleArray.forEach(function (item) {
-    if (item.standalone) {
+    if (isSingleItemBundle(item)) {
       item.psHistoricalTableRow = '|-\n| [[%%bundleName%% (Bundle)|%%bundleName%%]]\n| {{name|%%bundleName%%}}'; //+ psHistoricalTableRow_price;
     }
     else {
       item.psHistoricalTableRow = '|-\n| [[%%bundleName%%]]\n|'; // + psHistoricalTableRow_price;
     }
-    renderedHTML += microTemplate(item.psHistoricalTableRow, item);
+    psHistoricalTableRow += microTemplate(item.psHistoricalTableRow, item);
+
     if (item.psBundleItems && item.psBundleItems.length > 1) {
       item.psBundleItems.forEach(function (bundleItem) {
-        renderedHTML += '\n{{name|' + bundleItem + '}}';
+        psHistoricalTableRow += '\n{{name|' + bundleItem + '}}';
         if (item.returning)
           // TODO - and not standalone
-          renderedHTML += '<!-- ({{price|XXXXXXX|moonstone}})-->';
-        renderedHTML += '<br>';
+          psHistoricalTableRow += '<!-- ({{price|XXXXXXX|moonstone}})-->';
+        psHistoricalTableRow += '<br>';
       });
     }
-    renderedHTML += microTemplate(psHistoricalTableRow_price, item);
-    renderedHTML += '\n\n\n';
+
+    psHistoricalTableRow += microTemplate(psHistoricalTableRow_price, item);
+    psHistoricalTableRow += '\n\n\n';
   });
 
 
-  renderedHTML += '\n\n============ Bundle Article ============\n\n';  
+  tempTemplate = '';
+  psBundleArticle += '\n\n============ Bundle Article ============\n\n';  
   bundleArray.forEach(function (item) {
-    if (item.standalone) {
-      item.psBundleArticle =
-        '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%% Store.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%name%%\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=%%name%%\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' +
-        item.version +
-        '|Added}}\n\n{{NavboxPremiumBundle}}';
+
+    var imageParam = '%%bundleName%%'; // vs '%%bundleName%% Store'
+    var itemsParam1 = '<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->'; // vs ''
+    var itemsParam2 = ''; // vs '%%psBundleItems%%'
+
+    if (isSingleItemBundle(item)) {
+      imageParam = '%%bundleName%% Store';
+      itemsParam1 = '';
+      itemsParam2 = '%%psBundleItems%%';
     }
-    else {
-      item.psBundleArticle = '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%%.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
-    }
-    renderedHTML +=
-      microTemplate(item.psBundleArticle, item) +
-      '\n\n----------------------------------------------------------\n\n';
+    tempTemplate = '{{infobox\n|name=%%bundleName%%\n|image='+imageParam+'.png\n|width=350px\n|type=Premium Bundle\n|category=%%bundleType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%'+itemsParam1+'\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%bundleType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items='+itemsParam2+'\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
+
+    psBundleArticle += microTemplate(tempTemplate, item);
+    psBundleArticle += '\n\n----------------------------------------------------------\n\n';
   });
+
+  // '\n\n'
+  renderedHTML += psBundleNavbox + '' + psTopTable + '' + psPageListing + '' + psHistoricalTableRow + '' + psBundleArticle;
+
 
   return renderedHTML;
+}
+
+function isSingleItemBundle(item) {
+  return (item.psBundleItems.length == 1);
 }
 
 

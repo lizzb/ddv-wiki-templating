@@ -842,8 +842,13 @@ function parseItemSource(item) {
     if (showItemDebug) {
       console.log(item.bundleName, ' contains the item: ', item.name);
     }
-    if (item.name == item.bundleName) {
+    // item.name == item.bundleName
+    if (isStandalone(item)) { 
       item.standalone = true;
+      if (showItemDebug) { console.log(item.bundleName, ' IS A STANDALONE ITEM'); }
+    }
+    else {
+      item.standalone = false; // TODO - will be undefined for non-premium items, is this desired?
     }
 
     if (item.bundlePrice == '____') {
