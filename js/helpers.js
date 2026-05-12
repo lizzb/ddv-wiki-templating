@@ -553,84 +553,75 @@ function renderPSBundles(dataArray) {
   var psPageListing = '';
   var psHistoricalTableRow = '';
   var psBundleArticle = '';
-  var psBundleTables =
-    psBundleNavbox +
-    '\n\n' +
-    psTopTable +
-    '\n\n' +
-    psPageListing +
-    '\n\n' +
-    psHistoricalTableRow;
+  var psBundleTables = psBundleNavbox + '\n\n' + psTopTable + '\n\n' + psPageListing + '\n\n' + psHistoricalTableRow;
 
     // iterate through all furniture/clothing/whatever items
-    // and for some reason put the templates on the items themselves
+    // and for some reason put the templates on the items themselves??
   dataArray.forEach(function (item) {
     console.log(`${item.name} - inside render PS Bundles`);
     item = parseItemSource(item);
     renderedHTML += '\n\n';
-
     // TODO - this doesnt seem to be catching
     if (item.name == item.bundleName) {
       if (showItemDebug) { console.log(item.bundleName, ' IS A STANDALONE ITEM'); }
-
       // don't think this assignment will leave this function since modified dataArray is not passed out of function, a different one is
       item.standalone = true;
-
-      //console.log(itemFrom); // TODO - 2025.06.24 - figure out why this errors out, itemFrom needs to always be defined??
-      // TODO - if standalone item, replace '|bundleName=' + item.bundleName + '(Bundle){{!}}' + item.bundleName
-
-      item.psBundleNavbox = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
-      item.psTopTable = '| [[File:%%bundleName%% Store.png|450px|right|link=%%bundleName%% (Bundle)]]<!--row X leftright-->';
-      item.psPageListing = "File:%%bundleName%% Store.png|'''[[%%bundleName%% (Bundle)|%%bundleName%%]]'''|link=%%bundleName%% (Bundle)";
-      item.psHistoricalTableRow = '|-\n| [[%%bundleName%% (Bundle)|%%bundleName%%]]\n| {{name|%%bundleName%%}}'; //+ psHistoricalTableRow_price;
-      item.psBundleArticle =
-        '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%% Store.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%name%%\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=%%name%%\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' +
-        item.version +
-        '|Added}}\n\n{{NavboxPremiumBundle}}';
     } else {
       item.standalone = false;
       if (showItemDebug) { console.log('psBundleItems: ', item.psBundleItems); }
-      item.psBundleNavbox = "'''[[%%bundleName%%]]''' • ";
-      item.psTopTable = '| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row x leftright-->';
-      item.psPageListing = "File:%%bundleName%%.png|'''[[%%bundleName%%]]'''|link=%%bundleName%%";
-      item.psHistoricalTableRow = '|-\n| [[%%bundleName%%]]\n|'; // + psHistoricalTableRow_price;
-      //item.psHistoricalTableRow = "|-\n| [[%%bundleName%%]]\n|\n{{name|xxxxxx}}<!-- ({{price|XXXXXXX|moonstone}})--><br>\n{{name|xxxxxx}}<!-- ({{price|XXXXXXX|moonstone}})--><br>"; // + psHistoricalTableRow_price;
-      // TODO - rather than interpolating psBundleItems, add spaces between the commas of items for readability - for some reason below code wont work
-      /*if (item.psBundleItems && psBundleItems.length > 1){
-        console.log("BUNDLE ITEMS SHOULD BE JOINED WITH COMMA SPACE");
-        item.psBundleItemsString=item.psBundleItems.join(", ");
-      } 
-      else {
-        item.psBundleItemsString="";
-      }*/
-      item.psBundleArticle = '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%%.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
     }
   });
   // any modified values from above will apply
   bundleArray = parseUniqueBundles(dataArray);
+  console.log(`${bundleArray} - inside render PS Bundles`);
+
 
   renderedHTML += '\n\n============ Premium Bundle Navbox ============\n\n';
   bundleArray.forEach(function (item) {
-    //console.log(item.bundleName + psBundleNavbox);
+    if (item.standalone) {
+      item.psBundleNavbox = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
+    }
+    else {
+      item.psBundleNavbox = "'''[[%%bundleName%%]]''' • ";
+    }
     renderedHTML += microTemplate(item.psBundleNavbox, item) + '\n\n\n';
   });
 
+
   renderedHTML += '\n\n============ Premium Bundle Top Table ============\n\n';
   bundleArray.forEach(function (item) {
+    if (item.standalone) {
+      item.psTopTable = '| [[File:%%bundleName%% Store.png|450px|right|link=%%bundleName%% (Bundle)]]<!--row X leftright-->';
+    }
+    else {
+      item.psTopTable = '| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row x leftright-->';
+    }
     renderedHTML += microTemplate(item.psTopTable, item) + '\n\n\n';
   });
 
-  renderedHTML +=
-    '\n\n============ Premium Bundle Page Listing ============\n\n';
+
+  renderedHTML +='\n\n============ Premium Bundle Page Listing ============\n\n';
   bundleArray.forEach(function (item) {
+    if (item.standalone) {
+      item.psPageListing = "File:%%bundleName%% Store.png|'''[[%%bundleName%% (Bundle)|%%bundleName%%]]'''|link=%%bundleName%% (Bundle)";
+    }
+    else {
+      item.psPageListing = "File:%%bundleName%%.png|'''[[%%bundleName%%]]'''|link=%%bundleName%%";
+    }
     renderedHTML += microTemplate(item.psPageListing, item) + '\n\n\n';
   });
 
+
   // ****TODO FIX currently rendering dupes of standalone items in historical table - fixed?
   // ****TODO FIX currently not listing all items in the bundle -- think fixed?
-  renderedHTML +=
-    '\n\n============ Premium Bundle Historical Table ============\n\n';
+  renderedHTML += '\n\n============ Premium Bundle Historical Table ============\n\n';
   bundleArray.forEach(function (item) {
+    if (item.standalone) {
+      item.psHistoricalTableRow = '|-\n| [[%%bundleName%% (Bundle)|%%bundleName%%]]\n| {{name|%%bundleName%%}}'; //+ psHistoricalTableRow_price;
+    }
+    else {
+      item.psHistoricalTableRow = '|-\n| [[%%bundleName%%]]\n|'; // + psHistoricalTableRow_price;
+    }
     renderedHTML += microTemplate(item.psHistoricalTableRow, item);
     if (item.psBundleItems && item.psBundleItems.length > 1) {
       item.psBundleItems.forEach(function (bundleItem) {
@@ -645,8 +636,18 @@ function renderPSBundles(dataArray) {
     renderedHTML += '\n\n\n';
   });
 
-  renderedHTML += '\n\n============ Bundle Article ============\n\n';
+
+  renderedHTML += '\n\n============ Bundle Article ============\n\n';  
   bundleArray.forEach(function (item) {
+    if (item.standalone) {
+      item.psBundleArticle =
+        '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%% Store.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%name%%\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=%%name%%\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' +
+        item.version +
+        '|Added}}\n\n{{NavboxPremiumBundle}}';
+    }
+    else {
+      item.psBundleArticle = '{{infobox\n|name=%%bundleName%%\n|image=%%bundleName%%.png\n|width=350px\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%itemType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items=\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
+    }
     renderedHTML +=
       microTemplate(item.psBundleArticle, item) +
       '\n\n----------------------------------------------------------\n\n';
