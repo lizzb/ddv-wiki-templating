@@ -333,8 +333,12 @@ function parseSizePlacementEnv(item) {
 // TODO: output related items alphabetically for premium bundle items
 function output_relatedItems(item) {
   var output = '';
-  console.log(`RELATED ITEMS: ${item.relatedItems}`);
   //output = '\n<!--\n{{relatedItems | xxx, xxx, xxx}}\n-->\n';
+  if (item.relatedItems && item.relatedItems.length >= 1) {
+    output = `\n<!--\n{{relatedItems | ${item.relatedItems.join(', ')} }}\n-->\n`;
+  }
+  //output = `\n<!--\n{{relatedItems | ${item.relatedItems} }}\n-->\n`;
+
   return output;
 }
 
@@ -1534,13 +1538,32 @@ function parseItem(item) {
   return item;
 }
 
+// may not be ALL related items total, will be limited to whatevers in bundleArray
+function assignRelatedItemsFromInputArray(item, bundleArray) {
+  //console.log(`item.relatedItems before: ${item.relatedItems}`)
+  item.relatedItems = [];
+  bundleArray.forEach(function(bundleItem) {
+    if (bundleItem.psBundleItems.includes(item.name) && bundleItem.psBundleItems.length >1) {
+      // todo - need to omit the item with the matching name from relateditems
+      item.relatedItems = bundleItem.psBundleItems.filter(item => item !== item.name);
+    }
+  });
+  //console.log(`item.relatedItems after: ${item.relatedItems}`)
+  return item;
+}
+
 /* ============= */
 function renderClothingFurnitureArticle(dataArray) {
   var renderedHTML = '';
 
+  // get unique bundles with populated items from input array
+  var bundleArray = parseUniqueBundles(dataArray);
 
   var delimiter = '\n\n\n-----------------------------\n\n\n';
   dataArray.forEach(function(item) {
+
+    // possibly assigning itself recursively...??
+    item = assignRelatedItemsFromInputArray(item, bundleArray);
 
     // =*=*=*=*= PARSING ITEM START =*=*=*=*=
     // trying to troubleshoot why interpolation doesnt work for bundleName etc params
