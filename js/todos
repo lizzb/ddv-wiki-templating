@@ -1,5 +1,34 @@
 todo: 
 
+earrings - are a, they can (plural body text)
+
+/*
+//changed_items is changed items, items is new items
+for each newItem in DATA.items
+
+print to console log in sheet export format
+
+DATA.items[0].category == "Furniture" (Trimming is category=Furniture) or "Building"
+or "Clothing" or "Companion" or "Tool" (includes accessories) or "Skin" or "AvatarFeature" (glider)
+
+categories
+"ActivityItem"
+"AvatarFeature"
+"Building"
+"Character"
+"Clothing"
+"Companion"
+"Furniture"
+"MemoryShard"
+"PhotoMode"
+"Skin"
+"Tool"
+"TouchOfMagic"
+"Trimming"
+"Upgrade"
+*/
+
+Fairy Garden Chair, Giant Trumpet Flowers - TODO - was originally NOT premium path, need to not override original star path value when item is returning as a premium shop item
 
 TODO
 - FIX: misc navbox link not correclty generating (paper whirlwind, shooting star) - Misc

@@ -1635,7 +1635,7 @@ var premiumBundles = {
     },
     "Nana": {
         "linked_name": "Nana (Bundle)|Nana",
-        "contentsString": "{{name|Nana}}",
+        "contentsString": "{{name|Nana}}<br>{{name|Nana's Doghouse}}",
         "priceString": "{{price|3000|moonstone}}",
         "versionAdded": "1.17",
         "protoDbName": "Bundle_Nana",
@@ -2435,7 +2435,7 @@ var premiumBundles = {
     },
     "Tinker Bell's House": {
         "linked_name": "Tinker Bell's House (Bundle)|Tinker Bell's House",
-        "contentsString": "{{name|Tinker Bell's House}}",
+        "contentsString": "{{name|Tinker Bell's House (2){{!}}Tinker Bell's House}}",
         "priceString": "{{price|3000|moonstone}}",
         "versionAdded": "1.11",
         "protoDbName": "HouseSkin_TinkerbellHouse",

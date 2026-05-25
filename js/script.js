@@ -672,6 +672,8 @@ function parseItemSource(item) {
     item.quest = result[3]; // quest name
     */
 
+    /*
+
     // Regex breakdown:
     // ^(.+?)           -> Captures Character (Lazy match until "Level")
     // Level (\d+)      -> Captures Level digits
@@ -684,7 +686,6 @@ function parseItemSource(item) {
     
     const regex = /^(.+?) Level (\d+)\s+[Qq]uest\s+\((.+?)\)\s+\((?:(\d+)\s+)?(.+?)\)/;
     const match = string.match(regex);
-
     if (match) {
       item.character = match[1].trim(); // character value
       item.level = match[2]; // friendship level
@@ -696,13 +697,56 @@ function parseItemSource(item) {
       // Capture the "when" and clean up any trailing "?" as requested
       item.whenRewarded = match[5].replace(/\?$/, "").trim();
     } else {
-      console.warn("Failed to parse quest source:", string);
+      console.warn("Failed to parse quest source for item (", item.name, "): ",  string);
     }
-  }
 
-  /*
-  It is available in connection with the quest [[QUESTNAME]].<!--<<It is automatically rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->
-  */
+    // TODO: also parse if the source is still generic, fed from the reporter data
+    // Quest - Pocahontas Level 10 Quest (A Raccoon's Return)
+    const regex2 = /Quest \- ^(.+?) Level (\d+)\s+[Qq]uest\s+\((.+?)\)\s+\((?:(\d+)\s+)?(.+?)\)/;
+    const match2 = string.match(regex2);
+    console.log("string to match: ", string);
+    console.log(match2);
+
+    */
+
+    // Updated Regex: 
+    // 1. Matches optional prefix: (// Quest - )?
+    // 2. Captures: Character (.+?), Level (\d+), Quest (.+?)
+    // 3. Makes the secondary info group (qty and when) optional: (\((?:(\d+)\s+)?(.+?)\))?
+
+
+    // The pattern uses a non-capturing group (?:...) for the optional prefix.
+    // This ensures that the first capturing group (.+?) is ALWAYS the Character Name.
+    const regex = /^(?:\/\/\s*Quest\s*-\s*)?(.+?)\s+Level\s+(\d+)\s+[Qq]uest\s+\((.+?)\)(?:\s+\((?:(\d+)\s+)?(.+?)\))?/;
+    const match = string.match(regex);
+        
+    if (match) {
+        // match[1] now correctly skips the prefix and captures only the name
+        item.character = match[1].trim();  // this is still including "Quest - " incorrectly
+        item.level = match[2]; 
+        item.quest = match[3].trim(); 
+
+
+        // Regex optionality isn't working, so manually remove "Quest - " at the start (^) of the string
+        // The 'i' flag makes it case-insensitive (handles "QUEST - " as well)
+        item.character = item.character.replace(/^Quest\s*-\s*/i, '');
+         
+         // Check if the secondary parentheses existed
+        // Capture the quantity and whenRewarded only if the second group exists
+        if (match[4] || match[5]) {
+            item.qtyRewarded = match[4] ? match[4] : "1";
+            item.whenRewarded = match[5].replace(/\?$/, "").trim();
+        } else {
+            // Fallback for formats without quantity/when info
+            item.qtyRewarded = "1";
+            item.whenRewarded = "Unknown"; // Or null/undefined
+        }
+    } else {
+        console.warn("Failed to parse quest source for item (", item.name, "): ", string);
+    }
+
+
+  }
 
   // GOLD STANDARD - 
   // After reaching [[CHARACTERNAME#Friendship Rewards|Friendship Level FRIENDSHIPLEVEL]] with [[CHARACTERNAME]] and progressing through the quest [[QUESTNAME]],
@@ -778,8 +822,9 @@ function parseItemSource(item) {
 
   // ===== Star Path =====
   if (isStarPath(item)) {
-    /*
+    
     // Sample values
+     /*
     var item = {};
     Premium Bundle - Garden Teapot House (____ M) // Star Path - Garden of Whimsy - B3A - Bonus Items (150 tokens)
     item.source = "Star Path - Garden of Whimsy - B2C - Bonus Items (25 tokens)";
@@ -788,12 +833,13 @@ function parseItemSource(item) {
     parseStarPathData(item);
     */
 
+
     const string = item.source;
     const regex = /Star Path - (.+?) - ([A-Z0-9]+) - (?:(?:T(\d))(?: Premium)?|Bonus Items) \((\d+) tokens\)/;
     const match = string.match(regex);
 
     if (!match) {
-      console.log("FAILED TO PARSE ITEM SOURCE:", string);
+      console.warn("FAILED TO PARSE ITEM SOURCE (", item.name, "): ", string);
       return item;
     }
 
@@ -813,6 +859,23 @@ function parseItemSource(item) {
     item.premium = /Premium|Bonus Items/.test(string) ? "yes" : "no";
     item.bonus = /Bonus/.test(string) ? "yes" : "no";
 
+
+/*
+// NEW REGEX MON MAY 25 - trying to also capture case "Star Path - Elements of Nature - ....."
+const string = item.source;
+const regex = /^Star Path - (.+?)(?: - ([A-Z0-9]+))?(?: - (T(\d)( Premium)?|Bonus Items))?(?: \((\d+) tokens\))?.*$/;
+const match = string.match(regex);
+if (match) {
+    item.starpath = match[1].trim();     // "Garden of Whimsy"
+    item.tile = match[2] || null;    // "B3A"
+    item.tier = match[4] || null;      // "4" (if T4)
+    item.isPremium = !!match[5]; 
+    item.isBonus = !!match[3] && match[3] === "Bonus Items";
+    item.isPremium = match[6] || null;    // "150"
+}
+*/
+
+
     item.premiumInline = "";
     if (item.premium == "yes") {
       item.premiumInline = " Premium";
@@ -822,6 +885,10 @@ function parseItemSource(item) {
     if (item.bonus == "yes") {
       item.bonusInline = " Bonus";
     }
+
+    //console.log("star path match object:", match);
+
+
 
     /*
     // 2025.09.30 - if these are being set correctly, then why are they coming up undefined later....
@@ -958,8 +1025,8 @@ function output_from(item) {
       break;
 
     default:
-      infoboxFrom = '<!--TODO-->'; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
-      itemSource = 'SOURCE TODO.' + '<!--'+item.source+'-->'; // crafting
+      infoboxFrom = '<!--|from=\n|storeSlots=-->'; // '<!--TODO-->'; // TODO - from=Premium Shop, from=friendship, from=reward, crafting |from=Lorekeeper Tale ****
+      itemSource = '<!--SOURCE TODO.-->' + '<!--'+item.source+'-->'; // crafting
       break;
     }
 
@@ -1016,11 +1083,15 @@ function output_from(item) {
 
       infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
 
+      // Quest - Pocahontas Level 10 Quest (A Raccoon's Return)
       if (item.source && item.source.includes('Quest - ')) {
         // if source in format of "Quest - CHARACTER Level X (QUESTNAME)",
         // then it came directly from reporter data, not sheet
         // so use more general language
         itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
+      
+        itemSource += '<!--<<It is automatically rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->';
+        // It is available in connection with the quest [[QUESTNAME]].
       }
     }
 
