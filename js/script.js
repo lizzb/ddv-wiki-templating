@@ -823,59 +823,92 @@ function parseItemSource(item) {
   // ===== Star Path =====
   if (isStarPath(item)) {
     
+    /*
     // Sample values
-     /*
-    var item = {};
-    Premium Bundle - Garden Teapot House (____ M) // Star Path - Garden of Whimsy - B3A - Bonus Items (150 tokens)
-    item.source = "Star Path - Garden of Whimsy - B2C - Bonus Items (25 tokens)";
-    item.source = "Star Path - Paw-fect Romance - 4A - T4 Premium (70 tokens)";
-    item.source = "Star Path - Frost & Fairies - 1D - T1 (8 tokens)";
-    parseStarPathData(item);
+
+    1. "Premium Bundle - Garden Teapot House (____ M) // Star Path - Garden of Whimsy - B3A - Bonus Items (150 tokens)"
+    2. "Star Path - Garden of Whimsy - B2C - Bonus Items (25 tokens)"
+    3. "Star Path - Paw-fect Romance - 4A - T4 Premium (70 tokens)"
+    4. "Star Path - Frost & Fairies - 1D - T1 (8 tokens)"
+    5. "Star Path - Elements of Nature - ....."
+
+    If an item is "Bonus Items", it is premium=yes and bonus=yes
+
+    1. { starpath: "Garden of Whimsy", tile: "B3A", tier: "3", eventtokens: "150", premium: "yes", bonus: "yes" }
+    2. { starpath: "Garden of Whimsy", tile: "B2C", tier: "2", eventtokens: "25", premium: "yes", bonus: "yes" }
+    3. { starpath: "Paw-fect Romance", tile: "4A", tier: "4", eventtokens: "70", premium: "yes", bonus: "no" }
+    4. { starpath: "Frost & Fairies", tile: "1D", tier: "1", eventtokens: "8", premium: "no", bonus: "no" }
+    5. { starpath: "Elements of Nature", tile: "", tier: "", eventtokens: "", premium: "", bonus: "" }
     */
 
-
     const string = item.source;
-    const regex = /Star Path - (.+?) - ([A-Z0-9]+) - (?:(?:T(\d))(?: Premium)?|Bonus Items) \((\d+) tokens\)/;
+
+    // PREVIOUS FUNCTIONAL AI REGEX
+    // const regex = /Star Path - (.+?) - ([A-Z0-9]+) - (?:(?:T(\d))(?: Premium)?|Bonus Items) \((\d+) tokens\)/;
+
+    /// may 26
+
+    // The Regex Breakdown:
+    // 1. Star Path - 
+    // 2. ((?:(?! - [A-Z0-9])(?! - \.).)+) -> Forces a match of the full theme name by stopping right before a ' - Tile' or ' - ...' sequence.
+    // 3. (?:\s+-\s+([A-Z0-9]+))?          -> Optionally captures the alphanumeric Tile ID.
+    // 4. (?:\s+-\s+(Bonus Items|T\d(?:\s+Premium)?))? -> Optionally captures the Tier/Bonus string layout.
+    // 5. (?:\s*\((\d+)\s+tokens\))?       -> Optionally captures the token count inside parentheses.
+    const regex = /Star Path - ((?:(?! - [A-Z0-9])(?! - \.).)+)(?:\s+-\s+([A-Z0-9]+))?(?:\s+-\s+(Bonus Items|T\d(?:\s+Premium)?))?(?:\s*\((\d+)\s+tokens\))?/;
+
     const match = string.match(regex);
+    //console.log(match);
 
     if (!match) {
       console.warn("FAILED TO PARSE ITEM SOURCE (", item.name, "): ", string);
-      return item;
+      return item; // do i want to return item here?
     }
 
-    item.starpath = match[1]; // star path name
-    item.tile = match[2]; // tile
-    item.eventtokens = Number(match[4]); // event token item cost
+    item.starpath = match[1].trim(); // star path name
+    item.tile = match[2] || ""; // tile, e.g. 4D, B2C
+    item.tierType = match[3] || "";
+    item.eventtokens = Number(match[4]) || ""; // event token item cost
 
-    // AI: tier fallback to tile (B2C → 2)
+    /*
+    // PREVIOUS AI: tier fallback to tile (B2C → 2)
     if (match[3]) {
       item.tier = Number(match[3]);
     } else {
       const tileMatch = item.tile.match(/\d/);
       item.tier = tileMatch ? Number(tileMatch[0]) : null;
     }
+    */
 
-    // derived flags (don’t overcomplicate regex)
+    // 1. Determine Tier: Extract the first numerical digit found in the tile code or the tier status string
+    let tier = "";
+    if (item.tile) {
+      const tileDigit = item.tile.match(/\d/);
+      if (tileDigit) item.tier = tileDigit[0];
+    } else if (tierType) {
+      const tierDigit = item.tierType.match(/\d/);
+      if (tierDigit) item.tier = tierDigit[0];
+    }
+
+    /*
+    // PREVIOUS AI: derived flags (don’t overcomplicate regex)
     item.premium = /Premium|Bonus Items/.test(string) ? "yes" : "no";
     item.bonus = /Bonus/.test(string) ? "yes" : "no";
+    */
 
+    // 2. Determine Premium and Bonus Flags
+    if (item.tierType === "Bonus Items") {
+      item.premium = "yes";
+      item.bonus = "yes";
+    } else if (item.tierType.includes("Premium")) {
+      item.premium = "yes";
+      item.bonus = "no";
+    } else if (item.tierType !== "") {
+      // If a tier type exists (like "T1") but doesn't say Premium/Bonus
+      item.premium = "no";
+      item.bonus = "no";
+    }
 
-/*
-// NEW REGEX MON MAY 25 - trying to also capture case "Star Path - Elements of Nature - ....."
-const string = item.source;
-const regex = /^Star Path - (.+?)(?: - ([A-Z0-9]+))?(?: - (T(\d)( Premium)?|Bonus Items))?(?: \((\d+) tokens\))?.*$/;
-const match = string.match(regex);
-if (match) {
-    item.starpath = match[1].trim();     // "Garden of Whimsy"
-    item.tile = match[2] || null;    // "B3A"
-    item.tier = match[4] || null;      // "4" (if T4)
-    item.isPremium = !!match[5]; 
-    item.isBonus = !!match[3] && match[3] === "Bonus Items";
-    item.isPremium = match[6] || null;    // "150"
-}
-*/
-
-
+    // extra premiumInline and bonusInline property assignments
     item.premiumInline = "";
     if (item.premium == "yes") {
       item.premiumInline = " Premium";
@@ -885,18 +918,7 @@ if (match) {
     if (item.bonus == "yes") {
       item.bonusInline = " Bonus";
     }
-
     //console.log("star path match object:", match);
-
-
-
-    /*
-    // 2025.09.30 - if these are being set correctly, then why are they coming up undefined later....
-    //console.log(`item.starpath: ${item.starpath}`);
-    //console.log(`item.eventtokens: ${item.eventtokens}`);
-    //console.log(item);
-    // maybe getting overridden later? also the editor is lagging...
-    */
   }
 
   // ===== Premium Item (may include returning Star Path) =====
