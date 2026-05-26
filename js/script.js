@@ -570,13 +570,36 @@ function generateReturningPremiumStarPathBodyText(item) {
   if (!isPremium(item)) {
     output += `for a limited time `;
   }
-  output += `during the [[${item.starpath} Star Path]] event using {{price|${item.eventtokens}|` + lookupToken(item.starpath) + `|showLabel}}`;
-  output += ` from the Tier ${item.tier}${item.premiumInline}${item.bonusInline} Rewards`;
+  output += `during the [[${item.starpath} Star Path]] event`;
+
+
+  // extra premiumInline and bonusInline property assignments
+  var premiumInline = "";
+  if (item.premium == "yes") {
+    premiumInline = " Premium";
+  }
+
+  var bonusInline = "";
+  if (item.bonus == "yes") {
+    bonusInline = " Bonus";
+  }
+
+  // TODO: placeholder vals if not defined
+  if (item.eventtokens && item.tier && item.premium && item.bonus) {
+    output += ` using {{price|${item.eventtokens}|` + lookupToken(item.starpath) + `|showLabel}}`;
+    output += ` from the Tier ${item.tier}${premiumInline}${bonusInline} Rewards`;
+  }
+  else {
+    output += `{{cleanup|TODO --`;
+    output += ` using {{price|XXXXX|` + lookupToken(item.starpath) + `|showLabel}}`;
+    output += ` from the Tier TXXXXX / Premium/Bonus Rewards`;
+    output += `}}`
+  }
+
   if (item.bonus == "yes") {
     output += ", which were available after all regular Star Path rewards have been collected";
   }
   output += `.`;
-
 
   var inlineBundleLink = `[[${item.bundleName}]]`;
 
@@ -880,11 +903,13 @@ function parseItemSource(item) {
     */
 
     // 1. Determine Tier: Extract the first numerical digit found in the tile code or the tier status string
-    let tier = "";
+    item.tier= '';
+    item.premium = '';
+
     if (item.tile) {
       const tileDigit = item.tile.match(/\d/);
       if (tileDigit) item.tier = tileDigit[0];
-    } else if (tierType) {
+    } else if (item.tierType) {
       const tierDigit = item.tierType.match(/\d/);
       if (tierDigit) item.tier = tierDigit[0];
     }
@@ -906,17 +931,6 @@ function parseItemSource(item) {
       // If a tier type exists (like "T1") but doesn't say Premium/Bonus
       item.premium = "no";
       item.bonus = "no";
-    }
-
-    // extra premiumInline and bonusInline property assignments
-    item.premiumInline = "";
-    if (item.premium == "yes") {
-      item.premiumInline = " Premium";
-    }
-
-    item.bonusInline = "";
-    if (item.bonus == "yes") {
-      item.bonusInline = " Bonus";
     }
     //console.log("star path match object:", match);
   }
@@ -1128,7 +1142,7 @@ function output_from(item) {
       }
 
     // source should have already been parsed in parseItemSource
-    // properties: starpath, tile, tier, premium, premiumInline-->"yes" or "no", eventtokens, bonus, bonusInline
+    // properties: starpath, tile, tier, premium, eventtokens, bonus
 
       infoboxFrom = `|from=${item.starpath} Star Path`;
       if (item.bonus == "yes") {
@@ -1137,7 +1151,7 @@ function output_from(item) {
       infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
 
       if (showItemDebug) {
-        console.log(`Various item props for source ${item.source}:   ===  item.premium: ${item.premium} item.premiumInline: ${item.premiumInline}   item.bonus: ${item.bonus}  item.bonusInline: ${item.bonusInline}   `)
+        console.log(`Various item props for source ${item.source}:   ===  item.premium: ${item.premium}   item.bonus: ${item.bonus}  `)
 
       }
 
@@ -1940,7 +1954,7 @@ function generateHouseTemplate(item) {
 
     //template += itemDescriptionTemplate;
 
-    template += ''; // It was available to unlock and collect for a limited time during [[Garden of Whimsy Star Path]] event using {{price|150|tranquiltoken|showLabel}} from the Tier 3 Premium Bonus Rewards, which were available after all regular rewards have been collected.
+    template += ''; 
 
     //template += output_itemIntro(item);
     template += `'''${item.name}''' is a [[Dream Styles#House Dream Styles|House Dream Style]] that can be applied to the [[Player's House]].`;
