@@ -334,7 +334,7 @@ function parseSizePlacementEnv(item) {
 function output_relatedItems(item) {
   var output = '';
   //output = '\n<!--\n{{relatedItems | xxx, xxx, xxx}}\n-->\n';
-  if (item.relatedItems && item.relatedItems.length >= 1) {
+  if (item.bundleName && item.relatedItems && item.relatedItems.length >= 1) {
     output = `\n<!--\n{{relatedItems | ${item.relatedItems.join(', ')} }}\n-->\n`;
   }
   //output = `\n<!--\n{{relatedItems | ${item.relatedItems} }}\n-->\n`;
