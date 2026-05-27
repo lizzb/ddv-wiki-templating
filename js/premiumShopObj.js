@@ -1,6 +1,6 @@
 // https://jsbin.com/gehizeq/edit?js,console
 
-var premiumBundles_more = {
+var premiumBundles = {
     "Tournament Gown Merida": {
         "linked_name": "Tournament Gown Merida (Bundle)|Tournament Gown Merida",
         "contentsString": "{{name|Tournament Gown Merida}}",
@@ -328,10 +328,7 @@ var premiumBundles_more = {
         "versionAdded": "",
         "protoDbName": "",
         "bundleType": ""
-    }
-};
-
-var premiumBundles = {
+    },
     "Colors of Nature Bundle": {
         "linked_name": "Colors of Nature Bundle",
         "contentsString": "{{name|Percy}}\n{{name|Pug Treats Carousel}}\n{{name|Natural Wooden Pergola|2}}\n{{name|Natural Wooden Pergola Pond|2}}\n{{name|Natural Wooden Pergola Post|10}}\n{{name|Natural Wooden Pergola Corner Post|10}}\n{{name|Natural Wooden Pergola Side|10}}\n{{name|Swirling Leaves}}\n{{name|Swirling Forest Leaves}}\n{{name|Colors of Nature Well}}\n{{name|Colors of Nature Stall}}",
