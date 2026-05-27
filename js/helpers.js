@@ -586,7 +586,6 @@ function renderPSBundles(dataArray) {
   tempTemplate = '';
   psBundleNavbox += '\n\n============ Premium Bundle Navbox ============\n\n';
   bundleArray.forEach(function (item) {
-    console.log(`${item.name}`, item)
     if (isSingleItemBundle(item)) {
       tempTemplate = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
     }

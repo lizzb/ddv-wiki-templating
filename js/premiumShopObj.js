@@ -1,5 +1,336 @@
 // https://jsbin.com/gehizeq/edit?js,console
 
+var premiumBundles_more = {
+    "Tournament Gown Merida": {
+        "linked_name": "Tournament Gown Merida (Bundle)|Tournament Gown Merida",
+        "contentsString": "{{name|Tournament Gown Merida}}",
+        "priceString": "{{price|1750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Caterpillar Jacket": {
+        "linked_name": "Caterpillar Jacket (Bundle)|Caterpillar Jacket",
+        "contentsString": "{{name|Caterpillar Jacket}}",
+        "priceString": "{{price|1750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Dear Deer Ensemble": {
+        "linked_name": "Dear Deer Ensemble",
+        "contentsString": "{{name|Spring Doe Bucket Hat}}<br>{{name|Spring Doe Onesie}}<br>{{name|Spring Doe Hiking Boots}}",
+        "priceString": "{{price|1500|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Donut Duo": {
+        "linked_name": "Donut Duo",
+        "contentsString": "{{name|Mickey Mouse Cocoa Donut Headband}}<br>{{name|Mickey Mouse Strawberry Donut Headband}}",
+        "priceString": "{{price|1000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Floral Ensemble": {
+        "linked_name": "Floral Ensemble",
+        "contentsString": "{{name|Floral Mini Dress}}<br>{{name|White Floral Heels}}<br>{{name|Boater Hat}}<br>{{name|Swan Necklace}}<br>{{name|Rose Pearl Earrings}}",
+        "priceString": "{{price|1500|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Island-Inspired Ensemble": {
+        "linked_name": "Island-Inspired Ensemble",
+        "contentsString": "{{name|Blue Diving Suit}}<br>{{name|Snorkel Mask Headband}}<br>{{name|Tropical Foliage Mickey Headband}}<br>{{name|Yellow Diving Suit}}<br>{{name|Red Diving Suit}}<br>{{name|Snorkel Mask}}",
+        "priceString": "{{price|1750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Maleficent Wings": {
+        "linked_name": "Maleficent Wings (Bundle)|Maleficent Wings",
+        "contentsString": "{{name|Maleficent Wings}}",
+        "priceString": "{{price|1750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Patchwork Dress": {
+        "linked_name": "Patchwork Dress (Bundle)|Patchwork Dress",
+        "contentsString": "{{name|Patchwork Dress}}",
+        "priceString": "{{price|1750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Platinum Techwear Bundle": {
+        "linked_name": "Platinum Techwear Bundle",
+        "contentsString": "{{name|Platinum Techwear Pants}}<br>{{name|Melting Platinum Mickey Mouse Ears}}<br>{{name|Platinum Techwear Jacket}}<br>{{name|Platinum Holographic Backpack}}<br>{{name|Steamboat Sneakers}}<br>{{name|Vintage Mickey Bracelet}}<br>{{name|Gloved Hand Makeup}}",
+        "priceString": "{{price|1200|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Rainbow Phoenix Wings": {
+        "linked_name": "Rainbow Phoenix Wings (Bundle)|Rainbow Phoenix Wings",
+        "contentsString": "{{name|Rainbow Phoenix Wings}}",
+        "priceString": "{{price|1750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Rosy Maple Moth Wings": {
+        "linked_name": "Rosy Maple Moth Wings (Bundle)|Rosy Maple Moth Wings",
+        "contentsString": "{{name|Rosy Maple Moth Wings}}",
+        "priceString": "{{price|1750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Silken Dagger Gown": {
+        "linked_name": "Silken Dagger Gown (Bundle)|Silken Dagger Gown",
+        "contentsString": "{{name|Silken Dagger Gown}}",
+        "priceString": "{{price|1000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Small Pink Wings": {
+        "linked_name": "Small Pink Wings (Bundle)|Small Pink Wings",
+        "contentsString": "{{name|Small Pink Wings}}",
+        "priceString": "{{price|1750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Villainous Vibe": {
+        "linked_name": "Villainous Vibe",
+        "contentsString": "{{name|Wreck-It Jean Jacket}}<br>{{name|"King of the Pride" Mane}}<br>{{name|Left Rose Eyepatch}}<br>{{name|Right Rose Eyepatch}}",
+        "priceString": "{{price|1250|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "BamBee": {
+        "linked_name": "BamBee (Bundle)|BamBee",
+        "contentsString": "{{name|BamBee}}",
+        "priceString": "{{price|2000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Bountiful Croc": {
+        "linked_name": "Bountiful Croc (Bundle)|Bountiful Croc",
+        "contentsString": "{{name|Bountiful Croc}}",
+        "priceString": "{{price|2000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Fiery Raven": {
+        "linked_name": "Fiery Raven (Bundle)|Fiery Raven",
+        "contentsString": "{{name|Fiery Raven}}",
+        "priceString": "{{price|2000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "R2-D2 (Bundle)|R2-D2": {
+        "linked_name": "R2-D2 (Bundle)|R2-D2",
+        "contentsString": "{{name|R2—D2}}",
+        "priceString": "{{price|2500|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Whimsical Pink Companion Pack 2": {
+        "linked_name": "Whimsical Pink Companion Pack 2",
+        "contentsString": "{{name|Pink Whimsical Sunbird}}<br>{{name|Pink Whimsical Turtle}}<br>{{name|Pink Whimsical Rabbit}}<br>{{name|Pink Whimsical Fox}}",
+        "priceString": "{{price|2000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "\"Adventure Is Out There!\" Balloon Basket": {
+        "linked_name": "\"Adventure Is Out There!\" Balloon Basket (Bundle)|\"Adventure Is Out There!\" Balloon Basket",
+        "contentsString": "{{name|\"Adventure Is Out There!\" Balloon Basket}}",
+        "priceString": "{{price|1500|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Fairy Flower Set": {
+        "linked_name": "Fairy Flower Set",
+        "contentsString": "{{name|Whimsical Wheelbarrow|2}}<!-- ({{price|XXXXXXX|moonstone}})--><br>{{name|Giant Trumpet Flowers|2}}<!-- ({{price|XXXXXXX|moonstone}})--><br>{{name|Teatime Bird Feeder|2}}<!-- ({{price|XXXXXXX|moonstone}})--><br>{{name|Fairy Garden Chair|4}}<!-- ({{price|XXXXXXX|moonstone}})--><br>{{name|Fairy Garden Tea Set|2}}<!-- ({{price|XXXXXXX|moonstone}})--><!--TODO: VERIFY ITEM ORDER AND COUNTS-->",
+        "priceString": "{{price|1500|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Finding Nemo Decoration Set": {
+        "linked_name": "Finding Nemo Decoration Set",
+        "contentsString": "{{name|Large Aquarium}} ({{price|550|moonstone}})<br>{{name|Manta Ray Mobile}} ({{price|450|moonstone}})",
+        "priceString": "{{price|1000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Highland Will-o'—the-Wisps": {
+        "linked_name": "Highland Will-o'—the-Wisps (Bundle)|Highland Will-o'—the-Wisps",
+        "contentsString": "{{name|Highland Will-o'—the-Wisps|5}}",
+        "priceString": "{{price|1200|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Holiday Gift Bundle": {
+        "linked_name": "Holiday Gift Bundle",
+        "contentsString": "{{name|Grand Tree of Holiday Cheer}} ({{price|600|moonstone}})<br>{{name|Big Pile of Gifts}} ({{price|600|moonstone}})",
+        "priceString": "{{price|1200|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Inside Out Headquarters Set": {
+        "linked_name": "Inside Out Headquarters Set",
+        "contentsString": "{{name|Memory Display Partition}} ({{price|600|moonstone}})<br>{{name|Quirky Retro Couch}} ({{price|600|moonstone}})",
+        "priceString": "{{price|1200|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Monsters, Inc.'s Restaurant Set": {
+        "linked_name": "Monsters, Inc.'s Restaurant Set",
+        "contentsString": "{{name|Monstrous Sushi Counter}}<br>{{name|Monstrous Sushi Booth}}<br>{{name|Short Side Table}}<br>{{name|Monstrous Sushi Plate}}",
+        "priceString": "{{price|2000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Musical Mausoleum": {
+        "linked_name": "Musical Mausoleum (Bundle)|Musical Mausoleum",
+        "contentsString": "{{name|Musical Mausoleum}}",
+        "priceString": "{{price|1000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Paper Whirlwind": {
+        "linked_name": "Paper Whirlwind (Bundle)|Paper Whirlwind",
+        "contentsString": "{{name|Paper Whirlwind|3}}",
+        "priceString": "{{price|1000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Pirate's Map and Relics Bundle": {
+        "linked_name": "Pirate's Map and Relics Bundle",
+        "contentsString": "{{name|Mao Kun Map Table}}<br>{{name|Fountain of Youth}}<br>{{name|Chalice of Cartagena}}<br>{{name|Metal Grate|4}}",
+        "priceString": "{{price|2000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Sea Witch's Cauldron (Bundle)|Sea Witch's Cauldron": {
+        "linked_name": "Sea Witch's Cauldron (Bundle)|Sea Witch's Cauldron",
+        "contentsString": "{{name|Sea Witch's Cauldron}}",
+        "priceString": "{{price|750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Cozy Bookshop Home": {
+        "linked_name": "Cozy Bookshop Home (Bundle)|Cozy Bookshop Home",
+        "contentsString": "{{name|Cozy Bookshop Home}}",
+        "priceString": "{{price|3000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Garden Teapot House": {
+        "linked_name": "Garden Teapot House (Bundle)|Garden Teapot House",
+        "contentsString": "{{name|Garden Teapot House}}",
+        "priceString": "{{price|3000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Halloween Town House": {
+        "linked_name": "Halloween Town House (Bundle)|Halloween Town House",
+        "contentsString": "{{name|Halloween Town House}}",
+        "priceString": "{{price|3000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Jumbeaux's Cafe (Bundle)|Jumbeaux's Cafe": {
+        "linked_name": "Jumbeaux's Cafe (Bundle)|Jumbeaux's Cafe",
+        "contentsString": "{{name|Jumbeaux's Cafe}}",
+        "priceString": "{{price|3000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Mike and Sulley's Apartment (Bundle)|Mike and Sulley's Apartment": {
+        "linked_name": "Mike and Sulley's Apartment (Bundle)|Mike and Sulley's Apartment",
+        "contentsString": "{{name|Mike and Sulley's Apartment}}",
+        "priceString": "{{price|3000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Prince Eric's Ship (Bundle)|Prince Eric's Ship": {
+        "linked_name": "Prince Eric's Ship (Bundle)|Prince Eric's Ship",
+        "contentsString": "{{name|Prince Eric's Ship}}",
+        "priceString": "{{price|3750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Purple Cottage": {
+        "linked_name": "Purple Cottage (Bundle)|Purple Cottage",
+        "contentsString": "{{name|Purple Cottage}}",
+        "priceString": "{{price|3000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+
+    "Belle's Royal Tools": {
+        "linked_name": "Belle's Royal Tools",
+        "contentsString": "{{name|Roses and Gold Shovel}}<br>{{name|Roses and Gold Pickaxe}}<br>{{name|Roses and Gold Fishing Rod}}<br>{{name|Roses and Gold Hourglass}}<br>{{name|Roses and Gold Watering Can}}<br>{{name|Roses and Gold Phone}}",
+        "priceString": "{{price|3750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Monsters, Inc.'s Tool Set": {
+        "linked_name": "Monsters, Inc.'s Tool Set",
+        "contentsString": "{{name|Monster Shovel}}<br>{{name|Monster Pickaxe}}<br>{{name|Monster Fishing Rod}}<br>{{name|Monster Hourglass}}<br>{{name|Monster Watering Can}}<br>{{name|Monster Phone}}",
+        "priceString": "{{price|3750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "Nefarious Set": {
+        "linked_name": "Nefarious Set",
+        "contentsString": "{{name|Nefarious Shovel}}<br>{{name|Nefarious Pickaxe}}<br>{{name|Nefarious Fishing Rod}}<br>{{name|Nefarious Watering Can}}<br>{{name|Nefarious Phone}}",
+        "priceString": "{{price|3750|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    },
+    "\"Un Poco Loco\" Valley Bundle": {
+        "linked_name": "\"Un Poco Loco\" Valley Bundle",
+        "contentsString": "{{name|Un Poco Loco Wishing Well}}<br>{{name|\"Un Poco Loco\" Goofy Stall}}",
+        "priceString": "{{price|2000|moonstone}}",
+        "versionAdded": "",
+        "protoDbName": "",
+        "bundleType": ""
+    }
+};
+
 var premiumBundles = {
     "Colors of Nature Bundle": {
         "linked_name": "Colors of Nature Bundle",
@@ -2435,7 +2766,7 @@ var premiumBundles = {
     },
     "Tinker Bell's House": {
         "linked_name": "Tinker Bell's House (Bundle)|Tinker Bell's House",
-        "contentsString": "{{name|Tinker Bell's House (2){{!}}Tinker Bell's House}}",
+        "contentsString": "{{name|Tinker Bell's House (2)|link=Tinker Bell's House (2){{!}}Tinker Bell's House}}",
         "priceString": "{{price|3000|moonstone}}",
         "versionAdded": "1.11",
         "protoDbName": "HouseSkin_TinkerbellHouse",
@@ -4010,7 +4341,7 @@ var premiumBundles = {
         "bundleType": "Furniture"
     },
     "V8 Cafe House": {
-        "linked_name": "V8 Cafe House  (Bundle)|V8 Cafe House",
+        "linked_name": "V8 Cafe House (Bundle)|V8 Cafe House",
         "contentsString": "{{name|V8 Cafe House}}",
         "priceString": "{{price|3750|moonstone}}",
         "versionAdded": "1.10",
@@ -4243,37 +4574,112 @@ var premiumBundles = {
     }
 };
 
+function existsOnce(str, sub) {
+  return str.indexOf(sub) !== -1 && str.indexOf(sub) === str.lastIndexOf(sub);
+}
 
+function outputBundleAvailabilityHistoryTable(bundleName) {
+  
+  var output = "";
+
+  // ?. means “only continue if not null/undefined”
+  var bundleObj = premiumBundles?.[bundleName];
+  if (!bundleObj) {
+    //console.warn(`${bundleName} is not a defined property.`);
+    //output += `\n<!-- TODO: ${bundleName} -->`;
+    var tempHandleOldJS = bundleName + " is not a defined property."
+    console.warn(tempHandleOldJS);
+    output += "\n<!-- TODO: "+bundleName+" -->";
+  }
+  else {  
+    output += "\n|-";
+    output += "\n| [[" + bundleObj.linked_name + "]]";
+    output += "\n| ";
+
+    // bundleObj.contentsString.includes(bundleName) // not a safe check, check instead if only one name template included as well
+    if(bundleObj.linked_name.includes(" (Bundle)") || existsOnce(bundleObj.contentsString,"{{name|")) {
+      output += ""; // no leading line break if only a single item in bundle
+    }
+    else {
+      output += "\n";
+    }
+    output += bundleObj.contentsString.replaceAll("\n", "<br>\n");
+    output += "\n| " + bundleObj.priceString;
+    }
+  
+  return output;
+}
+
+  
+function outputBundleTopTable(bundleName) {
+  
+  var output = "";
+
+  // ?. means “only continue if not null/undefined”
+  var bundleObj = premiumBundles?.[bundleName];
+  if (!bundleObj) {
+    //console.warn(`${bundleName} is not a defined property.`);
+    //output += `\n<!-- TODO: ${bundleName} -->`;
+    var tempHandleOldJS = bundleName + " is not a defined property."
+    console.warn(tempHandleOldJS);
+    output += "\n<!-- TODO: "+bundleName+" -->";
+  }
+  else {  
+    output += "\n|-";
+
+    // bundleObj.contentsString.includes(bundleName) // not a safe check, check instead if only one name template included as well
+    if(bundleObj.linked_name.includes(" (Bundle)") || existsOnce(bundleObj.contentsString,"{{name|")) {
+      // standalone item bundle / only a single item in bundle
+      output += "\n| [[File:"+bundleName+" Store.png|450px|right|link="+bundleName+" (Bundle)]]<!--row X leftright-->";
+    }
+    else {
+      output += "\n| [[File:"+bundleName+".png|450px|right|link="+bundleName+"]]<!--row X leftright-->";
+    }
+    output += "";
+    }
+  
+  return output;
+}
 
 function outputShopWeek(shopWeekObj) {
-    var output = "";
-    var bundleNameList;
-    var bundleCount = 0;
+  var outputTopTable = "";
+  var outputHistoryTable = "";
+  var bundleNameList;
+  var bundleCount = 0;
+  
+  outputTopTable += '\n\n==Available This Week==\n; Item Bundles 2026.MM.DD - 2026.MM.DD\n{| class="premium-bundles-store-table"';
+  outputTopTable += "\n|-\n| colspan=2 | \n; SECTIONHEADER\n|-\n| colspan=2 | [[File:xxxxxx_doublewide.png|903px|right|link=xxxxxx]]<!--row X doublewide-->";
+  outputTopTable += "\n|-\n| colspan=2 | \n; Featured";
+  outputHistoryTable += "\n<!--Featured-->";
+  bundleNameList = shopWeekObj.Featured; // || []; // default to empty array to be safe
+  for (var i=0; i<bundleNameList.length; i++) {
+    outputTopTable += outputBundleTopTable(bundleNameList[i]);
+    outputHistoryTable += outputBundleAvailabilityHistoryTable(bundleNameList[i]);
+    bundleCount++;
+  }
+  
+  outputTopTable += "\n|-\n| colspan=2 | \n; Spotlight";
+  outputHistoryTable += "\n<!--Spotlight-->";
+  bundleNameList = shopWeekObj.Spotlight;
+  for (var i=0; i<bundleNameList.length; i++) {
+    outputTopTable += outputBundleTopTable(bundleNameList[i]);
+    outputHistoryTable += outputBundleAvailabilityHistoryTable(bundleNameList[i]);
+    bundleCount++;
+  }
 
-    output += "\n<!--Featured-->";
-    bundleNameList = shopWeekObj.Featured; // || []; // default to empty array to be safe
-    for (var i = 0; i < bundleNameList.length; i++) {
-        output += outputBundle(bundleNameList[i]);
-        bundleCount++;
-    }
+  outputTopTable += "\n|-\n| colspan=2 | \n; Limited-Time Deals";
+  outputHistoryTable += "\n<!--Limited-Time Deals-->";
+  bundleNameList = shopWeekObj.LimitedTimeDeals;
+  for (var i=0; i<bundleNameList.length; i++) {
+    outputTopTable += outputBundleTopTable(bundleNameList[i]);
+    outputHistoryTable += outputBundleAvailabilityHistoryTable(bundleNameList[i]);
+    bundleCount++;
+  }
 
-    output += "\n<!--Spotlight-->";
-    bundleNameList = shopWeekObj.Spotlight;
-    for (var i = 0; i < bundleNameList.length; i++) {
-        output += outputBundle(bundleNameList[i]);
-        bundleCount++;
-    }
-
-    output += "\n<!--Limited-Time Deals-->";
-    bundleNameList = shopWeekObj.LimitedTimeDeals;
-    for (var i = 0; i < bundleNameList.length; i++) {
-        output += outputBundle(bundleNameList[i]);
-        bundleCount++;
-    }
-
-    output = "\n\n<!--ROWSPAN: bundleCount-->" + output;
-
-    return output;
+  outputTopTable += '<!--Recommended (unique per player)-->\n|-\n| colspan=2 | \n; Seasonal Bundles\n|-\n| colspan=2 | \n|-\n<!--Bonus Gift (if relevant)-->\n<!--Dream Bundles, Companion Bundles, Signature Bundles-->\n<!--Star Path-->\n|}\n<div style="clear:both;"></div>';
+  outputTopTable = "\n\n<!--ROWSPAN: "+bundleCount+"-->" + outputTopTable +"\n\n\n\n"+ outputHistoryTable;
+  
+  return outputTopTable;
 }
 
 
@@ -4293,7 +4699,7 @@ var Shop_2026_04_15 = {
     "Spotlight": ["Fortune Teller Dress", "Fortune Teller Tent", "Linen Ensemble", "Rapunzel Costume Dress", "Handheld Plushie", "Bunny Costume Plushie", "Cloud Cottage", "Rosy Cloud Turtle", "Aurora Costume Dresses", "Celebration Jasmine Ensemble"],
     "LimitedTimeDeals": ["Whimsical Pink Companion Pack 1", "Whimsical Blue Companion Pack 2"]
 };
-Shop_2026_04_15.Title_001 = ["BB—8", "R2-D2"]; // Droid Dreams
+Shop_2026_04_15.Title_001 = ["BB—8", "R2-D2"];  // Droid Dreams
 
 var Shop_2026_04_22 = {
     "Featured": ["Tulip Town Bundle", "Tulip Town Buildings ", "Tulip Town Windmills", "Tulip Field Set", "Garden Party Daisy", "BB—8", "R2-D2"],
@@ -4335,19 +4741,29 @@ var Shop_2026_05_27 = {
     "LimitedTimeDeals": ["Leafy Cottage House", "A Bug's Life Decor Bundle"]
 };
 
-
-function test() {
-
-    var premiumShopWeekArray_update22 = [Shop_2026_04_15, Shop_2026_04_22, Shop_2026_04_29, Shop_2026_05_06, Shop_2026_05_13, Shop_2026_05_20, Shop_2026_05_27];
-
-    var output = "";
-    var shopWeekObj = {};
-
-    for (var i = 0; i < premiumShopWeekArray_update22.length; i++) {
-        shopWeekObj = premiumShopWeekArray_update22[i];
-        output += outputShopWeek(shopWeekObj);
-    }
-
-    return output;
+var Shop_test = {
+  "Featured": [],
+  "Spotlight": ["Tulip Field Set", "Fennec Fox", "Percy", "Celestial Stunner Ensemble" ],
+  "LimitedTimeDeals": ["Corona Castle", "Nightmare Castle"]
 }
-console.log(test());
+
+var premiumShopWeekArray_update22 = [ Shop_2026_04_15, Shop_2026_04_22, Shop_2026_04_29, Shop_2026_05_06, Shop_2026_05_13, Shop_2026_05_20, Shop_2026_05_27 ];
+
+var premiumShopWeekArray_small = [ Shop_test ];
+
+
+function test(shopWeekArray) {
+
+  var output = "";
+  var shopWeekObj = {};
+
+  for (var i=0; i<shopWeekArray.length; i++) {
+    shopWeekObj = shopWeekArray[i];
+    output += outputShopWeek(shopWeekObj);
+  }
+  
+  return output;
+}
+
+//console.log(test(premiumShopWeekArray_update22));
+console.log(test(premiumShopWeekArray_small));

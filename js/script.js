@@ -681,6 +681,13 @@ function parseItemSource(item) {
     item.character = result[1]; // friendship character - TODO - need to catch more conditions, e.g. quests
   }
 
+  // ===== Grand Exhibition =====
+  if (item.source.includes("Grand Exhibition") || item.location == "exhibition") {
+    //item.location=exhibition
+    // TODO - Grand Exhibition
+    // TODO: The Grand Exhibition: Dazzle Beach - TBA
+  }
+
   // ===== Quest =====
   if (isQuestItem(item)) {
     const string = item.source;
@@ -731,6 +738,7 @@ function parseItemSource(item) {
     console.log(match2);
 
     */
+    
 
     // Updated Regex: 
     // 1. Matches optional prefix: (// Quest - )?
@@ -740,20 +748,36 @@ function parseItemSource(item) {
 
     // The pattern uses a non-capturing group (?:...) for the optional prefix.
     // This ensures that the first capturing group (.+?) is ALWAYS the Character Name.
-    const regex = /^(?:\/\/\s*Quest\s*-\s*)?(.+?)\s+Level\s+(\d+)\s+[Qq]uest\s+\((.+?)\)(?:\s+\((?:(\d+)\s+)?(.+?)\))?/;
+    ////const regex = /^(?:\/\/\s*Quest\s*-\s*)?(.+?)\s+Level\s+(\d+)\s+[Qq]uest\s+\((.+?)\)(?:\s+\((?:(\d+)\s+)?(.+?)\))?/;
+    const regex = /^(?:Quest\s*-\s*)?(.+?)(?:\s+Level\s+(\d+))?\s+[Qq]uest\s+\((.+?)\)(?:(?:\s*-\s*(.+?))|(?:\s*\((?:(\d+)\s+)?(.+?)\)))?$/;
     const match = string.match(regex);
         
     if (match) {
         // match[1] now correctly skips the prefix and captures only the name
         item.character = match[1].trim();  // this is still including "Quest - " incorrectly
-        item.level = match[2]; 
+        item.level = match[2] || ""; 
         item.quest = match[3].trim(); 
 
+        item.qtyRewarded = "";
+        item.whenRewarded = "";
 
-        // Regex optionality isn't working, so manually remove "Quest - " at the start (^) of the string
+        // Route the trailing metadata based on whether it used a hyphen or parenthesis split
+        if (match[4]) {
+          // Hyphen-style suffix caught group 4
+          item.whenRewarded = match[4].trim();
+        } else if (match[6]) {
+          // Parenthesis-style suffix caught group 5 (quantity) and group 6 (when)
+          item.qtyRewarded = match[5] || "";
+          item.whenRewarded = match[6].trim();
+        }
+
+        // When Regex optionality isn't working, manually remove "Quest - " at the start (^) of the string
         // The 'i' flag makes it case-insensitive (handles "QUEST - " as well)
-        item.character = item.character.replace(/^Quest\s*-\s*/i, '');
-         
+        //// deleted this, contained a star+slash that interfered with js comments
+        //item.character = item.character.replace(/^Quest - /i, '');
+
+
+        /* // old ai
          // Check if the secondary parentheses existed
         // Capture the quantity and whenRewarded only if the second group exists
         if (match[4] || match[5]) {
@@ -764,8 +788,9 @@ function parseItemSource(item) {
             item.qtyRewarded = "1";
             item.whenRewarded = "Unknown"; // Or null/undefined
         }
+        */  
     } else {
-        console.warn("Failed to parse quest source for item (", item.name, "): ", string);
+        console.warn("Failed to parse quest source for item (", item.name, "): ", string); // NOTE: THIS IS BEING HIT 3X PER RUN PER ITEM - 2026.05.26
     }
 
 
@@ -777,12 +802,25 @@ function parseItemSource(item) {
   // it is given to be placed on [[Dazzle Beach]]
   // and will remain placed after the quest is completed.
   // It is automatically collected during the quest.
-  // Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
+  // Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]]
+  // and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
 
   /*
+
+
+  // sample cases
+
+  todo
+  - The Fairy Godmother Quest (The Pumpkin and the Princess) - mailbox post quest ("A Grateful Gift")
+  - Cinderella Level 10 Quest (The Friendship Ball) (post-quest mailbox reward) ("I found this...")
+
+  Fairy Godmother Quest (A Grateful Gift) - mailbox post quest
+  Quest - Pocahontas Level 4 quest (Working Together) (reward)
   Pocahontas Level 4 quest (Working Together) (reward)
   Pocahontas Level 4 quest (Working Together) (pick up after completed)
   Cinderella Level 10 Quest (The Friendship Ball) (post-quest mailbox reward)
+  
+
   Cinderella Level 2 quest (Cinderella's Custom Creation) (reward)
   Tramp Level 2 Quest (Not Your Average Squeaky Toy) (during?)
   Pocahontas Level 10 quest (A Raccoon's Return) (4 during)
@@ -882,57 +920,58 @@ function parseItemSource(item) {
     const match = string.match(regex);
     //console.log(match);
 
-    if (!match) {
+    if (match) {
+      item.starpath = match[1].trim(); // star path name
+      item.tile = match[2] || ""; // tile, e.g. 4D, B2C
+      item.tierType = match[3] || "";
+      item.eventtokens = Number(match[4]) || ""; // event token item cost
+
+      /*
+      // PREVIOUS AI: tier fallback to tile (B2C → 2)
+      if (match[3]) {
+        item.tier = Number(match[3]);
+      } else {
+        const tileMatch = item.tile.match(/\d/);
+        item.tier = tileMatch ? Number(tileMatch[0]) : null;
+      }
+      */
+
+      // 1. Determine Tier: Extract the first numerical digit found in the tile code or the tier status string
+      item.tier= '';
+      item.premium = '';
+
+      if (item.tile) {
+        const tileDigit = item.tile.match(/\d/);
+        if (tileDigit) item.tier = tileDigit[0];
+      } else if (item.tierType) {
+        const tierDigit = item.tierType.match(/\d/);
+        if (tierDigit) item.tier = tierDigit[0];
+      }
+
+      /*
+      // PREVIOUS AI: derived flags (don’t overcomplicate regex)
+      item.premium = /Premium|Bonus Items/.test(string) ? "yes" : "no";
+      item.bonus = /Bonus/.test(string) ? "yes" : "no";
+      */
+
+      // 2. Determine Premium and Bonus Flags
+      if (item.tierType === "Bonus Items") {
+        item.premium = "yes";
+        item.bonus = "yes";
+      } else if (item.tierType.includes("Premium")) {
+        item.premium = "yes";
+        item.bonus = "no";
+      } else if (item.tierType !== "") {
+        // If a tier type exists (like "T1") but doesn't say Premium/Bonus
+        item.premium = "no";
+        item.bonus = "no";
+      }
+      //console.log("star path match object:", match);
+    }
+    else {
       console.warn("FAILED TO PARSE ITEM SOURCE (", item.name, "): ", string);
-      return item; // do i want to return item here?
     }
-
-    item.starpath = match[1].trim(); // star path name
-    item.tile = match[2] || ""; // tile, e.g. 4D, B2C
-    item.tierType = match[3] || "";
-    item.eventtokens = Number(match[4]) || ""; // event token item cost
-
-    /*
-    // PREVIOUS AI: tier fallback to tile (B2C → 2)
-    if (match[3]) {
-      item.tier = Number(match[3]);
-    } else {
-      const tileMatch = item.tile.match(/\d/);
-      item.tier = tileMatch ? Number(tileMatch[0]) : null;
-    }
-    */
-
-    // 1. Determine Tier: Extract the first numerical digit found in the tile code or the tier status string
-    item.tier= '';
-    item.premium = '';
-
-    if (item.tile) {
-      const tileDigit = item.tile.match(/\d/);
-      if (tileDigit) item.tier = tileDigit[0];
-    } else if (item.tierType) {
-      const tierDigit = item.tierType.match(/\d/);
-      if (tierDigit) item.tier = tierDigit[0];
-    }
-
-    /*
-    // PREVIOUS AI: derived flags (don’t overcomplicate regex)
-    item.premium = /Premium|Bonus Items/.test(string) ? "yes" : "no";
-    item.bonus = /Bonus/.test(string) ? "yes" : "no";
-    */
-
-    // 2. Determine Premium and Bonus Flags
-    if (item.tierType === "Bonus Items") {
-      item.premium = "yes";
-      item.bonus = "yes";
-    } else if (item.tierType.includes("Premium")) {
-      item.premium = "yes";
-      item.bonus = "no";
-    } else if (item.tierType !== "") {
-      // If a tier type exists (like "T1") but doesn't say Premium/Bonus
-      item.premium = "no";
-      item.bonus = "no";
-    }
-    //console.log("star path match object:", match);
+    
   }
 
   // ===== Premium Item (may include returning Star Path) =====
@@ -1115,17 +1154,26 @@ function output_from(item) {
       }
 
       // source should have already been parsed in parseItemSource
-      itemSource = `It is automatically rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and completing the quest [[${item.quest}]].`;
+      if (item.level) {
+        infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
+        itemSource = `It is automatically rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and completing the quest [[${item.quest}]].`;
+      }
+      else {
+        // no level defined in input - assume reward language - TODO
+        infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}}}`;
+        
+        itemSource = `It is obtained in association with the [[${item.character}#Quests|${item.character}]] quest [[${item.quest}]].`;
+        itemSource += '<!--<<It is automatically rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->';
 
-      infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
-
-      // Quest - Pocahontas Level 10 Quest (A Raccoon's Return)
-      if (item.source && item.source.includes('Quest - ')) {
-        // if source in format of "Quest - CHARACTER Level X (QUESTNAME)",
-        // then it came directly from reporter data, not sheet
-        // so use more general language
-        itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
+      }
       
+      // Quest - Pocahontas Level 10 Quest (A Raccoon's Return)
+      // "Quest - " prefix indicates it came from reporter data
+      // if source in format of "Quest - CHARACTER Level X (QUESTNAME)",
+      // then it came directly from reporter data, not sheet
+      // so use more general language
+      if (item.source && item.source.includes('Quest - ')) {
+        itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
         itemSource += '<!--<<It is automatically rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->';
         // It is available in connection with the quest [[QUESTNAME]].
       }
