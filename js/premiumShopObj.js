@@ -235,7 +235,7 @@ var premiumBundles = {
         "protoDbName": "Bundle_POTCBundle1",
         "bundleType": "Furniture"
     },
-    "Sea Witch's Cauldron (Bundle)|Sea Witch's Cauldron": {
+    "Sea Witch's Cauldron": {
         "linked_name": "Sea Witch's Cauldron (Bundle)|Sea Witch's Cauldron",
         "contentsString": "{{name|Sea Witch's Cauldron}}",
         "priceString": "{{price|750|moonstone}}",
@@ -267,7 +267,7 @@ var premiumBundles = {
         "protoDbName": "HouseSkin_NBCInspiredHouse",
         "bundleType": "House"
     },
-    "Jumbeaux's Cafe (Bundle)|Jumbeaux's Cafe": {
+    "Jumbeaux's Cafe": {
         "linked_name": "Jumbeaux's Cafe (Bundle)|Jumbeaux's Cafe",
         "contentsString": "{{name|Jumbeaux's Cafe}}",
         "priceString": "{{price|3000|moonstone}}",
@@ -275,7 +275,7 @@ var premiumBundles = {
         "protoDbName": "HouseSkin_JumbeauxCafe",
         "bundleType": "House"
     },
-    "Mike and Sulley's Apartment (Bundle)|Mike and Sulley's Apartment": {
+    "Mike and Sulley's Apartment": {
         "linked_name": "Mike and Sulley's Apartment (Bundle)|Mike and Sulley's Apartment",
         "contentsString": "{{name|Mike and Sulley's Apartment}}",
         "priceString": "{{price|3000|moonstone}}",
@@ -283,7 +283,7 @@ var premiumBundles = {
         "protoDbName": "HouseSkin_MikeSullyAppt",
         "bundleType": "House"
     },
-    "Prince Eric's Ship (Bundle)|Prince Eric's Ship": {
+    "Prince Eric's Ship": {
         "linked_name": "Prince Eric's Ship (Bundle)|Prince Eric's Ship",
         "contentsString": "{{name|Prince Eric's Ship}}",
         "priceString": "{{price|3750|moonstone}}",
