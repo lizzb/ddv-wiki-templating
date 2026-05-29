@@ -109,7 +109,7 @@ var premiumBundles = {
     },
     "Villainous Vibe": {
         "linked_name": "Villainous Vibe",
-        "contentsString": "{{name|Wreck-It Jean Jacket}}<br>{{name|"King of the Pride" Mane}}<br>{{name|Left Rose Eyepatch}}<br>{{name|Right Rose Eyepatch}}",
+        "contentsString": "{{name|Wreck-It Jean Jacket}}<br>{{name|\"King of the Pride\" Mane}}<br>{{name|Left Rose Eyepatch}}<br>{{name|Right Rose Eyepatch}}",
         "priceString": "{{price|1250|moonstone}}",
         "versionAdded": "Bundle_Villain",
         "protoDbName": "1.3",
@@ -298,7 +298,7 @@ var premiumBundles = {
         "versionAdded": "1.3",
         "protoDbName": "HouseSkin_Cottage",
         "bundleType": "House"
-
+    },
     "Belle's Royal Tools": {
         "linked_name": "Belle's Royal Tools",
         "contentsString": "{{name|Roses and Gold Shovel}}<br>{{name|Roses and Gold Pickaxe}}<br>{{name|Roses and Gold Fishing Rod}}<br>{{name|Roses and Gold Hourglass}}<br>{{name|Roses and Gold Watering Can}}<br>{{name|Roses and Gold Phone}}",
