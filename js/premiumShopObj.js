@@ -1,340 +1,342 @@
 // https://jsbin.com/gehizeq/edit?js,console
 
+// todo: Fairy Flower Set
+
 var premiumBundles = {
     "Tournament Gown Merida": {
         "linked_name": "Tournament Gown Merida (Bundle)|Tournament Gown Merida",
         "contentsString": "{{name|Tournament Gown Merida}}",
         "priceString": "{{price|1750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "HeroItem_YellowStripeMerida",
+        "bundleType": "Character Style"
     },
     "Caterpillar Jacket": {
         "linked_name": "Caterpillar Jacket (Bundle)|Caterpillar Jacket",
         "contentsString": "{{name|Caterpillar Jacket}}",
         "priceString": "{{price|1750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.16",
+        "protoDbName": "Bundle_CaterpillarOutfitBundle",
+        "bundleType": "Clothing"
     },
     "Dear Deer Ensemble": {
         "linked_name": "Dear Deer Ensemble",
         "contentsString": "{{name|Spring Doe Bucket Hat}}<br>{{name|Spring Doe Onesie}}<br>{{name|Spring Doe Hiking Boots}}",
         "priceString": "{{price|1500|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "Bundle_BambiOutfit",
+        "bundleType": "Clothing"
     },
     "Donut Duo": {
         "linked_name": "Donut Duo",
         "contentsString": "{{name|Mickey Mouse Cocoa Donut Headband}}<br>{{name|Mickey Mouse Strawberry Donut Headband}}",
         "priceString": "{{price|1000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.4",
+        "protoDbName": "Bundle_DonutDuo",
+        "bundleType": "Clothing"
     },
     "Floral Ensemble": {
         "linked_name": "Floral Ensemble",
         "contentsString": "{{name|Floral Mini Dress}}<br>{{name|White Floral Heels}}<br>{{name|Boater Hat}}<br>{{name|Swan Necklace}}<br>{{name|Rose Pearl Earrings}}",
         "priceString": "{{price|1500|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.14.3",
+        "protoDbName": "Bundle_FloralBundle",
+        "bundleType": "Clothing"
     },
     "Island-Inspired Ensemble": {
         "linked_name": "Island-Inspired Ensemble",
         "contentsString": "{{name|Blue Diving Suit}}<br>{{name|Snorkel Mask Headband}}<br>{{name|Tropical Foliage Mickey Headband}}<br>{{name|Yellow Diving Suit}}<br>{{name|Red Diving Suit}}<br>{{name|Snorkel Mask}}",
         "priceString": "{{price|1750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.6",
+        "protoDbName": "Bundle_Summer23",
+        "bundleType": "Clothing"
     },
     "Maleficent Wings": {
         "linked_name": "Maleficent Wings (Bundle)|Maleficent Wings",
         "contentsString": "{{name|Maleficent Wings}}",
         "priceString": "{{price|1750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.8",
+        "protoDbName": "HeroItem_MaleficentWings",
+        "bundleType": "Clothing"
     },
     "Patchwork Dress": {
         "linked_name": "Patchwork Dress (Bundle)|Patchwork Dress",
         "contentsString": "{{name|Patchwork Dress}}",
         "priceString": "{{price|1750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.7",
+        "protoDbName": "HeroItem_SallysDress",
+        "bundleType": "Clothing"
     },
     "Platinum Techwear Bundle": {
         "linked_name": "Platinum Techwear Bundle",
         "contentsString": "{{name|Platinum Techwear Pants}}<br>{{name|Melting Platinum Mickey Mouse Ears}}<br>{{name|Platinum Techwear Jacket}}<br>{{name|Platinum Holographic Backpack}}<br>{{name|Steamboat Sneakers}}<br>{{name|Vintage Mickey Bracelet}}<br>{{name|Gloved Hand Makeup}}",
         "priceString": "{{price|1200|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.12",
+        "protoDbName": "Bundle_PlatinumTechwearOutfit",
+        "bundleType": "Clothing"
     },
     "Rainbow Phoenix Wings": {
         "linked_name": "Rainbow Phoenix Wings (Bundle)|Rainbow Phoenix Wings",
         "contentsString": "{{name|Rainbow Phoenix Wings}}",
         "priceString": "{{price|1750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.11",
+        "protoDbName": "HeroItem_DragonWings",
+        "bundleType": "Clothing"
     },
     "Rosy Maple Moth Wings": {
         "linked_name": "Rosy Maple Moth Wings (Bundle)|Rosy Maple Moth Wings",
         "contentsString": "{{name|Rosy Maple Moth Wings}}",
         "priceString": "{{price|1750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.12",
+        "protoDbName": "HeroItem_MapleMothWings",
+        "bundleType": "Clothing"
     },
     "Silken Dagger Gown": {
         "linked_name": "Silken Dagger Gown (Bundle)|Silken Dagger Gown",
         "contentsString": "{{name|Silken Dagger Gown}}",
         "priceString": "{{price|1000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "Item_RedGothelDress",
+        "bundleType": "Clothing"
     },
     "Small Pink Wings": {
         "linked_name": "Small Pink Wings (Bundle)|Small Pink Wings",
         "contentsString": "{{name|Small Pink Wings}}",
         "priceString": "{{price|1750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.9",
+        "protoDbName": "HeroItem_CupidWings",
+        "bundleType": "Clothing"
     },
     "Villainous Vibe": {
         "linked_name": "Villainous Vibe",
         "contentsString": "{{name|Wreck-It Jean Jacket}}<br>{{name|"King of the Pride" Mane}}<br>{{name|Left Rose Eyepatch}}<br>{{name|Right Rose Eyepatch}}",
         "priceString": "{{price|1250|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "Bundle_Villain",
+        "protoDbName": "1.3",
+        "bundleType": "Clothing"
     },
     "BamBee": {
         "linked_name": "BamBee (Bundle)|BamBee",
         "contentsString": "{{name|BamBee}}",
         "priceString": "{{price|2000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "HeroItem_Bambee",
+        "bundleType": "Companion"
     },
     "Bountiful Croc": {
         "linked_name": "Bountiful Croc (Bundle)|Bountiful Croc",
         "contentsString": "{{name|Bountiful Croc}}",
         "priceString": "{{price|2000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.6",
+        "protoDbName": "HeroItem_FruitCrocodile",
+        "bundleType": "Companion"
     },
     "Fiery Raven": {
         "linked_name": "Fiery Raven (Bundle)|Fiery Raven",
         "contentsString": "{{name|Fiery Raven}}",
         "priceString": "{{price|2000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.11",
+        "protoDbName": "HeroItem_FieryRaven",
+        "bundleType": "Companion"
     },
     "R2-D2 (Bundle)|R2-D2": {
         "linked_name": "R2-D2 (Bundle)|R2-D2",
         "contentsString": "{{name|R2—D2}}",
         "priceString": "{{price|2500|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.16",
+        "protoDbName": "HeroItem_R2D2",
+        "bundleType": "Companion"
     },
     "Whimsical Pink Companion Pack 2": {
         "linked_name": "Whimsical Pink Companion Pack 2",
         "contentsString": "{{name|Pink Whimsical Sunbird}}<br>{{name|Pink Whimsical Turtle}}<br>{{name|Pink Whimsical Rabbit}}<br>{{name|Pink Whimsical Fox}}",
         "priceString": "{{price|2000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.4",
+        "protoDbName": "Bundle_DreamlightCritter2",
+        "bundleType": "Companion"
     },
     "\"Adventure Is Out There!\" Balloon Basket": {
         "linked_name": "\"Adventure Is Out There!\" Balloon Basket (Bundle)|\"Adventure Is Out There!\" Balloon Basket",
         "contentsString": "{{name|\"Adventure Is Out There!\" Balloon Basket}}",
         "priceString": "{{price|1500|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.9",
+        "protoDbName": "Item_AdventureIsOutThereBalloonBasket",
+        "bundleType": "Furniture"
     },
     "Fairy Flower Set": {
         "linked_name": "Fairy Flower Set",
         "contentsString": "{{name|Whimsical Wheelbarrow|2}}<!-- ({{price|XXXXXXX|moonstone}})--><br>{{name|Giant Trumpet Flowers|2}}<!-- ({{price|XXXXXXX|moonstone}})--><br>{{name|Teatime Bird Feeder|2}}<!-- ({{price|XXXXXXX|moonstone}})--><br>{{name|Fairy Garden Chair|4}}<!-- ({{price|XXXXXXX|moonstone}})--><br>{{name|Fairy Garden Tea Set|2}}<!-- ({{price|XXXXXXX|moonstone}})--><!--TODO: VERIFY ITEM ORDER AND COUNTS-->",
         "priceString": "{{price|1500|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "Bundle_FairyFlowersSet / Bundle_FairyMushroomSet",
+        "bundleType": "Furniture"
     },
     "Finding Nemo Decoration Set": {
         "linked_name": "Finding Nemo Decoration Set",
         "contentsString": "{{name|Large Aquarium}} ({{price|550|moonstone}})<br>{{name|Manta Ray Mobile}} ({{price|450|moonstone}})",
         "priceString": "{{price|1000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.12",
+        "protoDbName": "Bundle_FindingNemoSet",
+        "bundleType": "Furniture"
     },
     "Highland Will-o'—the-Wisps": {
         "linked_name": "Highland Will-o'—the-Wisps (Bundle)|Highland Will-o'—the-Wisps",
         "contentsString": "{{name|Highland Will-o'—the-Wisps|5}}",
         "priceString": "{{price|1200|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "HeroItem_WillOTheWisps",
+        "bundleType": "Furniture"
     },
     "Holiday Gift Bundle": {
         "linked_name": "Holiday Gift Bundle",
         "contentsString": "{{name|Grand Tree of Holiday Cheer}} ({{price|600|moonstone}})<br>{{name|Big Pile of Gifts}} ({{price|600|moonstone}})",
         "priceString": "{{price|1200|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.14.3",
+        "protoDbName": "Bundle_HolidayGiftBundle",
+        "bundleType": "Furniture"
     },
     "Inside Out Headquarters Set": {
         "linked_name": "Inside Out Headquarters Set",
         "contentsString": "{{name|Memory Display Partition}} ({{price|600|moonstone}})<br>{{name|Quirky Retro Couch}} ({{price|600|moonstone}})",
         "priceString": "{{price|1200|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.10",
+        "protoDbName": "Bundle_InsideOutHeadquartersSet",
+        "bundleType": "Furniture"
     },
     "Monsters, Inc.'s Restaurant Set": {
         "linked_name": "Monsters, Inc.'s Restaurant Set",
         "contentsString": "{{name|Monstrous Sushi Counter}}<br>{{name|Monstrous Sushi Booth}}<br>{{name|Short Side Table}}<br>{{name|Monstrous Sushi Plate}}",
         "priceString": "{{price|2000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.9",
+        "protoDbName": "Bundle_MonstersIncsRestaurantSet",
+        "bundleType": "Furniture"
     },
     "Musical Mausoleum": {
         "linked_name": "Musical Mausoleum (Bundle)|Musical Mausoleum",
         "contentsString": "{{name|Musical Mausoleum}}",
         "priceString": "{{price|1000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.13",
+        "protoDbName": "Item_HauntedPipe",
+        "bundleType": "Furniture"
     },
     "Paper Whirlwind": {
         "linked_name": "Paper Whirlwind (Bundle)|Paper Whirlwind",
         "contentsString": "{{name|Paper Whirlwind|3}}",
         "priceString": "{{price|1000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "Item_FlyingPapers",
+        "bundleType": "Furniture"
     },
     "Pirate's Map and Relics Bundle": {
         "linked_name": "Pirate's Map and Relics Bundle",
         "contentsString": "{{name|Mao Kun Map Table}}<br>{{name|Fountain of Youth}}<br>{{name|Chalice of Cartagena}}<br>{{name|Metal Grate|4}}",
         "priceString": "{{price|2000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.7",
+        "protoDbName": "Bundle_POTCBundle1",
+        "bundleType": "Furniture"
     },
     "Sea Witch's Cauldron (Bundle)|Sea Witch's Cauldron": {
         "linked_name": "Sea Witch's Cauldron (Bundle)|Sea Witch's Cauldron",
         "contentsString": "{{name|Sea Witch's Cauldron}}",
         "priceString": "{{price|750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.10",
+        "protoDbName": "Item_UrsulaCauldron",
+        "bundleType": "Furniture"
     },
     "Cozy Bookshop Home": {
         "linked_name": "Cozy Bookshop Home (Bundle)|Cozy Bookshop Home",
         "contentsString": "{{name|Cozy Bookshop Home}}",
         "priceString": "{{price|3000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "HouseSkin_LibraryStore",
+        "bundleType": "House"
     },
     "Garden Teapot House": {
         "linked_name": "Garden Teapot House (Bundle)|Garden Teapot House",
         "contentsString": "{{name|Garden Teapot House}}",
         "priceString": "{{price|3000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.22",
+        "protoDbName": "HouseSkin_GardenTeapotHouse",
+        "bundleType": "House"
     },
     "Halloween Town House": {
         "linked_name": "Halloween Town House (Bundle)|Halloween Town House",
         "contentsString": "{{name|Halloween Town House}}",
         "priceString": "{{price|3000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.12",
+        "protoDbName": "HouseSkin_NBCInspiredHouse",
+        "bundleType": "House"
     },
     "Jumbeaux's Cafe (Bundle)|Jumbeaux's Cafe": {
         "linked_name": "Jumbeaux's Cafe (Bundle)|Jumbeaux's Cafe",
         "contentsString": "{{name|Jumbeaux's Cafe}}",
         "priceString": "{{price|3000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.12",
+        "protoDbName": "HouseSkin_JumbeauxCafe",
+        "bundleType": "House"
     },
     "Mike and Sulley's Apartment (Bundle)|Mike and Sulley's Apartment": {
         "linked_name": "Mike and Sulley's Apartment (Bundle)|Mike and Sulley's Apartment",
         "contentsString": "{{name|Mike and Sulley's Apartment}}",
         "priceString": "{{price|3000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.4",
+        "protoDbName": "HouseSkin_MikeSullyAppt",
+        "bundleType": "House"
     },
     "Prince Eric's Ship (Bundle)|Prince Eric's Ship": {
         "linked_name": "Prince Eric's Ship (Bundle)|Prince Eric's Ship",
         "contentsString": "{{name|Prince Eric's Ship}}",
         "priceString": "{{price|3750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.4",
+        "protoDbName": "HouseSkin_EricBoat",
+        "bundleType": "House"
     },
     "Purple Cottage": {
         "linked_name": "Purple Cottage (Bundle)|Purple Cottage",
         "contentsString": "{{name|Purple Cottage}}",
         "priceString": "{{price|3000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.3",
+        "protoDbName": "HouseSkin_Cottage",
+        "bundleType": "House"
 
     "Belle's Royal Tools": {
         "linked_name": "Belle's Royal Tools",
         "contentsString": "{{name|Roses and Gold Shovel}}<br>{{name|Roses and Gold Pickaxe}}<br>{{name|Roses and Gold Fishing Rod}}<br>{{name|Roses and Gold Hourglass}}<br>{{name|Roses and Gold Watering Can}}<br>{{name|Roses and Gold Phone}}",
         "priceString": "{{price|3750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.8",
+        "protoDbName": "Bundle_BellesRoyalTools",
+        "bundleType": "Tool Style"
     },
     "Monsters, Inc.'s Tool Set": {
         "linked_name": "Monsters, Inc.'s Tool Set",
         "contentsString": "{{name|Monster Shovel}}<br>{{name|Monster Pickaxe}}<br>{{name|Monster Fishing Rod}}<br>{{name|Monster Hourglass}}<br>{{name|Monster Watering Can}}<br>{{name|Monster Phone}}",
         "priceString": "{{price|3750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.9",
+        "protoDbName": "Bundle_MonstersIncsToolSet",
+        "bundleType": "Tool Style"
     },
     "Nefarious Set": {
         "linked_name": "Nefarious Set",
         "contentsString": "{{name|Nefarious Shovel}}<br>{{name|Nefarious Pickaxe}}<br>{{name|Nefarious Fishing Rod}}<br>{{name|Nefarious Watering Can}}<br>{{name|Nefarious Phone}}",
         "priceString": "{{price|3750|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.5",
+        "protoDbName": "Bundle_NefariousTool",
+        "bundleType": "Tool Style"
     },
     "\"Un Poco Loco\" Valley Bundle": {
         "linked_name": "\"Un Poco Loco\" Valley Bundle",
         "contentsString": "{{name|Un Poco Loco Wishing Well}}<br>{{name|\"Un Poco Loco\" Goofy Stall}}",
         "priceString": "{{price|2000|moonstone}}",
-        "versionAdded": "",
-        "protoDbName": "",
-        "bundleType": ""
+        "versionAdded": "1.19",
+        "protoDbName": "Bundle_CocoStallAndWell",
+        "bundleType": "Stall/Well"
     },
     "Colors of Nature Bundle": {
         "linked_name": "Colors of Nature Bundle",
         "contentsString": "{{name|Percy}}\n{{name|Pug Treats Carousel}}\n{{name|Natural Wooden Pergola|2}}\n{{name|Natural Wooden Pergola Pond|2}}\n{{name|Natural Wooden Pergola Post|10}}\n{{name|Natural Wooden Pergola Corner Post|10}}\n{{name|Natural Wooden Pergola Side|10}}\n{{name|Swirling Leaves}}\n{{name|Swirling Forest Leaves}}\n{{name|Colors of Nature Well}}\n{{name|Colors of Nature Stall}}",
         "priceString": "{{price|6600|moonstone}} (20% off)",
         "versionAdded": "1.22",
-        "protoDbName": "\u0015Megabundle_Pocahontas",
+        "protoDbName": "Megabundle_Pocahontas",
         "bundleType": "Mega Bundle"
     },
     "Colors of Nature Valley Bundle": {
