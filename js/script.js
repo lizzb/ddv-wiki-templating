@@ -43,12 +43,12 @@ function renderParent(dataArray, templateType) {
     }
 
     // i really should do better event handling....
-    priceConfirmed = $("#priceConfirmedCB").prop("checked");
+    priceCategoriesColorsTraitsConfirmed = $("#priceConfirmedCB").prop("checked");
     tagsConfirmed = $("#tagsConfirmedCB").prop("checked");
     collectionConfirmed = $("#collectionConfirmedCB").prop("checked");
     functionsConfirmed = $("#functionsConfirmedCB").prop("checked");
 
-    console.log(`priceConfirmed = ${priceConfirmed}, tagsConfirmed = ${tagsConfirmed}, collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
+    console.log(`priceCategoriesColorsTraitsConfirmed = ${priceCategoriesColorsTraitsConfirmed}, tagsConfirmed = ${tagsConfirmed}, collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
 
   // if a custom template is provided in the textarea, use that instead of the one specified by the function
     var inputTemplateValue = document.getElementById("template-input").value;
@@ -96,6 +96,14 @@ function output_category(item) {
   if (isBuilding(item) || isCastle(item) || isWishingWell(item) || isStall(item) || isVisitStation(item)) {
     output = '|category=none\n'; // i use categories in my sheet and elsewhere in parser, but technically these items have no category
   }
+
+  // TODO - reivist earlier parts of this function after adding  priceCategoriesColorsTraitsConfirmed
+
+  if (!priceCategoriesColorsTraitsConfirmed) {
+    item.missingCategories.push('[[Category: Missing Categories]]');
+  }
+  item.category = wrapComment(item.category, !priceCategoriesColorsTraitsConfirmed);
+
   return output;
 }
 
@@ -114,12 +122,12 @@ function output_buyprice(item) {
   }
 
   // TODO - fix this logic for second half
-  if (!priceConfirmed || (output != '' && !item.buyprice) ) {
+  if (!priceCategoriesColorsTraitsConfirmed || (output != '' && !item.buyprice) ) {
     item.missingCategories.push('[[Category: Missing Price]]');
   }
 
   // TODO - conditionals to prevent |buyprice=<!--null--> as output
-  item.buyprice = wrapComment(item.buyprice, !priceConfirmed);
+  item.buyprice = wrapComment(item.buyprice, !priceCategoriesColorsTraitsConfirmed);
 
   // not sure this is still required
   //const regex = /\n\|buyprice=\d\d [tT]okens/gi;
@@ -129,13 +137,21 @@ function output_buyprice(item) {
 }
 
 function output_color(item) {
+  var output = '|color=%%color%%\n';
+
+  // TODO - revisit this now that we have the priceCategoriesColorsTraitsConfirmed
   // Hairstyles/Accessories have no color
   if (!item.color && !(isHairstyle(item) || isAccessory(item))) {
     item.color = '<!--OPTIONS: blue, green, red, pink, white, black, yellow, orange, brown, purple, gray-->';
     item.missingCategories.push('[[Category: Missing Colors]]');
-  }  
+  }    
 
-  var output = '|color=%%color%%\n';
+  if (!priceCategoriesColorsTraitsConfirmed) {
+    item.missingCategories.push('[[Category: Missing Colors]]');
+  }
+  item.color = wrapComment(item.color, !priceCategoriesColorsTraitsConfirmed);
+
+
   return output;
 }
 
@@ -214,12 +230,17 @@ function output_collection(item) {
 }
 
 function output_traits(item) {
+  // TODO - revisit this now that we have priceCategoriesColorsTraitsConfirmed
   if (!item.traits && !(isHairstyle(item) || isAccessory(item))) {
     item.missingCategories.push('[[Category: Missing Traits]]');
-    item.traits =
-    '<!--Lavish/Simple, Calm/Playful, Delicate/Strong, Familiar/Wondrous-->';
+    item.traits = '<!--Lavish/Simple, Calm/Playful, Delicate/Strong, Familiar/Wondrous-->';
   }
   // Hairstyles/Accessories have no traits
+
+  if (!priceCategoriesColorsTraitsConfirmed) {
+    item.missingCategories.push('[[Category: Missing Traits]]');
+  }
+  item.traits = wrapComment(item.traits, !priceCategoriesColorsTraitsConfirmed);
 
   var output = '|traits=%%traits%%\n';
   return output;
@@ -892,6 +913,7 @@ function parseItemSource(item) {
     3. "Star Path - Paw-fect Romance - 4A - T4 Premium (70 tokens)"
     4. "Star Path - Frost & Fairies - 1D - T1 (8 tokens)"
     5. "Star Path - Elements of Nature - ....."
+    6. "Star Path - Winter Warmth - 9A - T9 Premium Bonus (300 tokens)"
 
     If an item is "Bonus Items", it is premium=yes and bonus=yes
 
@@ -900,78 +922,64 @@ function parseItemSource(item) {
     3. { starpath: "Paw-fect Romance", tile: "4A", tier: "4", eventtokens: "70", premium: "yes", bonus: "no" }
     4. { starpath: "Frost & Fairies", tile: "1D", tier: "1", eventtokens: "8", premium: "no", bonus: "no" }
     5. { starpath: "Elements of Nature", tile: "", tier: "", eventtokens: "", premium: "", bonus: "" }
+    6. { starpath: "Winter Warmth", tile: "9A", tier: "9", eventtokens: "300", premium: "yes", bonus: "yes" }
     */
+
+    // TODO - Giant Lotus Flower House = 9A - T9 Premium Bonus (desired)
+    // OR B3A - Bonus Items 3 (could more closely match reporter-provided data)
+    // ...report.html: DATA.starpath.reward_pages[8].name = "Bonus Page 3" .is_bonus = true
+    // ...report.html: DATA.starpath.reward_pages[5].name = "Page 6" .is_bonus = false
 
     const string = item.source;
 
-    // PREVIOUS FUNCTIONAL AI REGEX
-    // const regex = /Star Path - (.+?) - ([A-Z0-9]+) - (?:(?:T(\d))(?: Premium)?|Bonus Items) \((\d+) tokens\)/;
-
-    /// may 26
-
-    // The Regex Breakdown:
-    // 1. Star Path - 
-    // 2. ((?:(?! - [A-Z0-9])(?! - \.).)+) -> Forces a match of the full theme name by stopping right before a ' - Tile' or ' - ...' sequence.
-    // 3. (?:\s+-\s+([A-Z0-9]+))?          -> Optionally captures the alphanumeric Tile ID.
-    // 4. (?:\s+-\s+(Bonus Items|T\d(?:\s+Premium)?))? -> Optionally captures the Tier/Bonus string layout.
-    // 5. (?:\s*\((\d+)\s+tokens\))?       -> Optionally captures the token count inside parentheses.
-    const regex = /Star Path - ((?:(?! - [A-Z0-9])(?! - \.).)+)(?:\s+-\s+([A-Z0-9]+))?(?:\s+-\s+(Bonus Items|T\d(?:\s+Premium)?))?(?:\s*\((\d+)\s+tokens\))?/;
-
+    // ===== Robust Regex Breakdown =====
+    // Star Path -\s+               -> Matches literal prefix
+    // ((?:(?! - [A-Z0-9])(?! -\s*\.).)+) -> Captures Star Path Name (stops before tile or dot notation)
+    // (?: - ([A-Z0-9]+))?         -> OPTIONAL: Captures Tile (e.g., B3A, 4A)
+    // (?: - ([^(\n]+))?            -> OPTIONAL: Captures Tier/Type details up to the opening parenthesis
+    // (?:\((\d+)\s+tokens\))?      -> OPTIONAL: Captures Token digits
+    const regex = /Star Path -\s+((?:(?! - [A-Z0-9])(?! -\s*\.).)+)(?: - ([A-Z0-9]+))?(?: - ([^(\n]+))?(?:\((\d+)\s+tokens\))?/;
     const match = string.match(regex);
-    //console.log(match);
 
     if (match) {
-      item.starpath = match[1].trim(); // star path name
-      item.tile = match[2] || ""; // tile, e.g. 4D, B2C
-      item.tierType = match[3] || "";
-      item.eventtokens = Number(match[4]) || ""; // event token item cost
 
-      /*
-      // PREVIOUS AI: tier fallback to tile (B2C → 2)
-      if (match[3]) {
-        item.tier = Number(match[3]);
-      } else {
-        const tileMatch = item.tile.match(/\d/);
-        item.tier = tileMatch ? Number(tileMatch[0]) : null;
-      }
-      */
+      const starPathName = match[1].trim(); // star path name
+      const tileCode = match[2] || ""; // tile, e.g. 4D, B2C
+      const tierType = (match[3] || "").trim();
+      const tokens = match[4] ? Number(match[4]) : "";
 
-      // 1. Determine Tier: Extract the first numerical digit found in the tile code or the tier status string
-      item.tier= '';
-      item.premium = '';
+      // Map extracted regex groups directly to object properties
+      item.starpath = starPathName;
+      item.tile = tileCode;
+      item.eventtokens = tokens;
+      item.tier = "";
+      item.premium = "";
+      item.bonus = "";
 
-      if (item.tile) {
-        const tileDigit = item.tile.match(/\d/);
-        if (tileDigit) item.tier = tileDigit[0];
-      } else if (item.tierType) {
-        const tierDigit = item.tierType.match(/\d/);
-        if (tierDigit) item.tier = tierDigit[0];
+      // 1. Determine Tier (Safely extract first digit found in tile or tierType)
+      // Extract the first numerical digit found in the tile code or the tier status string
+      const tierDigit = (tileCode + tierType).match(/\d/);
+      if (tierDigit) {
+        item.tier = tierDigit[0];
       }
 
-      /*
-      // PREVIOUS AI: derived flags (don’t overcomplicate regex)
-      item.premium = /Premium|Bonus Items/.test(string) ? "yes" : "no";
-      item.bonus = /Bonus/.test(string) ? "yes" : "no";
-      */
+      // 2. Determine Premium and Bonus Flags using cleaner text flags
+      if (tierType) {
+        const isBonus = /Bonus/.test(tierType);
+        const isPremium = /Premium/.test(tierType) || isBonus;
 
-      // 2. Determine Premium and Bonus Flags
-      if (item.tierType === "Bonus Items") {
-        item.premium = "yes";
-        item.bonus = "yes";
-      } else if (item.tierType.includes("Premium")) {
-        item.premium = "yes";
-        item.bonus = "no";
-      } else if (item.tierType !== "") {
-        // If a tier type exists (like "T1") but doesn't say Premium/Bonus
+        item.premium = isPremium ? "yes" : "no";
+        item.bonus = isBonus ? "yes" : "no";
+
+      } else if (starPathName && !string.includes(".....")) {
+        // Catch-all fallbacks if tierType structure doesn't exist but data is valid
         item.premium = "no";
         item.bonus = "no";
       }
-      //console.log("star path match object:", match);
     }
     else {
       console.warn("FAILED TO PARSE ITEM SOURCE (", item.name, "): ", string);
     }
-    
   }
 
   // ===== Premium Item (may include returning Star Path) =====
@@ -2260,6 +2268,11 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('=null', '=');
 
     newStr = newStr.replaceAll('buyprice=<!--null-->', 'buyprice=');
+
+    // REVISIT - this is likely introduced with new priceCategoriesColorsTraitsConfirmed confirmed variable
+    // adjust other functions to prevent
+    newStr = newStr.replaceAll('<!--<!--', '<!--');
+    newStr = newStr.replaceAll('-->-->', '-->');
 
     /*
     [[:Category: <!--Eternity Isle--> Companions Collection|<!--Eternity Isle--> Companions Collection]]

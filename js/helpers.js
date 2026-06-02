@@ -396,78 +396,36 @@ function getCharacterUniverse(charName) {
   return universe;
 }
 
-function lookupToken(starpath) {
-  var output = '';
+const starpathsObject = {
+    "Pixar Fest": { "tokenName": 'pixartoken', "sheetLocationVal": 'starpath - pixar' },
+    "Villains'": {"tokenName": 'villaintoken', "sheetLocationVal": 'starpath - villains' },
+    "Festive": { "tokenName": 'festivetoken', "sheetLocationVal": 'starpath - festive' },
+    "Centennial": { "tokenName": 'centennialtoken', "sheetLocationVal": 'starpath - centennial' },
+    "Disney Parks": { "tokenName": 'parkstoken', "sheetLocationVal": 'starpath - parks' },
+    "Wonder of Pixar": { "tokenName": 'wonderpixartoken', "sheetLocationVal": 'starpath - wonder' },
+    "Haunted Holiday": { "tokenName": 'hauntedtoken', "sheetLocationVal": 'starpath - haunted' },
+    "Royal Winter": { "tokenName": 'royalwintertoken', "sheetLocationVal": 'starpath - royal' },
+    "Lovely Monsters": { "tokenName": 'monstertoken', "sheetLocationVal": 'starpath - monsters' },
+    "A Day at Disney": { "tokenName": 'dayatdisneytoken', "sheetLocationVal": 'starpath - adad' },
+    "Majesty and Magnolias": { "tokenName": 'magnoliatoken', "sheetLocationVal": 'starpath - majesty' },
+    "Dapper Delights": { "tokenName": 'lilypadtoken', "sheetLocationVal": 'starpath - dapper' },
+    "The Night Show": { "tokenName": 'rockstartoken', "sheetLocationVal": 'starpath - nightshow' },
+    "Frost & Fairies": { "tokenName": 'icecrystaltoken', "sheetLocationVal": 'starpath - frost' },
+    "Oasis Retreat": { "tokenName": 'tranquiltoken', "sheetLocationVal": 'starpath - oasis' },
+    "Garden of Whimsy": { "tokenName": 'pocketwatchtoken', "sheetLocationVal": 'starpath - whimsy' },
+    "Adventures in Never Land": { "tokenName": 'compasstoken', "sheetLocationVal": 'starpath - neverland' },
+    "Retro Roadtrip": { "tokenName": 'maltshoptoken', "sheetLocationVal": 'starpath - roadtrip' },
+    "Witchful Thinking": { "tokenName": 'brewtoken', "sheetLocationVal": 'starpath - witchful' },
+    "Winter Warmth": { "tokenName": 'waffletoken', "sheetLocationVal": 'starpath - warmth' },
+    "Paw-fect Romance": { "tokenName": 'pawprinttoken', "sheetLocationVal": 'starpath - pawfect' },
+    "Elements of Nature": { "tokenName": 'earthtoken', "sheetLocationVal": 'starpath - nature' },
+    "Godly Glamor Star Path": { "tokenName": 'glamortoken', "sheetLocationVal": 'starpath - godly' }
+  };
 
-  switch (starpath) {
-    case 'Pixar Fest':
-      output = 'pixartoken';
-      break;
-    case "Villains'":
-      output = 'villaintoken';
-      break;
-    case 'Festive':
-      output = 'festivetoken';
-      break;
-    case 'Centennial':
-      output = 'centennialtoken';
-      break;
-    case 'Disney Parks':
-      output = 'parkstoken';
-      break;
-    case 'Wonder of Pixar':
-      output = 'wonderpixartoken';
-      break;
-    case 'Haunted Holiday':
-      output = 'hauntedtoken';
-      break;
-    case 'Royal Winter':
-      output = 'royalwintertoken';
-      break;
-    case 'Lovely Monsters':
-      output = 'monstertoken';
-      break;
-    case 'A Day at Disney':
-      output = 'dayatdisneytoken';
-      break;
-    case 'Majesty and Magnolias':
-      output = 'magnoliatoken';
-      break;
-    case 'Dapper Delights':
-      output = 'lilypadtoken';
-      break;
-    case 'The Night Show':
-      output = 'rockstartoken';
-      break;
-    case 'Frost & Fairies': // The Frost & Fairies
-      output = 'icecrystaltoken';
-      break;
-    case 'Oasis Retreat':
-      output = 'tranquiltoken';
-      break;
-    case 'Garden of Whimsy':
-      output = 'pocketwatchtoken';
-      break;
-    case 'Adventures in Never Land':
-      output = 'compasstoken';
-      break;
-    case 'Retro Roadtrip':
-      output = 'maltshoptoken';
-      break;
-    case 'Witchful Thinking':
-      output = 'brewtoken';
-      break;
-    case 'Winter Warmth':
-      output = 'waffletoken';
-      break;
-    case 'Paw-fect Romance':
-      output = 'pawprinttoken';
-      break;
-    case 'Elements of Nature':
-      output = 'earthtoken';
-      break;
-    default:
-      output = 'ORIGINALTOKENNAME';
+function lookupToken(starpathName) {
+  var output = 'ORIGINALTOKENNAME'; // "starpath - ......"
+  if (starpathsObject[starpathName]) {
+    output = starpathsObject[starpathName].tokenName;
   }
   return output;
 }
@@ -653,12 +611,12 @@ function renderPSBundles(dataArray) {
 
     var imageParam = '%%bundleName%%'; // vs '%%bundleName%% Store'
     var itemsParam1 = '<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->'; // vs ''
-    var itemsParam2 = ''; // vs '%%psBundleItems%%'
+    var itemsParam2 = "\n|itemgallery=<!--{{Gallery|ITEM_COUNTSINGLE|caption='''[[ITEM_COUNTSINGLE]]'''|link=ITEM_COUNTSINGLE}}\n{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}-->"; // vs '%%psBundleItems%%'
 
     if (isSingleItemBundle(item)) {
       imageParam = '%%bundleName%% Store';
       itemsParam1 = '';
-      itemsParam2 = '%%psBundleItems%%';
+      itemsParam2 = '%%psBundleItems%%'; // will be single item
     }
     tempTemplate = '{{infobox\n|name=%%bundleName%%\n|image='+imageParam+'.png\n|width=350px\n|type=Premium Bundle\n|category=%%bundleType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%'+itemsParam1+'\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%bundleType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items='+itemsParam2+'\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
 
@@ -1693,6 +1651,7 @@ function renderSPDuties(dataArray) {
 
   // comment out icons if missing
   renderedHTML = renderedHTML.replaceAll('{{inlineIcon|null|iconOnly}}', '<!--{{inlineIcon|TBA|iconOnly}}-->');
+  renderedHTML = renderedHTML.replaceAll('{{inlineIcon|ICON_TBA|iconOnly}}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
 
   return renderedHTML;
 }

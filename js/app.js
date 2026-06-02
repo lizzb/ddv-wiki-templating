@@ -91,7 +91,7 @@ DataConverter.prototype.convert = function() {
         this.outputText = DataGridRenderer[this.outputDataType](t, i, r, this.indent, this.newLine);
         this.outputTextArea.val(u + this.outputText);
 
-        // TODO add onchange event handling for priceConfirmed, tagsConfirmed, collectionConfirmed, functionsConfirmed
+        // TODO add onchange event handling for priceCategoriesColorsTraitsConfirmed, tagsConfirmed, collectionConfirmed, functionsConfirmed
 
 
         const jsonString = this.outputText;

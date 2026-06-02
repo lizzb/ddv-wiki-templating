@@ -2,6 +2,12 @@ todo:
 
 
 
+|itemgallery=
+{{Gallery|ITEM_COUNT1|caption='''[[ITEM_COUNT1]]'''|link=ITEM_COUNT1}}
+{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}
+
+
+
 EVENTNAME = "Springtime Floating Festival"
 PUZZLENAME = "Rotating Statues"
 
@@ -363,7 +369,7 @@ It was originally available to unlock and collect for a limited time during the 
 Once collected it can be applied to rooms inside the [[Player's House]] using the [[Furniture menu]] inside the [[Inventory]].
 
 
-ADD EVENT HANDLERS TO collectionconfirmed, tagsconfirmed, priceconfirmed, functionsconfirmed checkboxes - right now you have to trigger a new templating by changing input or switching something else (like template radio)
+ADD EVENT HANDLERS TO collectionconfirmed, tagsconfirmed, priceCategoriesColorsTraitsConfirmed, functionsconfirmed checkboxes - right now you have to trigger a new templating by changing input or switching something else (like template radio)
 
 {{NavboxFurniture|misc.|general}} should be {{NavboxFurniture|misc|general}}
 
