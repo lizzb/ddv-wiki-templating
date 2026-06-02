@@ -2274,6 +2274,11 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('<!--<!--', '<!--');
     newStr = newStr.replaceAll('-->-->', '-->');
 
+    // TODO - make more robust, e.g. ensure only replacing |gridSize=(\d+)×(\d+)
+    // for now, assume if theres a "×", it came from my sheet, which came from reporter data
+    // replace with "x" which is easier for wiki users
+    newStr = newStr.replaceAll('×', 'x');
+
     /*
     [[:Category: <!--Eternity Isle--> Companions Collection|<!--Eternity Isle--> Companions Collection]]
 
