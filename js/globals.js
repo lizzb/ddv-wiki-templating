@@ -9,7 +9,7 @@ var newExpansionCollection = "Wishblossom Mountains";
 
 var starPathNameShort = "Godly Glamor";
 var starPathName = "Godly Glamor";
-var starPathToken = "glamortoken";
+var starPathToken = "lightningtoken";
 
 // toggle to wrap in cleanup tag
 var collectionConfirmed = $("#collectionConfirmedCB").prop("checked"); //true;
