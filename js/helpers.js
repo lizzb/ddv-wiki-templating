@@ -941,7 +941,7 @@ function renderMeals(dataArray) {
     templateMealArticle += "\n\n[[Cooking#Meals|Meals]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
 
     templateMealArticle += output_history(item);
-    templateMealArticle += '\n\n{{NavboxMeal|wishblossommountains}}';// {{NavboxMeal|storybookvale}} // {{NavboxMeal|eternityisle}}
+    templateMealArticle += '\n\n{{NavboxMeal|honeyglowwoods}}';// {{NavboxMeal|wishblossommountains}} // {{NavboxMeal|storybookvale}} // {{NavboxMeal|eternityisle}}
     templateMealArticle += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
 
     renderedHTML += microTemplate(templateMealArticle, item);
@@ -1299,7 +1299,7 @@ function generateCompanionTemplate(item) {
 
      if (isCritter) {
       template += "\n|from=Feeding Critters";
-      template += "\n|found=in the '''Wishblossom Mountains''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
+      template += "\n|found=in the '''Honeyglow Woods''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
       template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
       ////template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]], [[:Category:Spices|Spices & Herbs]], and [[:Category:Vegetables|Vegetables]] as they are defined on the Ingredients tab of the '''Collection Menu''' - e.g. [[Vanilla]] is included, and [[Seaweed]] is not. They will additionally eat Fruit grown from [[Crop Seeds|seeds]], i.e. [[Cosmic Figs]], [[Grapes]], [[Melon]], [[Pineapple]]-->";
       //template += "\n|likedFoods=[[:Category:Grains|Grains]] as they are defined on the '''Ingredients''' section of the '''Collection Menu''' (not as they are grouped at a [[:Category:Cooking Stations|Cooking Station]])";

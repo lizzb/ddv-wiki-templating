@@ -845,6 +845,22 @@ function test(shopWeekArray) {
 console.log(test(premiumShopWeekArray_all));
 document.getElementById("outputTextArea").value = test(premiumShopWeekArray_all);
 
+/*
+var singleWeek = {
+  "Featured": ["xxxxx", "xxxxx", "xxxxx", "xxxxx"],
+  "Spotlight": ["xxxxx", "xxxxx", "xxxxx", "xxxxx", "xxxxx", "xxxxx", "xxxxx", "xxxxx", "xxxxx"],
+  "LimitedTimeDeals": ["xxxxx", "xxxxx"]
+}
+*/
+
+var singleWeek = {
+  "Featured": ["Hercules Bundle", "Grecian Villa", "Gilded Agora Bundle", "Good, Good, Good Puppy", "Gilded Agora Gazebo"],
+  "Spotlight": ["Megara Costume Dress", "Hercules' Landscaping Set", "Angelic Wings", "Small Pink Wings", "Golden Clarion Bundle", "Mickey the Magician"],
+  "LimitedTimeDeals": ["Royal Jacket Set", "Villain Motifs Bundle"]
+}
+
+document.getElementById("outputTextArea").value = test( [ singleWeek ] );
+
 
 /*
 ==Available This Week==

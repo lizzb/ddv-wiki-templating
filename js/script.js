@@ -201,9 +201,14 @@ function output_collection(item) {
       //item.collection = wrapComment('Storybook Vale', !collectionConfirmed);
       item.collection = 'Storybook Vale';
       break;
+    case 'WM':
     case 'WR':
       //item.collection = wrapComment('Wishblossom Mountains', !collectionConfirmed);
       item.collection = 'Wishblossom Mountains';
+      break;
+    case 'HW':
+      //item.collection = wrapComment('Honeyglow Woods', !collectionConfirmed);
+      item.collection = 'Honeyglow Woods';
       break;
     case 'Dream Style':
       item.collection = 'remove'; //'n/a - CHARACTER DREAM STYLE';
@@ -380,6 +385,11 @@ function updateAppropriateVersion(item) {
   case "1.20.11":
     item.version = "1.20";
     break;
+  // temporary hard force
+  case "1.24":
+  case "1.24.1":
+    item.version = "Adventure Pack 1";
+    break;
   default:
     break;
   }
@@ -413,6 +423,17 @@ function updateAppropriateVersion(item) {
     case "1.20.1":
     case "1.20.2":
       item.version = "Expansion 3";
+      break;
+    default:
+      break;
+    }
+  }
+  if (item.collection == "HW" || item.collection == "Honeyglow Woods") {
+    switch (item.version) {
+      // 1.24 is temporary, sheet should not have that value
+    case "1.24":
+    case "1.24.1":
+      item.version = "Adventure Pack 1";
       break;
     default:
       break;
@@ -1076,6 +1097,8 @@ function output_from(item) {
   case 'x - SV':
   case 'SV':
   case 'WM':
+  case 'HW':
+  case 'HW - C':
     if (showItemDebug) {
       console.log(item.name, ' is a scrooge item');
     }
@@ -1092,6 +1115,7 @@ function output_from(item) {
       break;
 
     case 'x - C':
+    case 'HW - C':
       if (showItemDebug) {
         console.log(item.name, ' is a scrooge item that is conditional');
       }
@@ -1754,6 +1778,9 @@ function renderClothingFurnitureArticle(dataArray) {
     case 'WM':
       item.collection = 'Wishblossom Mountains';
       break;
+    case 'HW':
+      item.collection = 'Honeyglow Woods';
+      break;
     default:
       break;
     }
@@ -2271,6 +2298,9 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
     // REVISIT - this is likely introduced with new priceCategoriesColorsTraitsConfirmed confirmed variable
     // adjust other functions to prevent
+    // this isn't working still
+    newStr = newStr.replaceAll('<!--<!--', '<!--');
+    newStr = newStr.replaceAll('-->-->', '-->');
     newStr = newStr.replaceAll('<!--<!--', '<!--');
     newStr = newStr.replaceAll('-->-->', '-->');
 

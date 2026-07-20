@@ -1,6 +1,107 @@
 todo: 
 
 
+todo:
+
+
+
+
+todo: bundle generation needs to insert House Dream Style
+
+todo: limited deals not being found by reporter
+
+todo: fishing stand week not found by reporter
+
+*<!--DIMENSIONS NOT FILLED-->
+
+double checks after each weekly prep: companion template, returning item template
+
+
+todo: in-game ui says "Tool Set"
+
+
+
+todo: remember the ui sorts 
+
+White Oversized Glasses
+White Over-the-Knee Socks
+s < -
+
+
+TODO - implement Dreamlight Achievement article template and standardize in sheet. use Sunflower Hopscotch as example
+
+
+TODO - in sheet- "(pick up after completed)" or "(pick up post-quest)"? currently relying on former
+
+TODO - make template for level 5 premium companion reward articles
+
+
+|reward={{Friendship|COMPANION|5}}
+|from=Premium Shop
+|bundleName=COMPANION (Bundle){{!}}COMPANION
+|bundlePrice=3000
+
+It is automatically rewarded after reaching [[COMPANION#Friendship Rewards|Friendship Level 5]] with [[COMPANION]], which is available to purchase from the [[Premium Shop]] in the [[COMPANION (Bundle)|COMPANION]] bundle for {{price|3000|moonstone|showLabel}}.
+
+
+=== CATEGORIES in preparation of an expansion:
+
+Category:EXPANSIONCOLLECTION Store Exclusive
+Category:EXPANSIONCOLLECTION Resources
+Category:EXPANSIONCOLLECTION Foraging Collection
+Category:Fish from EXPANSIONCOLLECTION
+Category:Fruit from EXPANSIONCOLLECTION
+Category:Gems from EXPANSIONCOLLECTION
+Category:Vegetables from EXPANSIONCOLLECTION
+Category:Sweets from EXPANSIONCOLLECTION
+
+let category_Foraging = "Category:EXPANSIONCOLLECTION Foraging Collection\n\n{{categoryheader|the [[Foraging]] [[collections|collection]] categorized under [[EXPANSIONCOLLECTION]]}}\n\n[[Category:EXPANSIONCOLLECTION Collection]]";
+
+let category_StoreExclusive = "{{categoryheader|[[Clothing]], [[Furniture]], [[:Category:Wallpaper|Wallpaper]], and [[:Category:Flooring|Flooring]] items which are only sold at [[Scrooge's Store]] located in [[EXPANSIONCOLLECTION]] and no other location}}\n\n[[Category:Gameplay]]";
+
+let category_Resources = "{{categoryheader|items that can be found in the '''{{name|EXPANSIONCOLLECTION|link=EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Resource Locations]]";
+
+let category_Fish = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fish|link=:Category:Fish}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fish Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+let category_Fruit = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fruit|link=:Category:Fruit}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fruit Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+let category_Gems = "{{categoryheader|items categorized as '''{{inlineIcon|Gems|link=:Category:Gems}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Gem Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+let category_Vegetables = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Vegetables|link=:Category:Vegetables}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Vegetable Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+let category_Sweets = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Sweets|link=:Category:Sweets}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Sweets Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+
+
+
+let template_Memory = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|width=300px\n|type=Memory\n|description=%%description%%\n|universe=%%universe%%\n|collection=%%newExpansionCollection%%\n|found=TBA\n|from=<!--{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}-->\n}}\n'''%%name%%''' is a [[Memories#%%universe%%|%%universe%%]] [[Memories|Memory]].\n\nOnce collected it will be added to the [[:Category:%%newExpansionCollection%% Memories Collection|%%newExpansionCollection%% Memories Collection]]{{cleanup|Verify -- , and can be viewed in items with [[:Category:Memory Frame|Memory Frame]] functionality}}.\n<!--\n==Acquisition==\n:{{quest|QUESTNAME}} - Unlocked after fishing up/picking up/digging up/eating [[xxxx]] which is cooked using [[Ingredients]] and a [[QUESTITEM]] caught during the quest, then reading [[ITEM]] in Inventory.\n\n==Quests==\nThis memory is collected during the following quests:\n*{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}\n-->\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxMemory}}";
+
+let template_seed = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=%%description%%\n|type=Seed\n|buyprice=\n|sellprice=\n|giftreward=\n|growtime=<!--{{growthTime|15}}<br>{{growthTime|15|biome=PREFERREDBIOME}}-->\n|waterings=\n|yield=<!--{{name|CROPNAME|CROPCOUNT}}-->\n|from={{inlineIcon|Goofy's Stall|size=20|link=Goofy's Stall#%%newExpansionCollection%%}}\n|found={{name|%%newExpansionCollection%%}}\n|gridSize=\n|placement=\n|stackMax=\n}}\n'''%%name%%''' is a [[Crop Seeds|seed]] type which can be planted and harvested to obtain [[Ingredients]].\n\nThey can be purchased from [[Goofy's Stall]] in [[%%newExpansionCollection%%]] after the initial Stall repair.\n<!--\nIt takes XXXX minutes to grow<!-- and XXXX total waterings-- until CROPCOUNT [[CROPNAME]] can be harvested.\n-->\nThey can be planted in any Biome<!--, but will grow 10% faster when planted in either the [[PREFERREDBIOME#REGION1|REGION1]] or [[PREFERREDBIOME#REGION2|REGION2]] biomes in the [[Wishing Alps]]. This accelerated growth is denoted in the UI by a caret (^) icon that appears on the upper left corner of the seed image when choosing a seed to plant in its preferred Biome-->.\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxSeed|%%newExpansionCollection%%}}";
+
+
+
+let template_critter = "{{stub}}\n{{Infobox\n|image=%%name%%.png\n|type=Companions\n|category=<!--Animal Companions, Critter-->\n|collection=%%newExpansionCollection%%\n|hangout=<!--Foraging-->\n|critterType=<!--Hedgehog-->\n|found={{name|BIOMENAME}}<!--<br>(REGION)--><!--<br>M, T, W, Th, F, Sat, Sun PM-->\n|favfood=<!--{{name|XXXXXX}}-->\n|likedfoods=<!--{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}-->\n|minfeedings=1\n}}\n{{ItemDescription\n|%%name%%\n|type=Companion\n|critterType=<!--Hedgehog-->\n|from=Feeding Critters\n|found=in <!--the '''REGION''' area of-->[[BIOMENAME]]<!--all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->\n|favoriteFood=<!--Red Currants-->\n|likedFoods=<!--[[Blueberry]], [[Gooseberry]], [[Raspberry]], [[Strawberry]]-->\n|critterCollection=%%newExpansionCollection%%\n|hangout=[[Foraging]]\n|numFeedings=one<!--(1)-->\n}}\n{{CritterSchedule\n|location=BIOMENAME\n|sunday=TBA\n|monday=TBA\n|tuesday=TBA\n|wednesday=TBA\n|thursday=TBA\n|friday=TBA\n|saturday=TBA\n}}\n\n==Yield==\n{| class=wikitable id='recipe-table'\n!style="" | Food Type\n!style="" | Item\n!style="" | Possible Rewards\n|-\n| Favorite\n| <!--{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard|2}}<br>\n{{name|Memory Shard}}<br>\n{{name|Motif Bag}}-->\n|-\n| Liked\n|\n<!--{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard}}<br>\n{{name|Memory Shard}}<br>\n{{name|Wheat Seed}}-->\n|}\n\n==Friendship Rewards==\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.\n{| class=wikitable id='recipe-table'\n!Lvl\n!Image\n!Name\n!Type\n|-\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->\n|-\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]\n|-\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || [[File:Companion Gather Foraging Icon.png| 50x50px| center]] || [[Foraging|Foraging Gathering Bonus]] || [[Foraging|Resource Collection]]\n|-\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]\n|}\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxCompanion}}\n__noTOC__"
+
+
+
+
+
+
+
+
+
+
+
+
+
+review these, compile a quest item (meal recipe) template:
+
+https://dreamlightvalleywiki.com/Icy-Red_Stew..._Yuck
+https://dreamlightvalleywiki.com/Eau-de-Chien-Soggy
+
+
+even if location=friendship is empty if the formatting is correct (character level X) use friendship text generation
+
 
 |itemgallery=
 {{Gallery|ITEM_COUNT1|caption='''[[ITEM_COUNT1]]'''|link=ITEM_COUNT1}}
@@ -17,6 +118,196 @@ PUZZLENAME = "Rotating Statues"
 
 It is a reward for solving the [[EVENTNAME#PUZZLENAME|PUZZLENAME]] puzzle during the limited time [[EVENTNAME]] event.<!--Puzzle solving details, including link to Pouch object.--> Once collected....
 
+
+
+
+
+
+
+todo: create page for default well, default visit staion, default goofy's stall skin, castle, chez remy, EI and SV themed chez remy and store
+
+
+TODO:
+check if Winter Crystal Crafting Station had the night s how removed from its tags, i think they all did? maybe not use as a samle item
+
+verify if Camping House is Other or Dreamlight Valley
+
+
+TODO - article generation/standardization for premium/friendship items (pet houses) - e.g. Mochi's Cat House
+
+TODO - article generation for Cooking Station functionality items - e.g.  Brick Pizza Oven
+
+TODO - check lighting fx on Dogcatcher's Wagon
+
+Edwardian Chair and Curtains Set - TODO - verify category types, gathering count
+
+TODO - use Edwardian Chair and Curtains Set as example for outdoor gathering item rewarded during a quest - includes body gathering text
+
+todo: append ". Once it is placed in the world, the Player can '''Interact''' with the object to toggle the light on and off." for lighting objects
+
+
+TODO - Edwardian Dog Bath - verify category name (Appliance/s), verify size filled, verify placement (under vs default) and environment (indoor?).
+
+
+todo - doulbe check this - is it quest furnitur egiven during quest?
+
+{{infobox
+|image=Edwardian Dog Bowl.png
+
+
+todo: , and must be placed on a wall. --> , and must be placed indoors on a wall.
+
+
+todo - Edwardian Stained Glass Window -- check size
+
+
+, and must be placed indoors on a wall.
+
+
+Golden Lady and Tramp Statue -- max did all, i fix body text slightly -- TODO review level 10 quest body text form here, mine vs max's
+
+
+Antique Camera -- max did all - todo, work on article generation to match this, no colleciton, not tracked, cant buy more, given during? reward for? quest
+
+
+Lucky Clover Archway.png - max did all, article tweaks, fix environment param -- TODO revisit this template - in intro sentence arch vs event word priority? needsn to b3e standardized with shamrock bbanner
+
+
+Lucky Shamrock Banner - max did all, i fix environment param spelling -- TODO - revisit this page as an examlpe item for lighting object, seasonal crafting item
+
+
+todo - remove (wall) from size value from my parser
+
+TODO - saucery extract should be exporting type=Crafted Furniture, not type=Furniture, and also craftingcategory=Furniture
+
+
+
+TODO - "Love Is in the Air" Hearts still doesnt render corrctly
+
+
+TODO - standardize "floating" placement type
+
+
+TODO - sample item for bonus star path item - Cast Iron Steam Vent - Interact/toggle animation
+
+TODO - should it be functions=VFX for Green/Blue/Pink Fluttering Dragonflies? check bayou fireflies
+
+
+TODO - use Photo Shoot Spotlight for example item rewarded during quest, lighting constant, and not tracked
+
+
+TODO - add parser generated articles for:
+
+Cherry Blossom Plaza
+Cherry Blossom Chez Remy
+Scrooge McDuck's Cherry Blossom Store
+Cherry Blossom Dream Castle
+Cherry Blossom Goofy Stall
+Cherry Blossom Valley Visit Station
+Cherry Blossom Wishing Well
+
+
+
+Edwardian Dog Bath - TODO: verify category name (Appliance/s), verify size filled, verify placement (under vs default) and environment (indoor?).
+
+Edwardian Dog Bowl - todo - doulbe check - is it quest furniture given during quest?
+
+Edwardian Chair and Curtains Set - TODO: verify category types, gathering count
+
+Edwardian Stained Glass Window -- TODO: verify size
+
+Cast Iron Steam Vent - TODO - revisit functions value in both sheet and wiki
+
+Alley Cat Piano - TODO: verify music interact fx
+
+Tropical Waterfall — Single - TODO - verify size, 12x12 or 14x14. others done by max -- unclear if surface area or no
+
+Tropical Waterfall — Turn.png - fix size, dimensions arent filled, max did rest
+
+TODO - add parser generated articles for Villager Houses? maybe? e.g. Lady and Tramp's House
+
+TOODO - {{NavboxFurniture|landscaping|general}} -- todo, make sure this gnereates for navbox if multiple categories
+
+
+TODO - {{NavboxFurniture|misc.|general}} -- remove . after misc
+
+add: rustic wooden chair or change the house to the coffee shop which has 2 related items in bundle to test alpha sorting
+
+need an automatic light source starting with a vowel universe
+
+need a ceiling item - tigger balloon? from WM conditional store?
+
+need an SV item
+
+need an arch item
+
+ad a memory frame item - premium standalone? or something?
+
+
+
+|image=Rearing Stallion Topiary.png -- todo - revisit logic for navbox priorities
+
+
+TODO: adjust last sentence of companion home function body text - see Peaceful Meadow Companion Home
+
+nearby [[:Category:Companion Interest|Companion]] items.
+
+
+
+
+TODO - bonus items in sheet and parser generation for tier 7, 8, etc
+
+
+
+TODO: generate relateditems
+
+
+TODO: 
+
+It is automatically rewarded after reaching [[CHARACTERNAME#Friendship Rewards|Friendship Level 5]] with [[CHARACTERNAME]], which is available to purchase from the [[Premium Shop]] in the [[BUNDLELINK]] bundle for {{price|BUNDLECOST|moonstone|showLabel}}.
+
+
+
+
+todo: next test new ingredient, gem, meal, questitem output using whenever festive cocoa bean was introduced, or the WM introduction update
+
+todo: update the update with {{history|Adventure Pack 1}} or whatever it is
+
+TODO - populate the navbox with a category if it exists, even if it is commented out/not yet confirmed
+TODO - populate navbox with "decor" not default to appliance if nothing known for categories
+
+todo - "Hercules Level 2" not picking up friendship in parser correctly??
+
+
+
+TODO - check training mannequin again
+todo - revisit the language for seasonal crafting in sentence 1 and 2 - eg Slinky Dog Popcorn Bucket.png
+
+todo - check player level language for awarded/rewarded, check all level reward pages
+
+
+
+
+
+TODO - |placement=ceilings is triggering body text about being indoors even if not true (see Wild Vines Ceiling Ladder)
+todo - table not being inserted in intro line if surfacearea is present (e.g. Hercules Trophy Pedestal)
+
+TODO - quests that are prereqs for store items to appear are displaying in the infobox as rewards, which is incorrect
+
+Luxury Grecian Spa - todo - verify all categories
+
+also, no mention of water table vs regular table in the body text, may need fixing
+
+TODO - quest meals need a different template than regular meals
+
+
+redo:
+Mythical Cloud Glider - glider
+Golden Lightning Bolt Accessory - accessory
+
+Basic Toga Dress - made by max, doesnt reflect touchofmagic status
+
+Pink Baby Pegasus - double check, max made
 
 
 
