@@ -17,7 +17,7 @@ todo: fishing stand week not found by reporter
 double checks after each weekly prep: companion template, returning item template
 
 
-todo: in-game ui says "Tool Set"
+todo sheet/parser: in-game ui says "Tool Set"
 
 
 
@@ -25,7 +25,7 @@ todo: remember the ui sorts
 
 White Oversized Glasses
 White Over-the-Knee Socks
-s < -
+s < - i.e. s comes before dash in game ui
 
 
 TODO - implement Dreamlight Achievement article template and standardize in sheet. use Sunflower Hopscotch as example
