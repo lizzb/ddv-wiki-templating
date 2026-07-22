@@ -35,7 +35,7 @@ function renderParent(dataArray, templateType) {
       outputHTML = renderFlowers(dataArray);
       break;
     case "clothingFurniture":
-      //outputHTML += renderPSBundles(dataArray);// TEMPORARY
+      outputHTML += renderPSBundles(dataArray);
       outputHTML += renderClothingFurnitureArticle(dataArray);
       break;
     default:
@@ -1092,8 +1092,6 @@ function output_from(item) {
   // TODO - items from default scrooge catalog
   // It is one of the items available by default to order from [[Scrooge's Catalog]], and is also available to purchase from [[Scrooge's Store]]. 
 
-  console.log(item.inStore);
-
   switch (item.inStore) {
   case 'EI':
   case 'SV':
@@ -1105,7 +1103,6 @@ function output_from(item) {
     }
     infoboxFrom += "|from=Scrooge's Store (" + item.collection + ")\n|storeSlots=";
     itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']].';
-    console.log(`value of itemSource = ${itemSource}`);
     break;
 
   case 'x':
@@ -1139,7 +1136,7 @@ function output_from(item) {
     }
 
     // try to give things a default scrooge store article text
-    // this will cause the collection generation to not appear
+    // REVISIT - this will cause the collection generation to not appear
     /*
     if (item.source && item.source.includes('Store')) {
       itemSource = itemSource_scroogeDefault + '. '
@@ -1290,14 +1287,26 @@ function output_from(item) {
         console.log(item.name, ' is a friendship reward item', item.source);
       }
 
+      let infoboxBundleLink = `${item.bundleName} (Bundle){{!}}${item.bundleName}`;
+      let bodyBundleLink = `${item.bundleName} (Bundle)|${item.bundleName}`;
+      if (!isKnownCompanion(item.bundleName)) {
+        // if item.bundleName != any of the known companion names, assume the bundle it is included in is not named identically to the companion
+        // e.g. Amelia's Pink Goose House --> inside Abigail and Amelia the Geese != Abigail the Goose
+        // e.g. Mochi's Cat House --> inside Mochi (Bundle) == Mochi
+        // e.g. Figaro's House --> inside Figaro Bundle != Figaro
+        infoboxBundleLink = item.bundleName;
+        bodyBundleLink = item.bundleName;
+      }
+
       // source should have already been parsed in parseItemSource
-      infoboxFrom = `|reward={{Friendship|${item.character}|${item.level}}}`;
+      infoboxFrom = `|reward={{Friendship|${item.character}|${item.level}}}\n|from=Premium Shop\n|bundleName=${infoboxBundleLink}\n|bundlePrice=${item.bundlePrice}`;
 
       itemSource = `It is automatically rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
       if (item.location == 'premium/friendship') {
         // this is a bit of a hack - assuming that the bundle will be a standalone item named after the companion - will need manual refining
-        itemSource += `, which is available to purchase from the [[Premium Shop]] in the [[${item.bundleName} (Bundle)|${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}`;
+        itemSource += `, which is available to purchase from the [[Premium Shop]] in the [[${bodyBundleLink}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}`;
       }
+
       itemSource += `.`;
       
       // TODO: PREMIUM + FRIENDSHIP ITEMS
@@ -1323,6 +1332,31 @@ function output_from(item) {
   var output = '%%infoboxFrom%%\n';
   return output;
 }
+
+function isKnownCompanion(name) {
+  switch (name) {
+    case 'Abigail the Goose':
+    case 'Amelia the Goose':
+    case 'Baby Pegasus':
+    case 'BB—8':
+    case 'Dinah':
+    case 'Figaro':
+    case 'Heihei':
+    case 'Lucky':
+    case 'Max':
+    case 'Mochi':
+    case 'Nana':
+    case 'Percy':
+    case 'R2-D2':
+    case 'Rajah':
+    case 'The Footstool':
+      return true;
+    default:
+      return false;
+    }
+  return false;
+}
+
 
 function generateFrom_Crafting(item) {
 
@@ -2469,7 +2503,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
   
   //Alternative Approach (Split & Filter)
   //If regex behavior continues to act unpredictably depending on browser quirks or weird clipboard encodings, splitting the string by lines, filtering out the empty/whitespace-only lines, and re-joining them is 100% foolproof:
-
+  /*
 
   newStr = newStr
   .split(/\r?\n/)
@@ -2484,7 +2518,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
   
   //console.log(newStr.length);
 
-
+  */
   // todo: get rid of trailing space before line break
   return newStr;
 }

@@ -610,6 +610,7 @@ function renderPSBundles(dataArray) {
   bundleArray.forEach(function (item) {
 
     var imageParam = '%%bundleName%%'; // vs '%%bundleName%% Store'
+    var bundleTypeParam = '%%bundleType%%';
     var itemsParam1 = '<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->'; // vs ''
     var itemsParam2 = "\n|itemgallery=<!--{{Gallery|ITEM_COUNTSINGLE|caption='''[[ITEM_COUNTSINGLE]]'''|link=ITEM_COUNTSINGLE}}\n{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}-->"; // vs '%%psBundleItems%%'
 
@@ -618,7 +619,12 @@ function renderPSBundles(dataArray) {
       itemsParam1 = '';
       itemsParam2 = '%%psBundleItems%%'; // will be single item
     }
-    tempTemplate = '{{infobox\n|name=%%bundleName%%\n|image='+imageParam+'.png\n|width=350px\n|type=Premium Bundle\n|category=%%bundleType%%\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%'+itemsParam1+'\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category=%%bundleType%%\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items='+itemsParam2+'\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
+    if (bundleTypeParam) {
+      // TODO: set to "House Dream Style", "Tool Dream Style", "Character Dream Style", "Companion"
+      // currently we do not have a property like that available, must be manually set from sheet as first column
+      //console.log(item);
+    }
+    tempTemplate = '{{infobox\n|name=%%bundleName%%\n|image='+imageParam+'.png\n|width=350px\n|type=Premium Bundle\n|category='+bundleTypeParam+'\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%'+itemsParam1+'\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category='+bundleTypeParam+'\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items='+itemsParam2+'\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
 
     psBundleArticle += microTemplate(tempTemplate, item);
     psBundleArticle += '\n\n----------------------------------------------------------\n\n';
@@ -896,7 +902,8 @@ function renderMeals(dataArray) {
     templateMealArticle = '';
     // meal article template
     //templateMealArticle += '\n{{stub}}';
-    templateMealArticle += '\n{{infobox\n|image=%%name%%.png\n|description=';
+    templateMealArticle += '\n{{infobox\n|image=%%name%%.png';
+    templateMealArticle += '\n|description=';
     //console.log(`isVersatileRecipe(item) && item.stars && item.stars == 5 ${isVersatileRecipe(item)} ${item.stars} `);
     if (!isVersatileRecipe(item) && item.stars && item.stars == 5) {
       //console.log(`${item.name} successfully triggered as non-versatile recipe with 5 stars.`);
@@ -932,7 +939,7 @@ function renderMeals(dataArray) {
       itemUseBody =  'It can be [[Cooking|cooked]] by using '+item.articleListString + '. ';
     }
     else {
-       itemUseBody= 'It can be [[Cooking|cooked]] by combining '+item.articleListString + '. ';
+      itemUseBody = 'It can be [[Cooking|cooked]] by combining '+item.articleListString + '. ';
     }
 
     templateMealArticle += wrapComment(itemUseBody, !collectionConfirmed);
@@ -1116,6 +1123,50 @@ function generateRandomTemplate(item) {
 }
 */
 
+
+// TODO - generateNewExpansionTemplate is not used yet anywhere
+function generateNewExpansionTemplate(item) {
+  var template = '';
+
+  /*
+  // === CATEGORIES in preparation of an expansion:
+  Category:EXPANSIONCOLLECTION Store Exclusive
+  Category:EXPANSIONCOLLECTION Resources
+  Category:EXPANSIONCOLLECTION Foraging Collection
+  Category:Fish from EXPANSIONCOLLECTION
+  Category:Fruit from EXPANSIONCOLLECTION
+  Category:Gems from EXPANSIONCOLLECTION
+  Category:Vegetables from EXPANSIONCOLLECTION
+  Category:Sweets from EXPANSIONCOLLECTION
+  */
+
+  let category_Foraging = "Category:EXPANSIONCOLLECTION Foraging Collection\n\n{{categoryheader|the [[Foraging]] [[collections|collection]] categorized under [[EXPANSIONCOLLECTION]]}}\n\n[[Category:EXPANSIONCOLLECTION Collection]]";
+
+  let category_StoreExclusive = "{{categoryheader|[[Clothing]], [[Furniture]], [[:Category:Wallpaper|Wallpaper]], and [[:Category:Flooring|Flooring]] items which are only sold at [[Scrooge's Store]] located in [[EXPANSIONCOLLECTION]] and no other location}}\n\n[[Category:Gameplay]]";
+
+  let category_Resources = "{{categoryheader|items that can be found in the '''{{name|EXPANSIONCOLLECTION|link=EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Resource Locations]]";
+
+  let category_Fish = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fish|link=:Category:Fish}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fish Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+  let category_Fruit = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fruit|link=:Category:Fruit}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fruit Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+  let category_Gems = "{{categoryheader|items categorized as '''{{inlineIcon|Gems|link=:Category:Gems}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Gem Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+  let category_Vegetables = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Vegetables|link=:Category:Vegetables}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Vegetable Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+  let category_Sweets = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Sweets|link=:Category:Sweets}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Sweets Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+
+
+
+  let template_Memory = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|width=300px\n|type=Memory\n|description=%%description%%\n|universe=%%universe%%\n|collection=%%newExpansionCollection%%\n|found=TBA\n|from=<!--{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}-->\n}}\n'''%%name%%''' is a [[Memories#%%universe%%|%%universe%%]] [[Memories|Memory]].\n\nOnce collected it will be added to the [[:Category:%%newExpansionCollection%% Memories Collection|%%newExpansionCollection%% Memories Collection]]{{cleanup|Verify -- , and can be viewed in items with [[:Category:Memory Frame|Memory Frame]] functionality}}.\n<!--\n==Acquisition==\n:{{quest|QUESTNAME}} - Unlocked after fishing up/picking up/digging up/eating [[xxxx]] which is cooked using [[Ingredients]] and a [[QUESTITEM]] caught during the quest, then reading [[ITEM]] in Inventory.\n\n==Quests==\nThis memory is collected during the following quests:\n*{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}\n-->\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxMemory}}";
+
+  let template_seed = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=%%description%%\n|type=Seed\n|buyprice=\n|sellprice=\n|giftreward=\n|growtime=<!--{{growthTime|15}}<br>{{growthTime|15|biome=PREFERREDBIOME}}-->\n|waterings=\n|yield=<!--{{name|CROPNAME|CROPCOUNT}}-->\n|from={{inlineIcon|Goofy's Stall|size=20|link=Goofy's Stall#%%newExpansionCollection%%}}\n|found={{name|%%newExpansionCollection%%}}\n|gridSize=\n|placement=\n|stackMax=\n}}\n'''%%name%%''' is a [[Crop Seeds|seed]] type which can be planted and harvested to obtain [[Ingredients]].\n\nThey can be purchased from [[Goofy's Stall]] in [[%%newExpansionCollection%%]] after the initial Stall repair.\n<!--\nIt takes XXXX minutes to grow<!-- and XXXX total waterings-- until CROPCOUNT [[CROPNAME]] can be harvested.\n-->\nThey can be planted in any Biome<!--, but will grow 10% faster when planted in either the [[PREFERREDBIOME#REGION1|REGION1]] or [[PREFERREDBIOME#REGION2|REGION2]] biomes in the [[Wishing Alps]]. This accelerated growth is denoted in the UI by a caret (^) icon that appears on the upper left corner of the seed image when choosing a seed to plant in its preferred Biome-->.\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxSeed|%%newExpansionCollection%%}}";
+
+  return template;
+
+}
+
+
 function generateIngredientsTemplate(item) {
   var template = '';
     template += '{{stub}}';
@@ -1263,8 +1314,8 @@ function determineCritterType(itemName) {
 }
 
 function isCompanion(item) {
-  // TEMPORARY FOR UPDATE DAY
-  return false;
+
+  // return false; // TEMPORARY FOR UPDATE DAY
   return "TODO - determineCritterType";
 
   var isCompanion =
@@ -1277,6 +1328,9 @@ function isCompanion(item) {
 }
 
 function generateCompanionTemplate(item) {
+
+  let template_critter = "{{stub}}\n{{Infobox\n|image=%%name%%.png\n|type=Companions\n|category=<!--Animal Companions, Critter-->\n|collection=%%newExpansionCollection%%\n|hangout=<!--Foraging-->\n|critterType=<!--Hedgehog-->\n|found={{name|BIOMENAME}}<!--<br>(REGION)--><!--<br>M, T, W, Th, F, Sat, Sun PM-->\n|favfood=<!--{{name|XXXXXX}}-->\n|likedfoods=<!--{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}-->\n|minfeedings=1\n}}\n{{ItemDescription\n|%%name%%\n|type=Companion\n|critterType=<!--Hedgehog-->\n|from=Feeding Critters\n|found=in <!--the '''REGION''' area of-->[[BIOMENAME]]<!--all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->\n|favoriteFood=<!--Red Currants-->\n|likedFoods=<!--[[Blueberry]], [[Gooseberry]], [[Raspberry]], [[Strawberry]]-->\n|critterCollection=%%newExpansionCollection%%\n|hangout=[[Foraging]]\n|numFeedings=one<!--(1)-->\n}}\n{{CritterSchedule\n|location=BIOMENAME\n|sunday=TBA\n|monday=TBA\n|tuesday=TBA\n|wednesday=TBA\n|thursday=TBA\n|friday=TBA\n|saturday=TBA\n}}\n\n==Yield==\n{| class=wikitable id='recipe-table'\n!style="" | Food Type\n!style="" | Item\n!style="" | Possible Rewards\n|-\n| Favorite\n| <!--{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard|2}}<br>\n{{name|Memory Shard}}<br>\n{{name|Motif Bag}}-->\n|-\n| Liked\n|\n<!--{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard}}<br>\n{{name|Memory Shard}}<br>\n{{name|Wheat Seed}}-->\n|}\n\n==Friendship Rewards==\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.\n{| class=wikitable id='recipe-table'\n!Lvl\n!Image\n!Name\n!Type\n|-\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->\n|-\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]\n|-\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || [[File:Companion Gather Foraging Icon.png| 50x50px| center]] || [[Foraging|Foraging Gathering Bonus]] || [[Foraging|Resource Collection]]\n|-\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]\n|}\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxCompanion}}\n__noTOC__"
+
 
   var isCritter = false; // TODO: LOGIC FOR THIS
   template = '';
