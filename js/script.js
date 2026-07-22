@@ -35,7 +35,7 @@ function renderParent(dataArray, templateType) {
       outputHTML = renderFlowers(dataArray);
       break;
     case "clothingFurniture":
-      outputHTML += renderPSBundles(dataArray);
+      //outputHTML += renderPSBundles(dataArray);// TEMPORARY
       outputHTML += renderClothingFurnitureArticle(dataArray);
       break;
     default:
@@ -1092,9 +1092,10 @@ function output_from(item) {
   // TODO - items from default scrooge catalog
   // It is one of the items available by default to order from [[Scrooge's Catalog]], and is also available to purchase from [[Scrooge's Store]]. 
 
+  console.log(item.inStore);
+
   switch (item.inStore) {
   case 'EI':
-  case 'x - SV':
   case 'SV':
   case 'WM':
   case 'HW':
@@ -1104,6 +1105,7 @@ function output_from(item) {
     }
     infoboxFrom += "|from=Scrooge's Store (" + item.collection + ")\n|storeSlots=";
     itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']].';
+    console.log(`value of itemSource = ${itemSource}`);
     break;
 
   case 'x':
@@ -1114,8 +1116,7 @@ function output_from(item) {
       itemSource = itemSource_scroogeDefault + '.'; // basic scrooge text
       break;
 
-    case 'x - C':
-    case 'HW - C':
+  case 'x - C':
       if (showItemDebug) {
         console.log(item.name, ' is a scrooge item that is conditional');
       }
@@ -1138,9 +1139,12 @@ function output_from(item) {
     }
 
     // try to give things a default scrooge store article text
+    // this will cause the collection generation to not appear
+    /*
     if (item.source && item.source.includes('Store')) {
       itemSource = itemSource_scroogeDefault + '. '
     }
+    */
 
 
     if (isCraftable(item)) {
@@ -1178,6 +1182,7 @@ function output_from(item) {
         }
         break;
     }
+
 
   // ========== 3 CHECK IF FROM quest ==========
     if (isQuestItem(item)) {
@@ -2291,7 +2296,8 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
 
   function jankyCleanup(originalRenderedHTML) {
-    var newStr = originalRenderedHTML;
+    let newStr = originalRenderedHTML;
+
     newStr = newStr.replaceAll('=null', '=');
 
     newStr = newStr.replaceAll('buyprice=<!--null-->', 'buyprice=');
@@ -2442,6 +2448,42 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
 
   newStr = newStr.replaceAll('|universe=(unknown)','|universe=<!--(unknown)-->'); // introduced by companions
+
+
+
+  //===== below decreases it some, but not enough
+
+
+  // remove excess line breaks - still not working
+  // Replace 2 or more consecutive newlines (handling both \n and \r\n) with a single \n
+  //newStr = newStr.replace(/(\r\n|\n){2,}/g, '\n').trim();
+
+
+  //console.log(newStr.length);
+  //newStr = newStr.replace(/[\u2028\u2029\u200B]/g, '');
+  //newStr = newStr.replace(/[\u2028\u000D\u000A]/g, '');
+  //newStr = newStr.replaceAll('\n\n\n\n\n', '\n');
+  //newStr = newStr.replace(/([\n\r\u2028\u000D\u000A]){5,}/g, '\n').trim();
+
+
+  
+  //Alternative Approach (Split & Filter)
+  //If regex behavior continues to act unpredictably depending on browser quirks or weird clipboard encodings, splitting the string by lines, filtering out the empty/whitespace-only lines, and re-joining them is 100% foolproof:
+
+
+  newStr = newStr
+  .split(/\r?\n/)
+  .filter(line => line.trim() !== '') // Removes any completely empty or space-only lines
+  .join('\n');                      // Rejoins them cleanly with single line breaks
+
+
+  newStr = newStr
+  .replaceAll(/^\s*[\r\n]/gm, '\n') // Collapses blank lines containing spaces
+  .replaceAll(/(\r\n|\n){5,}/g, '\n') // Ensures no lingering multiple breaks remain
+  .trim();                        // Cleans up leading/trailing text block spacing
+  
+  //console.log(newStr.length);
+
 
   // todo: get rid of trailing space before line break
   return newStr;

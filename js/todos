@@ -1,6 +1,79 @@
 todo: 
 
 
+
+
+
+
+
+Star Path - Godly Glamor - V1F - V1 Premium (Week 6) -- todo handle parsing this
+
+
+Star Path - Godly Glamor - 9A - T9 Premium Bonus (300 tokens)
+
+
+
+
+
+
+
+
+
+TODO
+- HW scrooge items are not adding "[[Scrooge's Store]] in [[Honeyglow Woods]]." to body
+- change sheet vaues from Store to Store (HW) for additional visibility of conditions when skimming sheet
+- update parser to interpret "Store (VILLAGE)" from sheet ie "Store (Honeyglow Woods)" or "Store (HW)"
+
+- find: "|environment=indooronly- (no table)" and parses into separate line for function
+
+- reporter outputs "surfaces" for Woodland Hummock
+
+
+- rearrange furniture+clothing sheet tab
+- make clothing columns match furniture
+- add companion columns to match furniture/clohting
+
+
+
+-----------------------------
+
+
+
+
+todo: premium bundles for house generate with type=Furniture in infobox and itemdescription, should be "House Dream Style"
+
+*<!--DIMENSIONS NOT FILLED-->
+todo - always forget to comment out the attributes when generating premium item pages: collection, tags, price, size, functions, placement - colors, traits ok
+
+body text: environment and functions
+
+
+todo: parser didn't flag that Regal Prowess Ensemble is name of both item and bundle
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 todo:
 
 

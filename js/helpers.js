@@ -522,7 +522,7 @@ function renderPSBundles(dataArray) {
   dataArray.forEach(function (item) {
     // assigns item.standalone, among other values
     item = parseItemSource(item);
-    renderedHTML += '\n\n';
+    //renderedHTML += '\n\n'; THIS WAS THE ISSUE OF EXTRA SPACE
     
     //console.log(`item.standalone before loop: ${item.name}:  ${item.standalone}`)
     if (item.name == item.bundleName) {
