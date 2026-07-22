@@ -4,9 +4,7 @@ FIXED - VERIFIED
 
 
 
-DEFER
-- change sheet values from Store to Store (HW) for additional visibility of conditions when skimming sheet
-- update parser to interpret "Store (VILLAGE)" from sheet ie "Store (Honeyglow Woods)" or "Store (HW)" -- seems to currently work, but may be relying on inStore property
+
 
 
 
@@ -48,6 +46,12 @@ FUTURE TODO
 - premium bundles for house generate with type=Furniture in infobox and itemdescription, should be "House Dream Style" (currently data not passed to access this, also Tool Dream Style/Companion/Character Dream Style)
 - sheet/parser/wiki: in-game ui says "Tool Set", not "Tool Dream Style"
 - add table in the intro line if there is valid surface area
+
+
+
+DEFER
+- change sheet values from Store to Store (HW) for additional visibility of conditions when skimming sheet
+- update parser to interpret "Store (VILLAGE)" from sheet ie "Store (Honeyglow Woods)" or "Store (HW)" -- seems to currently work, but may be relying on inStore property
 
 ----------------------------------------------------------
 
