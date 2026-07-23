@@ -128,8 +128,8 @@ DataConverter.prototype.insertSampleData = function(dataName) {
   	else if (dataName == "questItems") {
   		outputString = 
 	    // ====== questItems: name, description, questname, questcharacter, realmname =====
-	    'name\tdescription\tquestname\tquestcharacter\trealmname\n' +
-	    'Flag Poles\tThese flag poles are needed to play Capture the Sun.\tCapture the Sun\tJoy\tnone';
+	    'name\tdescription\tquestname\tquestcharacter\tcharacterlevel\trealmname\n' +
+	    'Flag Poles\tThese flag poles are needed to play Capture the Sun.\tCapture the Sun\tJoy\t\tnone';
   	}
   	else if (dataName == "meals") {
   		/*outputString = 

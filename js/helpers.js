@@ -1329,7 +1329,7 @@ function isCompanion(item) {
 
 function generateCompanionTemplate(item) {
 
-  let template_critter = "{{stub}}\n{{Infobox\n|image=%%name%%.png\n|type=Companions\n|category=<!--Animal Companions, Critter-->\n|collection=%%newExpansionCollection%%\n|hangout=<!--Foraging-->\n|critterType=<!--Hedgehog-->\n|found={{name|BIOMENAME}}<!--<br>(REGION)--><!--<br>M, T, W, Th, F, Sat, Sun PM-->\n|favfood=<!--{{name|XXXXXX}}-->\n|likedfoods=<!--{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}-->\n|minfeedings=1\n}}\n{{ItemDescription\n|%%name%%\n|type=Companion\n|critterType=<!--Hedgehog-->\n|from=Feeding Critters\n|found=in <!--the '''REGION''' area of-->[[BIOMENAME]]<!--all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->\n|favoriteFood=<!--Red Currants-->\n|likedFoods=<!--[[Blueberry]], [[Gooseberry]], [[Raspberry]], [[Strawberry]]-->\n|critterCollection=%%newExpansionCollection%%\n|hangout=[[Foraging]]\n|numFeedings=one<!--(1)-->\n}}\n{{CritterSchedule\n|location=BIOMENAME\n|sunday=TBA\n|monday=TBA\n|tuesday=TBA\n|wednesday=TBA\n|thursday=TBA\n|friday=TBA\n|saturday=TBA\n}}\n\n==Yield==\n{| class=wikitable id='recipe-table'\n!style="" | Food Type\n!style="" | Item\n!style="" | Possible Rewards\n|-\n| Favorite\n| <!--{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard|2}}<br>\n{{name|Memory Shard}}<br>\n{{name|Motif Bag}}-->\n|-\n| Liked\n|\n<!--{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard}}<br>\n{{name|Memory Shard}}<br>\n{{name|Wheat Seed}}-->\n|}\n\n==Friendship Rewards==\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.\n{| class=wikitable id='recipe-table'\n!Lvl\n!Image\n!Name\n!Type\n|-\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->\n|-\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]\n|-\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || [[File:Companion Gather Foraging Icon.png| 50x50px| center]] || [[Foraging|Foraging Gathering Bonus]] || [[Foraging|Resource Collection]]\n|-\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]\n|}\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxCompanion}}\n__noTOC__"
+  //let template_critter = "{{stub}}\n{{Infobox\n|image=%%name%%.png\n|type=Companions\n|category=<!--Animal Companions, Critter-->\n|collection=%%newExpansionCollection%%\n|hangout=<!--Foraging-->\n|critterType=<!--Hedgehog-->\n|found={{name|BIOMENAME}}<!--<br>(REGION)--><!--<br>M, T, W, Th, F, Sat, Sun PM-->\n|favfood=<!--{{name|XXXXXX}}-->\n|likedfoods=<!--{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}-->\n|minfeedings=1\n}}\n{{ItemDescription\n|%%name%%\n|type=Companion\n|critterType=<!--Hedgehog-->\n|from=Feeding Critters\n|found=in <!--the '''REGION''' area of-->[[BIOMENAME]]<!--all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->\n|favoriteFood=<!--Red Currants-->\n|likedFoods=<!--[[Blueberry]], [[Gooseberry]], [[Raspberry]], [[Strawberry]]-->\n|critterCollection=%%newExpansionCollection%%\n|hangout=[[Foraging]]\n|numFeedings=one<!--(1)-->\n}}\n{{CritterSchedule\n|location=BIOMENAME\n|sunday=TBA\n|monday=TBA\n|tuesday=TBA\n|wednesday=TBA\n|thursday=TBA\n|friday=TBA\n|saturday=TBA\n}}\n\n==Yield==\n{| class=wikitable id='recipe-table'\n!style="" | Food Type\n!style="" | Item\n!style="" | Possible Rewards\n|-\n| Favorite\n| <!--{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard|2}}<br>\n{{name|Memory Shard}}<br>\n{{name|Motif Bag}}-->\n|-\n| Liked\n|\n<!--{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard}}<br>\n{{name|Memory Shard}}<br>\n{{name|Wheat Seed}}-->\n|}\n\n==Friendship Rewards==\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.\n{| class=wikitable id='recipe-table'\n!Lvl\n!Image\n!Name\n!Type\n|-\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->\n|-\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]\n|-\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || [[File:Companion Gather Foraging Icon.png| 50x50px| center]] || [[Foraging|Foraging Gathering Bonus]] || [[Foraging|Resource Collection]]\n|-\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]\n|}\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxCompanion}}\n__noTOC__"
 
 
   var isCritter = false; // TODO: LOGIC FOR THIS
@@ -1554,30 +1554,28 @@ function renderQuestItems(dataArray) {
   var renderedHTML = '';
   var delimiter = '';
   delimiter = '\n\n\n-----------------------------\n\n\n';
+  /*
   dataArray.forEach(function (item) {
+    // TODO: let questname = 'QUESTNAME', questcharacter = 'CHARACTER', realmname = 'REALMNAME', characterlevel = 'LEVEL';
+    // is all currently coming from data, should choose here instead whether to use placeholders or not
     template = '';
     template += '{{stub}}';
     template += '\n{{infobox';
     template += '\n|image=%%name%%.png';
     template += '\n|description=%%description%%';
     template += '\n|type=Quest Item';
-    template +=
-      '\n|found=<!--Given by {{name|%%questcharacter%%}} / Found in [[%%realmname%%]]-->';
-    template +=
-      '\n|from={{quest|%%questname%%|friendship=%%questcharacter%%|realm=%%realmname%%}}'; // TODO - LOGIC ON WHETHER COMMENTED OR NOT
+    template += '\n|found=<!--Given by {{name|%%questcharacter%%}} / Found in [[%%realmname%%]]-->';
+    template += '\n|from=<!--{{quest|%%questname%%|friendship=%%questcharacter%%|level=%%characterlevel%%|realm=%%realmname%%}}-->'; // TODO - LOGIC ON WHETHER COMMENTED OR NOT
     template += '\n|recipe=';
     template += '\n}}';
-    template +=
-      "\n'''%%name%%''' is a [[Quests|quest]] item<!--which is collected during // which is given by [[%%questcharacter%%]] during the [[%%realmname%%]] quest [[%%questname%%]] // which is crafted during the [[%%questcharacter%%#Friendship Quests|%%questcharacter%% Level 6 Friendship quest]] [[%%questname%%]]. // item which is [[Fishing|fished up]] in the [[%%realmname%%]] during the realm quest [[%%questname%%]]-->.";
+    template += "\n'''%%name%%''' is a [[Quests|quest]] item<!--which is collected during // which is given by [[%%questcharacter%%]] during the [[%%realmname%%]] quest [[%%questname%%]] // which is crafted during the [[%%questcharacter%%#Friendship Quests|%%questcharacter%% Level %%characterlevel%% Friendship quest]] [[%%questname%%]]. // item which is [[Fishing|fished up]] in the [[%%realmname%%]] during the realm quest [[%%questname%%]]-->.";
     template += '\n';
     template += '\n==Acquisition==';
-    template +=
-      '\n:{{quest|%%questname%%}} - TBA<!--Crafted during quest / Given by [[%%questcharacter%%]]-->';
+    template += '\n:{{quest|%%questname%%}} - TBA<!--Crafted during quest / Given by [[%%questcharacter%%]]-->';
     template += '\n';
     template += '\n<!--==Quest Objectives==';
     template += '\n{{Objectives|header}}';
-    template +=
-      "\n{{ObjectivesRow|{{quest|%%questname%%|friendship=%%questcharacter%%|realm=%%realmname%%}}|1|'''Use''' from Inventory.}} '''Interact''' with item, then '''Transfer''' from Inventory to keyhole labeled \"Keyhole Label\"";
+    template += "\n{{ObjectivesRow|{{quest|%%questname%%|friendship=%%questcharacter%%|level=%%characterlevel%%|realm=%%realmname%%}}|1|'''Use''' from Inventory.}} '''Interact''' with item, then '''Transfer''' from Inventory to keyhole labeled \"Keyhole Label\"";
     template += '\n{{Objectives|footer}}';
     template += '\n-->';
     template += '\n==History==';
@@ -1587,6 +1585,49 @@ function renderQuestItems(dataArray) {
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
   });
+  */
+  dataArray.forEach(function (item) {
+    let name = item.name || 'ITEMNAME';
+    let description = item.description || ''; // TODO: add missing description category
+    let questname = item.questname || 'QUESTNAME';
+    let questcharacter = item.questcharacter || 'CHARACTER';
+    let realmname = item.realmname || 'REALMNAME';
+    let characterlevel = item.characterlevel || 'LEVEL';
+    template = ``;
+    template += `{{stub}}`;
+    template += `\n{{infobox`;
+    template += `\n|image=${name}.png`;
+    template += `\n|description=${description}`;
+    template += `\n|type=Quest Item`;
+    template += `\n|found=<!--Given by {{name|${questcharacter}}} / Found in [[${realmname}]]-->`;
+    template += `\n|from=<!--{{quest|${questname}|friendship=${questcharacter}|level=${characterlevel}|realm=${realmname}}}-->`; // TODO - LOGIC ON WHETHER COMMENTED OR NOT
+    template += `\n|recipe=`;
+    template += `\n}}`;
+    template += `\n'''${name}''' is a [[Quests|quest]] item<!--which is collected during // which is given by [[${questcharacter}]] during the [[${realmname}]] quest [[${questname}]] // which is crafted during the [[${questcharacter}#Friendship Quests|${questcharacter} Level ${characterlevel} Friendship quest]] [[${questname}]]. // item which is [[Fishing|fished up]] in the [[${realmname}]] during the realm quest [[${questname}]]-->.`;
+    template += `\n`;
+    template += `\n==Acquisition==`;
+    template += `\n:{{quest|${questname}}} - TBA<!--Crafted during quest / Given by [[${questcharacter}]]-->`;
+    template += `\n`;
+    template += `\n<!--==Quest Objectives==`;
+    template += `\n{{Objectives|header}}`;
+    template += `\n{{ObjectivesRow|{{quest|${questname}|friendship=${questcharacter}|level=${characterlevel}|realm=${realmname}}}|1|'''Use''' from Inventory.}} '''Interact''' with item, then '''Transfer''' from Inventory to keyhole labeled \"Keyhole Label\"`;
+    template += `\n{{Objectives|footer}}`;
+    template += `\n-->`;
+    template += `\n==History==`;
+    template += '\n{{history|'+updateNumber+'|Added}}';
+    template += `\n`;
+    template += `\n{{NavboxQuestItem}}`;
+    template += !description ? '\n\n[[Category: Missing Description]]' : ''; 
+    renderedHTML += template;
+    renderedHTML += delimiter;
+  });
+
+   // janky cleanup
+  renderedHTML = renderedHTML.replaceAll(/level=(\d+)\|realm=REALMNAME/g, "level=$1");
+  //renderedHTML = renderedHTML.replaceAll('|realm=Friendship}}', '}}');
+  renderedHTML = renderedHTML.replaceAll('|realm=}}', '}}');
+  //renderedHTML = renderedHTML.replaceAll('|realm=REALMNAME}}', '}}');
+
   return renderedHTML;
 }
 
