@@ -1,11 +1,8 @@
+brave://settings/clearBrowserData
+
 FIXED - VERIFIED
 - HW scrooge items are not adding "[[Scrooge's Store]] in [[Honeyglow Woods]]." to body
 - make template for level 5 premium companion reward articles. Test cases: Mochi's Cat House, Amelia's Pink Goose House
-
-
-
-
-brave://settings/clearBrowserData
 
 
 REPORTER
@@ -77,18 +74,6 @@ Bundle vs. Item Name Detection:
 
 
 todo: missing colors not being added correctly for clothing? maybe also furniture?
-
-
-
-TODO - add parser generated articles for:
-
-Cherry Blossom Plaza
-Cherry Blossom Chez Remy
-Scrooge McDuck's Cherry Blossom Store
-Cherry Blossom Dream Castle
-Cherry Blossom Goofy Stall
-Cherry Blossom Valley Visit Station
-Cherry Blossom Wishing Well
 
 
 TODO - add parser generated articles for: - update wiki articles to match

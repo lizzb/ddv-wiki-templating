@@ -67,6 +67,15 @@ function createUniverseLink(itemType, universe) {
   return output;
 }
 
+function stripHTMLComments(html) {
+  //return html.replace(/<!--([\s\S])*?-->/g, '$1');
+  //return html.replace(/<[^>]+>/g, '');
+  // TODO - fix this regex to maintain the $1 value in the middle
+  html = html.replace(/<!--/g, '');
+  html = html.replace(/-->/g, '');
+  return html;
+}
+
 function makeHTMLComment(text) {
   return '<!--' + text + '-->';
 }
@@ -1316,7 +1325,7 @@ function determineCritterType(itemName) {
 function isCompanion(item) {
 
   // return false; // TEMPORARY FOR UPDATE DAY
-  return "TODO - determineCritterType";
+  //return "TODO - determineCritterType";
 
   var isCompanion =
     //(item.collection && item.collection.includes('Companion')) ||

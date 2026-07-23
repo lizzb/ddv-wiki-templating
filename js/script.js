@@ -361,7 +361,8 @@ function output_relatedItems(item) {
   var output = '';
   //output = '\n<!--\n{{relatedItems | xxx, xxx, xxx}}\n-->\n';
   if (item.bundleName && item.relatedItems && item.relatedItems.length >= 1) {
-    output = `\n<!--\n{{relatedItems | ${item.relatedItems.join(', ')} }}\n-->\n`;
+    //output = `\n<!--\n{{relatedItems | ${item.relatedItems.join(', ')} }}\n-->`;
+    output = `\n\n{{relatedItems | ${item.relatedItems.join(', ')} }}`;
   }
   //output = `\n<!--\n{{relatedItems | ${item.relatedItems} }}\n-->\n`;
 
@@ -451,11 +452,12 @@ function output_prioritizedCategory(categoryVal) {
   var output = categoryVal;
 
   // TODO: verify prioritization of categories
-  // i think a few are missing, fences, paths, rocks...
 
-  var prioritizedFurnitureCategories = ["Wallpaper", "Flooring", "Attractions", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Landscaping", "Foliage", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings"];
+  // contain both furniture and clothing categories
+  var prioritizedCategories = ["House", "Wallpaper", "Flooring", "Attractions", "Windows", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Foliage", "Landscaping", "Rocks", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings", "Companions", "Tools", "Hats", "Masks", "Glasses", "Earrings", "Neckwear", "Coats", "Tops", "Back", "Bracelets", "Gloves", "Pants", "Shorts", "Skirts", "Hose Socks", "Shoes", "Dresses", "Costumes", "Gliders"];
+  //TODO: "Floors", "Ceiling Textures", "Ceiling Decorations", "Trees", "Fencing"... Paths?
 
-  output = getFirstCategoryMatch(categoryVal, prioritizedFurnitureCategories);
+  output = getFirstCategoryMatch(categoryVal, prioritizedCategories);
 
   return output.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
 }
@@ -485,17 +487,13 @@ function output_navbox(item) {
       // append s to match navbox naming
       category = 'Hairstyles';
     }
+
     // Other universe items use their type in the navbox insteaad of their universe
-    //output = '{{Navbox' + itemType + '|' + category.toLowerCase().trim().replace(/\s/g, '') + '|general}}';
-    output = '{{Navbox' + itemType + '|' + output_prioritizedCategory(item.category) + '|general}}';
+    output = '{{Navbox' + itemType + '|' + output_prioritizedCategory(stripHTMLComments(item.category)) + '|general}}';
+
   } else {
     if (itemType == 'Clothing' || itemType == 'Furniture') {
-      output =
-      '{{Navbox' +
-      itemType +
-      '|' +
-      universe.toLowerCase().trim().replace(/\s/g, '') +
-      '|disney}}';
+      output = '{{Navbox' + itemType + '|' + universe.toLowerCase().trim().replace(/\s/g, '') + '|disney}}';
     } else output = disneyNavClothing + disneyNavFurniture;
   }
   if (isCraftable(item)) {
@@ -1770,17 +1768,22 @@ function parseItem(item) {
 
 // may not be ALL related items total, will be limited to whatevers in bundleArray
 function assignRelatedItemsFromInputArray(item, bundleArray) {
-  //console.log(`item.relatedItems before: ${item.relatedItems}`)
+
   item.relatedItems = [];
   bundleArray.forEach(function(bundleItem) {
     if (bundleItem.psBundleItems.includes(item.name) && bundleItem.psBundleItems.length >1) {
-      // todo - need to omit the item with the matching name from relateditems
-      item.relatedItems = bundleItem.psBundleItems.filter(item => item !== item.name);
+      // Filter out the item whose name matches itemObj.name and assign to relatedItems
+      item.relatedItems = bundleItem.psBundleItems.filter(
+        bundleItem => bundleItem !== item.name
+      );
     }
   });
-  //console.log(`item.relatedItems after: ${item.relatedItems}`)
+
   return item;
 }
+
+
+
 
 /* ============= */
 function renderClothingFurnitureArticle(dataArray) {
@@ -1993,6 +1996,7 @@ function renderClothingFurnitureArticle(dataArray) {
       template = generateBuildingSkinTemplate(item);
     }
     if (isCompanion(item)) {
+      console.log(`${item.name} is a companion!!!`)
       template = generateCompanionTemplate(item);
     }
 
