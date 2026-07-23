@@ -363,9 +363,15 @@ var isDecimalRe = /^\s*(\+|-)?((\d+([,\.]\d+)?)|([,\.]\d+))\s*$/,
         // Now that we have our delimiter out of the way, let's check to see
         // which kind of value we captured (quoted or unquoted).
         if (arrMatches[2]) {
+
+
+          // We found a quoted value. When we capture
+          // this value, unescape any double quotes.
+          var strMatchedValue = arrMatches[ 2 ].replace(new RegExp( "\"\"", "g" ), "\\\"");
+
           // We found a quoted value.
           // When we capture this value, convert it to HTML entity (THD)
-          var strMatchedValue = arrMatches[2].replace(/""/g, '&quot;');
+          //var strMatchedValue = arrMatches[2].replace(/""/g, '&quot;'); //// OLD
         } else {
           // We found a non-quoted value.
           var strMatchedValue = arrMatches[3];
