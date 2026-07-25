@@ -35,7 +35,7 @@ function renderParent(dataArray, templateType) {
       outputHTML = renderFlowers(dataArray);
       break;
     case "clothingFurniture":
-      outputHTML += renderPSBundles(dataArray);
+      //outputHTML += renderPSBundles(dataArray); // TODO: create a flag for rendering premium shop ps bundles / separately
       outputHTML += renderClothingFurnitureArticle(dataArray);
       break;
     default:
@@ -43,12 +43,14 @@ function renderParent(dataArray, templateType) {
     }
 
     // i really should do better event handling....
-    priceCategoriesColorsTraitsConfirmed = $("#priceConfirmedCB").prop("checked");
+    //priceCategoriesColorsTraitsConfirmed = $("#priceConfirmedCB").prop("checked");
+    priceConfirmed = $("#priceConfirmedCB").prop("checked");
+    categoriesColorsTraitsConfirmed = $("#categoriesColorsTraitsConfirmedCB").prop("checked");
     tagsConfirmed = $("#tagsConfirmedCB").prop("checked");
     collectionConfirmed = $("#collectionConfirmedCB").prop("checked");
     functionsConfirmed = $("#functionsConfirmedCB").prop("checked");
 
-    console.log(`priceCategoriesColorsTraitsConfirmed = ${priceCategoriesColorsTraitsConfirmed}, tagsConfirmed = ${tagsConfirmed}, collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
+    console.log(`priceConfirmed = ${priceConfirmed}, categoriesColorsTraitsConfirmed = ${categoriesColorsTraitsConfirmed}, tagsConfirmed = ${tagsConfirmed}, collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
 
   // if a custom template is provided in the textarea, use that instead of the one specified by the function
     var inputTemplateValue = document.getElementById("template-input").value;
@@ -82,8 +84,10 @@ function renderParent(dataArray, templateType) {
 function output_category(item) {
   if (!item.category) {
     if (item.itemType == 'Clothing') {
+      // temporary fix: remove Companions, after Accessories to prevent items with empty categories being flagged as companions
+      // TODO: make this more robust - if the value is empty of a param the placeholder shouldn't be inserted until the very end? or something?
       item.category =
-      '<!--Accessories, Companions, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
+      '<!--Accessories, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
     } else {
       // defaults to furniture
       item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
@@ -97,12 +101,12 @@ function output_category(item) {
     output = '|category=none\n'; // i use categories in my sheet and elsewhere in parser, but technically these items have no category
   }
 
-  // TODO - reivist earlier parts of this function after adding  priceCategoriesColorsTraitsConfirmed
+  // TODO - revisit earlier parts of this function after adding  categoriesColorsTraitsConfirmed
 
-  if (!priceCategoriesColorsTraitsConfirmed) {
+  if (!categoriesColorsTraitsConfirmed) {
     item.missingCategories.push('[[Category: Missing Categories]]');
   }
-  item.category = wrapComment(item.category, !priceCategoriesColorsTraitsConfirmed);
+  item.category = wrapComment(item.category, !categoriesColorsTraitsConfirmed);
 
   return output;
 }
@@ -122,12 +126,12 @@ function output_buyprice(item) {
   }
 
   // TODO - fix this logic for second half
-  if (!priceCategoriesColorsTraitsConfirmed || (output != '' && !item.buyprice) ) {
+  if (!priceConfirmed || (output != '' && !item.buyprice) ) {
     item.missingCategories.push('[[Category: Missing Price]]');
   }
 
   // TODO - conditionals to prevent |buyprice=<!--null--> as output
-  item.buyprice = wrapComment(item.buyprice, !priceCategoriesColorsTraitsConfirmed);
+  item.buyprice = wrapComment(item.buyprice, !priceConfirmed);
 
   // not sure this is still required
   //const regex = /\n\|buyprice=\d\d [tT]okens/gi;
@@ -139,17 +143,17 @@ function output_buyprice(item) {
 function output_color(item) {
   var output = '|color=%%color%%\n';
 
-  // TODO - revisit this now that we have the priceCategoriesColorsTraitsConfirmed
+  // TODO - revisit this now that we have the categoriesColorsTraitsConfirmed
   // Hairstyles/Accessories have no color
   if (!item.color && !(isHairstyle(item) || isAccessory(item))) {
     item.color = '<!--OPTIONS: blue, green, red, pink, white, black, yellow, orange, brown, purple, gray-->';
     item.missingCategories.push('[[Category: Missing Colors]]');
   }    
 
-  if (!priceCategoriesColorsTraitsConfirmed) {
+  if (!categoriesColorsTraitsConfirmed) {
     item.missingCategories.push('[[Category: Missing Colors]]');
   }
-  item.color = wrapComment(item.color, !priceCategoriesColorsTraitsConfirmed);
+  item.color = wrapComment(item.color, !categoriesColorsTraitsConfirmed);
 
 
   return output;
@@ -235,17 +239,17 @@ function output_collection(item) {
 }
 
 function output_traits(item) {
-  // TODO - revisit this now that we have priceCategoriesColorsTraitsConfirmed
+  // TODO - revisit this now that we have categoriesColorsTraitsConfirmed
   if (!item.traits && !(isHairstyle(item) || isAccessory(item))) {
     item.missingCategories.push('[[Category: Missing Traits]]');
     item.traits = '<!--Lavish/Simple, Calm/Playful, Delicate/Strong, Familiar/Wondrous-->';
   }
   // Hairstyles/Accessories have no traits
 
-  if (!priceCategoriesColorsTraitsConfirmed) {
+  if (!categoriesColorsTraitsConfirmed) {
     item.missingCategories.push('[[Category: Missing Traits]]');
   }
-  item.traits = wrapComment(item.traits, !priceCategoriesColorsTraitsConfirmed);
+  item.traits = wrapComment(item.traits, !categoriesColorsTraitsConfirmed);
 
   var output = '|traits=%%traits%%\n';
   return output;
@@ -400,6 +404,12 @@ function updateAppropriateVersion(item) {
     switch (item.version) {
     case "1.8":
       item.version = "Expansion 1-1";
+      break;
+    case "1.10":
+      item.version = "Expansion 1-2";
+      break;
+    case "1.12":
+      item.version = "Expansion 1-3";
       break;
     default:
       break;
@@ -2352,7 +2362,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
     newStr = newStr.replaceAll('buyprice=<!--null-->', 'buyprice=');
 
-    // REVISIT - this is likely introduced with new priceCategoriesColorsTraitsConfirmed confirmed variable
+    // REVISIT - this is likely introduced with new priceCategoriesColorsTraitsConfirmed/categoriesColorsTraitsConfirmed confirmed variable
     // adjust other functions to prevent
     // this isn't working still
     newStr = newStr.replaceAll('<!--<!--', '<!--');

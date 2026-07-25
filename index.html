@@ -68,7 +68,10 @@
             <br><br><br><br>
           </p>
           <p>
-            <label><input type="checkbox" id="priceConfirmedCB" class="settings-element"> Price (+Categories/Color/Traits) Confirmed</label>
+            <label><input type="checkbox" id="priceConfirmedCB" class="settings-element"> Price Confirmed</label>
+          </p>
+          <p>
+            <label><input type="checkbox" id="categoriesColorsTraitsConfirmedCB" class="settings-element"> Categories/Color/Traits Confirmed</label>
           </p>
           <p>
             <label><input type="checkbox" id="tagsConfirmedCB" class="settings-element"> Tags Confirmed</label>
@@ -231,7 +234,7 @@
 // Wire up instant live-update for the 4 confirmation checkboxes.
 // When ANY of these change, immediately re-render the wiki output.
 // This is delegated so it works even if DOM elements are added/changed later.
-$(document).on('change', '#priceConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB', function() {
+$(document).on('change', '#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB', function() {
   if (typeof d !== 'undefined' && d && typeof d.convert === 'function') {
     d.convert();
   }

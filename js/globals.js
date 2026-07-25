@@ -15,8 +15,10 @@ var starPathToken = "popcitytoken";
 var collectionConfirmed = $("#collectionConfirmedCB").prop("checked"); //true;
 
 // toggle for wrapping in comments in infobox
-//var priceConfirmed = $("#priceConfirmedCB").prop("checked"); //true;
-var priceCategoriesColorsTraitsConfirmed = $("#priceConfirmedCB").prop("checked"); //true;
+var priceConfirmed = $("#priceConfirmedCB").prop("checked"); //true;
+var categoriesColorsTraitsConfirmed = $("#categoriesColorsTraitsConfirmedCB").prop("checked");
+//var priceCategoriesColorsTraitsConfirmed = $("#priceConfirmedCB").prop("checked"); //true;
+
 var tagsConfirmed = $("#tagsConfirmedCB").prop("checked"); //true;
 
 // whether or not to include filler copy pasta for furniture functions
