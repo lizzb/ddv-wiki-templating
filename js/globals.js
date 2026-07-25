@@ -7,9 +7,9 @@ var templateType = "meals"; // other vals: clothingFurniture, spDuties, spReward
 var updateNumber = "1.24"; //"1.20.11"; //"Expansion 3"; //"1.20.2";// Expansion 3
 var newExpansionCollection = "Honeyglow Woods"; //"Wishblossom Mountains";
 
-var starPathNameShort = "Godly Glamor";
-var starPathName = "Godly Glamor";
-var starPathToken = "lightningtoken";
+var starPathNameShort = "Pop City";
+var starPathName = "Pop City";
+var starPathToken = "popcitytoken";
 
 // toggle to wrap in cleanup tag
 var collectionConfirmed = $("#collectionConfirmedCB").prop("checked"); //true;

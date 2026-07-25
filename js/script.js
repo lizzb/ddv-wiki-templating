@@ -1732,6 +1732,7 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
       // TODO: detect and insert number of villagers from functions=Gathering (X)
       var numVillagers = '2';
       itemUseBody = ' It has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport ' + numVillagers + ' random villagers to the location.';
+      // also i hate this wording
     }
     if (item.functions && item.functions.includes('Companion Home')) {
       output += " that functions as a [[:Category:Companion Home|companion home]]";
@@ -1904,6 +1905,8 @@ function renderClothingFurnitureArticle(dataArray) {
 
       // save Accessory "fake" universe to a new param
       const string = item.universe;
+      
+      // FORMAT 1: None - Accessory (Aladdin) or None - Accessory
       const regex = /None - (([\w\W ]+)\(([\w\W ]+)\))/;
       const result = string.split(regex);
       //console.log(result[2],"      ", result[3]);
@@ -1912,8 +1915,17 @@ function renderClothingFurnitureArticle(dataArray) {
       } else {
         item.groupedUniverse = "Other";
       }
+
+      // FORMAT 2: none (Aladdin) or none
+      const regex2 = /none \(([\w\W ]+)\)/;
+      const result2 = string.split(regex2);
+      if (result2[3]) {
+        item.groupedUniverse = result[3];
+      } else {
+        item.groupedUniverse = "Other";
+      }
+      
       //console.log("ITEM GROUPED UNIVERSE inside isAccessory = ",item.groupedUniverse);
-      // None - Accessory (Aladdin) or None - Accessory
       item.universe = 'none';
     }
 

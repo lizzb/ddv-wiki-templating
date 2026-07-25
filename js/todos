@@ -4,6 +4,11 @@ FIXED - VERIFIED
 - HW scrooge items are not adding "[[Scrooge's Store]] in [[Honeyglow Woods]]." to body
 - make template for level 5 premium companion reward articles. Test cases: Mochi's Cat House, Amelia's Pink Goose House
 
+TO VERIFY
+- correctly escape double quotes: "Love Is in the Air" Hearts, "Welkum Family" Poster
+escape quotes in bundle and item names --> i think the problem is in using mr data converter
+- escape quotes in item names
+
 
 REPORTER
 - reporter outputs "surfaces" for Woodland Hummock
@@ -35,7 +40,7 @@ WIKI+PARSER
 FUTURE TODO
 - ADD: ability to comment out price on output
 - ADD: ability to comment out tags on output
-- correctly escape double quotes: "Love Is in the Air" Hearts, "Welkum Family" Poster
+
 - remove line breaks in cells without breaking parser input 
 - detect line breaks in cell input and replace them with a newline character so as not to break the parsing
 - generateNewExpansionTemplate - new categories, memories, seeds
@@ -839,7 +844,6 @@ todo:
 - house and stall articles worked on 2025.10.05
 - add returning star path item category
 
-escape quotes in bundle and item names --> i think the problem is in using mr data converter
 
 
 - populate wallpaper and flooring articles
@@ -853,7 +857,7 @@ escape quotes in bundle and item names --> i think the problem is in using mr da
 
 - verify: if = under, change to underneath. if = ceiling, change to ceilings. if = wall, change to walls for placement values
 
-- escape quotes in item names
+
 
 - fix character dream style generation for bundles, and "house" not "furniture"
 
