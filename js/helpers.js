@@ -1,3 +1,4 @@
+
 function getInlineDataTemplate(templateID) {
   return document.getElementById(templateID).getAttribute('data-template');
 }
@@ -1058,7 +1059,8 @@ function generateGemTemplate(item) {
   template += '<!--It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. -->';
   template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Gems Collection|'+newExpansionCollection+' Gems Collection]].';
   template += ' ';
-  template += "\n\n[[Mining#Gems|Gems]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
+  var defaultItemPlacementText = "can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
+  template += "\n\n[[Mining#Gems|Gems]] " + defaultItemPlacementText;
   template += ' ';
   template += '\n<!--\nIn nodes where this gem can be found there is a chance to find [[Shiny %%name%%]], which is a less common and more valuable variant. In nodes where this gem can be found there is a chance to find [[NONSHINY]], which is a more common and less valuable variant.-->';
 
@@ -1258,7 +1260,8 @@ function generateIngredientsTemplate(item) {
       template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Ingredients Collection|'+newExpansionCollection+' Ingredients Collection]].';
     }
     template += '\n ';
-    template += "\n[[Ingredients]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
+    var defaultItemPlacementText = "can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
+    template += "\n[[Ingredients]] " + defaultItemPlacementText;
     template += '\n<!--';
     template += '\n==Ingredient Specific Recipes==';
     template += "\n'''{{PAGENAME}}''' is specifically required in the following [[Meals#Recipes|recipes]], and other [[ingredients]] of the same type can't be substituted.";

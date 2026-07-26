@@ -276,7 +276,7 @@ function output_functions(item) {
   var output = '|functions=%%functions%%\n';
   // TODO 2025.09.24 - functions empty
   // (!item.functions || item.functions == '-')
-  if (!item.functions) {
+  if (!item.functions || item.functions == '-') {
     // ****NOTE - usually missing functions indicates there are none, not that they are missing -- || item.functions == '-'
     //item.missingCategories.push('[[Category: Missing Functions]]');
 
@@ -361,7 +361,11 @@ function parseSizePlacementEnv(item) {
 }
 
 // TODO: output related items alphabetically for premium bundle items
+// TODO: do NOT output "relatedItems" that are part of an unnamed bundle
 function output_relatedItems(item) {
+  //console.log('inside output_relatedItems');
+  //console.log(item);
+
   var output = '';
   //output = '\n<!--\n{{relatedItems | xxx, xxx, xxx}}\n-->\n';
   if (item.bundleName && item.relatedItems && item.relatedItems.length >= 1) {
@@ -799,10 +803,29 @@ function parseItemSource(item) {
     // The pattern uses a non-capturing group (?:...) for the optional prefix.
     // This ensures that the first capturing group (.+?) is ALWAYS the Character Name.
     ////const regex = /^(?:\/\/\s*Quest\s*-\s*)?(.+?)\s+Level\s+(\d+)\s+[Qq]uest\s+\((.+?)\)(?:\s+\((?:(\d+)\s+)?(.+?)\))?/;
-    const regex = /^(?:Quest\s*-\s*)?(.+?)(?:\s+Level\s+(\d+))?\s+[Qq]uest\s+\((.+?)\)(?:(?:\s*-\s*(.+?))|(?:\s*\((?:(\d+)\s+)?(.+?)\)))?$/;
+    
+    //OLD
+    //const regex = /^(?:Quest\s*-\s*)?(.+?)(?:\s+Level\s+(\d+))?\s+[Qq]uest\s+\((.+?)\)(?:(?:\s*-\s*(.+?))|(?:\s*\((?:(\d+)\s+)?(.+?)\)))?$/; // can break with multiple parentheticals
+    //const match = string.match(regex);
+
+    /*
+    Sadness Level 4 quest (The Fortress of Saditude) (during) - limit 1
+Hades Level 10 quest (Fine, I'll Do It Myself) (reward) - limit 1
+Pocahontas Level 10 quest (A Raccoon's Return) (during)
+Pocahontas Level 10 quest (A Raccoon's Return) (4 during)
+Winnie the Pooh story quest (Epilogue: See You Next Summer) - unlocks automatically (unlisted reward during)
+Winnie the Pooh story quest (Interlude 4: Curiosity Satisfied) (reward)
+Cinderella Level 10 Quest (The Friendship Ball) (post-quest mailbox reward) ("I found this...")
+Crafting after Joy Level 7 quest (Imagination Land) (reward)
+*/
+
+    //const regex = /^\d*\s*(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<levelStory>story))\s+quest\s+\((?<quest>[^)]+)\)(?:\s*\((?:(?<qty>\d+)\s+)?(?<whenParen>[^)]+)\))?(?:\s*-\s*(?<whenHyphen>[^(\n]+))?/i;    //const match = line.match(regex);
+    const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<levelStory>story))\s+quest\s+\((?<quest>[^)]+)\)(?:\s*\((?:(?<qty>\d+)\s+)?(?<whenParen>[^)]+)\))?(?:\s*-\s*(?<whenHyphen>[^(\n]+))?/i;
     const match = string.match(regex);
         
     if (match) {
+
+      /* OLD
         // match[1] now correctly skips the prefix and captures only the name
         item.character = match[1].trim();  // this is still including "Quest - " incorrectly
         item.level = match[2] || ""; 
@@ -820,6 +843,24 @@ function parseItemSource(item) {
           item.qtyRewarded = match[5] || "";
           item.whenRewarded = match[6].trim();
         }
+        */
+      // use https://regex101.com/
+
+        const { character, levelNum, levelStory, quest, qty, whenParen, whenHyphen } = match.groups;
+
+        item.character = character ? character.trim() : "";
+        item.level = levelNum || levelStory || "";
+        item.quest = quest ? quest.trim() : "";
+
+        item.qtyRewarded = qty || "";
+        
+        // Cleanly route when/reward details regardless of hyphen or parenthesis formatting
+        // Pick parenthetical status if present, otherwise fall back to hyphen status
+        const rawWhen = whenParen || whenHyphen || "";
+        item.whenRewarded = rawWhen.trim();
+
+
+
 
         // When Regex optionality isn't working, manually remove "Quest - " at the start (^) of the string
         // The 'i' flag makes it case-insensitive (handles "QUEST - " as well)
@@ -1194,18 +1235,72 @@ function output_from(item) {
       if (showItemDebug) {
         console.log(item.name, ' is a quest reward item', item.source);
       }
+      placeholderCommentBodyDetailsQuest = '<!--<<It is rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->';
+
+      //console.log('item inside isQuestItem');
+      //console.log(item);
+
+      //Sadness Level 4 quest (The Fortress of Saditude) (during) - limit 1
+      //Hades Level 10 quest (Fine, I'll Do It Myself) (reward) - limit 1
 
       // source should have already been parsed in parseItemSource
       if (item.level) {
-        infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
-        itemSource = `It is automatically rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and completing the quest [[${item.quest}]].`;
+        /*whenRewarded, qtyRewarded, character, level, quest */
+
+        if (item.whenRewarded == 'reward') {
+          infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
+          itemSource = `It is rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
+          itemSource += ` and completing the quest [[${item.quest}]].`;
+        }
+        else if (item.whenRewarded == 'pick up after completed' || item.whenRewarded.includes('pick up')) {
+
+          itemSource = `After reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
+          itemSource += ` and completing the quest [[${item.quest}]],`;
+          itemSource += ` it <!--is placed in the Valley and -->will remain placed after the quest is completed.`;
+          itemSource += ` It can be collected by picking it up.`;
+
+        }
+        // todo - still need to fix regex to capture both this and the mailbox message, can check if this includes rather than is equal to for now
+        else if (item.whenRewarded.includes('post-quest mailbox reward')) {
+
+          itemSource = `It is rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
+          itemSource += ` and completing the quest [[${item.quest}]].`;
+          //itemSource += ` After the quest is complete, [[Cinderella]] will send a mail message titled ''"I found this..."'' with this item attached.`;
+          itemSource += ` After the quest is complete, [[${item.character}]] will send a mail message <!-- titled ''"MESSAGETITLE"''--> with this item attached.`;
+        }
+        /*
+        // Imagination Land Arch = "Crafting after Joy Level 7 quest (Imagination Land) (reward)"
+        // New Comfort Bear = "Sadness Level 10 Quest (Create a Bear) (reward)"
+        output += "After reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and progressing through the quest [[QUESTNAME]], it is";
+        output += " crafted and";
+        output += " placed<!-- in the Valley -->and will remain placed after the quest is completed."
+        output += " After that quest the crafting recipe will be permanently unlocked."
+        output += " It is unique and is limited to one."
+        // "Once collected it will not be added to the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] or [[:Category:Untracked Crafting Collection|Crafting Collection]], and more cannot be"
+        // " crafted or"
+        // " ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]]."
+        */
+        else {
+          //console.log(`whenRewarded for item ${item.name}: ${item.whenRewarded}`);
+          // covers (item.whenRewarded == 'during') TODO - catch other conditions
+          // 
+          // 
+
+          // TODO - more flexible placeholder language, currently hardcoded
+          infoboxFrom = `|from={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
+          itemSource = `After reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
+          itemSource += ` and progressing through the quest [[${item.quest}]],`;
+          itemSource += ` it is made available.`;
+          itemSource += `<!--it is given to be placed in [[VILLAGEorBIOME]]/on [[Dazzle Beach]] and will remain placed after the quest is completed.-->`;
+          itemSource += `<!-- It is automatically collected during the quest. -->`;
+        }
       }
       else {
         // no level defined in input - assume reward language - TODO
         infoboxFrom = `|reward={{quest|${item.quest}|friendship=${item.character}}}`;
         
         itemSource = `It is obtained in association with the [[${item.character}#Quests|${item.character}]] quest [[${item.quest}]].`;
-        itemSource += '<!--<<It is automatically rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->';
+        itemSource += placeholderCommentBodyDetailsQuest;
 
       }
       
@@ -1216,9 +1311,10 @@ function output_from(item) {
       // so use more general language
       if (item.source && item.source.includes('Quest - ')) {
         itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
-        itemSource += '<!--<<It is automatically rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->';
+        itemSource += placeholderCommentBodyDetailsQuest;
         // It is available in connection with the quest [[QUESTNAME]].
       }
+
     }
 
   // ========== 4 CHECK IF FROM STARPATH (either returning or current)==========
@@ -1456,8 +1552,7 @@ function output_itemUsage(item) {
   } else {
 
     // item.itemType is not Clothing, so furniture or crafted furniture -- NO reevaluate....
-    output +=
-    'It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]';
+    output += 'It can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]]';
 
     switch (item.placement) {
     case 'surfaces':
@@ -1465,8 +1560,7 @@ function output_itemUsage(item) {
       break;
     case 'walls (indoor)':
     case 'walls': // expected value at this point
-      output +=
-            ', and must be placed indoors on a wall.'; /*TODO is this being hit? naboo decor..., naboo fireplace not triggering proper reaading of environment etc*/
+      output += ', and must be placed indoors on a wall.'; /*TODO is this being hit? naboo decor..., naboo fireplace not triggering proper reaading of environment etc*/
       break;
     case 'wall-mounted':
       output += ', and must be placed indoors against a wall.';
@@ -1480,7 +1574,10 @@ function output_itemUsage(item) {
         output += '';
       }
 
-      if (item.environment == 'outdooronly') {
+      if (item.environment == 'outdooronly' && item.placement == 'water' ) {
+        output += ', and it can only be placed outdoors on water.';
+      }
+      else if (item.environment == 'outdooronly') {
         output += ', and it can only be placed outdoors.';
       }
 
@@ -1515,6 +1612,27 @@ function output_itemUsage(item) {
 
   return output;
 }
+
+
+
+function output_itemUsageTables(item) {
+  var questObjectiveTable = "\n\n<!--==Quest Objectives==\n{{Objectives|header}}\n{{ObjectivesRow|{{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUM}}|1|Place <near the base of POI> on [[Dazzle Beach]]/in the [[BIOME]]/in the Valley.}}\n{{Objectives|footer}}\n-->";
+
+  if (isQuestItem(item) && item.whenRewarded != 'reward') {
+    return questObjectiveTable;
+  }
+  return '';
+}
+
+function output_mailboxMessage(item) {
+  var mailboxMessage = `\n<!--\n==In-Game Messaging==\n:; MESSAGETITLE\n\n:Dear {Player},\n\n:MESSAGEBODY-->`;
+
+  if (isQuestItem(item) && item.whenRewarded && item.whenRewarded.includes('post-quest mailbox reward')) {
+    return mailboxMessage;
+  }
+  return '';
+}
+
 
 function output_itemIntro(item) {
   var itemUseIntro = '';
@@ -1781,13 +1899,19 @@ function parseItem(item) {
 function assignRelatedItemsFromInputArray(item, bundleArray) {
 
   item.relatedItems = [];
+  //console.log('inside assignRelatedItemsFromInputArray bundleArray object')
+  //console.log(bundleArray);
   bundleArray.forEach(function(bundleItem) {
-    if (bundleItem.psBundleItems.includes(item.name) && bundleItem.psBundleItems.length >1) {
-      // Filter out the item whose name matches itemObj.name and assign to relatedItems
-      item.relatedItems = bundleItem.psBundleItems.filter(
-        bundleItem => bundleItem !== item.name
-      );
-    }
+
+    // make sure the name of bundle is defined, otherwise everything without a bundle will lump together
+    if (bundleItem.bundleName) {
+      if (bundleItem.psBundleItems.includes(item.name) && bundleItem.psBundleItems.length >1) {
+        // Filter out the item whose name matches itemObj.name and assign to relatedItems
+        item.relatedItems = bundleItem.psBundleItems.filter(
+          bundleItem => bundleItem !== item.name
+        );
+      }
+    } 
   });
 
   return item;
@@ -1971,6 +2095,8 @@ function renderClothingFurnitureArticle(dataArray) {
     template += itemSource; //output_itemSource(item);
     template += collectionStatus; //output_collectionStatus(item);
     template += itemUsage; //output_itemUsage(item);
+    template += output_itemUsageTables(item);
+    template += output_mailboxMessage(item);
 
     template += output_relatedItems(item);
     template += output_history(item);
