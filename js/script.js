@@ -75,7 +75,8 @@ function renderParent(dataArray, templateType) {
     var output = '|type=%%itemType%%\n';
   // if  crafting then
     if (isCraftable(item)) {
-    output += '|craftingcategory=%%craftingCategory%%\n'; //Furniture
+    // as of 1.22? 1.23? there are no crafting categories any more
+    //output += '|craftingcategory=%%craftingCategory%%\n'; //Furniture
   }
   return output;
 }
@@ -269,9 +270,9 @@ function output_recipe(item) {
   } catch (ex) {
     console.error(ex);
   }
-  }
-  
-  return output;
+}
+
+return output;
 }
 
 function output_traits(item) {
@@ -822,41 +823,163 @@ function parseItemSource(item) {
     Winnie the Pooh story (Chapter 11: The Anti-monster Camp) (1 crafted during) - unlocks recipe
     */
 
-    const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<questType>story))\s*(?:quest)?\s+\((?<quest>[^)]+)\)(?:\s*\((?:(?<qty>\d+)\s+(?:[A-Za-z]+\s+)?)?(?<whenParen>[^)]+)\))?(?:\s*-\s*(?<tailHyphen>[^(\n]+))?/i;
+    //const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<questType>story))\s*(?:quest)?\s+\((?<quest>[^)]+)\)(?:\s*\((?:(?<qty>\d+)\s+(?:[A-Za-z]+\s+)?)?(?<whenParen>[^)]+)\))?(?:\s*-\s*(?<tailHyphen>[^(\n]+))?/i;
+    
+    //const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<questType>story))\s*(?:quest)?\s+\((?<quest>[^)]+)\)(?:\s*\((?:(?<qty>\d+)\s+)?(?:(?<actionVerb>crafted|given|found|made)\s+)?(?<whenParen>[^)]+?)\))?(?:\s*\("(?<quote>[^"]+)"\))?(?:\s*-\s*(?<tailHyphen>[^(\n]+))?/i;
+    
+    const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<questType>story))\s*(?:quest)?\s+\((?<quest>[^)]+)\)(?<tail>.*)$/i;
     const match = string.match(regex);
-        
+
     if (match) {
 
-
+      /*
       // use https://regex101.com/
+      const { character, levelNum, questType, quest, qty, whenParen, tailHyphen } = match.groups;
 
-        const { character, levelNum, questType, quest, qty, whenParen, tailHyphen } = match.groups;
+      item.character = character ? character.trim() : "";
+      item.level = levelNum || "";
+      item.questType = questType || ""; // Captures "story" or ""
+      item.quest = quest ? quest.trim() : "";
+      item.qtyRewarded = qty || "";
+      
+      //// Cleanly route when/reward details regardless of hyphen or parenthesis formatting
+      //// Pick parenthetical status if present, otherwise fall back to hyphen status
+      ////const rawWhen = whenParen || whenHyphen || "";
+      ////item.whenRewarded = rawWhen.trim();
 
-        item.character = character ? character.trim() : "";
-        item.level = levelNum || "";
-        item.questType = questType || ""; // Captures "story" or ""
-        item.quest = quest ? quest.trim() : "";
-        item.qtyRewarded = qty || "";
-        
-        //// Cleanly route when/reward details regardless of hyphen or parenthesis formatting
-        //// Pick parenthetical status if present, otherwise fall back to hyphen status
-        ////const rawWhen = whenParen || whenHyphen || "";
-        ////item.whenRewarded = rawWhen.trim();
+      let whenVal = whenParen ? whenParen.trim() : "";
+      let limitVal = tailHyphen ? tailHyphen.trim() : "";
 
-        let whenVal = whenParen ? whenParen.trim() : "";
-        let limitVal = tailHyphen ? tailHyphen.trim() : "";
+      // Handle trailing parenthesis cases like "(unlocks recipe)" where there is no hyphen
+      if (!limitVal && whenVal.match(/^(?:unlocks|limit)/i)) {
+        limitVal = whenVal;
+        whenVal = "";
+      }
 
-        // Handle trailing parenthesis cases like "(unlocks recipe)" where there is no hyphen
-        if (!limitVal && whenVal.match(/^(?:unlocks|limit)/i)) {
-          limitVal = whenVal;
-          whenVal = "";
-        }
+      item.whenRewarded = whenVal;
+      item.maxLimit = limitVal;
+      */
 
-        item.whenRewarded = whenVal;
-        item.maxLimit = limitVal;
+/*
+  const { character, levelNum, questType, quest, qty, actionVerb, whenParen, quote, tailHyphen } = match.groups;
+
+  item.character = character ? character.trim() : "";
+  item.level = levelNum || "";
+  item.questType = questType || "";
+  item.quest = quest ? quest.trim() : "";
+  item.qtyRewarded = qty || "";
+  item.howObtained = actionVerb ? actionVerb.toLowerCase().trim() : "obtained";
+  item.postQuestMailboxMessageTitle = quote ? quote.trim() : "";
+
+  // Parse parenthetical status block (e.g. "during, pick up after quest")
+  let rawParen = whenParen ? whenParen.trim() : "";
+  let rawHyphen = tailHyphen ? tailHyphen.trim() : "";
+
+  let timing = "";
+  let collected = "";
+  let limit = "";
+
+  // Extract "pick up after..." from paren status
+  if (rawParen.includes(",")) {
+    const parts = rawParen.split(",").map(s => s.trim());
+    timing = parts[0];
+    const rest = parts.slice(1).join(", ");
+    if (rest.match(/pick up/i)) {
+      collected = rest;
+    }
+  } else if (rawParen.match(/^pick up/i)) {
+    collected = rawParen;
+  } else {
+    timing = rawParen;
+  }
+
+  // Handle hyphen/trailing rules ("unlocks automatically", "limit 1")
+  if (rawHyphen.match(/^limit/i)) {
+    limit = rawHyphen;
+  } else if (rawHyphen.match(/^unlocks/i)) {
+    collected = rawHyphen;
+  }
+
+  item.whenRewarded = timing;
+  item.whenCollected = collected;
+  item.maxLimit = limit;
+*/
+
+
+
+      const { character, levelNum, questType, quest, tail } = match.groups;
+
+  item.character = character ? character.trim() : "";
+  item.level = levelNum || "";
+  item.questType = questType || "";
+  item.quest = quest ? quest.trim() : "";
+
+  // Initialize outputs
+  item.qtyRewarded = "";
+  item.howObtained = "";
+  item.whenRewarded = "";
+  item.whenCollected = "";
+  item.postQuestMailboxMessageTitle = "";
+  item.maxLimit = "";
+
+  if (tail) {
+    // Extract quoted strings ("I found this...")
+    const quoteMatch = tail.match(/\("(?<quote>[^"]+)"\)/);
+    if (quoteMatch) {
+      item.postQuestMailboxMessageTitle = quoteMatch.groups.quote.trim();
+    }
+
+    // Extract all parenthetical contents: (...)
+    const parenBlocks = [...tail.matchAll(/\(([^)]+)\)/g)]
+      .map(m => m[1].trim())
+      .filter(text => !text.startsWith('"')); // Ignore quote blocks
+
+    // Extract hyphenated tail text: - ...
+    const hyphenMatch = tail.match(/-\s*([^(\n]+)/);
+    const hyphenText = hyphenMatch ? hyphenMatch[1].trim() : "";
+
+    // 1. Process parenthetical blocks
+    parenBlocks.forEach(block => {
+      // Check for quantity + action verb (e.g., "1 given", "4 crafted")
+      const qtyActionMatch = block.match(/(?:^|\b)(?<qty>\d+)\s+(?<verb>given|crafted|found|made)\b/i);
+      if (qtyActionMatch) {
+        item.qtyRewarded = qtyActionMatch.groups.qty;
+        item.howObtained = qtyActionMatch.groups.verb.toLowerCase();
+      } else {
+        // Fallback: standalone action verb (e.g. "crafted during")
+        const verbMatch = block.match(/\b(?<verb>given|crafted|found|made)\b/i);
+        if (verbMatch) item.howObtained = verbMatch.groups.verb.toLowerCase();
+      }
+
+      // Check for collection triggers (e.g., "automatically collected", "pick up after completed")
+      if (block.match(/collected|pick up|unlocks/i)) {
+        item.whenCollected = block;
+      } 
+      // Otherwise, extract timing (e.g., "during", "reward", "unlisted reward, ...")
+      else if (block.match(/during|reward|post-quest/i)) {
+        // Clean out quantity/verb phrases if they were inside the same block
+        let timing = block
+          .replace(/\b\d+\s+(?:given|crafted|found|made)\b/gi, "")
+          .replace(/,\s*,/g, ",")
+          .replace(/^,\s*|\s*,\s*$/g, "")
+          .trim();
+        item.whenRewarded = timing;
+      }
+    });
+
+    // 2. Process hyphenated tail rules (e.g., "- limit 1", "- unlocks recipe")
+    if (hyphenText) {
+      if (hyphenText.match(/^limit/i)) {
+        item.maxLimit = hyphenText;
+      } else if (hyphenText.match(/^unlocks/i)) {
+        item.whenCollected = hyphenText;
+      }
+    }
+  }
+  console.log(`Quest-related parameters captured for ${item.name} from source:\n"${item.source}":\ncharacter: ${item.character}\nlevel: ${item.level}\nquestType: ${item.questType}\nquest: ${item.quest}\nqtyRewarded: ${item.qtyRewarded}\nhowObtained: ${item.howObtained}\npostQuestMailboxMessageTitle: ${item.postQuestMailboxMessageTitle}\nwhenRewarded: ${item.whenRewarded}\nwhenCollected: ${item.whenCollected}\nmaxLimit: ${item.maxLimit}`)
 
     } else {
-        console.warn("Failed to parse quest source for item (", item.name, "): ", string); // NOTE: THIS IS BEING HIT 3X PER RUN PER ITEM - 2026.05.26
+      console.warn("Failed to parse quest source for item (", item.name, "): ", string); // NOTE: THIS IS BEING HIT 3X PER RUN PER ITEM - 2026.05.26
     }
 
 
@@ -949,7 +1072,7 @@ function parseItemSource(item) {
 
   // ===== Star Path =====
   if (isStarPath(item)) {
-    
+
     /*
     // Sample values
 
@@ -1137,7 +1260,7 @@ function output_from(item) {
       itemSource = itemSource_scroogeDefault + '.'; // basic scrooge text
       break;
 
-  case 'x - C':
+    case 'x - C':
       if (showItemDebug) {
         console.log(item.name, ' is a scrooge item that is conditional');
       }
@@ -1188,21 +1311,21 @@ function output_from(item) {
 
     // hacky - populate storeslots sorta
     switch (item.location) {
-      case "table 1":
-      case "table 2":
-      case "table 3":
-      case "table 4":
-        infoboxFrom = infoboxFrom.replaceAll('storeSlots=', 'storeSlots='+item.location);
-        break;
-      default:
+    case "table 1":
+    case "table 2":
+    case "table 3":
+    case "table 4":
+      infoboxFrom = infoboxFrom.replaceAll('storeSlots=', 'storeSlots='+item.location);
+      break;
+    default:
         // quick hack because i don't have store slots tracked in sheet
         // TODO - i DO track table slots and trim, that could be accounted for
         // could also look at the size value and give defaults like lower, upper, etc
-        if (infoboxFrom.includes('Scrooge')) {
-          infoboxFrom = infoboxFrom.replaceAll('storeSlots=', 'storeSlots=<!--upper/lower-->');
-          item.missingCategories.push('[[Category: Missing Store Slot]]');
-        }
-        break;
+      if (infoboxFrom.includes('Scrooge')) {
+        infoboxFrom = infoboxFrom.replaceAll('storeSlots=', 'storeSlots=<!--upper/lower-->');
+        item.missingCategories.push('[[Category: Missing Store Slot]]');
+      }
+      break;
     }
 
 
@@ -1226,66 +1349,170 @@ function output_from(item) {
       Winnie the Pooh story quest (Interlude 4: Curiosity Satisfied) (reward) 
       Cinderella Level 10 Quest (The Friendship Ball) (post-quest mailbox reward) ("I found this...")
       Winnie the Pooh story (Chapter 11: The Anti-monster Camp) (1 crafted during) (unlocks recipe)
-
-      Imagination Land Arch = "Crafting after Joy Level 7 quest (Imagination Land) (reward)"
-      Welcoming Signpost = "Winnie the Pooh story (Chapter 11: The Anti-monster Camp) (1 crafted during) - unlocks recipe"
+      Winnie the Pooh story (Chapter 11: The Anti-monster Camp) (1 crafted during) - unlocks recipe // Welcoming Signpost
+      Crafting after Joy Level 7 quest (Imagination Land) (reward) // Imagination Land Arch
       */
+
+
+/*Quest-related parameters captured for Moontide Glow Stage from source:
+"Pocahontas Level 4 quest (Working Together) (pick up after completed)":
+character: Pocahontas
+level: 4
+questType: 
+quest: Working Together
+qtyRewarded: 
+howObtained: obtained
+postQuestMailboxMessageTitle: 
+whenRewarded: 
+whenCollected: pick up after completed
+maxLimit: */
+      //console.log(`whenRewarded: ${item.whenRewarded}, whenCollected: ${item.whenCollected}, whenCollected includes "pick up"? ${item.whenCollected.includes("pick up")}`)
+
+          /*
+          // 
+          // New Comfort Bear = "Sadness Level 10 Quest (Create a Bear) (reward)"
+          output += "After reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and progressing through the quest [[QUESTNAME]], it is";
+          output += " crafted and";
+          output += " placed<!-- in the Valley -->and will remain placed after the quest is completed."
+          */
+          // todo - still need to fix regex to capture both this and the mailbox message, can check if this includes rather than is equal to for now
+
+          /*if (capitalize(item.questType) == 'Story') {
+             itemSource = `It is rewarded after`;
+          }*/
+
+
+      // TODO - more flexible placeholder language
+      if (item.whenRewarded && item.whenRewarded.includes('reward')) {
+        // values: unlisted reward, reward
+        infoboxFrom = `|reward=${output_QuestTemplate(item)}`;
+      }
+      else if ((item.source.includes('unlocks recipe') || item.source.includes('Crafting after '))){
+        infoboxFrom = `|unlockquest=${output_QuestTemplate(item)}`;
+      }
+      else {
+        infoboxFrom = `|from=${output_QuestTemplate(item)}`;
+      }
+
+      let actionVerb = 'completing';
+      // TODO: rework the regex so that "during" is appropriately saved into a variable
+      // || item.source.includes('during')
+      // currently not correctly assigning: Pocahontas Level 10 quest (A Raccoon's Return) (unlisted reward, 1 given during) (automatically collected)
+      if (item.whenRewarded && item.whenRewarded.includes('during')) {
+        actionVerb = 'progressing through'
+      }
+
+      itemSource = `After`;
+      
+      if ( capitalize(item.questType) == 'Story' ) {
+        itemSource += ` ${actionVerb} the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]]`;
+      }
+      else {
+        itemSource += ` reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
+        itemSource += ` and ${actionVerb} the quest [[${item.quest}]]`;
+      }
+      if (actionVerb == 'completing') {
+        itemSource += `.`;
+      }
+      else {
+        itemSource += `,`;
+      }
+
+      if ((item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) && item.howObtained == '') {
+        item.howObtained = 'crafted';
+      }
+      
+      if (item.howObtained && item.howObtained != 'obtained' ||
+          (item.source.includes('unlocks recipe') || item.source.includes('Crafting after '))
+          ) {
+        let tempItemQty = item.qtyRewarded ? insertNumberWord(item.qtyRewarded) : 'one';
+        // one is crafted during the quest, placed in the [[Nectar Apiary]],
+        // and will remain placed after the quest is completed.
+        //console.log(`tempItemQty of ${item.name}: ${tempItemQty} from ${item.qtyRewarded}`)
+        tempItemQty = (tempItemQty=='one') ? 'it is' : tempItemQty + ' are'
+        //console.log(`item.qtyRewarded vs tempItemQty: ${item.qtyRewarded} vs ${tempItemQty}`)
+        itemSource += ` ${tempItemQty} ${item.howObtained} during the quest`;
+        itemSource += `, placed in the Village<!--Valley/[[VILLAGEorBIOME]]-->, `;
+        itemSource += `and `;
+        itemSource += (item.qtyRewarded>1) ? `they `: `it `;
+        itemSource += `will remain placed after the quest is completed.`;
+      }
+      else {
+
+        /*
+        "Crafting after Cogsworth Level 2 quest (Running Like Clockwork) (6 during)":
+character: Cogsworth
+level: 2
+questType: 
+quest: Running Like Clockwork
+qtyRewarded: 
+howObtained: 
+postQuestMailboxMessageTitle: 
+whenRewarded: 6 during
+whenCollected: 
+maxLimit: 
+*/
+
+        if (item.whenRewarded == 'reward') {
+          itemSource = itemSource.replace(/^After reaching/g, 'It is rewarded after reaching');
+        }
+        if (item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) {
+          itemSource += ` After that quest the [[Crafting|crafting recipe]] will be permanently unlocked.`;
+        }
+        else {
+          itemSource += ` it is made available.`;
+        }  
+      }
+
+      if (item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) {
+        itemSource += ` After that quest the [[Crafting|crafting recipe]] will be permanently unlocked.`;
+      }
+      
+      if (item.source.includes('automatically collected')) {
+        // unless overtly stated from sheet source, do not specify how/when it is collected
+        itemSource += ` It is automatically collected during the quest.`;
+      }
+      if (item.source.includes('pick up')) {
+        // unless overtly stated from sheet source, do not specify how/when it is collected
+        itemSource += ` It can be collected by picking it up.`;
+      }
+      if (item.maxLimit == 'limit 1') {
+        itemSource += ` It is unique and is limited to one.`;
+      }
+      if (item.whenRewarded && item.whenRewarded.includes('post-quest mailbox reward')) {
+        let postQuestMessageTitle = item.postQuestMessageTitle || 'MESSAGETITLE';
+        itemSource += ` After the quest is complete, [[${item.character}]] will send a mail message <!-- titled ''"${postQuestMessageTitle}"''--> with this item attached.`;
+      }
+
+      /*
 
       // source should have already been parsed in parseItemSource
       if (item.whenRewarded) {
-        /*whenRewarded, qtyRewarded, character, level, quest */
-        console.log(`source for ${item.name} at 1236ish: "${item.source}`);
-        console.log(item);
+        //whenRewarded, qtyRewarded, character, level, quest 
+        //console.log(`source for ${item.name} at 1236ish: "${item.source}`);
+        //console.log(item);
 
         let postQuestMessageTitle = item.postQuestMessageTitle || 'MESSAGETITLE';
-
-/*
-        function output_QuestLink(item) {
-  let questName = item.quest || 'QUESTNAME';
-  let questType = item.questType || ''; // either 'story' or ''
-  let characterName = item.character || 'CHARACTERNAME';
-  let levelNum = item.level || 'LEVELNUM';
-
-  if (item.level) {
-    output = `[[${characterName}#Friendship Rewards|Friendship Level ${levelNum}]] with [[${characterName}]]`;
-  }
-  else if (capitalize(item.questType) == 'Story') {
-    output = `[[${characterName}]] story quest [[${questName}]]`;
-  }
-  else {
-    output = `[[${characterName}#Quests|${characterName}]] quest [[${questName}]]`;
-  }
-
-  return output;
-}
-*/
-
 
         if (item.whenRewarded == 'reward' || item.whenRewarded.includes('post-quest mailbox reward')) {
           infoboxFrom = `|reward=${output_QuestTemplate(item)}`;
           itemSource = `It is rewarded after`;
 
           if ( capitalize(item.questType) == 'Story' ) {
-              itemSource += ` completing the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]].`;
+            itemSource += ` completing the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]].`;
           }
           else {
             itemSource += ` reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
             itemSource += ` and completing the quest [[${item.quest}]].`;
           }
 
-          if (item.whenRewarded.includes('post-quest mailbox reward')) {
-            itemSource += ` After the quest is complete, [[${item.character}]] will send a mail message <!-- titled ''"${postQuestMessageTitle}"''--> with this item attached.`;
-          }
           
-
-          // todo - still need to fix regex to capture both this and the mailbox message, can check if this includes rather than is equal to for now
-
-          /*if (capitalize(item.questType) == 'Story') {
-             itemSource = `It is rewarded after`;
-          }*/
         }
-        else if (item.whenRewarded.includes('during') || item.whenRewarded == 'pick up after completed' || item.whenRewarded.includes('pick up')) {
 
+        }
+      if (item.whenCollected.includes("pick up") || item.whenRewarded && item.whenRewarded.includes('during') || item.whenRewarded == 'pick up after completed') {
+
+          console.log(`${item.name} makes it into the 2nd clause 1329`)
           let actionVerb = 'completing';
           if (item.whenRewarded.includes('during')) {
             actionVerb = 'progressing through'
@@ -1295,18 +1522,23 @@ function output_from(item) {
           itemSource = `After `;
 
           if ( capitalize(item.questType) == 'Story' ) {
-              itemSource += ` ${actionVerb} the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]].`;
+            itemSource += ` ${actionVerb} the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]].`;
           }
           else {
             itemSource += ` reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
             itemSource += ` and ${actionVerb} the quest [[${item.quest}]],`;
           }
 
-          // one is crafted during the quest, placed in the [[Nectar Apiary]], and will remain placed after the quest is completed.
-          // After that quest the crafting recipe will be permanently unlocked. 
-          itemSource += ` it <!--is placed in the Valley and -->will remain placed after the quest is completed.`;
+          let tempItemQty = item.qtyRewarded ? insertNumberWord(item.qtyRewarded) : 'one';
+          // one is crafted during the quest, placed in the [[Nectar Apiary]],
+          // and will remain placed after the quest is completed.
+          itemSource += ` ${tempItemQty} is ${item.howObtained} during the quest`;
+          
+          //itemSource += ` it <!--is placed in the Valley/[[BIOME]] and -->will remain placed after the quest is completed.`;
+          itemSource += `, placed in the Village<!--Valley/[[BIOME]]-->, `;
+          itemSource += `and will remain placed after the quest is completed.`;
 
-          if (item.maxLimit == 'unlocks recipe') {
+          if (item.source.includes('unlocks recipe')) {
             itemSource += ` After that quest the [[Crafting|crafting recipe]] will be permanently unlocked.`;
           }
 
@@ -1317,24 +1549,6 @@ function output_from(item) {
             itemSource += ` It is unique and is limited to one.`;
           }
 
-          /*
-          // 
-          // New Comfort Bear = "Sadness Level 10 Quest (Create a Bear) (reward)"
-          output += "After reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and progressing through the quest [[QUESTNAME]], it is";
-          output += " crafted and";
-          output += " placed<!-- in the Valley -->and will remain placed after the quest is completed."
-          */
-        }
-        
-        /*
-  whenRewarded:"during"
-  source.includes("crafted during")
-  maxLimit: "unlocks recipe"
-        source for Welcoming Signpost at 1236ish: "Winnie the Pooh story (Chapter 11: The Anti-monster Camp) (1 crafted during) - unlocks recipe
-        After progressing through the [[Winnie the Pooh]] story quest [[Chapter 11: The Anti-monster Camp]],
-        
-
-        */
         else {
           //console.log(`whenRewarded for item ${item.name}: ${item.whenRewarded}`);
           // covers (item.whenRewarded == 'during') TODO - catch other conditions
@@ -1349,9 +1563,16 @@ function output_from(item) {
           itemSource += ` it is made available.`;
           itemSource += `<!--it is given to be placed in [[VILLAGEorBIOME]]/on [[Dazzle Beach]] and will remain placed after the quest is completed.-->`;
           itemSource += `<!-- It is automatically collected during the quest. -->`;
+          itemSource += `<!-- It can be collected by picking it up. -->`
         }
-      }
-      else {
+        
+
+
+      }*/
+
+      /*
+      if (infoboxFrom == '' && itemSource == '') {
+        // total default fallback if not assigned before this
         // no level defined in input - assume reward language - TODO
         infoboxFrom = `|from=${output_QuestTemplate(item)}`;
         
@@ -1359,7 +1580,8 @@ function output_from(item) {
         itemSource += placeholderCommentBodyDetailsQuest;
 
       }
-      
+      */
+      /*
       // Quest - Pocahontas Level 10 Quest (A Raccoon's Return)
       // "Quest - " prefix indicates it came from reporter data
       // if source in format of "Quest - CHARACTER Level X (QUESTNAME)",
@@ -1370,6 +1592,7 @@ function output_from(item) {
         itemSource += placeholderCommentBodyDetailsQuest;
         // It is available in connection with the quest [[QUESTNAME]].
       }
+      */
 
     }
 
@@ -1459,8 +1682,13 @@ function output_from(item) {
       }
 
       // source should have already been parsed in parseItemSource
-      infoboxFrom = `|reward={{Friendship|${item.character}|${item.level}}}\n|from=Premium Shop\n|bundleName=${infoboxBundleLink}\n|bundlePrice=${item.bundlePrice}`;
-
+      if (item.location == 'premium/friendship') {
+        infoboxFrom = `|reward={{Friendship|${item.character}|${item.level}}}\n|from=Premium Shop\n|bundleName=${infoboxBundleLink}\n|bundlePrice=${item.bundlePrice}`;
+      }
+      else if (item.location == 'friendship') {
+        infoboxFrom = `|reward={{Friendship|${item.character}|${item.level}}}`;
+      }
+      
       itemSource = `It is automatically rewarded after reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
       if (item.location == 'premium/friendship') {
         // this is a bit of a hack - assuming that the bundle will be a standalone item named after the companion - will need manual refining
@@ -1486,7 +1714,7 @@ function output_from(item) {
     }
 
   // Assign values created in this function to the item object -- but these won't actually be saved i dont think? not sure when the microtemplating actually happens
-  item.infoboxFrom = infoboxFrom;
+    item.infoboxFrom = infoboxFrom;
   item.itemSource = itemSource; // TODO: i think this is being reverted to an empty string?
 
   var output = '%%infoboxFrom%%\n';
@@ -1495,25 +1723,25 @@ function output_from(item) {
 
 function isKnownCompanion(name) {
   switch (name) {
-    case 'Abigail the Goose':
-    case 'Amelia the Goose':
-    case 'Baby Pegasus':
-    case 'BB—8':
-    case 'Dinah':
-    case 'Figaro':
-    case 'Heihei':
-    case 'Lucky':
-    case 'Max':
-    case 'Mochi':
-    case 'Nana':
-    case 'Percy':
-    case 'R2-D2':
-    case 'Rajah':
-    case 'The Footstool':
-      return true;
-    default:
-      return false;
-    }
+  case 'Abigail the Goose':
+  case 'Amelia the Goose':
+  case 'Baby Pegasus':
+  case 'BB—8':
+  case 'Dinah':
+  case 'Figaro':
+  case 'Heihei':
+  case 'Lucky':
+  case 'Max':
+  case 'Mochi':
+  case 'Nana':
+  case 'Percy':
+  case 'R2-D2':
+  case 'Rajah':
+  case 'The Footstool':
+    return true;
+  default:
+    return false;
+  }
   return false;
 }
 
@@ -1582,19 +1810,20 @@ function output_collectionStatus(item) {
 
     collectionText = ` It is not tracked in the `;
     //collectionText = `Once collected it will not be added to the `;
-    collectionText += `[[:Category:Untracked ${item.itemType} Sets Collection|${item.itemType} Sets Collection]]`;
+    let inlineItemType = (item.itemType == 'Crafted Furniture') ? 'Furniture' : item.itemType;
+    collectionText += `[[:Category:Untracked ${inlineItemType} Sets Collection|${inlineItemType} Sets Collection]]`;
 
     if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
-
       if (item.location && item.location.includes('crafting')) {
-        collectionText += ` or [[:Category:Untracked Crafting Collection|Crafting Collection]],`;
+        collectionText += ` or [[:Category:Untracked Crafting Collection|Crafting Collection]]`;
       }
-      collectionText += ` and more cannot be`;
-      if (item.location && item.location.includes('crafting')) {
-        collectionText += ` crafted or`;
+      if (item.source.includes('limit')) {
+        collectionText += `, and more cannot be`;
+        if (item.location && item.location.includes('crafting')) {
+          collectionText += ` crafted or`;
+        }
+        collectionText += ` ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]]`;
       }
-      collectionText += ` ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]]`;
-
     }
 
     collectionText += `.`;
@@ -1608,10 +1837,10 @@ function output_collectionStatus(item) {
   //let newStr = collectionText;
 
   // TODO: CATCH THIS before it happens
-  collectionText = collectionText.replaceAll('Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].',"It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].");
+  collectionText = collectionText.replaceAll('Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].',"xxxxxxxxIt is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].");
   
   // todo: Once collected it will not be added to the [[:Category:Untracked..... vs it is not tracked?
-  collectionText = collectionText.replaceAll("Once collected it will be added to the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].");
+  collectionText = collectionText.replaceAll("Once collected it will be added to the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "yyyyyyyyyIt is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].");
 
   // no idea why this isn't working as a fallback??? for welcoming signpost
   const target = "Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].";
@@ -1941,7 +2170,12 @@ function output_itemIntro(item) {
   // janky catch for more lighting objects - this is not robust!!!! cases where i've written extra info in the box
     if (item.functions && item.functions.includes('Light')) {
       itemUseIntro = 'lighting';
+
       itemUseBody = "<!-- Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off. // the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
+    
+      if (item.functions.includes('Constant')) {
+        itemUseBody = "<!-- Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
+      }
     }
 
 
@@ -2053,7 +2287,7 @@ function assignRelatedItemsFromInputArray(item, bundleArray) {
         // Filter out the item whose name matches itemObj.name and assign to relatedItems
         item.relatedItems = bundleItem.psBundleItems.filter(
           bundleItem => bundleItem !== item.name
-        );
+          );
       }
     } 
   });
@@ -2773,15 +3007,16 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
   // todo - revisit if this is necessary/appropriate, might be auto-added by page
   //newStr = newStr.replaceAll('[[Category:none Furniture Sets Collection]]','[[Category:Untracked Furniture Sets Collection]]');
-    newStr = newStr.replaceAll('[[Category:none Furniture Sets Collection]]','');
+  newStr = newStr.replaceAll('[[Category:none Furniture Sets Collection]]','');
 
 
-    newStr = newStr.replaceAll('|collection=Accessory', '|collection=none');
+  newStr = newStr.replaceAll('|collection=Accessory', '|collection=none');
     // no idea why this isn't working when in the collection function, but seems to work here??
+  // TODO - needs more logic - if the item is not crafted initially or recipe does not unlock, add " and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]]"
   const target = "Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].";
-  const replacement = "It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
+  const replacement = "It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] or [[:Category:Untracked Crafting Collection|Crafting Collection]].";
   newStr = newStr.replaceAll(target, replacement);
-    
+
 
 
   // todo: get rid of trailing space before line break

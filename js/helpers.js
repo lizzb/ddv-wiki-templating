@@ -444,16 +444,24 @@ function lookupToken(starpathName) {
 function insertNumberWord(num) {
   var output = '';
   switch (num) {
+    case "1":
     case 1:
-      return 'one-star ';
+      return 'one';
+    case "2":
     case 2:
-      return 'two-star ';
+      return 'two';
+    case "3":
     case 3:
-      return 'three-star ';
+      return 'three';
+    case "4":
     case 4:
-      return 'four-star ';
+      return 'four';
+    case "5":
     case 5:
-      return 'five-star ';
+      return 'five';
+    case "6":
+    case 6:
+      return 'six';
     default: {
       break;
     }
@@ -940,7 +948,7 @@ function renderMeals(dataArray) {
     templateMealArticle += '\n}}';
     // todo - make this conditional with collectionconfirmed
     //templateMealArticle += '{{cleanup|Ingredients and ingredient order need verification}}';
-    templateMealArticle += "\n'''%%name%%''' is a " + insertNumberWord(item.stars) + '' + insertCookingLink(item.category) + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
+    templateMealArticle += "\n'''%%name%%''' is a " + insertNumberWord(item.stars)+"-star " + '' + insertCookingLink(item.category) + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
 
     templateMealArticle += '\n\n';
 
@@ -1653,6 +1661,7 @@ function renderQuestItems(dataArray) {
 }
 
 function capitalize(str) {
+  if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
