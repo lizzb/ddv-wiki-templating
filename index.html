@@ -82,6 +82,9 @@
           <p>
             <label><input type="checkbox" id="functionsConfirmedCB" class="settings-element"> Functions Confirmed</label>
           </p>
+          <p>
+            <label><input type="checkbox" id="showItemDebugCB" class="settings-element"> Show Item Debug</label>
+          </p>
         
         
         <div id="description">
@@ -234,12 +237,61 @@
 // Wire up instant live-update for the 4 confirmation checkboxes.
 // When ANY of these change, immediately re-render the wiki output.
 // This is delegated so it works even if DOM elements are added/changed later.
-$(document).on('change', '#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB', function() {
+$(document).on('change', '#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #showItemDebugCB', function() {
   if (typeof d !== 'undefined' && d && typeof d.convert === 'function') {
     d.convert();
   }
 });
 </script>
+<!--
+<script>
+// === FEATURE 1: collapse embedded line breaks in pasted cells to " // " -- still not working ===
+(function() {
+  var originalParse = CSVParser.parse;
+  CSVParser.parse = function() {
+    var result = originalParse.apply(this, arguments);
+    for (var r = 0; r < result.dataGrid.length; r++) {
+      var row = result.dataGrid[r];
+      for (var c = 0; c < row.length; c++) {
+        if (typeof row[c] === 'string') {
+          row[c] = row[c]
+            .replace(/\\n/g, ' // ')   // undo app.js's own first-occurrence "\n"→"\\n" escape
+            .replace(/\\r/g, ' // ')   // same, for \r
+            .replace(/\r\n|\r|\n/g, ' // '); // catch any remaining real line breaks
+        }
+      }
+    }
+    return result;
+  };
+})();
+</script>
+
+<script>
+// === FEATURE 2: type/paste JSON directly into #data-output, skip TSV entirely ===
+(function() {
+  var dataOutputWait = false;
+  function renderFromDataOutputJSON() {
+    var raw = $('#data-output').val();
+    if (!raw) return;
+    var parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      console.warn('#data-output is not valid JSON -- skipping direct render. ' + e.message);
+      return;
+    }
+    $('#template-output').val(renderParent(parsed, templateType));
+  }
+  $('#data-output').on('change', renderFromDataOutputJSON);
+  $('#data-output').on('keyup', function() {
+    if (dataOutputWait) return;
+    dataOutputWait = true;
+    renderFromDataOutputJSON();
+    setTimeout(function() { dataOutputWait = false; }, 500);
+  });
+})();
+</script>
+-->
 <!--<script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
