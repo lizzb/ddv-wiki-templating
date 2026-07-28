@@ -1835,6 +1835,8 @@ function isTale(item) {
 
 function isHairstyle(item) {
   return (
+    (item.name && item.name.includes('Hairstyle')) ||
+    (item.name && item.name.includes('Hairdo')) ||
     (item.name && item.name.includes('Updo')) ||
     (item.name && item.name.includes('Haircut')) ||
     (item.category && item.category == 'Hairstyle')

@@ -27,3 +27,5 @@ var functionsConfirmed = $("#functionsConfirmedCB").prop("checked"); //true;
 
 // whether to console print out source of item as detected
 var showItemDebug = $("#showItemDebugCB").prop("checked"); //false; 
+
+var renderPSbundles = true;

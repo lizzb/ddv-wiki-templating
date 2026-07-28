@@ -35,7 +35,10 @@ function renderParent(dataArray, templateType) {
       outputHTML = renderFlowers(dataArray);
       break;
     case "clothingFurniture":
-      //outputHTML += renderPSBundles(dataArray); // TODO: create a flag for rendering premium shop ps bundles / separately
+      // todo - currently just a global var
+      if (renderPSbundles) {
+        outputHTML += renderPSBundles(dataArray);
+      }
       outputHTML += renderClothingFurnitureArticle(dataArray);
       break;
     default:
@@ -198,7 +201,7 @@ function output_collection(item) {
   case 'Tracked Wall':
   case 'Tracked Floor':
   case 'DV':
-    case 'Dreamlight Valley': // still not sure why this is getting fed sometimes, must be modified somewhere
+  case 'Dreamlight Valley': // still not sure why this is getting fed sometimes, must be modified somewhere
       item.collection = wrapComment('Dreamlight Valley', !collectionConfirmed);
       break;
     case 'EI':
@@ -248,7 +251,6 @@ function output_collection(item) {
       //item.missingCategories.push('[[Category: Missing Collection]]'); // TODO - check more use cases for this, otherwise was adding to wallpaper unnecessarily
     }
   }
-
 
   var output = '|collection=' + wrapComment('%%collection%%', !collectionConfirmed) + '\n';
   return output;
@@ -2835,87 +2837,22 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('×', 'x');
 
 
-    
-
-    /*
-    [[:Category: <!--Eternity Isle--> Companions Collection|<!--Eternity Isle--> Companions Collection]]
-
-<!--<!--Dreamlight Valley-->-->
-
-[[:Category:<!--Storybook Vale--> Furniture Sets Collection|<!--Storybook Vale--> Furniture Sets Collection]]
-
-[[:Category: <!--Dreamlight Valley dont change--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]]
-*/
-
-
-  /*
-  // check for with or without leading space in first line
-  XXX = "Dreamlight Valley"
-  YYY = "Furniture Sets"
-  newStr = newStr.replaceAll(
-    '[[:Category:<!--XXX--> YYY Collection|<!--XXX--> YYY Collection]]',
-    '[[:Category:XXX YYY Collection|XXX YYY Collection]]'
-  );
-  XXX = "Dreamlight Valley"
-  YYY = "Clothing Sets"
-  newStr = newStr.replaceAll(
-    '[[:Category: <!--XXX--> YYY Collection|<!--XXX--> YYY Collection]]',
-    '[[:Category:XXX YYY Collection|XXX YYY Collection]]'
-  );
-
-  XXX = "Storybook Vale"
-  YYY = "Furniture Sets"
-  newStr = newStr.replaceAll(
-    '[[:Category:<!--XXX--> YYY Collection|<!--XXX--> YYY Collection]]',
-    '[[:Category:XXX YYY Collection|XXX YYY Collection]]'
-  );
-  XXX = "Storybook Vale"
-  YYY = "Clothing Sets"
-  newStr = newStr.replaceAll(
-    '[[:Category: <!--XXX--> YYY Collection|<!--XXX--> YYY Collection]]',
-    '[[:Category:XXX YYY Collection|XXX YYY Collection]]'
-  );*/
-
-    /*
-    newStr = newStr.replaceAll(
-      '[[:Category: <!--Dreamlight Valley--> Companions Collection|<!--Dreamlight Valley--> Companions Collection]]',
-      '[[:Category: Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]]',
-      );
-    newStr = newStr.replaceAll(
-      '<!--<!--Dreamlight Valley-->-->',
-      '<!--Dreamlight Valley-->',
-      );
-
-    newStr = newStr.replaceAll("{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}",
-      "{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}"
-      );
-    newStr = newStr.replaceAll("g{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: <!--Dreamlight Valley--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]].}}",
-      "{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: Dreamlight Valley Clothing Sets Collection|Dreamlight Valley Clothing Sets Collection]].}}"
-      );
-      */
-
-
     // AI assist
     // <!-- ... --> is matched literally
     // \\s* handles any stray spaces inside the comment
     // (${keywords}) captures only the phrases you care about
     // $1 replaces the entire comment with just the captured keyword
-    const keywords = "Dreamlight Valley|Storybook Vale|Eternity Isle";
-    const regex2 = new RegExp(`<!--\\s*(${keywords})\\s*-->`, 'gi');
+    ////const keywords = "Dreamlight Valley|Storybook Vale|Eternity Isle";
+    ////const regex2 = new RegExp(`<!--\\s*(${keywords})\\s*-->`, 'gi');
+    ////newStr = newStr.replace(regex2, '$1');
 
-    newStr = newStr.replace(regex2, '$1');
     // remove extra spaces
-    newStr = newStr.replace(/\[\[:Category:\s+/g, '[[:Category:');
-    //document.getElementById('test').value = newStr;
+    ////newStr = newStr.replace(/\[\[:Category:\s+/g, '[[:Category:');
 
 
-
-
-    
 
     // main culprit of double space is itemUseIntro
     newStr = newStr.replaceAll('  ', ' ');
-
     
 
     // TODO: double check this in output - need to make functions value streamlining more robust, and not here
@@ -2923,6 +2860,9 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('Light \(Automatic\)', 'Lighting \(Automatic\)');
     newStr = newStr.replaceAll('Cooking Station \(Use\)', 'Cooking Station');
     newStr = newStr.replaceAll('Crafting Station \(Use\)', 'Crafting Station');
+    newStr = newStr.replaceAll('\n|functions=Rug', '');
+    newStr = newStr.replaceAll('\n|functions=Fireplace (Interact)', '\n|functions=Fireplace');
+
 
     // for crafted furniture
     newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');
@@ -2943,15 +2883,16 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('\{\{inlineIcon\|\|iconOnly\}\}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
 
     newStr = newStr.replaceAll('energy=-', 'energy=');
-    newStr = newStr.replaceAll('\n|functions=-', '');
-  //newStr = newStr.replaceAll('\n|functions=-', '\n|functions=none');
+    
 
     // TODO - fix functions=- at the source
     newStr = newStr.replaceAll('|placement=surfaces-', '|placement=surfaces');
     newStr = newStr.replaceAll('|placement=default-', '|placement=default');
 
-    newStr = newStr.replaceAll('\n|functions=Rug', '');
-    newStr = newStr.replaceAll('\n|functions=Fireplace (Interact)', '\n|functions=Fireplace');
+    newStr = newStr.replaceAll('\n|functions=-', '');
+  //newStr = newStr.replaceAll('\n|functions=-', '\n|functions=none');
+
+    
 
 
 
