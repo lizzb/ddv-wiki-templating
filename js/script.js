@@ -49,9 +49,12 @@ function renderParent(dataArray, templateType) {
     tagsConfirmed = $("#tagsConfirmedCB").prop("checked");
     collectionConfirmed = $("#collectionConfirmedCB").prop("checked");
     functionsConfirmed = $("#functionsConfirmedCB").prop("checked");
+    showItemDebug = $("#showItemDebugCB").prop("checked");
 
-    console.log(`priceConfirmed = ${priceConfirmed}, categoriesColorsTraitsConfirmed = ${categoriesColorsTraitsConfirmed}, tagsConfirmed = ${tagsConfirmed}, collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
-
+    if (showItemDebug) {
+      console.log(`priceConfirmed = ${priceConfirmed}, categoriesColorsTraitsConfirmed = ${categoriesColorsTraitsConfirmed}, tagsConfirmed = ${tagsConfirmed}, collectionConfirmed = ${collectionConfirmed},  functionsConfirmed = ${functionsConfirmed}`);
+    }
+    
   // if a custom template is provided in the textarea, use that instead of the one specified by the function
     var inputTemplateValue = document.getElementById("template-input").value;
     if (inputTemplateValue) {
@@ -976,8 +979,10 @@ function parseItemSource(item) {
       }
     }
   }
-  console.log(`Quest-related parameters captured for ${item.name} from source:\n"${item.source}":\ncharacter: ${item.character}\nlevel: ${item.level}\nquestType: ${item.questType}\nquest: ${item.quest}\nqtyRewarded: ${item.qtyRewarded}\nhowObtained: ${item.howObtained}\npostQuestMailboxMessageTitle: ${item.postQuestMailboxMessageTitle}\nwhenRewarded: ${item.whenRewarded}\nwhenCollected: ${item.whenCollected}\nmaxLimit: ${item.maxLimit}`)
-
+  if (showItemDebug) {
+    console.log(`Quest-related parameters captured for ${item.name} from source:\n"${item.source}":\ncharacter: ${item.character}\nlevel: ${item.level}\nquestType: ${item.questType}\nquest: ${item.quest}\nqtyRewarded: ${item.qtyRewarded}\nhowObtained: ${item.howObtained}\npostQuestMailboxMessageTitle: ${item.postQuestMailboxMessageTitle}\nwhenRewarded: ${item.whenRewarded}\nwhenCollected: ${item.whenCollected}\nmaxLimit: ${item.maxLimit}`)
+  }
+  
     } else {
       console.warn("Failed to parse quest source for item (", item.name, "): ", string); // NOTE: THIS IS BEING HIT 3X PER RUN PER ITEM - 2026.05.26
     }
@@ -1249,7 +1254,15 @@ function output_from(item) {
       console.log(item.name, ' is a scrooge item');
     }
     infoboxFrom += "|from=Scrooge's Store (" + item.collection + ")\n|storeSlots=";
-    itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']].';
+    itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']]';
+    // TODO - more conditional statements, also cosolidate in one place
+    if (item.character) {
+      itemSource += ` after [[${item.character}]] has joined the Valley`;
+    }
+    if (item.quest) {
+      itemSource += ` after completing the quest [[${item.quest}]]`;
+    }
+    itemSource += '. ';
     break;
 
   case 'x':
@@ -1267,13 +1280,14 @@ function output_from(item) {
       infoboxFrom = "|from=Scrooge's Store\n|storeSlots=";
       itemSource = itemSource_scroogeDefault + ` under certain conditions. `;
 
-      // TODO - more conditional statements
+      // TODO - more conditional statements, also cosolidate in one place
       if (item.character) {
-        itemSource = itemSource_scroogeDefault + ` after [[${item.character}]] has joined the Valley. `;
+        itemSource = itemSource_scroogeDefault + ` after [[${item.character}]] has joined the Valley`;
       }
       if (item.quest) {
-        itemSource = itemSource_scroogeDefault + ` after completing the quest [[${item.quest}]]. `;
+        itemSource = itemSource_scroogeDefault + ` after completing the quest [[${item.quest}]]`;
       }
+      itemSource += '. ';
       break;
 
     default:
@@ -1336,8 +1350,8 @@ function output_from(item) {
       }
       placeholderCommentBodyDetailsQuest = `<!--<<It is rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->`;
 
-      //console.log('item inside isQuestItem');
-      //console.log(item);
+
+
 
       /*
       // CASES TO HANDLED
@@ -1353,33 +1367,34 @@ function output_from(item) {
       Crafting after Joy Level 7 quest (Imagination Land) (reward) // Imagination Land Arch
       */
 
-
-/*Quest-related parameters captured for Moontide Glow Stage from source:
-"Pocahontas Level 4 quest (Working Together) (pick up after completed)":
-character: Pocahontas
-level: 4
-questType: 
-quest: Working Together
-qtyRewarded: 
-howObtained: obtained
-postQuestMailboxMessageTitle: 
-whenRewarded: 
-whenCollected: pick up after completed
-maxLimit: */
+      //console.log('item inside isQuestItem');
+      //console.log(item);
       //console.log(`whenRewarded: ${item.whenRewarded}, whenCollected: ${item.whenCollected}, whenCollected includes "pick up"? ${item.whenCollected.includes("pick up")}`)
 
-          /*
-          // 
-          // New Comfort Bear = "Sadness Level 10 Quest (Create a Bear) (reward)"
-          output += "After reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and progressing through the quest [[QUESTNAME]], it is";
-          output += " crafted and";
-          output += " placed<!-- in the Valley -->and will remain placed after the quest is completed."
-          */
-          // todo - still need to fix regex to capture both this and the mailbox message, can check if this includes rather than is equal to for now
 
-          /*if (capitalize(item.questType) == 'Story') {
-             itemSource = `It is rewarded after`;
-          }*/
+/*
+Quest-related parameters captured for Heroic Helmet from source:
+"Crafted during Eeyore Story quest (Chapter 5: The Big Red Monster)":
+character: Eeyore
+level: 
+questType: Story
+quest: Chapter 5: The Big Red Monster
+qtyRewarded: 
+howObtained: 
+postQuestMailboxMessageTitle: 
+whenRewarded: 
+whenCollected: 
+maxLimit: 
+
+should be: It [[Crafting|crafted]] during the Honeyglow Woods [[Eeyore]] story quest [[Chapter 5: The Big Red Monster]]
+output: After completing the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: The Big Red Monster]]. 
+
+It [[Crafting|crafted]] during the Honeyglow Woods [[Eeyore]] story quest [[Chapter 5: The Big Red Monster]], and will remain in the wardrobe after the quest is complete. 
+After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: The Big Red Monster]], it is crafted during the quest, placed in the Village<!--Valley/[[VILLAGEorBIOME]]-->, and it will remain placed after the quest is completed. 
+
+
+*/
+
 
 
       // TODO - more flexible placeholder language
@@ -1387,7 +1402,7 @@ maxLimit: */
         // values: unlisted reward, reward
         infoboxFrom = `|reward=${output_QuestTemplate(item)}`;
       }
-      else if ((item.source.includes('unlocks recipe') || item.source.includes('Crafting after '))){
+      else if ((item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) || item.location == 'quest/crafting' ){
         infoboxFrom = `|unlockquest=${output_QuestTemplate(item)}`;
       }
       else {
@@ -1395,13 +1410,11 @@ maxLimit: */
       }
 
       let actionVerb = 'completing';
-      // TODO: rework the regex so that "during" is appropriately saved into a variable
-      // || item.source.includes('during')
-      // currently not correctly assigning: Pocahontas Level 10 quest (A Raccoon's Return) (unlisted reward, 1 given during) (automatically collected)
       if (item.whenRewarded && item.whenRewarded.includes('during')) {
         actionVerb = 'progressing through'
       }
 
+      // After completing/After progressing in
       itemSource = `After`;
       
       if ( capitalize(item.questType) == 'Story' ) {
@@ -1422,9 +1435,7 @@ maxLimit: */
         item.howObtained = 'crafted';
       }
       
-      if (item.howObtained && item.howObtained != 'obtained' ||
-          (item.source.includes('unlocks recipe') || item.source.includes('Crafting after '))
-          ) {
+      if (item.howObtained && item.howObtained != 'obtained' || (item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) ) {
         let tempItemQty = item.qtyRewarded ? insertNumberWord(item.qtyRewarded) : 'one';
         // one is crafted during the quest, placed in the [[Nectar Apiary]],
         // and will remain placed after the quest is completed.
@@ -1432,36 +1443,24 @@ maxLimit: */
         tempItemQty = (tempItemQty=='one') ? 'it is' : tempItemQty + ' are'
         //console.log(`item.qtyRewarded vs tempItemQty: ${item.qtyRewarded} vs ${tempItemQty}`)
         itemSource += ` ${tempItemQty} ${item.howObtained} during the quest`;
-        itemSource += `, placed in the Village<!--Valley/[[VILLAGEorBIOME]]-->, `;
-        itemSource += `and `;
-        itemSource += (item.qtyRewarded>1) ? `they `: `it `;
-        itemSource += `will remain placed after the quest is completed.`;
+
+        if (item.itemType != 'Clothing') {
+          itemSource += `, placed in the Village<!--Valley/[[VILLAGEorBIOME]]-->, `;
+          itemSource += `and `;
+          itemSource += (item.qtyRewarded>1) ? `they `: `it `;
+          itemSource += `will remain placed after the quest is completed`;
+        }
+        itemSource += `.`;
+        
       }
       else {
 
-        /*
-        "Crafting after Cogsworth Level 2 quest (Running Like Clockwork) (6 during)":
-character: Cogsworth
-level: 2
-questType: 
-quest: Running Like Clockwork
-qtyRewarded: 
-howObtained: 
-postQuestMailboxMessageTitle: 
-whenRewarded: 6 during
-whenCollected: 
-maxLimit: 
-*/
-
-        if (item.whenRewarded == 'reward') {
+        if (item.whenRewarded && item.whenRewarded.includes('reward') || item.whenRewarded == 'reward' || item.whenReward == 'post-quest mailbox reward') {
           itemSource = itemSource.replace(/^After reaching/g, 'It is rewarded after reaching');
         }
-        if (item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) {
-          itemSource += ` After that quest the [[Crafting|crafting recipe]] will be permanently unlocked.`;
-        }
-        else {
+        /*else {
           itemSource += ` it is made available.`;
-        }  
+        }  */
       }
 
       if (item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) {
@@ -1482,117 +1481,47 @@ maxLimit:
       if (item.whenRewarded && item.whenRewarded.includes('post-quest mailbox reward')) {
         let postQuestMessageTitle = item.postQuestMessageTitle || 'MESSAGETITLE';
         itemSource += ` After the quest is complete, [[${item.character}]] will send a mail message <!-- titled ''"${postQuestMessageTitle}"''--> with this item attached.`;
+        itemSource += `It is collected upon claiming it from the mailbox.`;
       }
 
-      /*
 
-      // source should have already been parsed in parseItemSource
-      if (item.whenRewarded) {
-        //whenRewarded, qtyRewarded, character, level, quest 
-        //console.log(`source for ${item.name} at 1236ish: "${item.source}`);
-        //console.log(item);
+      // above applies to furniture and crafted furniture, overwrite it all if it is clothing
 
-        let postQuestMessageTitle = item.postQuestMessageTitle || 'MESSAGETITLE';
+      // && item.howObtained == 'crafted' || item.whenRewarded == 'crafted during'
+      if (item.itemType == 'Clothing' && (item.whenRewarded && !item.whenRewarded.includes('reward'))) {
 
-        if (item.whenRewarded == 'reward' || item.whenRewarded.includes('post-quest mailbox reward')) {
-          infoboxFrom = `|reward=${output_QuestTemplate(item)}`;
-          itemSource = `It is rewarded after`;
+        // TODO: fix this: "After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: The Big Red Monster]], it is crafted during the quest."
+        // its awkward, should instead be "It is [[Crafting|crafted]] during the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: The Big Red Monster]]."
 
-          if ( capitalize(item.questType) == 'Story' ) {
-            itemSource += ` completing the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]].`;
-          }
-          else {
-            itemSource += ` reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
-            itemSource += ` and completing the quest [[${item.quest}]].`;
-          }
+        // It given by [[Eeyore]] during the quest [[Tails and Tribulations]],
+        // After reaching [[Eeyore#Friendship Rewards|Friendship Level 4]] with [[Eeyore]] and progressing through the quest [[Tails and Tribulations]],
+        // reaching [[Jasmine#Friendship Rewards|Friendship Level 10]] with [[Jasmine]] and completing the quest [[Wild, Wild Wishes]]. 
 
-          
-        }
+        let clothingObtainTextInline = 'obtained<!--[[Crafting|crafted]]/given by [[CHARACTER]]-->';
 
-        }
-      if (item.whenCollected.includes("pick up") || item.whenRewarded && item.whenRewarded.includes('during') || item.whenRewarded == 'pick up after completed') {
+        //[[Eeyore]] level 7 [[friendship]] quest [[The Shy Villagers Society]]
+        // It is ${clothingObtainTextInline} during the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]].
+        // It is ${clothingObtainTextInline} during the [[${item.character}#Quests|${item.character}]] Level ${item.level} friendship quest [[${item.quest}]].
 
-          console.log(`${item.name} makes it into the 2nd clause 1329`)
-          let actionVerb = 'completing';
-          if (item.whenRewarded.includes('during')) {
-            actionVerb = 'progressing through'
-          }
-          infoboxFrom = `|from=${output_QuestTemplate(item)}`;
+        // TODO - account for story quest vs friendship quest
+        itemSource = `It is ${clothingObtainTextInline} during the [[${item.character}#Quests|${item.character}]] quest [[${item.quest}]].`;
+      }
 
-          itemSource = `After `;
+      // quick and hacky for update day use cases - override all logic above and give every item that flags isQuestItem(item) = true with this
+      let useDummyQuestFallback = false;
 
-          if ( capitalize(item.questType) == 'Story' ) {
-            itemSource += ` ${actionVerb} the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]].`;
-          }
-          else {
-            itemSource += ` reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
-            itemSource += ` and ${actionVerb} the quest [[${item.quest}]],`;
-          }
-
-          let tempItemQty = item.qtyRewarded ? insertNumberWord(item.qtyRewarded) : 'one';
-          // one is crafted during the quest, placed in the [[Nectar Apiary]],
-          // and will remain placed after the quest is completed.
-          itemSource += ` ${tempItemQty} is ${item.howObtained} during the quest`;
-          
-          //itemSource += ` it <!--is placed in the Valley/[[BIOME]] and -->will remain placed after the quest is completed.`;
-          itemSource += `, placed in the Village<!--Valley/[[BIOME]]-->, `;
-          itemSource += `and will remain placed after the quest is completed.`;
-
-          if (item.source.includes('unlocks recipe')) {
-            itemSource += ` After that quest the [[Crafting|crafting recipe]] will be permanently unlocked.`;
-          }
-
-          // TODO
-          //itemSource += ` It can be collected by picking it up.`;
-
-          if (item.maxLimit == 'limit 1') {
-            itemSource += ` It is unique and is limited to one.`;
-          }
-
-        else {
-          //console.log(`whenRewarded for item ${item.name}: ${item.whenRewarded}`);
-          // covers (item.whenRewarded == 'during') TODO - catch other conditions
-          // 
-          // 
-
-          // TODO - more flexible placeholder language
-          infoboxFrom = `|from=${output_QuestTemplate(item)}`;
-          itemSource = `After `;
-          itemSource += `reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
-          itemSource += ` and progressing through the quest [[${item.quest}]],`;
-          itemSource += ` it is made available.`;
-          itemSource += `<!--it is given to be placed in [[VILLAGEorBIOME]]/on [[Dazzle Beach]] and will remain placed after the quest is completed.-->`;
-          itemSource += `<!-- It is automatically collected during the quest. -->`;
-          itemSource += `<!-- It can be collected by picking it up. -->`
-        }
-        
-
-
-      }*/
-
-      /*
-      if (infoboxFrom == '' && itemSource == '') {
+      if ( useDummyQuestFallback || (infoboxFrom == '' && itemSource == '') || item.qtyRewarded == '' && item.howObtained == '' && item.whenCollected == '' && item.whenRewarded == '') {
         // total default fallback if not assigned before this
         // no level defined in input - assume reward language - TODO
         infoboxFrom = `|from=${output_QuestTemplate(item)}`;
         
+
+        // It is available in connection with the quest [[QUESTNAME]].
         itemSource = `It is obtained in association with the [[${item.character}#Quests|${item.character}]] quest [[${item.quest}]].`;
+        // itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
         itemSource += placeholderCommentBodyDetailsQuest;
 
       }
-      */
-      /*
-      // Quest - Pocahontas Level 10 Quest (A Raccoon's Return)
-      // "Quest - " prefix indicates it came from reporter data
-      // if source in format of "Quest - CHARACTER Level X (QUESTNAME)",
-      // then it came directly from reporter data, not sheet
-      // so use more general language
-      if (item.source && item.source.includes('Quest - ')) {
-        itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
-        itemSource += placeholderCommentBodyDetailsQuest;
-        // It is available in connection with the quest [[QUESTNAME]].
-      }
-      */
 
     }
 
@@ -2091,7 +2020,7 @@ function output_itemIntro(item) {
     case 'Light':
     case 'Lighting':
       itemUseIntro = 'lighting';
-      itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off."; // ....
+      itemUseBody = ""; // assigned below 
       break;
     case 'Arch':
       itemUseIntro = 'arch';
@@ -2111,10 +2040,10 @@ function output_itemIntro(item) {
       break;
     case 'Sit':
       itemUseIntro = 'seating'; //'<!--seating/bed-->';
-      itemUseBody = " Once it is placed in the world, the Player can '''Sit''' on the object.";
+      itemUseBody = ''; // overridden below
       break;
     case 'Lounge':
-      itemUseIntro = 'seating'; //'<!--seating/bed-->'; // sometimes this is bed... but should probs just display seating anyway, as bed has no intrinsic meaning
+      itemUseIntro = 'bed';//'seating'; //'<!--seating/bed-->'; // sometimes this is bed... but should probs just display seating anyway, as bed has no intrinsic meaning
       itemUseBody = " Once it is placed in the world, the Player can '''Lounge''' on the object.";
       break;
       // 2025.12.09 - TODO - investigate this
@@ -2165,6 +2094,10 @@ function output_itemIntro(item) {
       itemUseIntro == 'bed'
     }
 
+    if (item.functions.includes('Sit')) {
+        itemUseBody = " Once it is placed in the world, the Player can '''Sit''' on the object.";
+      }
+
 
   // TODO: this is overriding any values set above, need to fix
   // janky catch for more lighting objects - this is not robust!!!! cases where i've written extra info in the box
@@ -2176,6 +2109,10 @@ function output_itemIntro(item) {
       if (item.functions.includes('Constant')) {
         itemUseBody = "<!-- Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
       }
+      if (item.functions == 'Lighting') {
+        itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off.";
+      }
+      
     }
 
 
@@ -2224,6 +2161,11 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
   }
 
     // SO JANKY and repetitive but its working
+
+  if (item.functions && item.functions.includes('Storage (')) {
+    output += " that has <!--16/32/48--> inventory spaces";
+    itemUseBody = " Once placed it can be interacted with to store items outside of the [[Inventory|Player's Backpack]]. Crafting materials and cooking ingredients in storage are accessible at [[:Category:Crafting Stations|Crafting Stations]] and [[:Category:Cooking Stations|Cooking Stations]] even though they are no longer in Inventory.";
+  }
   if (item.functions && item.functions.includes('Cooking Station')) {
     output += " that functions as a [[:Category:Cooking Stations|cooking station]]";
     itemUseBody = " Once it is placed in the world, the Player can '''Use''' the item as a [[:Category:Cooking Stations|Cooking Station]] to make [[Cooking|meal recipes]].";
@@ -2235,8 +2177,16 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
   }
   if (item.functions && item.functions.includes('Gathering')) {
       output += ""; //" that functions as a [[:Category:Gathering.....|....]]";
+
       // TODO: detect and insert number of villagers from functions=Gathering (X)
-      var numVillagers = '2';
+      // Gathering (3)
+      //var numVillagers = '2';
+
+      //const str = "functions=Gathering (3)";
+
+      const match = item.functions.match(/\((\d+)\)/);
+      const numVillagers = match ? parseInt(match[1], 10) : null;
+
       itemUseBody = '\n\nIt has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport ' + numVillagers + ' random villagers to the location.';
       // also i hate this wording
     }
@@ -3001,6 +2951,8 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('|placement=default-', '|placement=default');
 
     newStr = newStr.replaceAll('\n|functions=Rug', '');
+    newStr = newStr.replaceAll('\n|functions=Fireplace (Interact)', '\n|functions=Fireplace');
+
 
 
   newStr = newStr.replaceAll('|universe=(unknown)','|universe=<!--(unknown)-->'); // introduced by companions
@@ -3016,6 +2968,11 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
   const target = "Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].";
   const replacement = "It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] or [[:Category:Untracked Crafting Collection|Crafting Collection]].";
   newStr = newStr.replaceAll(target, replacement);
+
+
+  var target2 = 'Once collected it will be added to the [[:Category:none Clothing Sets Collection|none Clothing Sets Collection]].';
+  var replacement2 = 'Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].';
+  newStr = newStr.replaceAll(target2, replacement2);
 
 
 

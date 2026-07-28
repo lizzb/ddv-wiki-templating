@@ -1614,7 +1614,7 @@ function renderQuestItems(dataArray) {
   dataArray.forEach(function (item) {
     let name = item.name || 'ITEMNAME';
     let description = item.description || ''; // TODO: add missing description category
-    let questname = item.quest || 'QUESTNAME';
+    let questname = item.questname || item.quest || 'QUESTNAME';
     let questType = item.questType || 'QUESTTYPE'; // either 'story' or ''
     let questcharacter = item.questcharacter || 'CHARACTER';
     let realmname = item.realmname || 'REALMNAME';

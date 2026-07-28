@@ -13,7 +13,10 @@ escape quotes in bundle and item names --> i think the problem is in using mr da
 - |Expansion 1-3 should be 1.12 for EI, i think? (vizier's alchemy table)
 - adjust last sentence of companion home function body text - see Peaceful Meadow Companion Home --> "nearby [[:Category:Companion Interest|Companion]] items."
 - TODO: generate relateditems
-
+- for level 10 quests rewards, remove automaticaly from "It is automatically rewarded after reaching"
+- Cozy Pillow Fort - reward/from value incorrect, quest name catching too much in regex
+- quest value parsing incorrectly: "Hades Level 10 quest (Fine, I'll Do It Myself) (reward) - limit 1", "Crafted during Sadness Level 4 Quest (The Fortress of Saditude) - limit 1", "Hercules Level 7 quest (Medicinal Mortality) (reward) - limit 1"
+todo - it is quest/crafting, "unlockquest" instead of "from" should be used in the infobox
 
 REPORTER
 - reporter outputs "surfaces" for Woodland Hummock
@@ -85,7 +88,16 @@ todo - rename character to questCharacter, level to questLevel, quest to questNa
 =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 
 
+// TODO: fix this: "After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: The Big Red Monster]], it is crafted during the quest."
+// its awkward, should instead be "It is [[Crafting|crafted]] during the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: The Big Red Monster]]."
 
+// It given by [[Eeyore]] during the quest [[Tails and Tribulations]],
+// After reaching [[Eeyore#Friendship Rewards|Friendship Level 4]] with [[Eeyore]] and progressing through the quest [[Tails and Tribulations]],
+
+
+
+
+- |placement=default (no table) --> should turn into |surfaceArea=none\n|placement=default
 - need to identify test cases of multiple items from a premium bundle
 
 - |collection=Accessory - should be none for accessories, and be grouped with closest associated universe (if any) in navbox
@@ -111,13 +123,13 @@ todo - rename character to questCharacter, level to questLevel, quest to questNa
 
 - add param of recipe to the crafted furniture template but fall back to empty if it isn't present - could generate from reporter
 
-- Cozy Pillow Fort - reward/from value incorrect, quest name catching too much in regex
 
-- quest value parsing incorrectly: "Hades Level 10 quest (Fine, I'll Do It Myself) (reward) - limit 1", "Crafted during Sadness Level 4 Quest (The Fortress of Saditude) - limit 1", "Hercules Level 7 quest (Medicinal Mortality) (reward) - limit 1"
+
+
 
 - Summer Crafting Station - needs to add intro sentence: "The crafting recipe is unlocked after using a [[Summer Crafting Station Recipe|recipe book]] send through in-game mail during [[Summer Sizzle|the event]]."
 
-- for level 10 quests rewards, remove automaticaly from "It is automatically rewarded after reaching"
+
 
 - Moontide glow banner should generate: "After reaching [[Pocahontas#Friendship Rewards|Friendship Level 10]] with [[Pocahontas]] and progressing through the quest [[A Raccoon's Return]], it is given to be placed on [[Dazzle Beach]] and will remain placed after the quest is completed. It is automatically collected during the quest. Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]]." from "Pocahontas Level 10 quest (A Raccoon's Return) (during)"
 
@@ -126,14 +138,12 @@ todo - rename character to questCharacter, level to questLevel, quest to questNa
 ----------------------------------------------------------
 
 
-
+- make all relatedItems when multiple clothing/furniture items related from a quest
 
 =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*
 problematic items:
 Cozy Tiger Pajama Hat
 philoctean gate
-
-todo - it is quest/crafting, "unlockquest" instead of "from" should be used in the infobox
 
 remove: |craftingcategory=Furniture
 
