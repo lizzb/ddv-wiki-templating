@@ -956,7 +956,8 @@ function renderMeals(dataArray) {
     templateMealArticle += wrapComment(itemUseBody, !collectionConfirmed);
     templateMealArticle += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Meals Collection|'+newExpansionCollection+' Meals Collection]].';
 
-    templateMealArticle += "\n\n[[Cooking#Meals|Meals]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
+    templateMealArticle += "\n\n[[Cooking#Meals|Meals]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''.";
+    templateMealArticle += " After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
 
     templateMealArticle += output_history(item);
     templateMealArticle += '\n\n{{NavboxMeal|honeyglowwoods}}';// {{NavboxMeal|wishblossommountains}} // {{NavboxMeal|storybookvale}} // {{NavboxMeal|eternityisle}}
@@ -1102,7 +1103,9 @@ function generateFlowerTemplate(item) {
     // line about beast flower shop? template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
     template += ' Once collected it will be added to the [[:Category:'+newExpansionCollection+' Foraging Collection|'+newExpansionCollection+' Foraging Collection]].';
     template += ' ';
-    template += "\n\n[[Foraging#Flowers|Flowers]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. For many quests which require picking a flower, dropping it from inventory and picking back up will award credit. After a flower has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
+    template += "\n\n[[Foraging#Flowers|Flowers]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''.";
+    template += " For many quests which require picking a flower, dropping it from inventory and picking back up will award credit.";
+    template += " After a flower has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
     
     //crafting recipes, quest objectives, quest recipes
     //template += insertRecipeDefaults(dataArray);
@@ -1599,10 +1602,12 @@ function renderQuestItems(dataArray) {
     renderedHTML += delimiter;
   });
   */
+  // It is crafted during the Honeyglow Woods [[Winnie the Pooh]] story quest [[Chapter 11: The Anti-monster Camp]],
   dataArray.forEach(function (item) {
     let name = item.name || 'ITEMNAME';
     let description = item.description || ''; // TODO: add missing description category
-    let questname = item.questname || 'QUESTNAME';
+    let questname = item.quest || 'QUESTNAME';
+    let questType = item.questType || 'QUESTTYPE'; // either 'story' or ''
     let questcharacter = item.questcharacter || 'CHARACTER';
     let realmname = item.realmname || 'REALMNAME';
     let characterlevel = item.characterlevel || 'LEVEL';
@@ -1616,7 +1621,10 @@ function renderQuestItems(dataArray) {
     template += `\n|from=<!--{{quest|${questname}|friendship=${questcharacter}|level=${characterlevel}|realm=${realmname}}}-->`; // TODO - LOGIC ON WHETHER COMMENTED OR NOT
     template += `\n|recipe=`;
     template += `\n}}`;
-    template += `\n'''${name}''' is a [[Quests|quest]] item<!--which is collected during // which is given by [[${questcharacter}]] during the [[${realmname}]] quest [[${questname}]] // which is crafted during the [[${questcharacter}#Friendship Quests|${questcharacter} Level ${characterlevel} Friendship quest]] [[${questname}]]. // item which is [[Fishing|fished up]] in the [[${realmname}]] during the realm quest [[${questname}]]-->.`;
+    template += `\n'''${name}''' is a [[Quests|quest]] item`;
+    template += `<!--which is collected during // which is given by [[${questcharacter}]] during the [[${realmname}]] quest [[${questname}]] `;
+    template +=  `// which is crafted during the [[${questcharacter}#Friendship Quests|${questcharacter} Level ${characterlevel} Friendship quest]] [[${questname}]]. `;
+    template += `// item which is [[Fishing|fished up]] in the [[${realmname}]] during the realm quest [[${questname}]]-->.`;
     template += `\n`;
     template += `\n==Acquisition==`;
     template += `\n:{{quest|${questname}}} - TBA<!--Crafted during quest / Given by [[${questcharacter}]]-->`;
@@ -1644,6 +1652,9 @@ function renderQuestItems(dataArray) {
   return renderedHTML;
 }
 
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 
 /*
