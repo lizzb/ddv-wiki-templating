@@ -329,6 +329,7 @@ function output_functions(item) {
 
 function output_sizePlacementEnv(item) {
   //item = parseSizePlacementEnv(item);
+  //console.log(`output_sizePlacementEnv`);
   if (!item.size) {
     item.size = '<!--WxD*<!--DIMENSIONS NOT FILLED-->';
     if (item.itemType != 'Clothing') {
@@ -447,9 +448,11 @@ function updateAppropriateVersion(item) {
     item.version = "1.20";
     break;
   // temporary hard force
-  case "1.24":
   case "1.24.1":
     item.version = "Adventure Pack 1";
+    break;
+  case "1.24.11":
+    item.version = "1.24";
     break;
   default:
     break;
@@ -617,6 +620,7 @@ function output_navbox(item) {
   newStr = newStr.replaceAll('abug\'slife', 'abugslife');
   newStr = newStr.replaceAll('{{NavboxFurniture|monsters,inc.|disney}}', '{{NavboxFurniture|monstersinc|disney}}');
   newStr = newStr.replaceAll('{{NavboxFurniture|wall-e|disney}}', '{{NavboxFurniture|walle|disney}}');
+  newStr = newStr.replaceAll('wreck-itralph', 'wreckitralph');
 
   output = newStr;
 
@@ -839,76 +843,8 @@ function parseItemSource(item) {
 
       /*
       // use https://regex101.com/
-      const { character, levelNum, questType, quest, qty, whenParen, tailHyphen } = match.groups;
-
-      item.character = character ? character.trim() : "";
-      item.level = levelNum || "";
-      item.questType = questType || ""; // Captures "story" or ""
-      item.quest = quest ? quest.trim() : "";
-      item.qtyRewarded = qty || "";
-      
-      //// Cleanly route when/reward details regardless of hyphen or parenthesis formatting
-      //// Pick parenthetical status if present, otherwise fall back to hyphen status
-      ////const rawWhen = whenParen || whenHyphen || "";
-      ////item.whenRewarded = rawWhen.trim();
-
-      let whenVal = whenParen ? whenParen.trim() : "";
-      let limitVal = tailHyphen ? tailHyphen.trim() : "";
-
-      // Handle trailing parenthesis cases like "(unlocks recipe)" where there is no hyphen
-      if (!limitVal && whenVal.match(/^(?:unlocks|limit)/i)) {
-        limitVal = whenVal;
-        whenVal = "";
-      }
-
-      item.whenRewarded = whenVal;
-      item.maxLimit = limitVal;
       */
 
-/*
-  const { character, levelNum, questType, quest, qty, actionVerb, whenParen, quote, tailHyphen } = match.groups;
-
-  item.character = character ? character.trim() : "";
-  item.level = levelNum || "";
-  item.questType = questType || "";
-  item.quest = quest ? quest.trim() : "";
-  item.qtyRewarded = qty || "";
-  item.howObtained = actionVerb ? actionVerb.toLowerCase().trim() : "obtained";
-  item.postQuestMailboxMessageTitle = quote ? quote.trim() : "";
-
-  // Parse parenthetical status block (e.g. "during, pick up after quest")
-  let rawParen = whenParen ? whenParen.trim() : "";
-  let rawHyphen = tailHyphen ? tailHyphen.trim() : "";
-
-  let timing = "";
-  let collected = "";
-  let limit = "";
-
-  // Extract "pick up after..." from paren status
-  if (rawParen.includes(",")) {
-    const parts = rawParen.split(",").map(s => s.trim());
-    timing = parts[0];
-    const rest = parts.slice(1).join(", ");
-    if (rest.match(/pick up/i)) {
-      collected = rest;
-    }
-  } else if (rawParen.match(/^pick up/i)) {
-    collected = rawParen;
-  } else {
-    timing = rawParen;
-  }
-
-  // Handle hyphen/trailing rules ("unlocks automatically", "limit 1")
-  if (rawHyphen.match(/^limit/i)) {
-    limit = rawHyphen;
-  } else if (rawHyphen.match(/^unlocks/i)) {
-    collected = rawHyphen;
-  }
-
-  item.whenRewarded = timing;
-  item.whenCollected = collected;
-  item.maxLimit = limit;
-*/
 
 
 
@@ -1167,6 +1103,28 @@ function parseItemSource(item) {
     const result = string.split(regex);
     item.bundleName = result[1];
     item.bundlePrice = result[2];
+
+// --------------------------------
+
+    const string2 = item.source;
+    // Regex matching any bundle occurrence in the string
+    const regex2 = /Premium Bundle - (.+?) \((\d+) M\)/g;
+    const matches = [...string.matchAll(regex2)];
+
+    if (matches.length > 0) {
+      // First bundle
+      item.bundleName = matches[0][1].trim();
+      item.bundlePrice = matches[0][2];
+
+      // Optional: If you need the second bundle when present
+      if (matches[1]) {
+        item.secondBundleName = matches[1][1].trim();
+        item.secondBundlePrice = matches[1][2];
+      }
+    }
+
+// --------------------------------
+
 
     // TODO - multiple item count eg (x3) - ignore
     // TODO - both mega bundle and premium bundle
@@ -2862,6 +2820,14 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('Crafting Station \(Use\)', 'Crafting Station');
     newStr = newStr.replaceAll('\n|functions=Rug', '');
     newStr = newStr.replaceAll('\n|functions=Fireplace (Interact)', '\n|functions=Fireplace');
+
+    
+    newStr = newStr.replaceAll('|placement=(outdoor)\n|environment=outdooronly', '|placement=\n|environment=outdooronly');
+
+    // TEMPORARY - comment out empty infobox recipes
+    newStr = newStr.replaceAll('|recipe=\n', '');
+    newStr = newStr.replaceAll('{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: <!--Dreamlight Valley--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]].}}','{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: Dreamlight Valley Clothing Sets Collection|Dreamlight Valley Clothing Sets Collection]].}}');
+    newStr = newStr.replaceAll("{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}","{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}");
 
 
     // for crafted furniture

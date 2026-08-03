@@ -430,7 +430,7 @@ const starpathsObject = {
     "Paw-fect Romance": { "tokenName": 'pawprinttoken', "sheetLocationVal": 'starpath - pawfect' },
     "Elements of Nature": { "tokenName": 'earthtoken', "sheetLocationVal": 'starpath - nature' },
     "Godly Glamor": { "tokenName": 'lightningtoken', "sheetLocationVal": 'starpath - godly' },
-    "Pop City": { "tokenName": 'popcitytoken', "sheetLocationVal": 'starpath - popcity' },
+    "Pop City": { "tokenName": 'neontoken', "sheetLocationVal": 'starpath - popcity' },
   };
 
 function lookupToken(starpathName) {

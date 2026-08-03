@@ -243,29 +243,41 @@ $(document).on('change', '#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB,
   }
 });
 </script>
-<!--
 <script>
-// === FEATURE 1: collapse embedded line breaks in pasted cells to " // " -- still not working ===
+// === FEATURE 1 (corrected): collapse line breaks inside quoted TSV cells ===
+// This must run BEFORE parsing, not after -- the parser's tab-delimiter
+// multi-line-quote handling is buggy and corrupts data if it ever sees a
+// real embedded newline. This pre-scans the raw pasted text, tracks
+// quote-open/close state character by character, and only collapses
+// newlines that are actually inside an open quote.
 (function() {
-  var originalParse = CSVParser.parse;
-  CSVParser.parse = function() {
-    var result = originalParse.apply(this, arguments);
-    for (var r = 0; r < result.dataGrid.length; r++) {
-      var row = result.dataGrid[r];
-      for (var c = 0; c < row.length; c++) {
-        if (typeof row[c] === 'string') {
-          row[c] = row[c]
-            .replace(/\\n/g, ' // ')   // undo app.js's own first-occurrence "\n"→"\\n" escape
-            .replace(/\\r/g, ' // ')   // same, for \r
-            .replace(/\r\n|\r|\n/g, ' // '); // catch any remaining real line breaks
-        }
+  function collapseNewlinesInsideQuotedCells(text) {
+    var result = '';
+    var inQuotes = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+        result += ch;
+      } else if ((ch === '\n' || ch === '\r') && inQuotes) {
+        if (ch === '\r' && text[i + 1] === '\n') i++; // treat \r\n as one break
+        result += ' // ';
+      } else {
+        result += ch;
       }
     }
     return result;
+  }
+
+  var originalParse = CSVParser.parse;
+  CSVParser.parse = function(inputText) {
+    var args = Array.prototype.slice.call(arguments);
+    args[0] = collapseNewlinesInsideQuotedCells(inputText);
+    return originalParse.apply(this, args);
   };
 })();
 </script>
-
+<!--
 <script>
 // === FEATURE 2: type/paste JSON directly into #data-output, skip TSV entirely ===
 (function() {

@@ -17,6 +17,7 @@ escape quotes in bundle and item names --> i think the problem is in using mr da
 - Cozy Pillow Fort - reward/from value incorrect, quest name catching too much in regex
 - quest value parsing incorrectly: "Hades Level 10 quest (Fine, I'll Do It Myself) (reward) - limit 1", "Crafted during Sadness Level 4 Quest (The Fortress of Saditude) - limit 1", "Hercules Level 7 quest (Medicinal Mortality) (reward) - limit 1"
 todo - it is quest/crafting, "unlockquest" instead of "from" should be used in the infobox
+- flag "hairstyle" or "hairdo" in name for isHairstyle function
 
 REPORTER
 - reporter outputs "surfaces" for Woodland Hummock
@@ -69,7 +70,6 @@ todo parser
 - gridsize and placement seem to always be commented out
 - missing: size category not present when gridsize is commented out
 - new function to generate PSbundle articles from full data, not just inferred from other items parsed like it is currently
-- flag "hairstyle" or "hairdo" in name for isHairstyle function
 - companions not flagging templates correclty
 - if "Back, Gliders" is category intro sentence should be "piece of back and glider [[clothing]]."
 

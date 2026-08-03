@@ -4,12 +4,12 @@
 // this value is changed based on changes to radio buttons in html - not sure if this actually does anything
 var templateType = "meals"; // other vals: clothingFurniture, spDuties, spRewards, questItems, meals, ingredients, companions
 
-var updateNumber = "1.24"; //"1.20.11"; //"Expansion 3"; //"1.20.2";// Expansion 3
+var updateNumber = "1.24.11"; //"1.20.11"; //"Expansion 3"; //"1.20.2";// Expansion 3 1.24 user facing is 1.24.11 in my sheet
 var newExpansionCollection = "Honeyglow Woods"; //"Wishblossom Mountains";
 
 var starPathNameShort = "Pop City";
 var starPathName = "Pop City";
-var starPathToken = "popcitytoken";
+var starPathToken = "neontoken";
 
 // toggle to wrap in cleanup tag
 var collectionConfirmed = $("#collectionConfirmedCB").prop("checked"); //true;
