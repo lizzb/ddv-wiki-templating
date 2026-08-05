@@ -774,6 +774,49 @@ function outputBundle_historicalTable(bundleObj) {
 // dupe content from premiumShopLineupGenerator ============
 
 
+
+function outputBundle_bundleArticle(bundleObj) {
+  let output = '';
+
+  let startWeekDate = '2026-MM-DD';
+  let endWeekDate = '2026-MM-DD';
+  let bundlePrice = bundleObj.bundlePrice;
+  let bundleName = bundleObj.bundleName;
+  let bundleType = bundleObj.bundleType;
+  let bundleVersion = bundleObj.version;
+
+  let psBundleItemsInline = bundleObj.psBundleItems.join(', ');
+
+  var imageParam = `${bundleName}`; // vs '%%bundleName%% Store'
+  var itemsParam1 = '<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->'; // vs ''
+  var itemsParam2 = "\n<!--|itemgallery={{Gallery|ITEM_COUNTSINGLE|caption='''[[ITEM_COUNTSINGLE]]'''|link=ITEM_COUNTSINGLE}}\n{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}-->"; // vs '%%psBundleItems%%'
+
+  if (bundleObj.standaloneBundleNaming) {
+    imageParam = `${bundleName} Store`;
+    itemsParam1 = '';
+    itemsParam2 = `${psBundleItemsInline}`; //'%%psBundleItems%%'; // will be single item, usually (unless standalone naming is being used because bundle name = item name contained but >1 item)
+  }
+  if (bundleType) {
+    // TODO: set to "House Dream Style", "Tool Dream Style", "Character Dream Style", "Companion"
+    // currently we do not have a property like that available, must be manually set from sheet as first column - jk we should have this already by determinebundletype
+    //console.log(item);
+  }
+  tempTemplate = `{{infobox\n|name=${bundleName}\n|image=${imageParam}.png\n|width=350px\n|type=Premium Bundle\n|category=${bundleType}\n|from=Premium Shop\n|sellprice={{price|${bundlePrice}|moonstone}}`;
+  tempTemplate += `\n|items=${psBundleItemsInline}${itemsParam1}\n}}`;
+  tempTemplate += `\n{{BundleDescription\n|${bundleName}\n|type=Premium Bundle\n|category=${bundleType}\n|from=Premium Shop\n|bundlePrice=${bundlePrice}`;
+  tempTemplate += `\n|items=${itemsParam2}`;
+  tempTemplate += `\n|dates=\n* ${startWeekDate} - ${endWeekDate}`;
+  tempTemplate += `\n}}`;
+  tempTemplate += ` {{cleanup|TODO - verify item order and counts}}`;
+  tempTemplate += `\n\n==History==\n{{history|${bundleVersion}|Added}}\n\n{{NavboxPremiumBundle}}`;
+
+  //output = microTemplate(tempTemplate, bundleObj);
+  output += tempTemplate + '\n\n----------------------------------------------------------\n\n';
+
+  return output;
+}
+
+
 function renderPSBundles(dataArray) {
   //console.log(`dataArray inside renderPSBundles`);
   //console.log(dataArray);
@@ -828,71 +871,23 @@ function renderPSBundles(dataArray) {
 
   var tempTemplate = '';
 
-  tempTemplate = '';
   psBundleNavbox += '\n\n============ Premium Bundle Navbox ============\n\n';
-  bundleArray.forEach(function (item) {
-    psBundleNavbox += outputBundle_psNavbox(item)+ '\n\n\n'; 
-  });
-
-  tempTemplate = '';
   psTopTable += '\n\n============ Premium Bundle Top Table ============\n\n';
-  bundleArray.forEach(function (item) {
-    psTopTable += outputBundle_topTable(item) + '\n\n\n';
-  });
-
-  tempTemplate = '';
   psPageListing +='\n\n============ Premium Bundle Page Listing ============\n\n';
-  bundleArray.forEach(function (item) {
-    psPageListing += outputBundle_psPageListing(item) + '\n\n\n';
-  });
-
-
-  // ****TODO FIX currently rendering dupes of standalone items in historical table - fixed?
-  // ****TODO FIX currently not listing all items in the bundle -- think fixed?
   psHistoricalTableRow += '\n\n============ Premium Bundle Historical Table ============\n\n';
+  psBundleArticle += '\n\n============ Bundle Article ============\n\n';
+
   bundleArray.forEach(function (item) {
+    psBundleNavbox += outputBundle_psNavbox(item)+ '\n\n\n';
+    psTopTable += outputBundle_topTable(item) + '\n\n\n';
+    psPageListing += outputBundle_psPageListing(item) + '\n\n\n';
     item = prepBundle(item);
     psHistoricalTableRow += outputBundle_historicalTable(item) + '\n\n\n';
-  });
-
-
-  tempTemplate = '';
-  psBundleArticle += '\n\n============ Bundle Article ============\n\n';  
-  bundleArray.forEach(function (item) {
-
-    var imageParam = '%%bundleName%%'; // vs '%%bundleName%% Store'
-    var bundleTypeParam = '%%bundleType%%';
-    var itemsParam1 = '<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->'; // vs ''
-    var itemsParam2 = "\n<!--|itemgallery={{Gallery|ITEM_COUNTSINGLE|caption='''[[ITEM_COUNTSINGLE]]'''|link=ITEM_COUNTSINGLE}}\n{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}-->"; // vs '%%psBundleItems%%'
-
-    if (isSingleItemBundle(item)) {
-      imageParam = '%%bundleName%% Store';
-      itemsParam1 = '';
-      itemsParam2 = '%%psBundleItems%%'; // will be single item
-    }
-    if (bundleTypeParam) {
-      // TODO: set to "House Dream Style", "Tool Dream Style", "Character Dream Style", "Companion"
-      // currently we do not have a property like that available, must be manually set from sheet as first column
-      //console.log(item);
-    }
-
-    let psBundleItemsInline = item.psBundleItems.join(', ');
-    let startWeekDate = '2026-MM-DD';
-    let endWeekDate = '2026-MM-DD';
-
-    tempTemplate = '{{infobox\n|name=%%bundleName%%\n|image='+imageParam+'.png\n|width=350px\n|type=Premium Bundle\n|category='+bundleTypeParam+'\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items='+psBundleItemsInline+itemsParam1+'\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category='+bundleTypeParam+'\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items='+itemsParam2;
-    tempTemplate += `\n|dates=\n* ${startWeekDate} - ${endWeekDate}`;
-    tempTemplate += '\n}}';
-    tempTemplate += ' {{cleanup|TODO - verify item order and counts}}'
-    tempTemplate += '\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
-
-    psBundleArticle += microTemplate(tempTemplate, item);
-    psBundleArticle += '\n\n----------------------------------------------------------\n\n';
+    psBundleArticle += outputBundle_bundleArticle(item);
   });
 
   // '\n\n'
   renderedHTML += psBundleNavbox + '' + psTopTable + '' + psPageListing + '' + psHistoricalTableRow + '' + psBundleArticle;
-
 
   return renderedHTML;
 }
@@ -1354,7 +1349,7 @@ function generateFlowerTemplate(item) {
     template += " For many quests which require picking a flower, dropping it from inventory and picking back up will award credit.";
     template += " After a flower has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
     
-    //crafting recipes, quest objectives, quest recipes
+    //crafting recipes, quest objectives, quest recipes - easier workflow to add later as needed than to delete from a bunch of pages?
     //template += insertRecipeDefaults(dataArray);
 
     template += output_history(item);
@@ -1388,7 +1383,7 @@ function generateRandomTemplate(item) {
 
 // TODO - generateNewExpansionTemplate is not used yet anywhere
 function generateNewExpansionTemplate(item) {
-  var template = '';
+  var template = 'TODO - generate list of category page articles for new expansion';
 
   /*
   // === CATEGORIES in preparation of an expansion:
@@ -1590,6 +1585,46 @@ function isCompanion(item) {
   return isCompanion;
 }
 
+function generateCritterSchedule(item){
+  let template = '';
+  template += "\n{{CritterSchedule";
+  template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
+  template += "\n|sunday=TBA";
+  template += "\n|monday=TBA";
+  template += "\n|tuesday=TBA";
+  template += "\n|wednesday=TBA";
+  template += "\n|thursday=TBA";
+  template += "\n|friday=TBA";
+  template += "\n|saturday=TBA";
+  template += "\n}}<!--";
+  template += "\n";
+  template += "\n==Yield==";
+  template += "\n{| class=wikitable id='recipe-table'";
+  template += '\n!style="" | Food Type';
+  template += '\n!style="" | Item';
+  template += '\n!style="" | Possible Rewards';
+  template += "\n|-";
+  template += "\n| Favorite";
+  template += "\n| TBA";
+  template += "\n|";
+  //template += "\nTBA";
+  template += "\n{{name|Dream Shard|2}}<br>";
+  template += "\n{{name|Memory Shard}}<br>";
+  template += "\n{{name|Motif Bag}}";
+  template += "\n|-";
+  template += "\n| Liked";
+  template += "\n| TBA";
+  template += "\n|";
+  //template += "\nTBA";
+  template += "\n{{name|Dream Shard}}<br>";
+  template += "\n{{name|Memory Shard}}<br>";
+  template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
+  template += "\n|}-->";
+  template += "\n{{cleanup|Missing Love and Like rewards}}";
+  template += "\n";
+  return template;
+}
+
 function generateCompanionTemplate(item) {
 
   //let template_critter = "{{stub}}\n{{Infobox\n|image=%%name%%.png\n|type=Companions\n|category=<!--Animal Companions, Critter-->\n|collection=%%newExpansionCollection%%\n|hangout=<!--Foraging-->\n|critterType=<!--Hedgehog-->\n|found={{name|BIOMENAME}}<!--<br>(REGION)--><!--<br>M, T, W, Th, F, Sat, Sun PM-->\n|favfood=<!--{{name|XXXXXX}}-->\n|likedfoods=<!--{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}-->\n|minfeedings=1\n}}\n{{ItemDescription\n|%%name%%\n|type=Companion\n|critterType=<!--Hedgehog-->\n|from=Feeding Critters\n|found=in <!--the '''REGION''' area of-->[[BIOMENAME]]<!--all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->\n|favoriteFood=<!--Red Currants-->\n|likedFoods=<!--[[Blueberry]], [[Gooseberry]], [[Raspberry]], [[Strawberry]]-->\n|critterCollection=%%newExpansionCollection%%\n|hangout=[[Foraging]]\n|numFeedings=one<!--(1)-->\n}}\n{{CritterSchedule\n|location=BIOMENAME\n|sunday=TBA\n|monday=TBA\n|tuesday=TBA\n|wednesday=TBA\n|thursday=TBA\n|friday=TBA\n|saturday=TBA\n}}\n\n==Yield==\n{| class=wikitable id='recipe-table'\n!style="" | Food Type\n!style="" | Item\n!style="" | Possible Rewards\n|-\n| Favorite\n| <!--{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard|2}}<br>\n{{name|Memory Shard}}<br>\n{{name|Motif Bag}}-->\n|-\n| Liked\n|\n<!--{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard}}<br>\n{{name|Memory Shard}}<br>\n{{name|Wheat Seed}}-->\n|}\n\n==Friendship Rewards==\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.\n{| class=wikitable id='recipe-table'\n!Lvl\n!Image\n!Name\n!Type\n|-\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->\n|-\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]\n|-\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || [[File:Companion Gather Foraging Icon.png| 50x50px| center]] || [[Foraging|Foraging Gathering Bonus]] || [[Foraging|Resource Collection]]\n|-\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]\n|}\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxCompanion}}\n__noTOC__"
@@ -1628,45 +1663,21 @@ function generateCompanionTemplate(item) {
     }
 
     if (isCritter) {
-      template += "\n{{CritterSchedule";
-      template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
-      template += "\n|sunday=TBA";
-      template += "\n|monday=TBA";
-      template += "\n|tuesday=TBA";
-      template += "\n|wednesday=TBA";
-      template += "\n|thursday=TBA";
-      template += "\n|friday=TBA";
-      template += "\n|saturday=TBA";
-      template += "\n}}<!--";
-      template += "\n";
-      template += "\n==Yield==";
-      template += "\n{| class=wikitable id='recipe-table'";
-      template += '\n!style="" | Food Type';
-      template += '\n!style="" | Item';
-      template += '\n!style="" | Possible Rewards';
-      template += "\n|-";
-      template += "\n| Favorite";
-      template += "\n| TBA";
-      template += "\n|";
-      //template += "\nTBA";
-      template += "\n{{name|Dream Shard|2}}<br>";
-      template += "\n{{name|Memory Shard}}<br>";
-      template += "\n{{name|Motif Bag}}";
-      template += "\n|-";
-      template += "\n| Liked";
-      template += "\n| TBA";
-      template += "\n|";
-      //template += "\nTBA";
-      template += "\n{{name|Dream Shard}}<br>";
-      template += "\n{{name|Memory Shard}}<br>";
-      template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
-      template += "\n|}-->";
-      template += "\n{{cleanup|Missing Love and Like rewards}}";
-      template += "\n";
+      template += generateCritterSchedule(item); 
     }
 
     template += '}}'; // END OF INFOBOX
     //template += `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`;
+
+    let infoboxHangout = `[[Foraging]] / [[Foraging#Flowers{{!}}Flowers]]`;
+    let inlineLink1 = `[[Foraging#Flowers|Flowers]] / [[Foraging]]`;
+    let inlineLink2 = `[[Foraging]]`;
+    let level4Icon = `Companion Gather Flowers Icon`;
+    let level4HangoutType = `[[Foraging|Flower Gathering Bonus]]`;
+    let level4LinkLabel = `[[Foraging|Resource Collection]]`;
+    let level2LinkLabel = `[[Ingredients|Ingredient]] / [[Foraging#Flowers|Flower]]`;
+    let level2RewardItem = `REWARDITEM`;
+    let level2RewardQty = `COUNT`;
 
     template += '\n{{ItemDescription';
     template += '\n|%%name%%';
@@ -1677,7 +1688,7 @@ function generateCompanionTemplate(item) {
     //template += '\n|bundleName=XXX_COMPANIONNAME_XXX (Bundle){{!}}XXX_COMPANIONNAME_XXX';
     //template += '\n|bundlePrice=XXX_BUNDLEPRICE_XXX';
     template += '|critterCollection=%%collection%%';
-    template += '\n|hangout=<!--[[Foraging]] / [[Foraging#Flowers{{!}}Flowers]]-->';
+    template += `\n|hangout=<!--${infoboxHangout}-->`;
     template += '\n}}';
 
     // is a limited time premium [[Companions#Event Companions|event companion]]
@@ -1697,40 +1708,37 @@ function generateCompanionTemplate(item) {
     for {{price|2000|moonstone|showLabel}}.
     */
 
-
     var companionCollectionText = ' Once collected it will be added to the [[:Category: %%collection%% %%itemType%% Collection|%%collection%% %%itemType%% Collection]].';
-    
     companionCollectionText = ' Once collected it will be added to the [[:Category:Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]].';
     template += companionCollectionText;
     
-    template += "\n\nIt can be equipped using the [[Wardrobe menu]] inside the [[Inventory]], under the '''Companions''' category.";
-    template += " Once equipped, it will follow the Player as they move between Biomes and wander nearby.";
-    template += " It can collect";
-    template += "<!-- [[Foraging#Flowers|Flowers]] / [[Foraging]]-->";
-    template += " resources near to the player, and after reaching [[friendship]] level 4 it can has a chance to produce bonus ";
-    template += "<!-- [[Foraging]]-->"
-    template+= " resources when gathering.";
-    template += " Companions can also be photographed in unique poses using [[Phone#Photo Mode|Photo Mode]], or housed in a [[:Category:Companion Home|Companion Home]].";
+    template += `\n\nIt can be equipped using the [[Wardrobe menu]] inside the [[Inventory]], under the '''Companions''' category.`;
+    template += ` Once equipped, it will follow the Player as they move between Biomes and wander nearby.`;
+    template += ` It can collect`;
+    template += `<!-- ${inlineLink1}-->`;
+    template += ` resources near to the player, and after reaching [[friendship]] level 4 it can has a chance to produce bonus `;
+    template += `<!-- ${inlineLink2}-->`
+    template+= ` resources when gathering.`;
+    template += ` Companions can also be photographed in unique poses using [[Phone#Photo Mode|Photo Mode]], or housed in a [[:Category:Companion Home|Companion Home]].`;
     
     template += '\n{{cleanup|Uncomment when confirmed --';
-    template += "\n==Friendship Rewards==";
-    template += "\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.";
-    template += "\n{| class=wikitable id='recipe-table'";
-    template += "\n!Lvl";
-    template += "\n!Image";
-    template += "\n!Name";
-    template += "\n!Type";
-    template += "\n|-";
-    template += "\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Ingredients|Ingredient]] / [[Foraging#Flowers|Flower]]-->";
-    template += "\n|-";
-    template += "\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]";
-    template += "\n|-";
-    template += "\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || <!--[[File:Companion Gather Flowers Icon.png| 50x50px| center]]--> || <!--[[Foraging|Flower Gathering Bonus]]--> || [[Foraging|Resource Collection]]";
-    template += "\n|-";
-    template += "\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]";
-    template += "\n|}";
-    template += "\n}}";
-    
+    template += `\n==Friendship Rewards==`;
+    template += `\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.`;
+    template += `\n{| class=wikitable id='recipe-table'`;
+    template += `\n!Lvl`;
+    template += `\n!Image`;
+    template += `\n!Name`;
+    template += `\n!Type`;
+    template += `\n|-`;
+    template += `\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:${level2RewardItem}.png| 50x50px| center]]--> || <!--[[${level2RewardItem}]] (${level2RewardQty})--> || <!--${level2LinkLabel}-->`;
+    template += `\n|-`;
+    template += `\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]`;
+    template += `\n|-`;
+    template += `\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || <!--[[File:${level4Icon}.png| 50x50px| center]]--> || <!--${level4HangoutType}--> || ${level4LinkLabel}`;
+    template += `\n|-`;
+    template += `\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]`;
+    template += `\n|}`;
+    template += `\n}}`;
 
     template += output_history(item) + output_navbox(item);
 
@@ -1905,12 +1913,9 @@ function capitalize(str) {
 }
 
 
-/*
-{{WallpaperFloorsDescription|wftype=Floors|universe=%%universe%%|from=Scrooge's Store|collection=Dreamlight Valley|preUpdate5=yes}}
-*/
 function renderUpdatedFlooring(dataArray) {
 
-  
+  //{{WallpaperFloorsDescription|wftype=Floors|universe=%%universe%%|from=Scrooge's Store|collection=Dreamlight Valley|preUpdate5=yes}}
 
   // Create stub articles for quest items
   var renderedHTML = '';
@@ -1948,16 +1953,16 @@ function renderUpdatedFlooring(dataArray) {
     template += '\n|placement=flooring';
     template += '\n|environment=indooronly';
     template += '\n}}';
-/*
-    template += output_from(item); //necessary vals set/defined in output_from(item);
-*/
+
+    // template += output_from(item); //necessary vals set/defined in output_from(item);
+
     template +=
       "\n{{WallpaperFloorsDescription|wftype=Floors|universe=%%universe%%|from=Scrooge's Store|collection=Dreamlight Valley";
     if (item.version == "1.5") {
       template += "|preUpdate5=yes";
     }
       
-      template += "}}";
+    template += "}}";
     template += '\n\n==History==';
     template += `\n{{history|${item.version}|Added}}`;
     template += `\n{{history|1.18|Changed name from ''${item.originalName}'', added as [[:Category:Ceiling Texture|ceiling texture]]}}`;
@@ -2277,7 +2282,7 @@ const getHighestPriorityMatch = (str, priorities) => {
 */
 
 function getFirstCategoryMatch(categoryVal, prioritizedCategoryArray) {
-    /*
+  /*
   const str = "hello world";
   const keywords = ["hello", "bye", "test"];
 
@@ -2290,7 +2295,6 @@ function getFirstCategoryMatch(categoryVal, prioritizedCategoryArray) {
   // const containsAny = regex.test(str);
 
   // Why this is solid: some() stops early (efficient) / Reads like plain English: “does some keyword match?” / Easy to extend or tweak
-
   // version 3: one liner
   const containsAny = (str, arr) => arr.some(s => str.includes(s));
   */
