@@ -163,6 +163,10 @@ function determineCharacterFromDreamStyle(itemName) {
     'Lightyear',
     'Woody',
     'EVE',
+    'Eeyore',
+    'Piglet',
+    'Tigger',
+    'Winnie the Pooh',
     'WALL-E',
     'Vanellope',
   ];
@@ -277,6 +281,10 @@ function getCharacterUniverse(charName) {
     'Woody',
     'EVE',
     'WALL-E',
+    'Eeyore',
+    'Piglet',
+    'Tigger',
+    'Winnie the Pooh',
     'Vanellope',
     'Snow White',
     'Tigger',
@@ -398,8 +406,15 @@ function getCharacterUniverse(charName) {
       case 'WALL-E':
         universe = 'WALL-E';
         break;
+      case 'Eeyore':
+      case 'Piglet':
+      case 'Tigger':
+      case 'Winnie the Pooh':
+        universe = 'Winnie the Pooh';
+        break;
+      case 'Ralph':
       case 'Vanellope':
-        universe = 'TODO_UNIVERSE';
+        universe = 'Wreck-It Ralph';
         break;
     }
   }
@@ -550,13 +565,14 @@ function parseUniqueBundles(dataArray) {
       //resultArray.push(item);
 
       // default/initialize the bundle version to whatever the version of the first item itemType was,
-      // which is NOT robust for returning items - TODO FIX VERSION
+      // which is NOT robust for returning items - if you set to item.version
+      // TODO FIX VERSION - for now, default to the global variable "updateNumber" - the current/latest update
       let bundleObj = {
         bundleName: item.bundleName,
         bundlePrice: item.bundlePrice,
         psBundleItems: item.psBundleItems,
         //bundleType: item.itemType,
-        version: item.version,
+        version: updateNumber, //item.version,
 
         protoDbName: "unknown",
         friendlyName: item.bundleName,
@@ -613,6 +629,35 @@ ddv-wiki-weeklyupdates script needs:
 
 - currently does not generate bundle articles - but maybe it should?
 - currently does not have access to all historical bundles, which it would need if we wanted to generate the FULL historical table not just rows for new bundles added
+
+
+CURRENT FUNCTIONS OF EACH:
+
+ddv-wiki-templating:
+- generate premium bundle articles from data of given rows of items (relies on all rows of bundle items to be provided for completeness)
+- generate item articles from data of given rows of items (including related items from bundle if all are provided)
+- also generate navbox and premium shop page formatting for optional manual insertion
+- output bundle objects JSON with vertical-space-condensed/select properties in console to use in ddv-wiki-weeklyupdates (outputPSBundleJSON) --> items inside the bundle are single line so they are easy to rearrange based on actual in-game bundle order
+
+
+ddv-wiki-weeklyupdates:
+- inserts newly added bundles onto PremiumShop main page + NavboxPremiumBundles
+- inserts newly added clothing/furniture onto Clothing/Furniture + NavboxClothing/NavboxFurniture
+
+
+psShopLineupGenerator:
+- generate full top currentAvailability table, historicalAvailability table by using string input of bundle names and historical data of past bundles
+
+
+
+in advance, we don't know the order or quantity of items, or which precise bundles will be chosen
+need to be able to quickly review new bundles in-game wednesday morning,
+change placeholder values (bundlePrice), fix item order, add cleanup for checking item quantity
+then regenerate bundle articles + historical table (both dependent on item order+bundleprice)
+and regenerate item articles (dependent on bundleprice)
+
+need to also be able to easily/quickly provide names of other returning bundles and generate currentAvailability and historical tables based on existing data
+
 */
 
 
@@ -628,7 +673,8 @@ function outputPSBundleJSON(bundleArray) {
 
   let output = '';
   bundleArray.forEach(function (bundleObj) {
-    output += `\n"${bundleObj.friendlyName}": {\n\t"protoDbName": "${bundleObj.protoDbName}",\n\t"friendlyName": "${bundleObj.friendlyName}",\n\t"bundlePrice": "${bundleObj.bundlePrice}",\n\t"bundleType": "${bundleObj.bundleType}",\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
+    console.log(bundleObj)
+    output += `\n"${bundleObj.friendlyName}": {\n\t"protoDbName": "${bundleObj.protoDbName}",\n\t"versionAdded": "${bundleObj.version}",\n\t"friendlyName": "${bundleObj.friendlyName}",\n\t"bundlePrice": "${bundleObj.bundlePrice}",\n\t"bundleType": "${bundleObj.bundleType}",\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
     output += `\n\t"itemArray": [`;
 
     for (var i=0; i<bundleObj.itemArray.length; i++) {
@@ -809,7 +855,16 @@ function outputBundle_bundleArticle(bundleObj) {
   tempTemplate += `\n|dates=\n* ${startWeekDate} - ${endWeekDate}`;
   tempTemplate += `\n}}`;
   tempTemplate += ` {{cleanup|TODO - verify item order and counts}}`;
-  tempTemplate += `\n\n==History==\n{{history|${bundleVersion}|Added}}\n\n{{NavboxPremiumBundle}}`;
+
+  //tempTemplate += `\n\n==History==\n{{history|${bundleVersion}|Added}}\n\n{{NavboxPremiumBundle}}`;
+  tempTemplate += output_history(bundleObj);
+  tempTemplate += `\n\n{{NavboxPremiumBundle}}`;
+
+  // TODO - detect logic for returning star path premium bundles/items, right now just always adds
+  let isReturningItemBundle = true;
+  if (isReturningItemBundle) {
+    tempTemplate += `\n\n[[Category: Returning Star Path Premium Bundles]]`;
+  }
 
   //output = microTemplate(tempTemplate, bundleObj);
   output += tempTemplate + '\n\n----------------------------------------------------------\n\n';
