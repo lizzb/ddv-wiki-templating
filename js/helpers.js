@@ -591,7 +591,7 @@ Information flow:
 
 Pre-Wednesday prep:
 
-// todo: can be generated: priceString, contentsString
+// todo: can be generated: priceString, contentsString (but first check if already defined/exists --> was probably copy/pasted and is already verified)
 // generate contentsString - take itemArray, join with `\n{{name|itemName|qty}}<br>`, no trailing <br>, no qty if = 1
 // ignore price if not defined or price = 0, comment out qty if = "XXX"
 // todo: assemble this table based on row input from sheet
@@ -608,10 +608,11 @@ ddv-wiki-weeklyupdates script needs:
 - if bundle uses standalone naming/linking formatting (relevant on PremiumShop body, NavboxPremiumBundle, currentlyAvailable table, historical table)
 - bundleType (to know where to insert bundle names on PremiumShop body and NavboxPremiumBundle)
 - item universes + categories (to know where to insert item names on Furniture/Clothing + NavboxFurniture/NavboxClothing)
-- currently does not generate historical table or top currently available table - but it SHOULD
+- currently does not generate historical table or top currently available table - but it SHOULD? i think??
 --> item orders + quantities within bundle (to order correctly inside historical table)
 
 - currently does not generate bundle articles - but maybe it should?
+- currently does not have access to all historical bundles, which it would need if we wanted to generate the FULL historical table not just rows for new bundles added
 */
 
 
