@@ -473,8 +473,48 @@ function insertNumberWord(num) {
 
 
 
+// COPIED PARTIALLY FROM WIKI_SHEET.JS/premiumShopLineupGenerator - BE WARY OF DUPLICATE CONTENT
+function determinePremiumBundleType(bundleItemArray) {
+  //const itemsById = _getWikiItemMap();
+  let output = '';
+  let itemTypeCounter = {};
+  for (let i = 0; i < bundleItemArray.length; i++) {
+    //let item = itemsById[bundleItemArray[i].id];
+    let item = bundleItemArray[i];
+    //console.log(item);
+    let itemType = item ? item.itemType : '';
+    itemTypeCounter[itemType] = (itemTypeCounter[itemType] ?? 0) + 1;
+    // handle ties
+    const max = Math.max(...Object.values(itemTypeCounter));
+    const highestKeys = Object.keys(itemTypeCounter).filter(key => itemTypeCounter[key] === max);
 
+    //console.log(`inside determinePremiumBundleType with highestKeys: ${highestKeys}`);
+    // todo: Companion,Building,Furniture mixes
+    if (highestKeys.includes("Building")) output = 'Building / House';
+    else if (highestKeys.includes("Skin")) output = 'Character Dream Style / Stall / Wishing Well / Castle Dream Style'; // Dream Castle Skin, Goofy's Stall Skin, Wishing Well Skin, Valley Visit Station Style
+    else if (highestKeys.includes("Companion") && highestKeys.includes("Furniture")) output = 'Companion';
+    else if (highestKeys.includes("Companion") && highestKeys.includes("Clothing")) output = 'Clothing/Companion';
+    else if (highestKeys.includes("Companion")) output = 'Companion';
+    else if (highestKeys.includes("AvatarFeature")) output = 'Glider';
+    else if (highestKeys.includes("Tool")) output = 'Tool Style / Accessory';
+    else if (highestKeys.includes("Clothing") && highestKeys.includes("Furniture")) output = 'Clothing/Furniture';
+    else if (highestKeys.includes("Clothing")) output = 'Clothing';
+    else if (highestKeys.includes("Furniture")) output = 'Furniture';
+    else if (highestKeys.includes("MountGear")) output = 'Mount Customization';
+    else output = 'bundleTypeTBD';
+  }
+  return output;
+}
 
+function useStandaloneNaming(bundleObj) {
+  return bundleObj.itemArray.some(
+    item => item.name === bundleObj.friendlyName
+  );
+}
+
+function isSingleItemBundle(item) {
+  return (item.psBundleItems.length == 1);
+}
 
 
 function parseUniqueBundles(dataArray) {
@@ -492,30 +532,252 @@ function parseUniqueBundles(dataArray) {
       //if (!foundObject.psBundleItems) foundObject.psBundleItems = [];
       foundObject.psBundleItems.push(item.name);
       //console.log("psBundleItems: ", foundObject.psBundleItems);
+
+      let itemObj = { "id": item.itemID, "name": item.name, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+      foundObject.itemArray.push(itemObj);
+
     } else {
       //console.log(`'${searchItem}' is not present in our resultArray, adding.`);
       // **** TODO - single-item bundles seem to have duplicate values??? or perhaps just using the wrong template - also not including one of the items in multi-item bundles??
       item.psBundleItems = [];
       item.psBundleItems.push(item.name);
+
+      // limited is currently the propertyname being used for icon
+      //let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
+      let itemObj = { "id": item.itemID, "name": item.name, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+      item.itemArray = [];
+      item.itemArray.push(itemObj);
       //resultArray.push(item);
 
-      // default the bundle object type to whatever the first item itemType was, as well as whatever its version is - which is NOT robust for returning items - TODO
-      resultArray.push( {bundleName: item.bundleName, bundlePrice: item.bundlePrice, psBundleItems: item.psBundleItems, bundleType: item.itemType, version:item.version } );
+      // default/initialize the bundle version to whatever the version of the first item itemType was,
+      // which is NOT robust for returning items - TODO FIX VERSION
+      let bundleObj = {
+        bundleName: item.bundleName,
+        bundlePrice: item.bundlePrice,
+        psBundleItems: item.psBundleItems,
+        //bundleType: item.itemType,
+        version: item.version,
+
+        protoDbName: "unknown",
+        friendlyName: item.bundleName,
+        itemArray: item.itemArray
+      };
+  
+      resultArray.push( bundleObj );
     }
   });
-  //console.log(resultArray);
+
+
+  resultArray.forEach(function (bundleObj) {
+    // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
+    bundleObj.standaloneBundleNaming = (bundleObj.itemArray.length == 1 || useStandaloneNaming(bundleObj));
+
+    bundleObj.bundleType = determinePremiumBundleType(bundleObj.itemArray);
+  });
+
+
+  /*// do NOT alpha sort - use the given order of the items from data (which will be whatever order the rows were in when copy/pasted)
   resultArray.forEach(function (bundleObj) {
     bundleObj.psBundleItems.sort(); // alpha sort each bundle's items
   });
+  */
 
   // resultArray is array of bundleobjects with bundleName, bundlePrice, psBundleItems, bundleType, version
   return resultArray;
 }
 
+/*
+Information flow:
 
+Pre-Wednesday prep:
+
+// todo: can be generated: priceString, contentsString
+// generate contentsString - take itemArray, join with `\n{{name|itemName|qty}}<br>`, no trailing <br>, no qty if = 1
+// ignore price if not defined or price = 0, comment out qty if = "XXX"
+// todo: assemble this table based on row input from sheet
+
+// Regal Prowess Ensemble, Clinging Vines Set, Fantasia Broomstick, Main Street Buildings, Butterfly Costume Piglet, Glowing Gifts
+// Sunflower Crochet Skirt, Sunflower Crochet Kerchief, Sunflower Crochet Boots, Sunflower Crochet Top
+
+// focus JUST on Clinging Vines Set atm
+// we do NOT know /unknown before wednesday: bundlePrice, item order, item quantities
+// we DO know before wednesday: likely items, bundle name+link, item categories+universes
+
+
+ddv-wiki-weeklyupdates script needs:
+- if bundle uses standalone naming/linking formatting (relevant on PremiumShop body, NavboxPremiumBundle, currentlyAvailable table, historical table)
+- bundleType (to know where to insert bundle names on PremiumShop body and NavboxPremiumBundle)
+- item universes + categories (to know where to insert item names on Furniture/Clothing + NavboxFurniture/NavboxClothing)
+- currently does not generate historical table or top currently available table - but it SHOULD
+--> item orders + quantities within bundle (to order correctly inside historical table)
+
+- currently does not generate bundle articles - but maybe it should?
+*/
+
+
+
+
+
+
+// output the properties needed to populate the python ddv-wiki-weeklyupdates script
+function outputPSBundleJSON(bundleArray) {
+
+  //let output = JSON.stringify(resultArray);
+  //output = output.replaceAll("bundleName", "\nbundleName")
+
+  let output = '';
+  bundleArray.forEach(function (bundleObj) {
+    output += `\n"${bundleObj.friendlyName}": {\n\t"protoDbName": "${bundleObj.protoDbName}",\n\t"friendlyName": "${bundleObj.friendlyName}",\n\t"bundlePrice": "${bundleObj.bundlePrice}",\n\t"bundleType": "${bundleObj.bundleType}",\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
+    output += `\n\t"itemArray": [`;
+
+    for (var i=0; i<bundleObj.itemArray.length; i++) {
+      let item = bundleObj.itemArray[i];
+      output += `\n\t    { "id": "${item.id}", "name": "${item.name}", "itemType": "${item.itemType}", "universe": "${item.universe}", "collection_icon": "${item.collection_icon}", "categories": ${JSON.stringify(item.categories)}, `;
+      output += `"qty": "TBA", "price": "TBA"`;
+      output += `},`;
+    }
+    
+    output += `\n\t]\n},`;
+  })
+
+
+  output = "PREMIUM SHOP BUNDLES FOR ddv-wiki-weeklyupdates:\n\n" + output;
+  
+
+  return output;
+}
+
+
+// dupe content from premiumShopLineupGenerator ============
+function prepBundle(bundleObj) {
+  var output = '';
+  var priceString = '';
+  var contentsString = '';
+
+  let bundleItems = bundleObj.itemArray;
+
+  // determine "bundleType" to group bundle in correct invented grouping area on wiki PS page and PS navbox
+  bundleObj.bundleType = determinePremiumBundleType(bundleItems);
+
+  // Generate priceString
+  bundleObj.priceString = `{{price|${bundleObj.bundlePrice}|moonstone}}`;
+
+  // Generate contentsString
+  for (var i=0; i<bundleItems.length; i++) {
+    var itemObj = bundleItems[i];
+    contentsString += `{{name|${itemObj.name}`;
+    contentsString += (itemObj.qty && itemObj.qty > 1) ? `|${itemObj.qty}` : ``;
+    contentsString += `}}`;
+    // do not add a <br> after the last bundle item in the historical table
+    contentsString += (i < bundleItems.length-1) ? `<br>\n`: ``;
+  }
+
+  // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
+  bundleObj.standaloneBundleNaming = (bundleItems.length == 1 || useStandaloneNaming(bundleObj));
+
+  bundleObj.linkedName = (bundleItems.length == 1 || bundleObj.standaloneBundleNaming) ? `${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}` : `${bundleObj.friendlyName}`;
+
+  // compatibility with old format
+  //bundleObj.linked_name = `Tournament Gown Merida (Bundle)|Tournament Gown Merida`;
+  bundleObj.linked_name = bundleObj.linkedName;
+  //console.log(`linked_name assigned: ${bundleObj.linked_name}`)
+
+  bundleObj.contentsString = contentsString;
+
+  return bundleObj;
+}
+
+function outputBundle_psNavbox(bundleObj) {
+  /*
+  if (isSingleItemBundle(item)) {
+      tempTemplate = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
+    }
+    else {
+      tempTemplate = "'''[[%%bundleName%%]]''' • ";
+    }
+  return microTemplate(tempTemplate, item) + '\n\n\n';
+  */
+  let output = `'''[[${bundleObj.friendlyName}]]''' •`;
+  if (bundleObj.standaloneBundleNaming) {
+    output = `'''[[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]''' •`;
+  }
+  return output;
+}
+
+function outputBundle_topTable(bundleObj) {
+  /*
+    if (isSingleItemBundle(item)) {
+      tempTemplate = '| [[File:%%bundleName%% Store.png|450px|right|link=%%bundleName%% (Bundle)]]<!--row X leftright-->';
+    }
+    else {
+      tempTemplate = '| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row x leftright-->';
+    }
+  return microTemplate(tempTemplate, item) + '\n\n\n';
+  */
+  let output = `| [[File:${bundleObj.friendlyName}.png|450px|right|link=${bundleObj.friendlyName}]]`;
+  if (bundleObj.standaloneBundleNaming) {
+    output = `| [[File:${bundleObj.friendlyName} Store.png|450px|right|link=${bundleObj.friendlyName} (Bundle)]]`;
+  }
+  output += `<!--row X leftright-->`
+  return output;
+}
+
+function outputBundle_psPageListing(bundleObj) {
+  /*
+  if (isSingleItemBundle(item)) {
+      tempTemplate = "File:%%bundleName%% Store.png|'''[[%%bundleName%% (Bundle)|%%bundleName%%]]'''|link=%%bundleName%% (Bundle)";
+    }
+    else {
+      tempTemplate = "File:%%bundleName%%.png|'''[[%%bundleName%%]]'''|link=%%bundleName%%";
+    }
+   return microTemplate(tempTemplate, item) + '\n\n\n';
+  */
+  let output = `File:${bundleObj.friendlyName}.png|'''[[${bundleObj.friendlyName}]]'''|link=${bundleObj.friendlyName}`;
+  if (bundleObj.standaloneBundleNaming) {
+    output = `File:${bundleObj.friendlyName} Store.png|'''[[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]'''|link=${bundleObj.friendlyName} (Bundle)`;
+  }
+  return output;
+}
+
+function outputBundle_historicalTable(bundleObj) {
+  /*
+    if (isSingleItemBundle(item)) {
+    item.psHistoricalTableRow = '|-\n| [[%%bundleName%% (Bundle)|%%bundleName%%]]\n| {{name|%%bundleName%%}}'; //+ psHistoricalTableRow_price;
+  }
+  else {
+    item.psHistoricalTableRow = '|-\n| [[%%bundleName%%]]\n|'; // + psHistoricalTableRow_price;
+  }
+  psHistoricalTableRow += microTemplate(item.psHistoricalTableRow, item);
+
+  if (item.psBundleItems && item.psBundleItems.length > 1) {
+    item.psBundleItems.forEach(function (bundleItem) {
+      psHistoricalTableRow += '\n{{name|' + bundleItem + '}}';
+      if (item.returning)
+        // TODO - and not standalone
+        psHistoricalTableRow += '<!-- ({{price|XXXXXXX|moonstone}})-->';
+      psHistoricalTableRow += '<br>';
+    });
+  }
+
+  return microTemplate(psHistoricalTableRow_price, item) + '\n\n\n';
+*/
+  let output = `|-\n| [[${bundleObj.friendlyName}]]`;
+  if (bundleObj.standaloneBundleNaming) {
+    output = `|-\n| [[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]`;
+  }
+  output += "\n|";
+  output += (bundleObj.itemArray.length>1) ? `\n` : ` `;
+  output += bundleObj.contentsString;
+  output += "\n| " + bundleObj.priceString;
+  return output;
+}
+// dupe content from premiumShopLineupGenerator ============
 
 
 function renderPSBundles(dataArray) {
+  //console.log(`dataArray inside renderPSBundles`);
+  //console.log(dataArray);
+
   var renderedHTML = '';
   var template = '';
 
@@ -558,42 +820,30 @@ function renderPSBundles(dataArray) {
   // get unique bundles with populated items from input array
   bundleArray = parseUniqueBundles(dataArray);
 
+
+  //console.log(bundleArray);
+  console.log(outputPSBundleJSON(bundleArray));
+  //console.log(`bundleArray inside renderPSBundles`);
+  //console.log(bundleArray);
+
   var tempTemplate = '';
 
   tempTemplate = '';
   psBundleNavbox += '\n\n============ Premium Bundle Navbox ============\n\n';
   bundleArray.forEach(function (item) {
-    if (isSingleItemBundle(item)) {
-      tempTemplate = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
-    }
-    else {
-      tempTemplate = "'''[[%%bundleName%%]]''' • ";
-    }
-    psBundleNavbox += microTemplate(tempTemplate, item) + '\n\n\n';
+    psBundleNavbox += outputBundle_psNavbox(item)+ '\n\n\n'; 
   });
 
   tempTemplate = '';
   psTopTable += '\n\n============ Premium Bundle Top Table ============\n\n';
   bundleArray.forEach(function (item) {
-    if (isSingleItemBundle(item)) {
-      tempTemplate = '| [[File:%%bundleName%% Store.png|450px|right|link=%%bundleName%% (Bundle)]]<!--row X leftright-->';
-    }
-    else {
-      tempTemplate = '| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row x leftright-->';
-    }
-    psTopTable += microTemplate(tempTemplate, item) + '\n\n\n';
+    psTopTable += outputBundle_topTable(item) + '\n\n\n';
   });
 
   tempTemplate = '';
   psPageListing +='\n\n============ Premium Bundle Page Listing ============\n\n';
   bundleArray.forEach(function (item) {
-    if (isSingleItemBundle(item)) {
-      tempTemplate = "File:%%bundleName%% Store.png|'''[[%%bundleName%% (Bundle)|%%bundleName%%]]'''|link=%%bundleName%% (Bundle)";
-    }
-    else {
-      tempTemplate = "File:%%bundleName%%.png|'''[[%%bundleName%%]]'''|link=%%bundleName%%";
-    }
-    psPageListing += microTemplate(tempTemplate, item) + '\n\n\n';
+    psPageListing += outputBundle_psPageListing(item) + '\n\n\n';
   });
 
 
@@ -601,26 +851,8 @@ function renderPSBundles(dataArray) {
   // ****TODO FIX currently not listing all items in the bundle -- think fixed?
   psHistoricalTableRow += '\n\n============ Premium Bundle Historical Table ============\n\n';
   bundleArray.forEach(function (item) {
-    if (isSingleItemBundle(item)) {
-      item.psHistoricalTableRow = '|-\n| [[%%bundleName%% (Bundle)|%%bundleName%%]]\n| {{name|%%bundleName%%}}'; //+ psHistoricalTableRow_price;
-    }
-    else {
-      item.psHistoricalTableRow = '|-\n| [[%%bundleName%%]]\n|'; // + psHistoricalTableRow_price;
-    }
-    psHistoricalTableRow += microTemplate(item.psHistoricalTableRow, item);
-
-    if (item.psBundleItems && item.psBundleItems.length > 1) {
-      item.psBundleItems.forEach(function (bundleItem) {
-        psHistoricalTableRow += '\n{{name|' + bundleItem + '}}';
-        if (item.returning)
-          // TODO - and not standalone
-          psHistoricalTableRow += '<!-- ({{price|XXXXXXX|moonstone}})-->';
-        psHistoricalTableRow += '<br>';
-      });
-    }
-
-    psHistoricalTableRow += microTemplate(psHistoricalTableRow_price, item);
-    psHistoricalTableRow += '\n\n\n';
+    item = prepBundle(item);
+    psHistoricalTableRow += outputBundle_historicalTable(item) + '\n\n\n';
   });
 
 
@@ -631,7 +863,7 @@ function renderPSBundles(dataArray) {
     var imageParam = '%%bundleName%%'; // vs '%%bundleName%% Store'
     var bundleTypeParam = '%%bundleType%%';
     var itemsParam1 = '<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->'; // vs ''
-    var itemsParam2 = "\n|itemgallery=<!--{{Gallery|ITEM_COUNTSINGLE|caption='''[[ITEM_COUNTSINGLE]]'''|link=ITEM_COUNTSINGLE}}\n{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}-->"; // vs '%%psBundleItems%%'
+    var itemsParam2 = "\n<!--|itemgallery={{Gallery|ITEM_COUNTSINGLE|caption='''[[ITEM_COUNTSINGLE]]'''|link=ITEM_COUNTSINGLE}}\n{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}-->"; // vs '%%psBundleItems%%'
 
     if (isSingleItemBundle(item)) {
       imageParam = '%%bundleName%% Store';
@@ -643,7 +875,16 @@ function renderPSBundles(dataArray) {
       // currently we do not have a property like that available, must be manually set from sheet as first column
       //console.log(item);
     }
-    tempTemplate = '{{infobox\n|name=%%bundleName%%\n|image='+imageParam+'.png\n|width=350px\n|type=Premium Bundle\n|category='+bundleTypeParam+'\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items=%%psBundleItems%%'+itemsParam1+'\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category='+bundleTypeParam+'\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items='+itemsParam2+'\n|dates=\n* 2026-MM-DD - 2026-MM-DD\n}}\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
+
+    let psBundleItemsInline = item.psBundleItems.join(', ');
+    let startWeekDate = '2026-MM-DD';
+    let endWeekDate = '2026-MM-DD';
+
+    tempTemplate = '{{infobox\n|name=%%bundleName%%\n|image='+imageParam+'.png\n|width=350px\n|type=Premium Bundle\n|category='+bundleTypeParam+'\n|from=Premium Shop\n|sellprice={{price|%%bundlePrice%%|moonstone}}\n|items='+psBundleItemsInline+itemsParam1+'\n}}\n{{BundleDescription\n|%%bundleName%%\n|type=Premium Bundle\n|category='+bundleTypeParam+'\n|from=Premium Shop\n|bundlePrice=%%bundlePrice%%\n|items='+itemsParam2;
+    tempTemplate += `\n|dates=\n* ${startWeekDate} - ${endWeekDate}`;
+    tempTemplate += '\n}}';
+    tempTemplate += ' {{cleanup|TODO - verify item order and counts}}'
+    tempTemplate += '\n\n==History==\n{{history|' + item.version + '|Added}}\n\n{{NavboxPremiumBundle}}';
 
     psBundleArticle += microTemplate(tempTemplate, item);
     psBundleArticle += '\n\n----------------------------------------------------------\n\n';
@@ -656,9 +897,7 @@ function renderPSBundles(dataArray) {
   return renderedHTML;
 }
 
-function isSingleItemBundle(item) {
-  return (item.psBundleItems.length == 1);
-}
+
 
 
 function insertCookingLink(input) {
