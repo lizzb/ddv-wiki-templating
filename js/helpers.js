@@ -498,20 +498,67 @@ function determinePremiumBundleType(bundleItemArray) {
     let item = bundleItemArray[i];
     //console.log(item);
     let itemType = item ? item.itemType : '';
+
+    //console.log(`item.category: ${item.category}`)
+    //console.log(item);
+    // account for the fact that character dream styles are stored on the clothing sheet, and this value will populate once it gets into the sheet because i populate first column with sheet it came from
+    if (itemType == "Clothing" || itemType == "Dream Style") {
+      if (item.collection == "Character Dream Style" || item.categories.includes("Character") ) itemType = 'Character Style';
+      if (item.collection == "Accessory" && item.categories.includes("Accessor") ) itemType = 'Accessory';
+      if (item.collection == "Glider" && item.categories.includes("Glider") ) itemType = 'Glider';
+
+    }
+
     itemTypeCounter[itemType] = (itemTypeCounter[itemType] ?? 0) + 1;
     // handle ties
     const max = Math.max(...Object.values(itemTypeCounter));
     const highestKeys = Object.keys(itemTypeCounter).filter(key => itemTypeCounter[key] === max);
+    // TODO - this needs more work, both in the logic and in the sheet inputs/standardization
+/*
+// values i use in my sheet
+if ( item.collection == 'Dream Castle' || item.universe == 'none (Dream Castle)' || item.category == 'Dream Castle Skin')
+if ( item.collection == 'Goofy's Stall' || item.universe == 'none (Stall)' || item.category == 'Goofy's Stall')
+if ( item.collection == 'Visit Station' || item.universe == 'none (Visit Station)' || item.category == 'Visit Station' )
+if ( item.collection == 'Wishing Well' || item.universe == 'none (Well)' || item.category == 'Wishing Well' )
+if ( item.collection == 'Building' && item.universe == 'none (Chez Remy)' || item.category == 'Chez Remy' )
+if ( item.collection == 'Building' && item.universe == 'none (Scrooge's Store)' || item.category == 'Scrooge's Store' )
+if ( item.collection == 'Building' && item.universe == 'none (Plaza)' || item.category == 'Plaza Square' )
+if ( item.collection == 'Building' && item.universe == 'none (Boutique)' || item.category == 'Boutique' )
+
+if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 'xxxxx' )
+
+
+if ( item.collection == 'Character Dream Style' || item.collection == 'Dream Style' || item.category == 'Character' || item.universe == 'Character Dream Style')
+if ( item.collection == 'Dream Style' || item.category == 'Character' )
+
+if ( item.collection == 'Dream Style' && item.category.includes('Tool') ) // 'Tool Dream Style', 'Tools', 'Tool'
+
+if ( item.collection == 'Glider' && item.category.includes('Glider'))
+
+if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 'xxxxx' )
+
+*/
+
+  // from reporter tsv export for character dream style: itemType="Dream Style", collection="Character Dream Style", category.includes("Character")
+  // TODO - not exporting 
+  // "categories": ["Character"]
+
+    // TODO - this needs so much cleanup - fri aug 7
+
 
     //console.log(`inside determinePremiumBundleType with highestKeys: ${highestKeys}`);
     // todo: Companion,Building,Furniture mixes
     if (highestKeys.includes("Building")) output = 'Building / House';
+    //else if (highestKeys.includes("Character Dream Style")) output = 'Character Dream Style';
+    else if (highestKeys.includes("Character Style")) output = 'Character Style';
     else if (highestKeys.includes("Skin")) output = 'Character Dream Style / Stall / Wishing Well / Castle Dream Style'; // Dream Castle Skin, Goofy's Stall Skin, Wishing Well Skin, Valley Visit Station Style
     else if (highestKeys.includes("Companion") && highestKeys.includes("Furniture")) output = 'Companion';
     else if (highestKeys.includes("Companion") && highestKeys.includes("Clothing")) output = 'Clothing/Companion';
     else if (highestKeys.includes("Companion")) output = 'Companion';
+    else if (highestKeys.includes("Glider")) output = 'Glider';
     else if (highestKeys.includes("AvatarFeature")) output = 'Glider';
     else if (highestKeys.includes("Tool")) output = 'Tool Style / Accessory';
+    else if (highestKeys.includes("Accessory")) output = 'Accessory';
     else if (highestKeys.includes("Clothing") && highestKeys.includes("Furniture")) output = 'Clothing/Furniture';
     else if (highestKeys.includes("Clothing")) output = 'Clothing';
     else if (highestKeys.includes("Furniture")) output = 'Furniture';
@@ -660,6 +707,26 @@ need to also be able to easily/quickly provide names of other returning bundles 
 
 */
 
+/*
+// do i really need the script to decide what type of bundle it is? maybe i should manually set that in this file instead for clarity
+
+// Properties script-generated and added: bundleType, standaloneBundleNaming, priceString, contentsString
+// currently i think that it might be auto-adding qty and price but those should be manually listed here so that i can update them accordingly
+
+// priceString really only needs to be defined separately for mega bundles so the price displayed might be different
+// {{price|4400|moonstone}} (20% off)
+// bundles with multiple items still display the total normally
+
+// TODO: pass WWxLL (not full) or similar - don't know "not full" before update day though...
+// todo: dont forget to create mega bundle articles as well, and companion bundles
+
+// should i actually be generating bundleType or should i self-assign? maybe just assign?
+
+TODO - change workflow so that i dont have duplicate premium shop data in diff places
+
+TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsString, but NOT for ones that are already defined
+
+*/
 
 
 
@@ -673,14 +740,44 @@ function outputPSBundleJSON(bundleArray) {
 
   let output = '';
   bundleArray.forEach(function (bundleObj) {
-    console.log(bundleObj)
-    output += `\n"${bundleObj.friendlyName}": {\n\t"protoDbName": "${bundleObj.protoDbName}",\n\t"versionAdded": "${bundleObj.version}",\n\t"friendlyName": "${bundleObj.friendlyName}",\n\t"bundlePrice": "${bundleObj.bundlePrice}",\n\t"bundleType": "${bundleObj.bundleType}",\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
+    //console.log(bundleObj)
+
+    output += `\n`;
+    // TODO - i might separately need to output this as property names for premiumShopObj.js in psLineupGenerator?
+    // unclear what my flow is
+    outputAsNamedPropertyObject = false;
+    if (outputAsNamedPropertyObject) {
+      output += `"${bundleObj.friendlyName}": `;
+    }
+    output += `{`;
+    output += `\n\t"protoDbName": "${bundleObj.protoDbName}",`;
+    output += `\n\t"friendlyName": "${bundleObj.friendlyName}",`;
+    output += `\n\t"bundlePrice": "${bundleObj.bundlePrice}",`;
+    output += `\n\t"versionAdded": "${bundleObj.version}",`; // don't think this is needed for weeklyupdates?
+    output += `\n\t"bundleType": "${bundleObj.bundleType}",`;
+    output += `\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
+    // why didn't i originally include these properties..? does weeklyupdates generate them itself?
+    // no, i think it doesnt need it, weeklyUpdates only inserts new bundle titles/item titles into correct places, not generating bundle articles or historical table
+    /*
+    //output += `"\n\tpriceString": "{{price|${bundleObj.bundlePrice}|moonstone}}",`;
+    //output += `\n\t"contentsString": "",`;
+    */
+
+    // but the bundles DO need to be in premium shop display order, and they need to be array objects, not named properties
+    // in theory by the time it gets here, the itemorder inside each bundle should already be defined? (by manually changing on premiumShopObj... ... no wait, we dont have access to that here...)
+    // i need to manually sort the order of the rows of the items themselves in a mirror test sheet? i think?
+    // so i sitll need to change the order in just ONE spot, not sure where atm...
+
     output += `\n\t"itemArray": [`;
 
     for (var i=0; i<bundleObj.itemArray.length; i++) {
-      let item = bundleObj.itemArray[i];
-      output += `\n\t    { "id": "${item.id}", "name": "${item.name}", "itemType": "${item.itemType}", "universe": "${item.universe}", "collection_icon": "${item.collection_icon}", "categories": ${JSON.stringify(item.categories)}, `;
-      output += `"qty": "TBA", "price": "TBA"`;
+      let item = bundleObj.itemArray[i]; 
+
+      output += `\n\t    { "id": "${item.id}",`;
+      output += ` "name": "${item.name}",`;
+      output += ` "qty": "TBD", "price": "NA",`;
+      output += ` "itemType": "${item.itemType}",`;
+      output += ` "universe": "${item.universe}", "collection_icon": "${item.collection_icon}", "categories": ${JSON.stringify(item.categories)} `;     
       output += `},`;
     }
     
