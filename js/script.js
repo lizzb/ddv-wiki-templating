@@ -35,11 +35,13 @@ function renderParent(dataArray, templateType) {
       outputHTML = renderFlowers(dataArray);
       break;
     case "clothingFurniture":
+      // necessary prepping of items (e.g. re-setting itemType, etc) is done here, so call this before renderPSBundles
+      // ... i think? but i'm not even positive if dataArray is being modified... but this seems to be working once i swap them?
+      outputHTML += renderClothingFurnitureArticle(dataArray);
       // todo - currently just a global var
       if (renderPSbundles) {
-        outputHTML += renderPSBundles(dataArray);
+        outputHTML = renderPSBundles(dataArray) + outputHTML;
       }
-      outputHTML += renderClothingFurnitureArticle(dataArray);
       break;
     default:
       outputHTML = "Unsure what template generating function to use, templateType: ", templateType;
@@ -642,7 +644,7 @@ function parseItemUsage(item) {
 }
 
 // preparation for allowing to copy/paste directly from sheet without leading Clothing/Furniture column
-function parseItemType(item) {
+function inferItemType(item) {
   if (showItemDebug) {
     console.log(`item.itemType of ${item.name} = ${item.itemType}`);
   }
@@ -1094,10 +1096,37 @@ function parseItemSource(item) {
   }
 
   // ===== Premium Item (may include returning Star Path) =====
+
+
   if (isPremium(item)) {
     if (item.location.includes('starpath')) {
       item.returning = true; // both premium and returning star path
     }
+
+    // let bundleQty = "TBD";
+    // let msCost = "NA"
+    // TODO - capture multiple item count
+    // eg (x3) should set bundleQty = 3;
+    // no parenthetical indicates bundleQty = 1
+    // not yet defined = (xX) - should set bundleQty = "TBD"
+    // per-item moonstone prices, if relevant, will appear with this formatting: [___ M]
+    // if defined, e.g. [250 M] set msCost = 250;
+    // if not defined because not present, set msCost = "NA"
+    // if defiend with a placeholder, e.g. [___ M], set msCost = "TBD"
+
+    // TODO - parse all bundles, e.g. both mega bundle and premium bundle an item appears in
+
+    /*
+    // TEST CASES for item.source values
+    Premium Bundle - Swirling Leaves Set (1250 M) (x3) // Premium Bundle - Mega Bundle - Colors of Nature Bundle (6600 M) (x1)
+    Premium Bundle - Savanna Living Room Set (1500 M) (x2)
+    Premium Bundle - Bioluminescent Set (____ M) (xX)
+    Premium Bundle - Winter Gala Ensemble (1500 M) [___ M] // Star Path - Royal Winter - 3F - T3 Premium (30 tokens)
+    Premium Bundle - Mickey's 100th-Anniversary Decoration Set (1000 M) [250 M] // Star Path - Centennial - 1E - T1 (30 tokens)
+    */
+
+  // =============sat aug 8 335pm 
+  /*
     const string = item.source;
     const regex = /Premium Bundle \- ([\"\'\w\W]+) \(([\w\_\d]+) M\)/;
     const result = string.split(regex);
@@ -1122,13 +1151,77 @@ function parseItemSource(item) {
         item.secondBundlePrice = matches[1][2];
       }
     }
+  // =============sat aug 8 335pm 
+  */
+
+    // 1. THE EXTENDED REGEX
+    // Prefix: Matches "Premium Bundle -" OR "Mega Bundle -" (one or more times)
+    // Group 1: Bundle Name (lazy match)
+    // Group 2: Bundle Price (digits or underscores)
+    // Group 3 (Optional): Quantity inside parentheses, e.g., (x3) or (xX)
+    // Group 4 (Optional): Per-item price inside brackets, e.g., [250 M] or [___ M]
+    const regexExtended = /(?:(?:Premium Bundle|Mega Bundle)\s*-\s*)+(.+?)\s*\(([\d_]+)\s*M\)(?:\s*\(([xX\d]+)\))?(?:\s*\[([\d_]+)\s*M\])?/gi;
+    
+    const matches = [...item.source.matchAll(regexExtended)];
+    
+    // Create an array to hold all bundle data for this item safely
+    item.bundles = [];
+
+    for (const match of matches) {
+      const bundleName = match[1].trim();
+      let bundlePrice = match[2];
+      const qtyMatch = match[3]; // e.g., "x3" or "xX"
+      const msMatch = match[4];  // e.g., "250" or "___"
+
+      // Process Quantity
+      let bundleQty = 1; // Default
+      if (qtyMatch) {
+        if (qtyMatch.toLowerCase() === 'xx') {
+          bundleQty = "TBD";
+        } else {
+          bundleQty = parseInt(qtyMatch.replace(/x/i, ''), 10);
+        }
+      }
+
+      // Process Per-Item Cost
+      let msCost = "NA"; // Default
+      if (msMatch) {
+        if (msMatch.includes('_')) {
+          msCost = "TBD";
+        } else {
+          msCost = parseInt(msMatch, 10);
+        }
+      }
+
+      // Process TBD Bundle Prices (Dynamic 3-character prefix)
+      if (bundlePrice.includes('_')) {
+        // Strips non-alphanumeric, grabs first 3 chars, capitalizes
+        const prefix = bundleName.replace(/[^a-zA-Z0-9]/g, '').substring(0, 3).toUpperCase();
+        bundlePrice = `TBA_${prefix}`;
+      }
+
+      // Push parsed data to our array
+      item.bundles.push({
+        bundleName,
+        bundlePrice,
+        bundleQty,
+        msCost
+      });
+    }
+
+    // Preserve legacy root properties for the first bundle if your existing scripts expect it
+    if (item.bundles.length > 0) {
+      item.bundleName = item.bundles[0].bundleName;
+      item.bundlePrice = item.bundles[0].bundlePrice;
+      item.bundleQty = item.bundles[0].bundleQty;
+      item.msCost = item.bundles[0].msCost;
+    }
+    // bundleQty, msCost
+    //console.log('1218')
+    //console.log(item)
+
 
 // --------------------------------
-
-
-    // TODO - multiple item count eg (x3) - ignore
-    // TODO - both mega bundle and premium bundle
-    // Premium Bundle - Swirling Leaves Set (1250 M) (x3) // Premium Bundle - Mega Bundle - Colors of Nature Bundle (6600 M) (x1)
 
     if (showItemDebug) {
       console.log(item.bundleName, ' contains the item: ', item.name);
@@ -1142,12 +1235,16 @@ function parseItemSource(item) {
       item.standalone = false; // TODO - will be undefined for non-premium items, is this desired?
     }
 
+    /*
     if (item.bundlePrice == '____') {
       item.bundlePrice = 'XXX___XXX';
-      // TODO - MAKE THIS MORE ROBUST IN CASE TOO SHORT/NOT UNIQUE
+      // TODO - MAKE THIS placeholder val MORE ROBUST IN CASE TOO SHORT/NOT UNIQUE - should be 3+ characters
       item.bundlePrice = 'TBA_' + getFirstLetters(item.bundleName);
     }
-  }
+    */
+
+  } // end isPremium
+
 
   // ===== Lorekeeper Tale =====
   if (isTale(item)) {
@@ -2212,10 +2309,36 @@ function assignRelatedItemsFromInputArray(item, bundleArray) {
 function renderClothingFurnitureArticle(dataArray) {
   var renderedHTML = '';
 
+  // TODO - at this point itemType has not been reset from Furniture-->House, etc
+
+  // todo - i'm adding an extra loop here, need to decrease this
+  //const users = [{ name: 'Alice' }, { name: 'Bob' }];
+
+//  todo - check if all of the other isX functions should be moved here? also need to reduce number of loops run...
+
+dataArray.forEach((item) => {
+  //item.name = 'Mutated'; // Modifying a property changes the source object
+  console.log('line 2321 reached')
+
+  //console.log('item: ');
+  // todo - why is this not converting input of itemType from Furniture to House?
+  if (isHouse(item)) {
+      item.itemType = "House";
+      item.category = "House";
+      item.collection = 'House Dream Style';
+    }
+});
+
+console.log('dataArray 2333')
+console.log(dataArray)
+
+
   // get unique bundles with populated items from input array
   var bundleArray = parseUniqueBundles(dataArray);
 
   var delimiter = '\n\n\n-----------------------------\n\n\n';
+
+  // this does nOT modify the dataArray, i dont think
   dataArray.forEach(function(item) {
 
     // possibly assigning itself recursively...??
@@ -2226,7 +2349,7 @@ function renderClothingFurnitureArticle(dataArray) {
     if (!item) return;
     item.missingCategories = [];
 
-    item = parseItemType(item);
+    //item = inferItemType(item); // assigns either "Clothing" or "Furniture" if itemType column is not provided
     item = parseItemSource(item);
     item = parseSizePlacementEnv(item);
 
@@ -2252,29 +2375,6 @@ function renderClothingFurnitureArticle(dataArray) {
 
     if (item.universe == "(none)") {
       item.universe = "none";
-    }
-
-    // TODO... . THIS IS FEELING A BIT JANKY
-    if (isCastle(item)) {
-      //in game: type=Dream Castle Skin, collection=none, category=none
-      item.itemType = 'Dream Castle Skin';
-      item.category = 'Dream Castle';
-      item.collection = 'none';
-    }
-
-    // not entirely sure why uncommenting this breaks stuff
-    /*
-    if (isCharacterDreamStyle) {
-      item.itemType = 'Dream Style';
-      item.category = 'Character Dream Style';
-      item.universe = 'Character Dream Style';
-    }*/
-
-    if (isCompanion(item)) {
-      //in game: type=Companions, collection=<<>>, category=<<>>
-      item.itemType = 'Companions';
-      //item.category = item.category;
-      //item.collection = 'Dreamlight Valley'; // item.collection
     }
 
     if (isBuilding(item)) {
@@ -2306,6 +2406,38 @@ function renderClothingFurnitureArticle(dataArray) {
 
       //console.log(`LOOP END: item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
   }
+
+    // TODO... . THIS IS FEELING A BIT JANKY
+    if (isCastle(item)) {
+      //in game: type=Dream Castle Skin, collection=none, category=none
+      item.itemType = 'Dream Castle Skin';
+      item.category = 'Dream Castle';
+      item.collection = 'none';
+    }
+
+    // not entirely sure why uncommenting this breaks stuff
+    /*
+    if (isCharacterDreamStyle) {
+      item.itemType = 'Dream Style';
+      item.category = 'Character Dream Style';
+      item.universe = 'Character Dream Style';
+    }*/
+
+    if (isCompanion(item)) {
+      //in game: type=Companions, collection=<<>>, category=<<>>
+      item.itemType = 'Companions';
+      //item.category = item.category;
+      //item.collection = 'Dreamlight Valley'; // item.collection
+    }
+
+
+
+    
+  
+
+
+
+
   if (isStall(item)) {
     item.itemType = "Goofy's Stall Skin";
       item.category = "Goofy's Stall"; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category

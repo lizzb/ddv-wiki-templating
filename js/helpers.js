@@ -492,27 +492,70 @@ function insertNumberWord(num) {
 function determinePremiumBundleType(bundleItemArray) {
   //const itemsById = _getWikiItemMap();
   let output = '';
+
+
+  /* // optimized version? needs testing
+  const itemTypeCounter = {};
+
+  // Step 1: Count everything in one linear pass - O(N)
+  for (const item of items) {
+    itemTypeCounter[item.itemType] = (itemTypeCounter[item.itemType] ?? 0) + 1;
+  }
+
+  // Step 2: Extract all keys and highest keys once - O(K) where K = unique item types
+  const allKeys = Object.keys(itemTypeCounter);
+  const max = Math.max(...Object.values(itemTypeCounter));
+  const highestKeys = allKeys.filter(key => itemTypeCounter[key] === max);
+  */
+
   let itemTypeCounter = {};
   for (let i = 0; i < bundleItemArray.length; i++) {
     //let item = itemsById[bundleItemArray[i].id];
     let item = bundleItemArray[i];
     //console.log(item);
-    let itemType = item ? item.itemType : '';
+    //let itemType = item ? item.itemType : '';
 
     //console.log(`item.category: ${item.category}`)
     //console.log(item);
     // account for the fact that character dream styles are stored on the clothing sheet, and this value will populate once it gets into the sheet because i populate first column with sheet it came from
-    if (itemType == "Clothing" || itemType == "Dream Style") {
-      if (item.collection == "Character Dream Style" || item.categories.includes("Character") ) itemType = 'Character Style';
-      if (item.collection == "Accessory" && item.categories.includes("Accessor") ) itemType = 'Accessory';
-      if (item.collection == "Glider" && item.categories.includes("Glider") ) itemType = 'Glider';
+    if (item.itemType == "Clothing" || item.itemType == "Dream Style") {
+      if (item.collection == "Character Dream Style" || item.categories.includes("Character") ) item.itemType = 'Character Style';
+      if (item.collection == "Accessory" && item.categories.includes("Accessor") ) item.itemType = 'Accessory';
+      if (item.collection == "Glider" && item.categories.includes("Glider") ) item.itemType = 'Glider';
 
     }
 
-    itemTypeCounter[itemType] = (itemTypeCounter[itemType] ?? 0) + 1;
-    // handle ties
+
+    
+    //console.log(`itemType of ${item.name}: ${item.itemType}`)
+    /*// todo - setting isHouse value this SHOULD be handled way before this funciton, but fallback
+    if (itemType == "Furniture") {
+      console.log('got inside 515 with item:')
+      console.log(item);
+      if (item.categories && item.categories.includes('House') ) item.itemType = 'House';
+
+      // todo: capture
+      // categories: ['House']
+      if (isHouse(item)) {
+        itemType = 'House';
+      }
+    }
+    */
+
+    //console.log(`after: itemType of ${item.name}: ${item.itemType}`)
+    //console.log(`itemType given to itemTypeCounter = ${item.itemType}`)
+
+    // Update tally
+    itemTypeCounter[item.itemType] = (itemTypeCounter[item.itemType] ?? 0) + 1;
+
+    }
+
+    // Extract all unique keys as an array
+    const allKeys = Object.keys(itemTypeCounter);
+
+    // Find highest frequency keys (ties handled)
     const max = Math.max(...Object.values(itemTypeCounter));
-    const highestKeys = Object.keys(itemTypeCounter).filter(key => itemTypeCounter[key] === max);
+    const highestKeys = allKeys.filter(key => itemTypeCounter[key] === max);
     // TODO - this needs more work, both in the logic and in the sheet inputs/standardization
 /*
 // values i use in my sheet
@@ -546,8 +589,12 @@ if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 
     // TODO - this needs so much cleanup - fri aug 7
 
 
-    //console.log(`inside determinePremiumBundleType with highestKeys: ${highestKeys}`);
+    console.log(`594 inside determinePremiumBundleType with highestKeys: ${highestKeys}`);
+    console.log(`allKeys at 593 ${allKeys}`)
     // todo: Companion,Building,Furniture mixes
+    // t his isnt working because House is not in highestKeys if its House, Furniture, Furniture - Furniture is
+    //if (highestKeys.includes("House") && highestKeys.includes("Furniture")) output = 'House/Furniture';
+    //if (highestKeys.includes("House")) output = 'House';
     if (highestKeys.includes("Building")) output = 'Building / House';
     //else if (highestKeys.includes("Character Dream Style")) output = 'Character Dream Style';
     else if (highestKeys.includes("Character Style")) output = 'Character Style';
@@ -564,7 +611,16 @@ if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 
     else if (highestKeys.includes("Furniture")) output = 'Furniture';
     else if (highestKeys.includes("MountGear")) output = 'Mount Customization';
     else output = 'bundleTypeTBD';
-  }
+
+
+    
+
+    // above is logic for assuming all item categories hold equal weight, but that is not true
+    // if any House is contained, House should be inthe output
+    //console.log(`allKeys.includes("House")? ${allKeys.includes("House")}`)
+    if (allKeys.includes("House") && allKeys.includes("Furniture")) output = 'House/Furniture';
+    else if (allKeys.includes("House")) output = 'House';
+  
   return output;
 }
 
@@ -584,6 +640,16 @@ function parseUniqueBundles(dataArray) {
   var resultArray = [];
 
   dataArray.forEach(function (item) {
+    let itemID = item.ID || item.id || item.itemID;
+
+    // TODO: parse source value to determine itemQty and msCost per item
+    let bundleQty = item.bundleQty || "TBD";
+    let msCost = item.msCost || "NA"
+
+    // bundleQty, msCost 
+    //console.log('line 591');
+    //console.log(item);
+
     const searchItem = item.bundleName;
     //item = parseItemSource(item); // Item source already parsed for infobox, shouldnt be necessary here ... but think logic flow is wonky
     const foundObject = resultArray.find(
@@ -595,7 +661,7 @@ function parseUniqueBundles(dataArray) {
       foundObject.psBundleItems.push(item.name);
       //console.log("psBundleItems: ", foundObject.psBundleItems);
 
-      let itemObj = { "id": item.itemID, "name": item.name, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+      let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
       foundObject.itemArray.push(itemObj);
 
     } else {
@@ -606,7 +672,7 @@ function parseUniqueBundles(dataArray) {
 
       // limited is currently the propertyname being used for icon
       //let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
-      let itemObj = { "id": item.itemID, "name": item.name, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+      let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
       item.itemArray = [];
       item.itemArray.push(itemObj);
       //resultArray.push(item);
@@ -619,7 +685,8 @@ function parseUniqueBundles(dataArray) {
         bundlePrice: item.bundlePrice,
         psBundleItems: item.psBundleItems,
         //bundleType: item.itemType,
-        version: updateNumber, //item.version,
+        //version: updateNumber, //item.version,
+        version: item.version, // versionAdded should use version of first item added for historical bundles - but this will break with returning star path bundles
 
         protoDbName: "unknown",
         friendlyName: item.bundleName,
@@ -635,7 +702,9 @@ function parseUniqueBundles(dataArray) {
     // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
     bundleObj.standaloneBundleNaming = (bundleObj.itemArray.length == 1 || useStandaloneNaming(bundleObj));
 
+
     bundleObj.bundleType = determinePremiumBundleType(bundleObj.itemArray);
+     console.log(`line 705 result of determinePremiumBundleType on ${bundleObj.name}: ${bundleObj.bundleType}`)
   });
 
 
@@ -745,6 +814,7 @@ function outputPSBundleJSON(bundleArray) {
     output += `\n`;
     // TODO - i might separately need to output this as property names for premiumShopObj.js in psLineupGenerator?
     // unclear what my flow is
+    // outputAsNamedPropertyObject = false to make it an array and use for weeklyupdates, true to generate for premiumShopObj.js
     outputAsNamedPropertyObject = false;
     if (outputAsNamedPropertyObject) {
       output += `"${bundleObj.friendlyName}": `;
@@ -753,7 +823,7 @@ function outputPSBundleJSON(bundleArray) {
     output += `\n\t"protoDbName": "${bundleObj.protoDbName}",`;
     output += `\n\t"friendlyName": "${bundleObj.friendlyName}",`;
     output += `\n\t"bundlePrice": "${bundleObj.bundlePrice}",`;
-    output += `\n\t"versionAdded": "${bundleObj.version}",`; // don't think this is needed for weeklyupdates?
+    output += `\n\t"versionAdded": "${bundleObj.version}",`; // don't think this is needed for weeklyupdates? - but its good to have
     output += `\n\t"bundleType": "${bundleObj.bundleType}",`;
     output += `\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
     // why didn't i originally include these properties..? does weeklyupdates generate them itself?
@@ -772,10 +842,13 @@ function outputPSBundleJSON(bundleArray) {
 
     for (var i=0; i<bundleObj.itemArray.length; i++) {
       let item = bundleObj.itemArray[i]; 
+      let itemQty = item.qty || "TBD";
+      let itemMSPrice = item.msCost = "NA";
 
       output += `\n\t    { "id": "${item.id}",`;
       output += ` "name": "${item.name}",`;
-      output += ` "qty": "TBD", "price": "NA",`;
+      // TODO - parse SOURCE to see if qty or price is defined
+      output += ` "qty": "${itemQty}", "price": "${itemMSPrice}",`;
       output += ` "itemType": "${item.itemType}",`;
       output += ` "universe": "${item.universe}", "collection_icon": "${item.collection_icon}", "categories": ${JSON.stringify(item.categories)} `;     
       output += `},`;
@@ -802,6 +875,7 @@ function prepBundle(bundleObj) {
 
   // determine "bundleType" to group bundle in correct invented grouping area on wiki PS page and PS navbox
   bundleObj.bundleType = determinePremiumBundleType(bundleItems);
+  console.log(`bundleObj.bundleType at 876? ${bundleObj.bundleType}`)
 
   // Generate priceString
   bundleObj.priceString = `{{price|${bundleObj.bundlePrice}|moonstone}}`;
@@ -1017,10 +1091,7 @@ function renderPSBundles(dataArray) {
   bundleArray = parseUniqueBundles(dataArray);
 
 
-  //console.log(bundleArray);
-  console.log(outputPSBundleJSON(bundleArray));
-  //console.log(`bundleArray inside renderPSBundles`);
-  //console.log(bundleArray);
+  
 
   var tempTemplate = '';
 
@@ -1038,6 +1109,12 @@ function renderPSBundles(dataArray) {
     psHistoricalTableRow += outputBundle_historicalTable(item) + '\n\n\n';
     psBundleArticle += outputBundle_bundleArticle(item);
   });
+
+
+  //console.log(bundleArray);
+  console.log(outputPSBundleJSON(bundleArray));
+  //console.log(`bundleArray inside renderPSBundles`);
+  //console.log(bundleArray);
 
   // '\n\n'
   renderedHTML += psBundleNavbox + '' + psTopTable + '' + psPageListing + '' + psHistoricalTableRow + '' + psBundleArticle;
@@ -2247,7 +2324,7 @@ function isHouse(item) {
   var isHouse =
     /*(item.name && item.name.includes('House')) ||*/ // TODO - make more robust, currently grabs furniture items iwth house in title
     /* do NOT do this - if category is set to commented value this will flag true - (item.category && item.category.includes('House')) ||*/
-    (item.collection && item.collection.includes('House Dream Style'));
+    (item.category && item.category.includes('House') || item.collection && item.collection.includes('House Dream Style'));
 
   return isHouse;
 }
