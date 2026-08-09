@@ -222,6 +222,12 @@ function determineCharacterFromDreamStyle(itemName) {
 return charName;
 }
 
+/*
+function getCharacterProperName(charName) {
+  return 
+}
+*/
+
 function getCharacterUniverse(charName) {
   var charactersProperNames = [
     'Aladdin',
@@ -258,6 +264,7 @@ function getCharacterUniverse(charName) {
     'Mushu',
     'Oswald',
     'Peter Pan',
+    'Tinker Bell',
     'Remy',
     'Aurora',
     'Maleficent',
@@ -361,6 +368,7 @@ function getCharacterUniverse(charName) {
       universe = 'Oswald the Lucky Rabbit';
       break;
     case 'Peter Pan':
+    case 'Tinker Bell':
       universe = 'Peter Pan';
       break;
     case 'Remy':
@@ -653,21 +661,21 @@ function determinePremiumBundleType(bundleItemArray) {
         foundObject.itemArray.push(itemObj);
 
       } else {
-      //console.log(`'${searchItem}' is not present in our resultArray, adding.`);
-      // **** TODO - single-item bundles seem to have duplicate values??? or perhaps just using the wrong template - also not including one of the items in multi-item bundles??
+        //console.log(`'${searchItem}' is not present in our resultArray, adding.`);
+        // **** TODO - single-item bundles seem to have duplicate values??? or perhaps just using the wrong template - also not including one of the items in multi-item bundles??
         item.psBundleItems = [];
         item.psBundleItems.push(item.name);
 
-      // limited is currently the propertyname being used for icon
-      //let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
+        // limited is currently the propertyname being used for icon
+        //let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
         let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
         item.itemArray = [];
         item.itemArray.push(itemObj);
-      //resultArray.push(item);
+        //resultArray.push(item);
 
-      // default/initialize the bundle version to whatever the version of the first item itemType was,
-      // which is NOT robust for returning items - if you set to item.version
-      // TODO FIX VERSION - for now, default to the global variable "updateNumber" - the current/latest update
+        // default/initialize the bundle version to whatever the version of the first item itemType was,
+        // which is NOT robust for returning items - if you set to item.version
+        // TODO FIX VERSION - for now, default to the global variable "updateNumber" - the current/latest update
         let bundleObj = {
           bundleName: item.bundleName,
           bundlePrice: item.bundlePrice,

@@ -91,6 +91,8 @@ function renderParent(dataArray, templateType) {
 
 // only useful for handling clothing/furniture
   function output_category(item) {
+
+    /*
     if (!item.category) {
       if (item.itemType == 'Clothing') {
       // temporary fix: remove Companions, after Accessories to prevent items with empty categories being flagged as companions
@@ -100,11 +102,23 @@ function renderParent(dataArray, templateType) {
       } else {
       // defaults to furniture
       item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
+      }
     }
+    */
 
+  //var output = '|category=%%category%%\n';
+  let inlineCategory = wrapComment(item.category, !categoriesColorsTraitsConfirmed);
+  if (!item.category) {
+    // output placeholder comment vals for categories
+    if (item.itemType == 'Clothing') {
+      inlineCategory = '<!--Accessories, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
+    }
+    else {
+      // defaults to furniture
+      inlineCategory = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
+    }
   }
-
-  var output = '|category=%%category%%\n';
+  var output = `|category=${inlineCategory}\n`;
 
   if (isBuilding(item) || isCastle(item) || isWishingWell(item) || isStall(item) || isVisitStation(item)) {
     output = '|category=none\n'; // i use categories in my sheet and elsewhere in parser, but technically these items have no category
@@ -115,7 +129,7 @@ function renderParent(dataArray, templateType) {
   if (!categoriesColorsTraitsConfirmed) {
     item.missingCategories.push('[[Category: Missing Categories]]');
   }
-  item.category = wrapComment(item.category, !categoriesColorsTraitsConfirmed);
+  //item.category = wrapComment(item.category, !categoriesColorsTraitsConfirmed);
 
   return output;
 }
@@ -434,7 +448,10 @@ function output_relatedItems(item) {
 
 function output_history(item) {
   item = updateAppropriateVersion(item);
-  var output = '\n\n==History==\n{{history|' + item.version + '|Added}}';
+
+  let inlineVersion = item.wikiVersion ? item.wikiVersion : item.version;
+  //var output = '\n\n==History==\n{{history|' + item.version + '|Added}}';
+  var output = `\n\n==History==\n{{history|${inlineVersion}|Added}}`;
   return output;
 }
 
@@ -444,17 +461,17 @@ function updateAppropriateVersion(item) {
   // different wiki user-facing version values than actual
   switch (item.version) {
   case "1.14.3":
-    item.version = "1.14";
+    item.wikiVersion = "1.14";
     break;
   case "1.20.11":
-    item.version = "1.20";
+    item.wikiVersion = "1.20";
     break;
   // temporary hard force
   case "1.24.1":
-    item.version = "Adventure Pack 1";
+    item.wikiVersion = "Adventure Pack 1";
     break;
   case "1.24.11":
-    item.version = "1.24";
+    item.wikiVersion = "1.24";
     break;
   default:
     break;
@@ -464,13 +481,13 @@ function updateAppropriateVersion(item) {
   if (item.collection == "EI" || item.collection == "Eternity Isle") {
     switch (item.version) {
     case "1.8":
-      item.version = "Expansion 1-1";
+      item.wikiVersion = "Expansion 1-1";
       break;
     case "1.10":
-      item.version = "Expansion 1-2";
+      item.wikiVersion = "Expansion 1-2";
       break;
     case "1.12":
-      item.version = "Expansion 1-3";
+      item.wikiVersion = "Expansion 1-3";
       break;
     default:
       break;
@@ -479,10 +496,10 @@ function updateAppropriateVersion(item) {
   if (item.collection == "SV" || item.collection == "Storybook Vale") {
     switch (item.version) {
     case "1.14.1":
-      item.version = "Expansion 2-1";
+      item.wikiVersion = "Expansion 2-1";
       break;
     case "1.17.11":
-      item.version = "Expansion 2-2";
+      item.wikiVersion = "Expansion 2-2";
       break;
     default:
       break;
@@ -494,7 +511,7 @@ function updateAppropriateVersion(item) {
     case "1.20":
     case "1.20.1":
     case "1.20.2":
-      item.version = "Expansion 3";
+      item.wikiVersion = "Expansion 3";
       break;
     default:
       break;
@@ -505,7 +522,7 @@ function updateAppropriateVersion(item) {
       // 1.24 is temporary, sheet should not have that value
     case "1.24":
     case "1.24.1":
-      item.version = "Adventure Pack 1";
+      item.wikiVersion = "Adventure Pack 1";
       break;
     default:
       break;
@@ -900,7 +917,7 @@ function parseItemSource(item) {
     if (showItemDebug) {
       console.log(`Quest-related parameters captured for ${item.name} from source:\n"${item.source}":\ncharacter: ${item.character}\nlevel: ${item.level}\nquestType: ${item.questType}\nquest: ${item.quest}\nqtyRewarded: ${item.qtyRewarded}\nhowObtained: ${item.howObtained}\npostQuestMailboxMessageTitle: ${item.postQuestMailboxMessageTitle}\nwhenRewarded: ${item.whenRewarded}\nwhenCollected: ${item.whenCollected}\nmaxLimit: ${item.maxLimit}`)
     }
-    
+
   } else {
       console.warn("Failed to parse quest source for item (", item.name, "): ", string); // NOTE: THIS IS BEING HIT 3X PER RUN PER ITEM - 2026.05.26
     }
@@ -2142,7 +2159,7 @@ function output_itemIntro(item) {
       itemUseIntro = 'lighting';
 
       itemUseBody = "<!-- Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off. // the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
-      
+
       if (item.functions.includes('Constant')) {
         itemUseBody = "<!-- Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
       }
@@ -2442,7 +2459,13 @@ function renderClothingFurnitureArticle(dataArray) {
   //item.name = 'Mutated'; // Modifying a property changes the source object
   //console.log('line 2321 reached')
 
+    if (item.universe == "(none)") {
+      item.universe = "none";
+    }
+
     item = assignItemType(item);
+    item = parseItemSource(item);
+    item = parseSizePlacementEnv(item);
   });
 
   console.log('dataArray 2333')
@@ -2466,8 +2489,8 @@ function renderClothingFurnitureArticle(dataArray) {
     item.missingCategories = [];
 
     //item = inferItemType(item); // assigns either "Clothing" or "Furniture" if itemType column is not provided
-    item = parseItemSource(item);
-    item = parseSizePlacementEnv(item);
+    //item = parseItemSource(item);
+    //item = parseSizePlacementEnv(item);
 
     switch (item.collection) {
     case 'DV':
@@ -2488,10 +2511,11 @@ function renderClothingFurnitureArticle(dataArray) {
     default:
       break;
     }
-
+    /*
     if (item.universe == "(none)") {
       item.universe = "none";
     }
+    */
 
     // removed if isbuilding/iscastle/isstall/isvalleyvisitstation/iswishingwell/ishairstyle/isaccessory
     // logic from this location and moved inside assignItemType
