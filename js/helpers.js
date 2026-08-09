@@ -25,7 +25,7 @@ function microTemplate(templateStr, objData) {
     templateStr = templateStr.replace(
       new RegExp('%%' + prop + '%%', 'g'),
       objData[prop]
-    );
+      );
   return templateStr;
 }
 
@@ -56,16 +56,16 @@ function createUniverseLink(itemType, universe) {
     universe == 'none' ||
     universe == 'none?' ||
     universe.includes('none')
-  ) {
+    ) {
     output += 'n unthemed';
-  } else {
-    if (universe!= "One Hundred and One Dalmatians" && isVowel(universe.substr(0, 1))) {
-      output += 'n';
-    }
-    output += ' [[' + itemType + '#' + universe + '|' + universe + ']] themed';
+} else {
+  if (universe!= "One Hundred and One Dalmatians" && isVowel(universe.substr(0, 1))) {
+    output += 'n';
   }
+  output += ' [[' + itemType + '#' + universe + '|' + universe + ']] themed';
+}
 
-  return output;
+return output;
 }
 
 function stripHTMLComments(html) {
@@ -179,47 +179,47 @@ function determineCharacterFromDreamStyle(itemName) {
   }
 
   switch (charName) {
-    case 'Scrooge':
-      charName = 'Scrooge McDuck';
-      break;
-    case 'Godmother':
-      charName = 'The Fairy Godmother';
-      break;
-    case 'Beast':
-      charName = 'The Beast';
-      break;
-    case 'Minnie':
-      charName = 'Minnie Mouse';
-      break;
-    case 'Mickey':
-      charName = 'Mickey Mouse';
-      break;
-    case 'Forgotten':
-      charName = 'The Forgotten';
-      break;
-    case 'Donald':
-      charName = 'Donald Duck';
-      break;
-    case 'Mike':
-      charName = 'Mike Wazowski';
-      break;
-    case 'Gothel':
-      charName = 'Mother Gothel';
-      break;
-    case 'Eric':
-      charName = 'Prince Eric';
-      break;
-    case 'Jack':
-      charName = 'Jack Skellington';
-      break;
-    case 'Buzz':
-      charName = 'Buzz Lightyear';
-      break;
-    default: {
-      break;
-    }
+  case 'Scrooge':
+    charName = 'Scrooge McDuck';
+    break;
+  case 'Godmother':
+    charName = 'The Fairy Godmother';
+    break;
+  case 'Beast':
+    charName = 'The Beast';
+    break;
+  case 'Minnie':
+    charName = 'Minnie Mouse';
+    break;
+  case 'Mickey':
+    charName = 'Mickey Mouse';
+    break;
+  case 'Forgotten':
+    charName = 'The Forgotten';
+    break;
+  case 'Donald':
+    charName = 'Donald Duck';
+    break;
+  case 'Mike':
+    charName = 'Mike Wazowski';
+    break;
+  case 'Gothel':
+    charName = 'Mother Gothel';
+    break;
+  case 'Eric':
+    charName = 'Prince Eric';
+    break;
+  case 'Jack':
+    charName = 'Jack Skellington';
+    break;
+  case 'Buzz':
+    charName = 'Buzz Lightyear';
+    break;
+  default: {
+    break;
   }
-  return charName;
+}
+return charName;
 }
 
 function getCharacterUniverse(charName) {
@@ -295,158 +295,172 @@ function getCharacterUniverse(charName) {
 
   for (let i = 0; i < charactersProperNames.length; i++) {
     switch (charName) {
-      case 'Aladdin':
-      case 'Jafar':
-      case 'Jasmine':
-        universe = 'Aladdin';
-        break;
-      case 'Alice':
-      case 'Cheshire Cat':
-        universe = 'Alice in Wonderland';
-        break;
-      case 'Belle':
-      case 'Gaston':
-      case 'The Beast':
-        universe = 'Beauty and the Beast';
-        break;
-      case 'Merida':
-        universe = 'Brave';
-        break;
-      case 'The Fairy Godmother':
-        universe = 'Cinderella';
-        break;
-      case 'The Forgotten':
-        universe = 'TODO_UNIVERSE';
-        break;
-      case 'Mirabel':
-        universe = 'Encanto';
-        break;
-      case 'Anna':
-      case 'Elsa':
-      case 'Kristoff':
-      case 'Olaf':
-        universe = 'Frozen';
-        break;
-      case 'Hades':
-        universe = 'Hercules';
-        break;
-      case 'Joy':
-      case 'Sadness':
-        universe = 'Inside Out';
-        break;
-      case 'Stitch':
-        universe = 'Lilo & Stich';
-        break;
-      case 'Daisy':
-      case 'Donald Duck':
-      case 'Goofy':
-      case 'Mickey Mouse':
-      case 'Minnie Mouse':
-      case 'Scrooge McDuck':
-        universe = 'Mickey & Friends';
-        break;
-      case 'Maui':
-      case 'Moana':
-        universe = 'Moana';
-        break;
-      case 'Mike Wazowski':
-      case 'Sulley':
-        universe = 'Monsters, Inc.';
-        break;
-      case 'Mulan':
-      case 'Mushu':
-        universe = 'Mulan';
-        break;
-      case 'Oswald':
-        universe = 'Oswald the Lucky Rabbit';
-        break;
-      case 'Peter Pan':
-        universe = 'Peter Pan';
-        break;
-      case 'Remy':
-        universe = 'Ratatouille';
-        break;
-      case 'Aurora':
-      case 'Maleficent':
-        universe = 'Beauty';
-        break;
-      case 'Flynn':
-      case 'Mother Gothel':
-      case 'Rapunzel':
-        universe = 'Tangled';
-        break;
-      case 'Nala':
-      case 'Pumbaa':
-      case 'Scar':
-      case 'Simba':
-      case 'Timon':
-        universe = 'The Lion King';
-        break;
-      case 'Ariel':
-      case 'Prince Eric':
-      case 'Ursula':
-      case 'Vanessa':
-        universe = 'The Little Mermaid';
-        break;
-      case 'Tiana':
-        universe = 'Princess and the Frog';
-        break;
-      case 'Merlin':
-        universe = 'Sword in the Stone';
-        break;
-      case 'Jack Skellington':
-      case 'Sally':
-        universe = "Tim Burton's The Nightmare Before Christmas";
-        break;
-      case 'Buzz Lightyear':
-      case 'Woody':
-        universe = 'Toy Story';
-        break;
-      case 'EVE':
-      case 'WALL-E':
-        universe = 'WALL-E';
-        break;
-      case 'Eeyore':
-      case 'Piglet':
-      case 'Tigger':
-      case 'Winnie the Pooh':
-        universe = 'Winnie the Pooh';
-        break;
-      case 'Ralph':
-      case 'Vanellope':
-        universe = 'Wreck-It Ralph';
-        break;
+    case 'Aladdin':
+    case 'Jafar':
+    case 'Jasmine':
+      universe = 'Aladdin';
+      break;
+    case 'Alice':
+    case 'Cheshire Cat':
+      universe = 'Alice in Wonderland';
+      break;
+    case 'Belle':
+    case 'Gaston':
+    case 'The Beast':
+      universe = 'Beauty and the Beast';
+      break;
+    case 'Merida':
+      universe = 'Brave';
+      break;
+    case 'The Fairy Godmother':
+      universe = 'Cinderella';
+      break;
+    case 'The Forgotten':
+      universe = 'TODO_UNIVERSE';
+      break;
+    case 'Mirabel':
+      universe = 'Encanto';
+      break;
+    case 'Anna':
+    case 'Elsa':
+    case 'Kristoff':
+    case 'Olaf':
+      universe = 'Frozen';
+      break;
+    case 'Hades':
+      universe = 'Hercules';
+      break;
+    case 'Joy':
+    case 'Sadness':
+      universe = 'Inside Out';
+      break;
+    case 'Stitch':
+      universe = 'Lilo & Stich';
+      break;
+    case 'Daisy':
+    case 'Donald Duck':
+    case 'Goofy':
+    case 'Mickey Mouse':
+    case 'Minnie Mouse':
+    case 'Scrooge McDuck':
+      universe = 'Mickey & Friends';
+      break;
+    case 'Maui':
+    case 'Moana':
+      universe = 'Moana';
+      break;
+    case 'Mike Wazowski':
+    case 'Sulley':
+      universe = 'Monsters, Inc.';
+      break;
+    case 'Mulan':
+    case 'Mushu':
+      universe = 'Mulan';
+      break;
+    case 'Oswald':
+      universe = 'Oswald the Lucky Rabbit';
+      break;
+    case 'Peter Pan':
+      universe = 'Peter Pan';
+      break;
+    case 'Remy':
+      universe = 'Ratatouille';
+      break;
+    case 'Aurora':
+    case 'Maleficent':
+      universe = 'Beauty';
+      break;
+    case 'Flynn':
+    case 'Mother Gothel':
+    case 'Rapunzel':
+      universe = 'Tangled';
+      break;
+    case 'Nala':
+    case 'Pumbaa':
+    case 'Scar':
+    case 'Simba':
+    case 'Timon':
+      universe = 'The Lion King';
+      break;
+    case 'Ariel':
+    case 'Prince Eric':
+    case 'Ursula':
+    case 'Vanessa':
+      universe = 'The Little Mermaid';
+      break;
+    case 'Tiana':
+      universe = 'Princess and the Frog';
+      break;
+    case 'Merlin':
+      universe = 'Sword in the Stone';
+      break;
+    case 'Jack Skellington':
+    case 'Sally':
+      universe = "Tim Burton's The Nightmare Before Christmas";
+      break;
+    case 'Buzz Lightyear':
+    case 'Woody':
+      universe = 'Toy Story';
+      break;
+    case 'EVE':
+    case 'WALL-E':
+      universe = 'WALL-E';
+      break;
+    case 'Eeyore':
+    case 'Piglet':
+    case 'Tigger':
+    case 'Winnie the Pooh':
+      universe = 'Winnie the Pooh';
+      break;
+    case 'Ralph':
+    case 'Vanellope':
+      universe = 'Wreck-It Ralph';
+      break;
     }
   }
   return universe;
 }
 
 const starpathsObject = {
-    "Pixar Fest": { "tokenName": 'pixartoken', "sheetLocationVal": 'starpath - pixar' },
-    "Villains'": {"tokenName": 'villaintoken', "sheetLocationVal": 'starpath - villains' },
-    "Festive": { "tokenName": 'festivetoken', "sheetLocationVal": 'starpath - festive' },
-    "Centennial": { "tokenName": 'centennialtoken', "sheetLocationVal": 'starpath - centennial' },
-    "Disney Parks": { "tokenName": 'parkstoken', "sheetLocationVal": 'starpath - parks' },
-    "Wonder of Pixar": { "tokenName": 'wonderpixartoken', "sheetLocationVal": 'starpath - wonder' },
-    "Haunted Holiday": { "tokenName": 'hauntedtoken', "sheetLocationVal": 'starpath - haunted' },
-    "Royal Winter": { "tokenName": 'royalwintertoken', "sheetLocationVal": 'starpath - royal' },
-    "Lovely Monsters": { "tokenName": 'monstertoken', "sheetLocationVal": 'starpath - monsters' },
-    "A Day at Disney": { "tokenName": 'dayatdisneytoken', "sheetLocationVal": 'starpath - adad' },
-    "Majesty and Magnolias": { "tokenName": 'magnoliatoken', "sheetLocationVal": 'starpath - majesty' },
-    "Dapper Delights": { "tokenName": 'lilypadtoken', "sheetLocationVal": 'starpath - dapper' },
-    "The Night Show": { "tokenName": 'rockstartoken', "sheetLocationVal": 'starpath - nightshow' },
-    "Frost & Fairies": { "tokenName": 'icecrystaltoken', "sheetLocationVal": 'starpath - frost' },
-    "Oasis Retreat": { "tokenName": 'tranquiltoken', "sheetLocationVal": 'starpath - oasis' },
-    "Garden of Whimsy": { "tokenName": 'pocketwatchtoken', "sheetLocationVal": 'starpath - whimsy' },
-    "Adventures in Never Land": { "tokenName": 'compasstoken', "sheetLocationVal": 'starpath - neverland' },
-    "Retro Roadtrip": { "tokenName": 'maltshoptoken', "sheetLocationVal": 'starpath - roadtrip' },
-    "Witchful Thinking": { "tokenName": 'brewtoken', "sheetLocationVal": 'starpath - witchful' },
-    "Winter Warmth": { "tokenName": 'waffletoken', "sheetLocationVal": 'starpath - warmth' },
-    "Paw-fect Romance": { "tokenName": 'pawprinttoken', "sheetLocationVal": 'starpath - pawfect' },
-    "Elements of Nature": { "tokenName": 'earthtoken', "sheetLocationVal": 'starpath - nature' },
-    "Godly Glamor": { "tokenName": 'lightningtoken', "sheetLocationVal": 'starpath - godly' },
-    "Pop City": { "tokenName": 'neontoken', "sheetLocationVal": 'starpath - popcity' },
-  };
+  "Pixar Fest": { "tokenName": 'pixartoken', "sheetLocationVal": 'starpath - pixar', tagName: '' },
+  "Villains'": {"tokenName": 'villaintoken', "sheetLocationVal": 'starpath - villains', tagName: '' },
+  "Festive": { "tokenName": 'festivetoken', "sheetLocationVal": 'starpath - festive', tagName: '' },
+  "Centennial": { "tokenName": 'centennialtoken', "sheetLocationVal": 'starpath - centennial', tagName: '' },
+  "Disney Parks": { "tokenName": 'parkstoken', "sheetLocationVal": 'starpath - parks', tagName: '' },
+  "Wonder of Pixar": { "tokenName": 'wonderpixartoken', "sheetLocationVal": 'starpath - wonder', tagName: '' },
+  "Haunted Holiday": { "tokenName": 'hauntedtoken', "sheetLocationVal": 'starpath - haunted', tagName: '' },
+  "Royal Winter": { "tokenName": 'royalwintertoken', "sheetLocationVal": 'starpath - royal', tagName: '' },
+  "Lovely Monsters": { "tokenName": 'monstertoken', "sheetLocationVal": 'starpath - monsters', tagName: '' },
+  "A Day at Disney": { "tokenName": 'dayatdisneytoken', "sheetLocationVal": 'starpath - adad', tagName: '' },
+  "Majesty and Magnolias": { "tokenName": 'magnoliatoken', "sheetLocationVal": 'starpath - majesty', tagName: '' },
+  "Dapper Delights": { "tokenName": 'lilypadtoken', "sheetLocationVal": 'starpath - dapper', tagName: '' },
+  "The Night Show": { "tokenName": 'rockstartoken', "sheetLocationVal": 'starpath - nightshow', tagName: '' },
+  "Frost & Fairies": { "tokenName": 'icecrystaltoken', "sheetLocationVal": 'starpath - frost', tagName: '' },
+  "Oasis Retreat": { "tokenName": 'tranquiltoken', "sheetLocationVal": 'starpath - oasis', tagName: '' },
+  "Garden of Whimsy": { "tokenName": 'pocketwatchtoken', "sheetLocationVal": 'starpath - whimsy', tagName: '' },
+  "Adventures in Never Land": { "tokenName": 'compasstoken', "sheetLocationVal": 'starpath - neverland', tagName: 'Adventures in Never Land' },
+  "Retro Roadtrip": { "tokenName": 'maltshoptoken', "sheetLocationVal": 'starpath - roadtrip', tagName: 'Retro Roadtrip' },
+  "Witchful Thinking": { "tokenName": 'brewtoken', "sheetLocationVal": 'starpath - witchful', tagName: 'Witchful Thinking 2025' },
+  "Winter Warmth": { "tokenName": 'waffletoken', "sheetLocationVal": 'starpath - warmth', tagName: 'Winter Warmth 2025' },
+  "Paw-fect Romance": { "tokenName": 'pawprinttoken', "sheetLocationVal": 'starpath - pawfect', tagName: 'Paw-fect Romance' },
+  "Elements of Nature": { "tokenName": 'earthtoken', "sheetLocationVal": 'starpath - nature', tagName: 'Elements of Nature' },
+  "Godly Glamor": { "tokenName": 'lightningtoken', "sheetLocationVal": 'starpath - godly', tagName: 'Godly Glamor' },
+  "Pop City": { "tokenName": 'neontoken', "sheetLocationVal": 'starpath - popcity', tagName: 'Pop City' },
+};
+
+function commentOutStarPathTags(item){
+  //TODO
+  // if item contains a tag that is the value of a star path tag,
+  // don't show it on the wiki, comment it out
+  // (previous alternative was commenting out within the spreadsheet itself)
+  // Rec Room, Study, Rustic, Elegant<!--, Witchful Thinking 2025-->
+  // <!--Winter Warmth 2025, -->Outdoors, Traditional, Cute
+  // Elegant, <!--The Night Show, -->Quirky, Rec Room, Living Room, Study
+  // Casual, Cute, Outdoors, Pop City
+  // ensure that tags are not double-wrapped in case the sheet values are already wrapped in html comments
+  let output = '';
+  return output;
+}
 
 function lookupToken(starpathName) {
   var output = 'ORIGINALTOKENNAME'; // "starpath - ......"
@@ -459,30 +473,30 @@ function lookupToken(starpathName) {
 function insertNumberWord(num) {
   var output = '';
   switch (num) {
-    case "1":
-    case 1:
-      return 'one';
-    case "2":
-    case 2:
-      return 'two';
-    case "3":
-    case 3:
-      return 'three';
-    case "4":
-    case 4:
-      return 'four';
-    case "5":
-    case 5:
-      return 'five';
-    case "6":
-    case 6:
-      return 'six';
-    default: {
-      break;
-    }
+  case "1":
+  case 1:
+    return 'one';
+  case "2":
+  case 2:
+    return 'two';
+  case "3":
+  case 3:
+    return 'three';
+  case "4":
+  case 4:
+    return 'four';
+  case "5":
+  case 5:
+    return 'five';
+  case "6":
+  case 6:
+    return 'six';
+  default: {
+    break;
   }
+}
   //if (num >= 1 && num <=5 ) output += "-star ";
-  return '';
+return '';
 }
 
 
@@ -492,21 +506,6 @@ function insertNumberWord(num) {
 function determinePremiumBundleType(bundleItemArray) {
   //const itemsById = _getWikiItemMap();
   let output = '';
-
-
-  /* // optimized version? needs testing
-  const itemTypeCounter = {};
-
-  // Step 1: Count everything in one linear pass - O(N)
-  for (const item of items) {
-    itemTypeCounter[item.itemType] = (itemTypeCounter[item.itemType] ?? 0) + 1;
-  }
-
-  // Step 2: Extract all keys and highest keys once - O(K) where K = unique item types
-  const allKeys = Object.keys(itemTypeCounter);
-  const max = Math.max(...Object.values(itemTypeCounter));
-  const highestKeys = allKeys.filter(key => itemTypeCounter[key] === max);
-  */
 
   let itemTypeCounter = {};
   for (let i = 0; i < bundleItemArray.length; i++) {
@@ -523,24 +522,26 @@ function determinePremiumBundleType(bundleItemArray) {
       if (item.collection == "Accessory" && item.categories.includes("Accessor") ) item.itemType = 'Accessory';
       if (item.collection == "Glider" && item.categories.includes("Glider") ) item.itemType = 'Glider';
 
+      /*
+      // values i use in my sheet
+      if ( item.collection == 'Dream Castle' || item.universe == 'none (Dream Castle)' || item.category == 'Dream Castle Skin')
+      if ( item.collection == 'Goofy's Stall' || item.universe == 'none (Stall)' || item.category == 'Goofy's Stall')
+      if ( item.collection == 'Visit Station' || item.universe == 'none (Visit Station)' || item.category == 'Visit Station' )
+      if ( item.collection == 'Wishing Well' || item.universe == 'none (Well)' || item.category == 'Wishing Well' )
+      if ( item.collection == 'Building' && item.universe == 'none (Chez Remy)' || item.category == 'Chez Remy' )
+      if ( item.collection == 'Building' && item.universe == 'none (Scrooge's Store)' || item.category == 'Scrooge's Store' )
+      if ( item.collection == 'Building' && item.universe == 'none (Plaza)' || item.category == 'Plaza Square' )
+      if ( item.collection == 'Building' && item.universe == 'none (Boutique)' || item.category == 'Boutique' )
+      if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 'xxxxx' )
+      if ( item.collection == 'Character Dream Style' || item.collection == 'Dream Style' || item.category == 'Character' || item.universe == 'Character Dream Style')
+      if ( item.collection == 'Dream Style' || item.category == 'Character' )
+      if ( item.collection == 'Dream Style' && item.category.includes('Tool') ) // 'Tool Dream Style', 'Tools', 'Tool'
+      if ( item.collection == 'Glider' && item.category.includes('Glider'))
+      if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 'xxxxx' )
+
+      */
+
     }
-
-
-    
-    //console.log(`itemType of ${item.name}: ${item.itemType}`)
-    /*// todo - setting isHouse value this SHOULD be handled way before this funciton, but fallback
-    if (itemType == "Furniture") {
-      console.log('got inside 515 with item:')
-      console.log(item);
-      if (item.categories && item.categories.includes('House') ) item.itemType = 'House';
-
-      // todo: capture
-      // categories: ['House']
-      if (isHouse(item)) {
-        itemType = 'House';
-      }
-    }
-    */
 
     //console.log(`after: itemType of ${item.name}: ${item.itemType}`)
     //console.log(`itemType given to itemTypeCounter = ${item.itemType}`)
@@ -548,69 +549,46 @@ function determinePremiumBundleType(bundleItemArray) {
     // Update tally
     itemTypeCounter[item.itemType] = (itemTypeCounter[item.itemType] ?? 0) + 1;
 
-    }
+  }
 
-    // Extract all unique keys as an array
-    const allKeys = Object.keys(itemTypeCounter);
+  // Extract all unique keys (itemTypes) as an array
+  const allKeys = Object.keys(itemTypeCounter);
 
-    // Find highest frequency keys (ties handled)
-    const max = Math.max(...Object.values(itemTypeCounter));
-    const highestKeys = allKeys.filter(key => itemTypeCounter[key] === max);
-    // TODO - this needs more work, both in the logic and in the sheet inputs/standardization
-/*
-// values i use in my sheet
-if ( item.collection == 'Dream Castle' || item.universe == 'none (Dream Castle)' || item.category == 'Dream Castle Skin')
-if ( item.collection == 'Goofy's Stall' || item.universe == 'none (Stall)' || item.category == 'Goofy's Stall')
-if ( item.collection == 'Visit Station' || item.universe == 'none (Visit Station)' || item.category == 'Visit Station' )
-if ( item.collection == 'Wishing Well' || item.universe == 'none (Well)' || item.category == 'Wishing Well' )
-if ( item.collection == 'Building' && item.universe == 'none (Chez Remy)' || item.category == 'Chez Remy' )
-if ( item.collection == 'Building' && item.universe == 'none (Scrooge's Store)' || item.category == 'Scrooge's Store' )
-if ( item.collection == 'Building' && item.universe == 'none (Plaza)' || item.category == 'Plaza Square' )
-if ( item.collection == 'Building' && item.universe == 'none (Boutique)' || item.category == 'Boutique' )
+  // Find highest frequency keys (ties handled)
+  const max = Math.max(...Object.values(itemTypeCounter));
+  const highestKeys = allKeys.filter(key => itemTypeCounter[key] === max);
+  // TODO - this needs more work, both in the logic and in the sheet inputs/standardization
 
-if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 'xxxxx' )
-
-
-if ( item.collection == 'Character Dream Style' || item.collection == 'Dream Style' || item.category == 'Character' || item.universe == 'Character Dream Style')
-if ( item.collection == 'Dream Style' || item.category == 'Character' )
-
-if ( item.collection == 'Dream Style' && item.category.includes('Tool') ) // 'Tool Dream Style', 'Tools', 'Tool'
-
-if ( item.collection == 'Glider' && item.category.includes('Glider'))
-
-if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 'xxxxx' )
-
-*/
 
   // from reporter tsv export for character dream style: itemType="Dream Style", collection="Character Dream Style", category.includes("Character")
   // TODO - not exporting 
   // "categories": ["Character"]
 
-    // TODO - this needs so much cleanup - fri aug 7
+  // TODO - this needs so much cleanup - fri aug 7
 
 
-    console.log(`594 inside determinePremiumBundleType with highestKeys: ${highestKeys}`);
-    console.log(`allKeys at 593 ${allKeys}`)
+  //console.log(`594 inside determinePremiumBundleType with highestKeys: ${highestKeys}`);
+  //console.log(`allKeys at 593 ${allKeys}`)
     // todo: Companion,Building,Furniture mixes
-    // t his isnt working because House is not in highestKeys if its House, Furniture, Furniture - Furniture is
+    // this isnt working because House is not in highestKeys if its House, Furniture, Furniture - Furniture is
     //if (highestKeys.includes("House") && highestKeys.includes("Furniture")) output = 'House/Furniture';
     //if (highestKeys.includes("House")) output = 'House';
-    if (highestKeys.includes("Building")) output = 'Building / House';
+  if (highestKeys.includes("Building")) output = 'Building / House';
     //else if (highestKeys.includes("Character Dream Style")) output = 'Character Dream Style';
-    else if (highestKeys.includes("Character Style")) output = 'Character Style';
-    else if (highestKeys.includes("Skin")) output = 'Character Dream Style / Stall / Wishing Well / Castle Dream Style'; // Dream Castle Skin, Goofy's Stall Skin, Wishing Well Skin, Valley Visit Station Style
-    else if (highestKeys.includes("Companion") && highestKeys.includes("Furniture")) output = 'Companion';
-    else if (highestKeys.includes("Companion") && highestKeys.includes("Clothing")) output = 'Clothing/Companion';
-    else if (highestKeys.includes("Companion")) output = 'Companion';
-    else if (highestKeys.includes("Glider")) output = 'Glider';
-    else if (highestKeys.includes("AvatarFeature")) output = 'Glider';
-    else if (highestKeys.includes("Tool")) output = 'Tool Style / Accessory';
-    else if (highestKeys.includes("Accessory")) output = 'Accessory';
-    else if (highestKeys.includes("Clothing") && highestKeys.includes("Furniture")) output = 'Clothing/Furniture';
-    else if (highestKeys.includes("Clothing")) output = 'Clothing';
-    else if (highestKeys.includes("Furniture")) output = 'Furniture';
-    else if (highestKeys.includes("MountGear")) output = 'Mount Customization';
-    else output = 'bundleTypeTBD';
+  else if (highestKeys.includes("Character Style")) output = 'Character Style';
+  else if (highestKeys.includes("Skin")) output = 'Character Dream Style / Stall / Wishing Well / Castle Dream Style'; // Dream Castle Skin, Goofy's Stall Skin, Wishing Well Skin, Valley Visit Station Style
+  //else if (highestKeys.includes("Companion") && highestKeys.includes("Furniture")) output = 'Companion';
+  //else if (highestKeys.includes("Companion") && highestKeys.includes("Clothing")) output = 'Clothing/Companion';
+  //else if (highestKeys.includes("Companion")) output = 'Companion';
+  else if (highestKeys.includes("Glider")) output = 'Glider';
+  else if (highestKeys.includes("AvatarFeature")) output = 'Glider';
+  else if (highestKeys.includes("Tool")) output = 'Tool Style / Accessory';
+  else if (highestKeys.includes("Accessory")) output = 'Accessory';
+  else if (highestKeys.includes("Clothing") && highestKeys.includes("Furniture")) output = 'Clothing/Furniture';
+  else if (highestKeys.includes("Clothing")) output = 'Clothing';
+  else if (highestKeys.includes("Furniture")) output = 'Furniture';
+  else if (highestKeys.includes("MountGear")) output = 'Mount Customization';
+  else output = 'bundleTypeTBD';
 
 
     
@@ -618,72 +596,82 @@ if ( item.collection == 'xxxxx' && item.universe == 'xxxxx' || item.category == 
     // above is logic for assuming all item categories hold equal weight, but that is not true
     // if any House is contained, House should be inthe output
     //console.log(`allKeys.includes("House")? ${allKeys.includes("House")}`)
-    if (allKeys.includes("House") && allKeys.includes("Furniture")) output = 'House/Furniture';
-    else if (allKeys.includes("House")) output = 'House';
-  
+    if (allKeys.includes("House")) {
+      if (allKeys.includes("Furniture")) output = 'House/Furniture';
+      else output = 'House';
+    }
+
+    if (allKeys.includes("Companion")) {
+      if (allKeys.includes("Furniture")) output = 'Companion/Furniture';
+      else if (allKeys.includes("Clothing")) output = 'Clothing/Companion';
+      else output = 'Companion';
+    }
+
   return output;
 }
 
-function useStandaloneNaming(bundleObj) {
-  return bundleObj.itemArray.some(
-    item => item.name === bundleObj.friendlyName
-  );
-}
-
-function isSingleItemBundle(item) {
-  return (item.psBundleItems.length == 1);
-}
 
 
-function parseUniqueBundles(dataArray) {
+  function useStandaloneNaming(bundleObj) {
+    return bundleObj.itemArray.some(
+      item => item.name === bundleObj.friendlyName
+      );
+  }
+
+  function isSingleItemBundle(item) {
+    return (item.psBundleItems.length == 1);
+  }
+
+
+  function parseUniqueBundles(dataArray) {
   // TODO - add to relatedItems in alpha sort order
-  var resultArray = [];
+    var resultArray = [];
 
-  dataArray.forEach(function (item) {
-    let itemID = item.ID || item.id || item.itemID;
+    dataArray.forEach(function (item) {
+      let itemID = item.ID || item.id || item.itemID;
 
     // TODO: parse source value to determine itemQty and msCost per item
-    let bundleQty = item.bundleQty || "TBD";
-    let msCost = item.msCost || "NA"
+      let bundleQty = item.bundleQty || "TBD";
+      let msCost = item.msCost || "NA"
 
     // bundleQty, msCost 
     //console.log('line 591');
     //console.log(item);
 
-    const searchItem = item.bundleName;
+      const searchItem = item.bundleName;
     //item = parseItemSource(item); // Item source already parsed for infobox, shouldnt be necessary here ... but think logic flow is wonky
-    const foundObject = resultArray.find(
-      (obj) => obj.bundleName === searchItem
-    );
-    if (foundObject) {
+      const foundObject = resultArray.find(
+        (obj) => obj.bundleName === searchItem
+        );
+      if (foundObject) {
       //console.log(`'${searchItem}' (bundleName) is already present in our resultArray`);
       //if (!foundObject.psBundleItems) foundObject.psBundleItems = [];
-      foundObject.psBundleItems.push(item.name);
+        foundObject.psBundleItems.push(item.name);
       //console.log("psBundleItems: ", foundObject.psBundleItems);
 
-      let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
-      foundObject.itemArray.push(itemObj);
+        let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+        foundObject.itemArray.push(itemObj);
 
-    } else {
+      } else {
       //console.log(`'${searchItem}' is not present in our resultArray, adding.`);
       // **** TODO - single-item bundles seem to have duplicate values??? or perhaps just using the wrong template - also not including one of the items in multi-item bundles??
-      item.psBundleItems = [];
-      item.psBundleItems.push(item.name);
+        item.psBundleItems = [];
+        item.psBundleItems.push(item.name);
 
       // limited is currently the propertyname being used for icon
       //let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
-      let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
-      item.itemArray = [];
-      item.itemArray.push(itemObj);
+        let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+        item.itemArray = [];
+        item.itemArray.push(itemObj);
       //resultArray.push(item);
 
       // default/initialize the bundle version to whatever the version of the first item itemType was,
       // which is NOT robust for returning items - if you set to item.version
       // TODO FIX VERSION - for now, default to the global variable "updateNumber" - the current/latest update
-      let bundleObj = {
-        bundleName: item.bundleName,
-        bundlePrice: item.bundlePrice,
-        psBundleItems: item.psBundleItems,
+        let bundleObj = {
+          bundleName: item.bundleName,
+          bundlePrice: item.bundlePrice,
+          psBundleItems: item.psBundleItems,
         //bundleType: item.itemType,
         //version: updateNumber, //item.version,
         version: item.version, // versionAdded should use version of first item added for historical bundles - but this will break with returning star path bundles
@@ -692,20 +680,20 @@ function parseUniqueBundles(dataArray) {
         friendlyName: item.bundleName,
         itemArray: item.itemArray
       };
-  
+
       resultArray.push( bundleObj );
     }
   });
 
 
-  resultArray.forEach(function (bundleObj) {
+    resultArray.forEach(function (bundleObj) {
     // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
-    bundleObj.standaloneBundleNaming = (bundleObj.itemArray.length == 1 || useStandaloneNaming(bundleObj));
+      bundleObj.standaloneBundleNaming = (bundleObj.itemArray.length == 1 || useStandaloneNaming(bundleObj));
 
 
-    bundleObj.bundleType = determinePremiumBundleType(bundleObj.itemArray);
-     console.log(`line 705 result of determinePremiumBundleType on ${bundleObj.name}: ${bundleObj.bundleType}`)
-  });
+      bundleObj.bundleType = determinePremiumBundleType(bundleObj.itemArray);
+      console.log(`line 705 result of determinePremiumBundleType on ${bundleObj.name}: ${bundleObj.bundleType}`)
+    });
 
 
   /*// do NOT alpha sort - use the given order of the items from data (which will be whatever order the rows were in when copy/pasted)
@@ -715,8 +703,8 @@ function parseUniqueBundles(dataArray) {
   */
 
   // resultArray is array of bundleobjects with bundleName, bundlePrice, psBundleItems, bundleType, version
-  return resultArray;
-}
+    return resultArray;
+  }
 
 /*
 Information flow:
@@ -802,27 +790,27 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
 
 
 // output the properties needed to populate the python ddv-wiki-weeklyupdates script
-function outputPSBundleJSON(bundleArray) {
+  function outputPSBundleJSON(bundleArray) {
 
   //let output = JSON.stringify(resultArray);
   //output = output.replaceAll("bundleName", "\nbundleName")
 
-  let output = '';
-  bundleArray.forEach(function (bundleObj) {
+    let output = '';
+    bundleArray.forEach(function (bundleObj) {
     //console.log(bundleObj)
 
-    output += `\n`;
+      output += `\n`;
     // TODO - i might separately need to output this as property names for premiumShopObj.js in psLineupGenerator?
     // unclear what my flow is
     // outputAsNamedPropertyObject = false to make it an array and use for weeklyupdates, true to generate for premiumShopObj.js
-    outputAsNamedPropertyObject = false;
-    if (outputAsNamedPropertyObject) {
-      output += `"${bundleObj.friendlyName}": `;
-    }
-    output += `{`;
-    output += `\n\t"protoDbName": "${bundleObj.protoDbName}",`;
-    output += `\n\t"friendlyName": "${bundleObj.friendlyName}",`;
-    output += `\n\t"bundlePrice": "${bundleObj.bundlePrice}",`;
+      outputAsNamedPropertyObject = false;
+      if (outputAsNamedPropertyObject) {
+        output += `"${bundleObj.friendlyName}": `;
+      }
+      output += `{`;
+      output += `\n\t"protoDbName": "${bundleObj.protoDbName}",`;
+      output += `\n\t"friendlyName": "${bundleObj.friendlyName}",`;
+      output += `\n\t"bundlePrice": "${bundleObj.bundlePrice}",`;
     output += `\n\t"versionAdded": "${bundleObj.version}",`; // don't think this is needed for weeklyupdates? - but its good to have
     output += `\n\t"bundleType": "${bundleObj.bundleType}",`;
     output += `\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
@@ -858,54 +846,54 @@ function outputPSBundleJSON(bundleArray) {
   })
 
 
-  output = "PREMIUM SHOP BUNDLES FOR ddv-wiki-weeklyupdates:\n\n" + output;
-  
+    output = "PREMIUM SHOP BUNDLES FOR ddv-wiki-weeklyupdates:\n\n" + output;
 
-  return output;
-}
+
+    return output;
+  }
 
 
 // dupe content from premiumShopLineupGenerator ============
-function prepBundle(bundleObj) {
-  var output = '';
-  var priceString = '';
-  var contentsString = '';
+  function prepBundle(bundleObj) {
+    var output = '';
+    var priceString = '';
+    var contentsString = '';
 
-  let bundleItems = bundleObj.itemArray;
+    let bundleItems = bundleObj.itemArray;
 
   // determine "bundleType" to group bundle in correct invented grouping area on wiki PS page and PS navbox
-  bundleObj.bundleType = determinePremiumBundleType(bundleItems);
-  console.log(`bundleObj.bundleType at 876? ${bundleObj.bundleType}`)
+    bundleObj.bundleType = determinePremiumBundleType(bundleItems);
+    console.log(`bundleObj.bundleType at 876? ${bundleObj.bundleType}`)
 
   // Generate priceString
-  bundleObj.priceString = `{{price|${bundleObj.bundlePrice}|moonstone}}`;
+    bundleObj.priceString = `{{price|${bundleObj.bundlePrice}|moonstone}}`;
 
   // Generate contentsString
-  for (var i=0; i<bundleItems.length; i++) {
-    var itemObj = bundleItems[i];
-    contentsString += `{{name|${itemObj.name}`;
-    contentsString += (itemObj.qty && itemObj.qty > 1) ? `|${itemObj.qty}` : ``;
-    contentsString += `}}`;
+    for (var i=0; i<bundleItems.length; i++) {
+      var itemObj = bundleItems[i];
+      contentsString += `{{name|${itemObj.name}`;
+      contentsString += (itemObj.qty && itemObj.qty > 1) ? `|${itemObj.qty}` : ``;
+      contentsString += `}}`;
     // do not add a <br> after the last bundle item in the historical table
-    contentsString += (i < bundleItems.length-1) ? `<br>\n`: ``;
-  }
+      contentsString += (i < bundleItems.length-1) ? `<br>\n`: ``;
+    }
 
   // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
-  bundleObj.standaloneBundleNaming = (bundleItems.length == 1 || useStandaloneNaming(bundleObj));
+    bundleObj.standaloneBundleNaming = (bundleItems.length == 1 || useStandaloneNaming(bundleObj));
 
-  bundleObj.linkedName = (bundleItems.length == 1 || bundleObj.standaloneBundleNaming) ? `${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}` : `${bundleObj.friendlyName}`;
+    bundleObj.linkedName = (bundleItems.length == 1 || bundleObj.standaloneBundleNaming) ? `${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}` : `${bundleObj.friendlyName}`;
 
   // compatibility with old format
   //bundleObj.linked_name = `Tournament Gown Merida (Bundle)|Tournament Gown Merida`;
-  bundleObj.linked_name = bundleObj.linkedName;
+    bundleObj.linked_name = bundleObj.linkedName;
   //console.log(`linked_name assigned: ${bundleObj.linked_name}`)
 
-  bundleObj.contentsString = contentsString;
+    bundleObj.contentsString = contentsString;
 
-  return bundleObj;
-}
+    return bundleObj;
+  }
 
-function outputBundle_psNavbox(bundleObj) {
+  function outputBundle_psNavbox(bundleObj) {
   /*
   if (isSingleItemBundle(item)) {
       tempTemplate = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
@@ -915,14 +903,14 @@ function outputBundle_psNavbox(bundleObj) {
     }
   return microTemplate(tempTemplate, item) + '\n\n\n';
   */
-  let output = `'''[[${bundleObj.friendlyName}]]''' •`;
-  if (bundleObj.standaloneBundleNaming) {
-    output = `'''[[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]''' •`;
+    let output = `'''[[${bundleObj.friendlyName}]]''' •`;
+    if (bundleObj.standaloneBundleNaming) {
+      output = `'''[[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]''' •`;
+    }
+    return output;
   }
-  return output;
-}
 
-function outputBundle_topTable(bundleObj) {
+  function outputBundle_topTable(bundleObj) {
   /*
     if (isSingleItemBundle(item)) {
       tempTemplate = '| [[File:%%bundleName%% Store.png|450px|right|link=%%bundleName%% (Bundle)]]<!--row X leftright-->';
@@ -932,15 +920,15 @@ function outputBundle_topTable(bundleObj) {
     }
   return microTemplate(tempTemplate, item) + '\n\n\n';
   */
-  let output = `| [[File:${bundleObj.friendlyName}.png|450px|right|link=${bundleObj.friendlyName}]]`;
-  if (bundleObj.standaloneBundleNaming) {
-    output = `| [[File:${bundleObj.friendlyName} Store.png|450px|right|link=${bundleObj.friendlyName} (Bundle)]]`;
+    let output = `| [[File:${bundleObj.friendlyName}.png|450px|right|link=${bundleObj.friendlyName}]]`;
+    if (bundleObj.standaloneBundleNaming) {
+      output = `| [[File:${bundleObj.friendlyName} Store.png|450px|right|link=${bundleObj.friendlyName} (Bundle)]]`;
+    }
+    output += `<!--row X leftright-->`
+    return output;
   }
-  output += `<!--row X leftright-->`
-  return output;
-}
 
-function outputBundle_psPageListing(bundleObj) {
+  function outputBundle_psPageListing(bundleObj) {
   /*
   if (isSingleItemBundle(item)) {
       tempTemplate = "File:%%bundleName%% Store.png|'''[[%%bundleName%% (Bundle)|%%bundleName%%]]'''|link=%%bundleName%% (Bundle)";
@@ -950,14 +938,14 @@ function outputBundle_psPageListing(bundleObj) {
     }
    return microTemplate(tempTemplate, item) + '\n\n\n';
   */
-  let output = `File:${bundleObj.friendlyName}.png|'''[[${bundleObj.friendlyName}]]'''|link=${bundleObj.friendlyName}`;
-  if (bundleObj.standaloneBundleNaming) {
-    output = `File:${bundleObj.friendlyName} Store.png|'''[[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]'''|link=${bundleObj.friendlyName} (Bundle)`;
+    let output = `File:${bundleObj.friendlyName}.png|'''[[${bundleObj.friendlyName}]]'''|link=${bundleObj.friendlyName}`;
+    if (bundleObj.standaloneBundleNaming) {
+      output = `File:${bundleObj.friendlyName} Store.png|'''[[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]'''|link=${bundleObj.friendlyName} (Bundle)`;
+    }
+    return output;
   }
-  return output;
-}
 
-function outputBundle_historicalTable(bundleObj) {
+  function outputBundle_historicalTable(bundleObj) {
   /*
     if (isSingleItemBundle(item)) {
     item.psHistoricalTableRow = '|-\n| [[%%bundleName%% (Bundle)|%%bundleName%%]]\n| {{name|%%bundleName%%}}'; //+ psHistoricalTableRow_price;
@@ -979,31 +967,31 @@ function outputBundle_historicalTable(bundleObj) {
 
   return microTemplate(psHistoricalTableRow_price, item) + '\n\n\n';
 */
-  let output = `|-\n| [[${bundleObj.friendlyName}]]`;
-  if (bundleObj.standaloneBundleNaming) {
-    output = `|-\n| [[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]`;
+    let output = `|-\n| [[${bundleObj.friendlyName}]]`;
+    if (bundleObj.standaloneBundleNaming) {
+      output = `|-\n| [[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]`;
+    }
+    output += "\n|";
+    output += (bundleObj.itemArray.length>1) ? `\n` : ` `;
+    output += bundleObj.contentsString;
+    output += "\n| " + bundleObj.priceString;
+    return output;
   }
-  output += "\n|";
-  output += (bundleObj.itemArray.length>1) ? `\n` : ` `;
-  output += bundleObj.contentsString;
-  output += "\n| " + bundleObj.priceString;
-  return output;
-}
 // dupe content from premiumShopLineupGenerator ============
 
 
 
-function outputBundle_bundleArticle(bundleObj) {
-  let output = '';
+  function outputBundle_bundleArticle(bundleObj) {
+    let output = '';
 
-  let startWeekDate = '2026-MM-DD';
-  let endWeekDate = '2026-MM-DD';
-  let bundlePrice = bundleObj.bundlePrice;
-  let bundleName = bundleObj.bundleName;
-  let bundleType = bundleObj.bundleType;
-  let bundleVersion = bundleObj.version;
+    let startWeekDate = '2026-MM-DD';
+    let endWeekDate = '2026-MM-DD';
+    let bundlePrice = bundleObj.bundlePrice;
+    let bundleName = bundleObj.bundleName;
+    let bundleType = bundleObj.bundleType;
+    let bundleVersion = bundleObj.version;
 
-  let psBundleItemsInline = bundleObj.psBundleItems.join(', ');
+    let psBundleItemsInline = bundleObj.psBundleItems.join(', ');
 
   var imageParam = `${bundleName}`; // vs '%%bundleName%% Store'
   var itemsParam1 = '<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->'; // vs ''
@@ -1129,36 +1117,36 @@ function insertCookingLink(input) {
   //console.log("insertCookingLink called with: ", input)
   var output = '';
   switch (input) {
-    case 'Appetizers':
-      return '[[Cooking#Appetizers|appetizer meal]]';
-    case 'Entrées':
-    case 'Entrees':
-      return '[[Cooking#Entrées|entrée meal]]';
-    case 'Desserts':
-      return '[[Cooking#Desserts|dessert meal]]';
-    case 'Any Dairy and Oil':
-      return '[[:Category:Dairy and Oil|any Dairy and Oil]]';
-    case 'Any Sweet':
-      return '[[:Category:Sweets|any Sweet]]';
-    case 'Any Fruit':
-      return '[[:Category:Fruit|any Fruit]]';
-    case 'Any Fish':
-      return '[[:Category:Fish|any Fish]]';
-    case 'Any Spice':
-      return '[[:Category:Spices|any Spice]]';
-    case 'Any Seafood':
-      return '[[:Category:Seafood|any Seafood]]';
-    case 'Any Vegetables':
-      return '[[:Category:Vegetables|any Vegetable]]';
-    case 'Any Grain':
-      return '[[:Category:Grains|any Grain]]';
-    case 'Any Meat':
-      return '[[:Category:Meats|any Meat]]';
-    case 'Any Protein':
-      return '[[:Category:Protein|any Protein]]';
-    case 'xxxxx':
-      return 'xxxxx';
-    default: {
+  case 'Appetizers':
+    return '[[Cooking#Appetizers|appetizer meal]]';
+  case 'Entrées':
+  case 'Entrees':
+    return '[[Cooking#Entrées|entrée meal]]';
+  case 'Desserts':
+    return '[[Cooking#Desserts|dessert meal]]';
+  case 'Any Dairy and Oil':
+    return '[[:Category:Dairy and Oil|any Dairy and Oil]]';
+  case 'Any Sweet':
+    return '[[:Category:Sweets|any Sweet]]';
+  case 'Any Fruit':
+    return '[[:Category:Fruit|any Fruit]]';
+  case 'Any Fish':
+    return '[[:Category:Fish|any Fish]]';
+  case 'Any Spice':
+    return '[[:Category:Spices|any Spice]]';
+  case 'Any Seafood':
+    return '[[:Category:Seafood|any Seafood]]';
+  case 'Any Vegetables':
+    return '[[:Category:Vegetables|any Vegetable]]';
+  case 'Any Grain':
+    return '[[:Category:Grains|any Grain]]';
+  case 'Any Meat':
+    return '[[:Category:Meats|any Meat]]';
+  case 'Any Protein':
+    return '[[:Category:Protein|any Protein]]';
+  case 'xxxxx':
+    return 'xxxxx';
+  default: {
       return 'meal'; // meal // default use is placeholder meal text for new stub articles
       break;
     }
@@ -1169,29 +1157,29 @@ function insertCookingLink(input) {
 function insertIngredientCategoryLink(input) {
   var output = '';
   switch (input) {
-    case 'Dairy and Oil':
-      return '[[:Category:Dairy and Oil|any Dairy and Oil]]';
-    case 'Sweets':
-      return '[[:Category:Sweets|Sweet]]';
-    case 'Fish':
-      return '[[:Category:Fish|Fish]]';
-    case 'Fruit':
-      return '[[:Category:Fruit|Fruit]]';
-    case 'Spices':
-      return '[[:Category:Spices|Spice]]';
-    case 'Seafood':
-      return '[[:Category:Seafood|Seafood]]';
-    case 'Vegetables':
-      return '[[:Category:Vegetables|Vegetable]]';
-    case 'Grains':
-      return '[[:Category:Grains|Grain]]';
-    case 'Meat':
-      return '[[:Category:Meats|Meat]]';
-    case 'Protein':
-      return '[[:Category:Protein|Protein]]';
-    case 'xxxxx':
-      return 'xxxxx';
-    default: {
+  case 'Dairy and Oil':
+    return '[[:Category:Dairy and Oil|any Dairy and Oil]]';
+  case 'Sweets':
+    return '[[:Category:Sweets|Sweet]]';
+  case 'Fish':
+    return '[[:Category:Fish|Fish]]';
+  case 'Fruit':
+    return '[[:Category:Fruit|Fruit]]';
+  case 'Spices':
+    return '[[:Category:Spices|Spice]]';
+  case 'Seafood':
+    return '[[:Category:Seafood|Seafood]]';
+  case 'Vegetables':
+    return '[[:Category:Vegetables|Vegetable]]';
+  case 'Grains':
+    return '[[:Category:Grains|Grain]]';
+  case 'Meat':
+    return '[[:Category:Meats|Meat]]';
+  case 'Protein':
+    return '[[:Category:Protein|Protein]]';
+  case 'xxxxx':
+    return 'xxxxx';
+  default: {
       return 'ingredient';// 'meal' // default use is placeholder meal text for new stub articles
       break;
     }
@@ -1229,36 +1217,36 @@ exports.oxford = function(arr, conjunction, ifempty){
 function isVersatileRecipe(item) {
     // TODO: loop through item ingredients and check for versatile ingredients
   for (var i=0; i<item.ingredientArray.length; i++) {
-      if (isVersatileIngredient(item.ingredientArray[i])) {
+    if (isVersatileIngredient(item.ingredientArray[i])) {
         //console.log(`detected that ${item.ingredientArray[i]} is versatile ingredient`);
-        return true;
-      }
+      return true;
     }
-    
+  }
+
   return false;
 }
 
 function isVersatileIngredient(ingName) {
   switch (ingName) {
-    case 'Dairy and Oil':
-    case 'Fruit':
-    case 'Grains':
-    case 'Meat':
-    case 'Seafood':
-    case 'Spices': 
-    case 'Sweets': 
-    case 'Vegetables':  
-      return true;
-    default: {
-      break;
-    }
+  case 'Dairy and Oil':
+  case 'Fruit':
+  case 'Grains':
+  case 'Meat':
+  case 'Seafood':
+  case 'Spices': 
+  case 'Sweets': 
+  case 'Vegetables':  
+    return true;
+  default: {
+    break;
   }
+}
 
   // this will correctly detect, but breaks the functions??
-  if (ingName && ingName.includes("Any ")) {
-    return true;
-  } 
-  return false;
+if (ingName && ingName.includes("Any ")) {
+  return true;
+} 
+return false;
 }
 
 
@@ -1279,16 +1267,16 @@ function createInfoboxRecipe(item) {
 {{name|Moss|2}}<br>
 {{name|Pine Cone|5}}<br>
 {{name|Crimson Eternal Poppies|2}}*/
-    var output = '|recipe=';
-    var ingredientArray = [];
-    if (item["ing1"] && item["ing1"] != "-") ingredientArray.push(wrapNameTemplate(item["ing1"], item["ing1qty"]));
-    if (item["ing2"] && item["ing2"] != "-") ingredientArray.push(wrapNameTemplate(item["ing2"], item["ing2qty"]));
-    if (item["ing3"] && item["ing3"] != "-") ingredientArray.push(wrapNameTemplate(item["ing3"], item["ing3qty"]));
-    if (item["ing4"] && item["ing4"] != "-") ingredientArray.push(wrapNameTemplate(item["ing4"], item["ing4qty"]));
-    if (item["ing5"] && item["ing5"] != "-") ingredientArray.push(wrapNameTemplate(item["ing5"], item["ing5qty"]));
-    if (item["ing6"] && item["ing6"] != "-") ingredientArray.push(wrapNameTemplate(item["ing6"], item["ing6qty"]));
+  var output = '|recipe=';
+  var ingredientArray = [];
+  if (item["ing1"] && item["ing1"] != "-") ingredientArray.push(wrapNameTemplate(item["ing1"], item["ing1qty"]));
+  if (item["ing2"] && item["ing2"] != "-") ingredientArray.push(wrapNameTemplate(item["ing2"], item["ing2qty"]));
+  if (item["ing3"] && item["ing3"] != "-") ingredientArray.push(wrapNameTemplate(item["ing3"], item["ing3qty"]));
+  if (item["ing4"] && item["ing4"] != "-") ingredientArray.push(wrapNameTemplate(item["ing4"], item["ing4qty"]));
+  if (item["ing5"] && item["ing5"] != "-") ingredientArray.push(wrapNameTemplate(item["ing5"], item["ing5qty"]));
+  if (item["ing6"] && item["ing6"] != "-") ingredientArray.push(wrapNameTemplate(item["ing6"], item["ing6qty"]));
     //item.ingredientArray = ingredientArray;
-    output = ingredientArray.join("<br>\n");
+  output = ingredientArray.join("<br>\n");
 
   return output;
 }
@@ -1461,32 +1449,32 @@ function renderMeals(dataArray) {
 }
 
 function insertRecipeDefaults(dataArray) {
-    var template = ''
-    template += '\n==Crafting Recipes==';
-    template += "\n'''{{PAGENAME}}''' is a required material in the following [[Crafting|crafting recipe]].";
-    template += "\n{| class='wikitable sortable' id='recipe-table'";
-    template += '\n! class=unsortable | Image';
-    template += '\n!Name';
-    template += '\n!Crafting Recipe';
-    template += '\n|-';
-    template += '\n|[[File:CRAFTEDITEMNAME.png|50px|center|link=CRAFTEDITEMNAME]]';
-    template += '\n|[[CRAFTEDITEMNAME]]';
-    template += '\n|';
-    template += '\n{{name|ING1NAME|ING1QUANTITY}}<br>';
-    template += '\n{{name|ING2NAME|ING2QUANTITY}}<br>';
-    template += '\n{{name|ING3NAME|ING3QUANTITY}}';
-    template += '\n|}';
-    template += '\n';
-    template += '\n==Quest Objectives==';
-    template += '\n{{Objectives|header}}';
-    template += '\n{{ObjectivesRow|{{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUMBER}}|COUNT|USE OBJECTIVE}}';
-    template += '\n{{Objectives|footer}}';
-    template += '\n';
-    template += '\n==Quest Recipes==';
-    template += '\n{{Recipe|header|quest}}';
-    template += '\n{{RecipeRow|RECIPENAME|quest={{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUMBER}}}}';
-    template += '\n{{Recipe|footer}}';
-    return template;
+  var template = ''
+  template += '\n==Crafting Recipes==';
+  template += "\n'''{{PAGENAME}}''' is a required material in the following [[Crafting|crafting recipe]].";
+  template += "\n{| class='wikitable sortable' id='recipe-table'";
+  template += '\n! class=unsortable | Image';
+  template += '\n!Name';
+  template += '\n!Crafting Recipe';
+  template += '\n|-';
+  template += '\n|[[File:CRAFTEDITEMNAME.png|50px|center|link=CRAFTEDITEMNAME]]';
+  template += '\n|[[CRAFTEDITEMNAME]]';
+  template += '\n|';
+  template += '\n{{name|ING1NAME|ING1QUANTITY}}<br>';
+  template += '\n{{name|ING2NAME|ING2QUANTITY}}<br>';
+  template += '\n{{name|ING3NAME|ING3QUANTITY}}';
+  template += '\n|}';
+  template += '\n';
+  template += '\n==Quest Objectives==';
+  template += '\n{{Objectives|header}}';
+  template += '\n{{ObjectivesRow|{{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUMBER}}|COUNT|USE OBJECTIVE}}';
+  template += '\n{{Objectives|footer}}';
+  template += '\n';
+  template += '\n==Quest Recipes==';
+  template += '\n{{Recipe|header|quest}}';
+  template += '\n{{RecipeRow|RECIPENAME|quest={{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUMBER}}}}';
+  template += '\n{{Recipe|footer}}';
+  return template;
 }
 
 function renderGems(dataArray) {
@@ -1550,24 +1538,24 @@ function generateGemTemplate(item) {
 
 function generateFlowerTemplate(item) {
   var template = '';
-    template += '{{Infobox';
-    template += '\n|image=%%name%%.png';
-    template += '\n|description=';
-    template += '\n|type=Foraging';
-    template += '\n|category=Flowers';
-    template += '\n|collection='+newExpansionCollection;
-    template += '\n|sellprice=';
-    template += '\n|giftreward=';
-    template += '\n|color=';
-    template += '\n|from={{name|Foraging}}';
-    template += '\n|biomes=<!--{{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}-->';
-    template += '\n|biomes=%%biome%%';
-    template += '\n|spawnTimer={{growthTime|}}';
-    template += '\n|spawnMax=';
-    template += '\n|gridSize=';
-    template += '\n|placement=<!--surfaces, unpaved-->';
-    template += '\n|stackMax=';
-    template += '\n}}';
+  template += '{{Infobox';
+  template += '\n|image=%%name%%.png';
+  template += '\n|description=';
+  template += '\n|type=Foraging';
+  template += '\n|category=Flowers';
+  template += '\n|collection='+newExpansionCollection;
+  template += '\n|sellprice=';
+  template += '\n|giftreward=';
+  template += '\n|color=';
+  template += '\n|from={{name|Foraging}}';
+  template += '\n|biomes=<!--{{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}-->';
+  template += '\n|biomes=%%biome%%';
+  template += '\n|spawnTimer={{growthTime|}}';
+  template += '\n|spawnMax=';
+  template += '\n|gridSize=';
+  template += '\n|placement=<!--surfaces, unpaved-->';
+  template += '\n|stackMax=';
+  template += '\n}}';
     //template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild<!--in '''REGION1''' and '''REGION2''' areas in [[BIOME1]]-->.";
     template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild in all regions of [[%%biome%%]]."; // wild in the [[%%biome%%]].";
     template += '';
@@ -1585,23 +1573,23 @@ function generateFlowerTemplate(item) {
     template += output_history(item);
     template += '\n\n{{NavboxForage}}';
     template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]] [[Category:Missing Colors]]';
-  return template;
-}
+    return template;
+  }
 
 
 
  // TODO - renderflowers looks like the same as renderVariableTemplate(dataArray, template) {
-function renderFlowers(dataArray) {
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
-    var template = generateFlowerTemplate(item);
-    renderedHTML += microTemplate(template, item);
-    renderedHTML += delimiter;
-  });
-  return renderedHTML;
-}
+  function renderFlowers(dataArray) {
+    var renderedHTML = '';
+    var delimiter = '';
+    delimiter = '\n\n\n-----------------------------\n\n\n';
+    dataArray.forEach(function (item) {
+      var template = generateFlowerTemplate(item);
+      renderedHTML += microTemplate(template, item);
+      renderedHTML += delimiter;
+    });
+    return renderedHTML;
+  }
 
 /*
 function generateRandomTemplate(item) {
@@ -1612,8 +1600,8 @@ function generateRandomTemplate(item) {
 
 
 // TODO - generateNewExpansionTemplate is not used yet anywhere
-function generateNewExpansionTemplate(item) {
-  var template = 'TODO - generate list of category page articles for new expansion';
+  function generateNewExpansionTemplate(item) {
+    var template = 'TODO - generate list of category page articles for new expansion';
 
   /*
   // === CATEGORIES in preparation of an expansion:
@@ -1627,35 +1615,35 @@ function generateNewExpansionTemplate(item) {
   Category:Sweets from EXPANSIONCOLLECTION
   */
 
-  let category_Foraging = "Category:EXPANSIONCOLLECTION Foraging Collection\n\n{{categoryheader|the [[Foraging]] [[collections|collection]] categorized under [[EXPANSIONCOLLECTION]]}}\n\n[[Category:EXPANSIONCOLLECTION Collection]]";
+    let category_Foraging = "Category:EXPANSIONCOLLECTION Foraging Collection\n\n{{categoryheader|the [[Foraging]] [[collections|collection]] categorized under [[EXPANSIONCOLLECTION]]}}\n\n[[Category:EXPANSIONCOLLECTION Collection]]";
 
-  let category_StoreExclusive = "{{categoryheader|[[Clothing]], [[Furniture]], [[:Category:Wallpaper|Wallpaper]], and [[:Category:Flooring|Flooring]] items which are only sold at [[Scrooge's Store]] located in [[EXPANSIONCOLLECTION]] and no other location}}\n\n[[Category:Gameplay]]";
+    let category_StoreExclusive = "{{categoryheader|[[Clothing]], [[Furniture]], [[:Category:Wallpaper|Wallpaper]], and [[:Category:Flooring|Flooring]] items which are only sold at [[Scrooge's Store]] located in [[EXPANSIONCOLLECTION]] and no other location}}\n\n[[Category:Gameplay]]";
 
-  let category_Resources = "{{categoryheader|items that can be found in the '''{{name|EXPANSIONCOLLECTION|link=EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Resource Locations]]";
+    let category_Resources = "{{categoryheader|items that can be found in the '''{{name|EXPANSIONCOLLECTION|link=EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Resource Locations]]";
 
-  let category_Fish = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fish|link=:Category:Fish}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fish Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Fish = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fish|link=:Category:Fish}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fish Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
 
-  let category_Fruit = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fruit|link=:Category:Fruit}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fruit Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Fruit = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fruit|link=:Category:Fruit}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fruit Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
 
-  let category_Gems = "{{categoryheader|items categorized as '''{{inlineIcon|Gems|link=:Category:Gems}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Gem Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Gems = "{{categoryheader|items categorized as '''{{inlineIcon|Gems|link=:Category:Gems}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Gem Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
 
-  let category_Vegetables = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Vegetables|link=:Category:Vegetables}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Vegetable Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Vegetables = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Vegetables|link=:Category:Vegetables}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Vegetable Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
 
-  let category_Sweets = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Sweets|link=:Category:Sweets}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Sweets Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
-
-
-
-  let template_Memory = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|width=300px\n|type=Memory\n|description=%%description%%\n|universe=%%universe%%\n|collection=%%newExpansionCollection%%\n|found=TBA\n|from=<!--{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}-->\n}}\n'''%%name%%''' is a [[Memories#%%universe%%|%%universe%%]] [[Memories|Memory]].\n\nOnce collected it will be added to the [[:Category:%%newExpansionCollection%% Memories Collection|%%newExpansionCollection%% Memories Collection]]{{cleanup|Verify -- , and can be viewed in items with [[:Category:Memory Frame|Memory Frame]] functionality}}.\n<!--\n==Acquisition==\n:{{quest|QUESTNAME}} - Unlocked after fishing up/picking up/digging up/eating [[xxxx]] which is cooked using [[Ingredients]] and a [[QUESTITEM]] caught during the quest, then reading [[ITEM]] in Inventory.\n\n==Quests==\nThis memory is collected during the following quests:\n*{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}\n-->\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxMemory}}";
-
-  let template_seed = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=%%description%%\n|type=Seed\n|buyprice=\n|sellprice=\n|giftreward=\n|growtime=<!--{{growthTime|15}}<br>{{growthTime|15|biome=PREFERREDBIOME}}-->\n|waterings=\n|yield=<!--{{name|CROPNAME|CROPCOUNT}}-->\n|from={{inlineIcon|Goofy's Stall|size=20|link=Goofy's Stall#%%newExpansionCollection%%}}\n|found={{name|%%newExpansionCollection%%}}\n|gridSize=\n|placement=\n|stackMax=\n}}\n'''%%name%%''' is a [[Crop Seeds|seed]] type which can be planted and harvested to obtain [[Ingredients]].\n\nThey can be purchased from [[Goofy's Stall]] in [[%%newExpansionCollection%%]] after the initial Stall repair.\n<!--\nIt takes XXXX minutes to grow<!-- and XXXX total waterings-- until CROPCOUNT [[CROPNAME]] can be harvested.\n-->\nThey can be planted in any Biome<!--, but will grow 10% faster when planted in either the [[PREFERREDBIOME#REGION1|REGION1]] or [[PREFERREDBIOME#REGION2|REGION2]] biomes in the [[Wishing Alps]]. This accelerated growth is denoted in the UI by a caret (^) icon that appears on the upper left corner of the seed image when choosing a seed to plant in its preferred Biome-->.\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxSeed|%%newExpansionCollection%%}}";
-
-  return template;
-
-}
+    let category_Sweets = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Sweets|link=:Category:Sweets}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Sweets Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
 
 
-function generateIngredientsTemplate(item) {
-  var template = '';
+
+    let template_Memory = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|width=300px\n|type=Memory\n|description=%%description%%\n|universe=%%universe%%\n|collection=%%newExpansionCollection%%\n|found=TBA\n|from=<!--{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}-->\n}}\n'''%%name%%''' is a [[Memories#%%universe%%|%%universe%%]] [[Memories|Memory]].\n\nOnce collected it will be added to the [[:Category:%%newExpansionCollection%% Memories Collection|%%newExpansionCollection%% Memories Collection]]{{cleanup|Verify -- , and can be viewed in items with [[:Category:Memory Frame|Memory Frame]] functionality}}.\n<!--\n==Acquisition==\n:{{quest|QUESTNAME}} - Unlocked after fishing up/picking up/digging up/eating [[xxxx]] which is cooked using [[Ingredients]] and a [[QUESTITEM]] caught during the quest, then reading [[ITEM]] in Inventory.\n\n==Quests==\nThis memory is collected during the following quests:\n*{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}\n-->\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxMemory}}";
+
+    let template_seed = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=%%description%%\n|type=Seed\n|buyprice=\n|sellprice=\n|giftreward=\n|growtime=<!--{{growthTime|15}}<br>{{growthTime|15|biome=PREFERREDBIOME}}-->\n|waterings=\n|yield=<!--{{name|CROPNAME|CROPCOUNT}}-->\n|from={{inlineIcon|Goofy's Stall|size=20|link=Goofy's Stall#%%newExpansionCollection%%}}\n|found={{name|%%newExpansionCollection%%}}\n|gridSize=\n|placement=\n|stackMax=\n}}\n'''%%name%%''' is a [[Crop Seeds|seed]] type which can be planted and harvested to obtain [[Ingredients]].\n\nThey can be purchased from [[Goofy's Stall]] in [[%%newExpansionCollection%%]] after the initial Stall repair.\n<!--\nIt takes XXXX minutes to grow<!-- and XXXX total waterings-- until CROPCOUNT [[CROPNAME]] can be harvested.\n-->\nThey can be planted in any Biome<!--, but will grow 10% faster when planted in either the [[PREFERREDBIOME#REGION1|REGION1]] or [[PREFERREDBIOME#REGION2|REGION2]] biomes in the [[Wishing Alps]]. This accelerated growth is denoted in the UI by a caret (^) icon that appears on the upper left corner of the seed image when choosing a seed to plant in its preferred Biome-->.\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxSeed|%%newExpansionCollection%%}}";
+
+    return template;
+
+  }
+
+
+  function generateIngredientsTemplate(item) {
+    var template = '';
     template += '{{stub}}';
     template += '\n{{infobox';
     template += '\n|image=%%name%%.png';
@@ -1767,95 +1755,95 @@ function generateIngredientsTemplate(item) {
     template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
 
     return template;
-}
+  }
 
-function renderIngredients(dataArray) {
+  function renderIngredients(dataArray) {
 
   // Create stub articles for quest items
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
+    var renderedHTML = '';
+    var delimiter = '';
+    delimiter = '\n\n\n-----------------------------\n\n\n';
     
-  dataArray.forEach(function (item) {
-    var template = '';
+    dataArray.forEach(function (item) {
+      var template = '';
 
-    if (isFlower(item)) {
-      template = generateFlowerTemplate(item);
-    }
-    else if (isGem(item)) {
-      template = generateGemTemplate(item);
-    }
+      if (isFlower(item)) {
+        template = generateFlowerTemplate(item);
+      }
+      else if (isGem(item)) {
+        template = generateGemTemplate(item);
+      }
 
-    else {
-      template = generateIngredientsTemplate(item);
-    }
+      else {
+        template = generateIngredientsTemplate(item);
+      }
 
-    renderedHTML += microTemplate(template, item);
-    renderedHTML += delimiter;
-  });
-  return renderedHTML;
-}
+      renderedHTML += microTemplate(template, item);
+      renderedHTML += delimiter;
+    });
+    return renderedHTML;
+  }
 
 
-function determineCritterType(itemName) {
-  return "TODO - determineCritterType";
-}
+  function determineCritterType(itemName) {
+    return "TODO - determineCritterType";
+  }
 
-function isCompanion(item) {
+  function isCompanion(item) {
 
   // return false; // TEMPORARY FOR UPDATE DAY
   //return "TODO - determineCritterType";
 
-  var isCompanion =
+    var isCompanion =
     //(item.collection && item.collection.includes('Companion')) ||
     //(item.name && item.name.includes('Castle')) ||
     //(item.universe && item.universe.includes('Companion') ||
     (item.category && item.category.includes('Companion'));
 
-  return isCompanion;
-}
+    return isCompanion;
+  }
 
-function generateCritterSchedule(item){
-  let template = '';
-  template += "\n{{CritterSchedule";
-  template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
-  template += "\n|sunday=TBA";
-  template += "\n|monday=TBA";
-  template += "\n|tuesday=TBA";
-  template += "\n|wednesday=TBA";
-  template += "\n|thursday=TBA";
-  template += "\n|friday=TBA";
-  template += "\n|saturday=TBA";
-  template += "\n}}<!--";
-  template += "\n";
-  template += "\n==Yield==";
-  template += "\n{| class=wikitable id='recipe-table'";
-  template += '\n!style="" | Food Type';
-  template += '\n!style="" | Item';
-  template += '\n!style="" | Possible Rewards';
-  template += "\n|-";
-  template += "\n| Favorite";
-  template += "\n| TBA";
-  template += "\n|";
+  function generateCritterSchedule(item){
+    let template = '';
+    template += "\n{{CritterSchedule";
+    template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
+    template += "\n|sunday=TBA";
+    template += "\n|monday=TBA";
+    template += "\n|tuesday=TBA";
+    template += "\n|wednesday=TBA";
+    template += "\n|thursday=TBA";
+    template += "\n|friday=TBA";
+    template += "\n|saturday=TBA";
+    template += "\n}}<!--";
+    template += "\n";
+    template += "\n==Yield==";
+    template += "\n{| class=wikitable id='recipe-table'";
+    template += '\n!style="" | Food Type';
+    template += '\n!style="" | Item';
+    template += '\n!style="" | Possible Rewards';
+    template += "\n|-";
+    template += "\n| Favorite";
+    template += "\n| TBA";
+    template += "\n|";
   //template += "\nTBA";
-  template += "\n{{name|Dream Shard|2}}<br>";
-  template += "\n{{name|Memory Shard}}<br>";
-  template += "\n{{name|Motif Bag}}";
-  template += "\n|-";
-  template += "\n| Liked";
-  template += "\n| TBA";
-  template += "\n|";
+    template += "\n{{name|Dream Shard|2}}<br>";
+    template += "\n{{name|Memory Shard}}<br>";
+    template += "\n{{name|Motif Bag}}";
+    template += "\n|-";
+    template += "\n| Liked";
+    template += "\n| TBA";
+    template += "\n|";
   //template += "\nTBA";
-  template += "\n{{name|Dream Shard}}<br>";
-  template += "\n{{name|Memory Shard}}<br>";
-  template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
-  template += "\n|}-->";
-  template += "\n{{cleanup|Missing Love and Like rewards}}";
-  template += "\n";
-  return template;
-}
+    template += "\n{{name|Dream Shard}}<br>";
+    template += "\n{{name|Memory Shard}}<br>";
+    template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
+    template += "\n|}-->";
+    template += "\n{{cleanup|Missing Love and Like rewards}}";
+    template += "\n";
+    return template;
+  }
 
-function generateCompanionTemplate(item) {
+  function generateCompanionTemplate(item) {
 
   //let template_critter = "{{stub}}\n{{Infobox\n|image=%%name%%.png\n|type=Companions\n|category=<!--Animal Companions, Critter-->\n|collection=%%newExpansionCollection%%\n|hangout=<!--Foraging-->\n|critterType=<!--Hedgehog-->\n|found={{name|BIOMENAME}}<!--<br>(REGION)--><!--<br>M, T, W, Th, F, Sat, Sun PM-->\n|favfood=<!--{{name|XXXXXX}}-->\n|likedfoods=<!--{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}-->\n|minfeedings=1\n}}\n{{ItemDescription\n|%%name%%\n|type=Companion\n|critterType=<!--Hedgehog-->\n|from=Feeding Critters\n|found=in <!--the '''REGION''' area of-->[[BIOMENAME]]<!--all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->\n|favoriteFood=<!--Red Currants-->\n|likedFoods=<!--[[Blueberry]], [[Gooseberry]], [[Raspberry]], [[Strawberry]]-->\n|critterCollection=%%newExpansionCollection%%\n|hangout=[[Foraging]]\n|numFeedings=one<!--(1)-->\n}}\n{{CritterSchedule\n|location=BIOMENAME\n|sunday=TBA\n|monday=TBA\n|tuesday=TBA\n|wednesday=TBA\n|thursday=TBA\n|friday=TBA\n|saturday=TBA\n}}\n\n==Yield==\n{| class=wikitable id='recipe-table'\n!style="" | Food Type\n!style="" | Item\n!style="" | Possible Rewards\n|-\n| Favorite\n| <!--{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard|2}}<br>\n{{name|Memory Shard}}<br>\n{{name|Motif Bag}}-->\n|-\n| Liked\n|\n<!--{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard}}<br>\n{{name|Memory Shard}}<br>\n{{name|Wheat Seed}}-->\n|}\n\n==Friendship Rewards==\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.\n{| class=wikitable id='recipe-table'\n!Lvl\n!Image\n!Name\n!Type\n|-\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->\n|-\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]\n|-\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || [[File:Companion Gather Foraging Icon.png| 50x50px| center]] || [[Foraging|Foraging Gathering Bonus]] || [[Foraging|Resource Collection]]\n|-\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]\n|}\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxCompanion}}\n__noTOC__"
 
@@ -1879,7 +1867,7 @@ function generateCompanionTemplate(item) {
     template += '|hangout=<!--Flowers-->';
     template += '\n'+output_from(item);
 
-     if (isCritter) {
+    if (isCritter) {
       template += "\n|from=Feeding Critters";
       template += "\n|found=in the '''Honeyglow Woods''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
       template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
@@ -1986,19 +1974,19 @@ function generateCompanionTemplate(item) {
 
 function generateCompanionTemplateOriginal(item) {
 
-    var isCritter = true;
+  var isCritter = true;
 
-    template = '';
-    template += "{{stub}}";
-    template += "\n{{Infobox";
-    template += "\n|image=%%name%%.png";
-    template += "\n|type=Companions";
-    template += "\n|category=Animal Companions"
+  template = '';
+  template += "{{stub}}";
+  template += "\n{{Infobox";
+  template += "\n|image=%%name%%.png";
+  template += "\n|type=Companions";
+  template += "\n|category=Animal Companions"
 
-    if (isCritter) { template += ", Critter"; }
+  if (isCritter) { template += ", Critter"; }
 
-    template += "\n|collection="+newExpansionCollection;
-    template += "\n|hangout=<!--Flowers/Ore/Fruit-->";
+  template += "\n|collection="+newExpansionCollection;
+  template += "\n|hangout=<!--Flowers/Ore/Fruit-->";
     template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk/Sunbird/Capybara/Squirrel-->;
 
     if (isCritter) { 
@@ -2027,34 +2015,34 @@ function generateCompanionTemplateOriginal(item) {
     template += output_history(item);
     template += "\n\n{{NavboxCompanion}}";
     
-  
+
     return template;
-}
+  }
 
 
 
-function renderCompanions(dataArray) {
+  function renderCompanions(dataArray) {
   // Create stub articles for critter items
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
+    var renderedHTML = '';
+    var delimiter = '';
+    delimiter = '\n\n\n-----------------------------\n\n\n';
+    dataArray.forEach(function (item) {
 
-    template = generateCompanionTemplateOriginal(item);
+      template = generateCompanionTemplateOriginal(item);
 
-    renderedHTML += microTemplate(template, item);
-    renderedHTML += delimiter;
-  });
-  return renderedHTML;
-}
+      renderedHTML += microTemplate(template, item);
+      renderedHTML += delimiter;
+    });
+    return renderedHTML;
+  }
 
 
 
-function renderQuestItems(dataArray) {
+  function renderQuestItems(dataArray) {
   // Create stub articles for quest items
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
+    var renderedHTML = '';
+    var delimiter = '';
+    delimiter = '\n\n\n-----------------------------\n\n\n';
   /*
   dataArray.forEach(function (item) {
     // TODO: let questname = 'QUESTNAME', questcharacter = 'CHARACTER', realmname = 'REALMNAME', characterlevel = 'LEVEL';
@@ -2088,8 +2076,8 @@ function renderQuestItems(dataArray) {
   });
   */
   // It is crafted during the Honeyglow Woods [[Winnie the Pooh]] story quest [[Chapter 11: The Anti-monster Camp]],
-  dataArray.forEach(function (item) {
-    let name = item.name || 'ITEMNAME';
+    dataArray.forEach(function (item) {
+      let name = item.name || 'ITEMNAME';
     let description = item.description || ''; // TODO: add missing description category
     let questname = item.questname || item.quest || 'QUESTNAME';
     let questType = item.questType || 'QUESTTYPE'; // either 'story' or ''
@@ -2129,94 +2117,94 @@ function renderQuestItems(dataArray) {
   });
 
    // janky cleanup
-  renderedHTML = renderedHTML.replaceAll(/level=(\d+)\|realm=REALMNAME/g, "level=$1");
+    renderedHTML = renderedHTML.replaceAll(/level=(\d+)\|realm=REALMNAME/g, "level=$1");
   //renderedHTML = renderedHTML.replaceAll('|realm=Friendship}}', '}}');
-  renderedHTML = renderedHTML.replaceAll('|realm=}}', '}}');
+    renderedHTML = renderedHTML.replaceAll('|realm=}}', '}}');
   //renderedHTML = renderedHTML.replaceAll('|realm=REALMNAME}}', '}}');
 
-  return renderedHTML;
-}
+    return renderedHTML;
+  }
 
-function capitalize(str) {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
+  function capitalize(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
 
 
-function renderUpdatedFlooring(dataArray) {
+  function renderUpdatedFlooring(dataArray) {
 
   //{{WallpaperFloorsDescription|wftype=Floors|universe=%%universe%%|from=Scrooge's Store|collection=Dreamlight Valley|preUpdate5=yes}}
 
   // Create stub articles for quest items
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
+    var renderedHTML = '';
+    var delimiter = '';
+    delimiter = '\n\n\n-----------------------------\n\n\n';
+    dataArray.forEach(function (item) {
 
-    item.missingCategories = [];
-    item = parseItemSource(item);
-    item = item = parseSizePlacementEnv(item);
+      item.missingCategories = [];
+      item = parseItemSource(item);
+      item = item = parseSizePlacementEnv(item);
 
     // ===== Quest =====
-  if (item.notes) {
-    const string = item.notes;
+      if (item.notes) {
+        const string = item.notes;
     // Note: capital Q in quest source value
-    const regex = /Renamed from ###([\w\W ]+)###;/;
-    const result = string.split(regex);
+        const regex = /Renamed from ###([\w\W ]+)###;/;
+        const result = string.split(regex);
     item.originalName = result[1]; //character value
     console.log(item.originalName);
   }
 
-    template = '';
-    template += '{{rename|%%name%%|Renamed in 1.18}}';
-    template += '\n{{infobox';
-    template += '\n|image=%%name%%.png';
-    template += '\n'+output_type(item);
-    template += '|category=Flooring, Ceiling Texture';
-    template += '\n'+output_buyprice(item);
-    template += output_color(item);
-    template += output_tags(item);
-    template += output_collection(item);
-    template += output_traits(item);
-    template += output_universe(item);
-    template += '|storeSlots=paint';
-    template += '\n|placement=flooring';
-    template += '\n|environment=indooronly';
-    template += '\n}}';
+  template = '';
+  template += '{{rename|%%name%%|Renamed in 1.18}}';
+  template += '\n{{infobox';
+  template += '\n|image=%%name%%.png';
+  template += '\n'+output_type(item);
+  template += '|category=Flooring, Ceiling Texture';
+  template += '\n'+output_buyprice(item);
+  template += output_color(item);
+  template += output_tags(item);
+  template += output_collection(item);
+  template += output_traits(item);
+  template += output_universe(item);
+  template += '|storeSlots=paint';
+  template += '\n|placement=flooring';
+  template += '\n|environment=indooronly';
+  template += '\n}}';
 
     // template += output_from(item); //necessary vals set/defined in output_from(item);
 
-    template +=
-      "\n{{WallpaperFloorsDescription|wftype=Floors|universe=%%universe%%|from=Scrooge's Store|collection=Dreamlight Valley";
-    if (item.version == "1.5") {
-      template += "|preUpdate5=yes";
-    }
-      
-    template += "}}";
-    template += '\n\n==History==';
-    template += `\n{{history|${item.version}|Added}}`;
-    template += `\n{{history|1.18|Changed name from ''${item.originalName}'', added as [[:Category:Ceiling Texture|ceiling texture]]}}`;
-    template += output_navbox(item);
-    renderedHTML += microTemplate(template, item);
-    renderedHTML += delimiter;
-  });
-  return jankyCleanup(renderedHTML);
+  template +=
+  "\n{{WallpaperFloorsDescription|wftype=Floors|universe=%%universe%%|from=Scrooge's Store|collection=Dreamlight Valley";
+  if (item.version == "1.5") {
+    template += "|preUpdate5=yes";
+  }
+
+  template += "}}";
+  template += '\n\n==History==';
+  template += `\n{{history|${item.version}|Added}}`;
+  template += `\n{{history|1.18|Changed name from ''${item.originalName}'', added as [[:Category:Ceiling Texture|ceiling texture]]}}`;
+  template += output_navbox(item);
+  renderedHTML += microTemplate(template, item);
+  renderedHTML += delimiter;
+});
+    return jankyCleanup(renderedHTML);
   //return renderedHTML;
-}
+  }
 
 
 
 // TODO - also generate the separating column row breaks for html table
-function renderSPRewardTable(dataArray) {
-  var renderedHTML = '';
-  var delimiter = '';
+  function renderSPRewardTable(dataArray) {
+    var renderedHTML = '';
+    var delimiter = '';
   //delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
+    dataArray.forEach(function (item) {
     // WHY DID THIS microtemplating STOP WORKING - 2025.09.25 - maybe i modified the output_from?
     // for some reason this function causes a problem!>??!
     //output_from(item); // this function also modifies item to add tile, eventtoken, and premium properties
-    template = '';
-    template +=
+      template = '';
+      template +=
       '{{StarPathRewardRow\n|starpath=' +
       starPathNameShort +
       '\n|id=%%tile%%\n|name=%%name%%\n|type=%%itemType%%' +
@@ -2224,126 +2212,126 @@ function renderSPRewardTable(dataArray) {
 
     // <!--Types: Accessory, Clothing, Hairstyle, Eye Shadow, Face Paint, Furniture, Wallpaper, Flooring, Motif, Companion, Moonstones, Character Dream Style -->
 
-    renderedHTML += microTemplate(template, item);
-    renderedHTML += delimiter;
-  });
+      renderedHTML += microTemplate(template, item);
+      renderedHTML += delimiter;
+    });
   // prevent premium=null
-  renderedHTML = renderedHTML.replaceAll('=null', '=');
+    renderedHTML = renderedHTML.replaceAll('=null', '=');
 
-  return renderedHTML;
-}
+    return renderedHTML;
+  }
 
 
-function renderSPDuties(dataArray) {
+  function renderSPDuties(dataArray) {
   // Create table of star path duties for star path page from array spDuties
   //getElementId('output').innerHTML = renderVariableTemplate(spDuties, spDutyRow);
 
-  var renderedHTML = '';
-  var delimiter = '';
+    var renderedHTML = '';
+    var delimiter = '';
   //delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
-    template =
+    dataArray.forEach(function (item) {
+      template =
       '|-\n| align="center" | %%num%% || align="center" | {{inlineIcon|%%icon%%|iconOnly}} || %%name%% || %%qty%% || {{price|%%reward%%|' +
       starPathToken +
       '}}\n';
 
-    renderedHTML += microTemplate(template, item);
-    renderedHTML += delimiter;
-  });
+      renderedHTML += microTemplate(template, item);
+      renderedHTML += delimiter;
+    });
 
   // comment out icons if missing
-  renderedHTML = renderedHTML.replaceAll('{{inlineIcon|null|iconOnly}}', '<!--{{inlineIcon|TBA|iconOnly}}-->');
-  renderedHTML = renderedHTML.replaceAll('{{inlineIcon|ICON_TBA|iconOnly}}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
+    renderedHTML = renderedHTML.replaceAll('{{inlineIcon|null|iconOnly}}', '<!--{{inlineIcon|TBA|iconOnly}}-->');
+    renderedHTML = renderedHTML.replaceAll('{{inlineIcon|ICON_TBA|iconOnly}}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
 
-  return renderedHTML;
-}
+    return renderedHTML;
+  }
 
 
 
 // is flower or gem
-function isFlower(item) {
-  return (
-    (item.name && item.name.includes('Flower')) ||
-    (item.cookingType && item.cookingType == 'Flower'));
+  function isFlower(item) {
+    return (
+      (item.name && item.name.includes('Flower')) ||
+      (item.cookingType && item.cookingType == 'Flower'));
   }
-function isGem(item) {
-  return (
-    (item.name && item.name.includes('Shiny')) ||
-    (item.cookingType && item.cookingType == 'Gem') ||
-    (item.collectionType && item.collectionType.includes('Gem'))
-    );
-}
+  function isGem(item) {
+    return (
+      (item.name && item.name.includes('Shiny')) ||
+      (item.cookingType && item.cookingType == 'Gem') ||
+      (item.collectionType && item.collectionType.includes('Gem'))
+      );
+  }
 
-function isWallpaper(item) {
-  return (
-    (item.name && item.name.includes('Wallpaper')) ||
-    (item.category && item.category == 'Wallpaper') ||
-    (item.category && item.category.includes('Wallpaper')));
-}
+  function isWallpaper(item) {
+    return (
+      (item.name && item.name.includes('Wallpaper')) ||
+      (item.category && item.category == 'Wallpaper') ||
+      (item.category && item.category.includes('Wallpaper')));
+  }
 
 // will no longer work
-function isFlooring(item) {
-  return (
-    (item.name && item.name.includes('Flooring')) ||
-    (item.name && item.name.includes(' Tile')) ||
-    (item.category && item.category == 'Flooring') || 
-    (item.category && item.category.includes('Flooring'))
-  );
+  function isFlooring(item) {
+    return (
+      (item.name && item.name.includes('Flooring')) ||
+      (item.name && item.name.includes(' Tile')) ||
+      (item.category && item.category == 'Flooring') || 
+      (item.category && item.category.includes('Flooring'))
+      );
   //return true;
-}
+  }
 
-function isWallpaperFlooring(item) {
-  return (isWallpaper(item) || isFlooring(item));
-}
+  function isWallpaperFlooring(item) {
+    return (isWallpaper(item) || isFlooring(item));
+  }
 
-function isPremium(item) {
-  return (
-    (item.location && item.location == 'premium') ||
-    (item.source && item.source.includes('Bundle'))
-  );
-}
+  function isPremium(item) {
+    return (
+      (item.location && item.location == 'premium') ||
+      (item.source && item.source.includes('Bundle'))
+      );
+  }
 
-function isTale(item) {
-  return (item.location && item.location.includes('tale'));
-}
+  function isTale(item) {
+    return (item.location && item.location.includes('tale'));
+  }
 
-function isHairstyle(item) {
-  return (
-    (item.name && item.name.includes('Hairstyle')) ||
-    (item.name && item.name.includes('Hairdo')) ||
-    (item.name && item.name.includes('Updo')) ||
-    (item.name && item.name.includes('Haircut')) ||
-    (item.category && item.category == 'Hairstyle')
-  );
-}
+  function isHairstyle(item) {
+    return (
+      (item.name && item.name.includes('Hairstyle')) ||
+      (item.name && item.name.includes('Hairdo')) ||
+      (item.name && item.name.includes('Updo')) ||
+      (item.name && item.name.includes('Haircut')) ||
+      (item.category && item.category == 'Hairstyle')
+      );
+  }
 
-function isHouse(item) {
+  function isHouse(item) {
 
   //console.log(`got into isHouse with item: name=${item.name}, itemType=${item.itemType}, category=${item.category}`);
 
-  var isHouse =
+    var isHouse =
     /*(item.name && item.name.includes('House')) ||*/ // TODO - make more robust, currently grabs furniture items iwth house in title
     /* do NOT do this - if category is set to commented value this will flag true - (item.category && item.category.includes('House')) ||*/
     (item.category && item.category.includes('House') || item.collection && item.collection.includes('House Dream Style'));
 
-  return isHouse;
-}
+    return isHouse;
+  }
 
-function isStall(item) {
+  function isStall(item) {
   // some crafted items are called stall
-  var result =  (
-    (item.universe && item.universe.includes('Stall')) ||
-    (item.collection && item.collection.includes('Stall'))); 
-  return result;
-}
+    var result =  (
+      (item.universe && item.universe.includes('Stall')) ||
+      (item.collection && item.collection.includes('Stall'))); 
+    return result;
+  }
 
-function isAccessory(item) {
-  var result =  (
-    (item.collection && item.collection.includes('Accessory')) ||
-    (item.universe && item.universe.includes('Accessory')) ||
-    (item.name && item.name.includes('Accessory')) ||
-    (item.name && item.name.includes('Handheld')) ||
-    (item.category && item.category == 'Accessory') ||
+  function isAccessory(item) {
+    var result =  (
+      (item.collection && item.collection.includes('Accessory')) ||
+      (item.universe && item.universe.includes('Accessory')) ||
+      (item.name && item.name.includes('Accessory')) ||
+      (item.name && item.name.includes('Handheld')) ||
+      (item.category && item.category == 'Accessory') ||
     (item.category && item.category == 'Accessories')); // do NOT catch Umbrella - not safe
   /*if (result) {
     item.category = 'Accessories';
@@ -2352,12 +2340,12 @@ function isAccessory(item) {
 
   }*/
 
-  return result;
-}
+    return result;
+  }
 
 // todo: isBuilding - Chez Remy, Plaza, Scrooge's Store
-function isBuilding(item) {
-  var isBuilding =
+  function isBuilding(item) {
+    var isBuilding =
     (item.collection && item.collection.includes('Building')) ||
     //(item.name && item.name.includes('Building')) ||
     (item.category && item.category.includes('Building'))  ||
@@ -2368,50 +2356,50 @@ function isBuilding(item) {
 
     // TODO - might need more thoroughness
 
-  return isBuilding;
-}
+    return isBuilding;
+  }
 
-function isCastle(item) {
-  var isCastle =
+  function isCastle(item) {
+    var isCastle =
     (item.collection && item.collection.includes('Castle')) ||
     //(item.name && item.name.includes('Castle')) ||
     (item.category && item.category.includes('Castle'))  ||
     (item.universe && item.universe.includes('Castle'));
 
-  return isCastle;
-}
+    return isCastle;
+  }
 
-function isVisitStation(item) {
-  var isVisitStation =
+  function isVisitStation(item) {
+    var isVisitStation =
     (item.collection && item.collection.includes('Visit Station')) ||
     //(item.name && item.name.includes('Visit Station')) ||
     (item.category && item.category.includes('Visit Station'))  ||
     (item.universe && item.universe.includes('Visit Station'));
 
-  return isVisitStation;
-}
+    return isVisitStation;
+  }
 
-function isWishingWell(item) {
-  var isWishingWell =
+  function isWishingWell(item) {
+    var isWishingWell =
     (item.collection && item.collection.includes('Well')) ||
     (item.name && item.name.includes('Wishing Well')) ||
     (item.category && item.category.includes('Well')) ||
     (item.universe && item.universe.includes('Well'));
 
-  return isWishingWell;
-}
+    return isWishingWell;
+  }
 
 // this may also be catching wishing wells? need to investigate
-function isCharacterDreamStyle(item) {
+  function isCharacterDreamStyle(item) {
 
   //category: Character Dream Style   universe: Character Dream Style    itemType: Dream Style.    universe:Character Dream Style
-  
+
   // for chardreamstyles, itemType = Dream Style (originally Clothing from sheet, script overwrites), category = Character Dream Style, universe = Character Dream Style ...
   // IS SOMETHING WRONG HERE... 2026.03.24
   // TODO: double check values used in sheet for character dream styles, category=Dream Style is not exclusive to character skins
-  
+
   // why is this broken...
-  var isDreamStyle = 
+    var isDreamStyle = 
     (item.collection == 'n/a - CHARACTER DREAM STYLE') ||
     (item.itemType == 'Clothing' &&  item.collection == 'Dream Style') ||
     (item.category == 'Character Dream Style') ||
@@ -2428,25 +2416,25 @@ function isCharacterDreamStyle(item) {
     //item.universe = 'Character Dream Style'; this will overwrite the infobox value if set here
   }
   */
-  return isDreamStyle;
-}
+    return isDreamStyle;
+  }
 
-function isStandalone(item) {
+  function isStandalone(item) {
   //item isnt parsed yet, below wont work?  not sure
 
-  return (
-    (item.name == item.bundleName && (item.source && item.source.includes('Premium Bundle - ' + item.name))) ||
-    item.standalone
-  );
-}
+    return (
+      (item.name == item.bundleName && (item.source && item.source.includes('Premium Bundle - ' + item.name))) ||
+      item.standalone
+      );
+  }
 
-function isCraftable(item) {
-  var isCraftable =
+  function isCraftable(item) {
+    var isCraftable =
     (item.location && item.location.includes('crafting')) ||
     (item.source && item.source.includes('Crafting'));
 
-  if (isCraftable) {
-    item.itemType = 'Crafted Furniture';
+    if (isCraftable) {
+      item.itemType = 'Crafted Furniture';
     item.craftingCategory = 'Furniture'; // Refined Materials
   }
   return isCraftable;
@@ -2454,17 +2442,17 @@ function isCraftable(item) {
 
 function isStarPath(item) {
   var isStarPath = 
-    item.location && item.location.includes('starpath') ||
-    item.source && item.source.includes('Star Path');
+  item.location && item.location.includes('starpath') ||
+  item.source && item.source.includes('Star Path');
   return  isStarPath;
 }
 
 function isQuestItem(item) {
   var isQuestItem = 
-    item.location && item.location.includes('quest') ||
-    item.source && item.source.includes(' quest ') ||
-    item.source && item.source.includes('Quest - ') ||
-    item.source && item.source.includes(' Quest ');
+  item.location && item.location.includes('quest') ||
+  item.source && item.source.includes(' quest ') ||
+  item.source && item.source.includes('Quest - ') ||
+  item.source && item.source.includes(' Quest ');
   return isQuestItem;
 }
 

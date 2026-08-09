@@ -85,19 +85,19 @@ function renderParent(dataArray, templateType) {
     if (isCraftable(item)) {
     // as of 1.22? 1.23? there are no crafting categories any more
     //output += '|craftingcategory=%%craftingCategory%%\n'; //Furniture
+    }
+    return output;
   }
-  return output;
-}
 
 // only useful for handling clothing/furniture
-function output_category(item) {
-  if (!item.category) {
-    if (item.itemType == 'Clothing') {
+  function output_category(item) {
+    if (!item.category) {
+      if (item.itemType == 'Clothing') {
       // temporary fix: remove Companions, after Accessories to prevent items with empty categories being flagged as companions
       // TODO: make this more robust - if the value is empty of a param the placeholder shouldn't be inserted until the very end? or something?
-      item.category =
-      '<!--Accessories, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
-    } else {
+        item.category =
+        '<!--Accessories, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
+      } else {
       // defaults to furniture
       item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
     }
@@ -204,26 +204,26 @@ function output_collection(item) {
   case 'Tracked Floor':
   case 'DV':
   case 'Dreamlight Valley': // still not sure why this is getting fed sometimes, must be modified somewhere
-      item.collection = wrapComment('Dreamlight Valley', !collectionConfirmed);
-      break;
-    case 'EI':
-      item.collection = wrapComment('Eternity Isle', !collectionConfirmed);
+    item.collection = wrapComment('Dreamlight Valley', !collectionConfirmed);
+    break;
+  case 'EI':
+    item.collection = wrapComment('Eternity Isle', !collectionConfirmed);
       //item.collection = 'Eternity Isle';
-      break;
-    case 'SV':
-      item.collection = wrapComment('Storybook Vale', !collectionConfirmed);
+    break;
+  case 'SV':
+    item.collection = wrapComment('Storybook Vale', !collectionConfirmed);
       //item.collection = 'Storybook Vale';
-      break;
-    case 'WM':
-    case 'WR':
-      item.collection = wrapComment('Wishblossom Mountains', !collectionConfirmed);
+    break;
+  case 'WM':
+  case 'WR':
+    item.collection = wrapComment('Wishblossom Mountains', !collectionConfirmed);
       //item.collection = 'Wishblossom Mountains';
-      break;
-    case 'HW':
-      item.collection = wrapComment('Honeyglow Woods', !collectionConfirmed);
+    break;
+  case 'HW':
+    item.collection = wrapComment('Honeyglow Woods', !collectionConfirmed);
       //item.collection = 'Honeyglow Woods';
-      break;
-    case 'Dream Style':
+    break;
+  case 'Dream Style':
       item.collection = 'remove'; //'n/a - CHARACTER DREAM STYLE';
       break;
     case 'Well':
@@ -643,29 +643,7 @@ function parseItemUsage(item) {
   return item;
 }
 
-// preparation for allowing to copy/paste directly from sheet without leading Clothing/Furniture column
-function inferItemType(item) {
-  if (showItemDebug) {
-    console.log(`item.itemType of ${item.name} = ${item.itemType}`);
-  }
-  // do nothing if itemType already came from imported data
-  if (item.itemType) return item;
 
-  var allClothingCategories = ["Companions", "Tools", "Hats", "Masks", "Glasses", "Earrings", "Neckwear", "Coats", "Tops", "Back", "Bracelets", "Gloves", "Pants", "Shorts", "Skirts", "Hose Socks", "Shoes", "Dresses", "Costumes", "Gliders"];
-  var allFurnitureCategories = ["House", "Essentials", "Decor", "Trimmings", "Tables", "Beds", "Seating", "Storage", "Appliance", "Electronics", "Utilities", "Art", "Lighting", "Foliage", "Rugs", "Misc.", "Floors", "Windows", "Landscaping", "Wall", "Ceiling Decorations", "Trees", "Rocks", "Fencing", "Attractions"]; // TODO: Ceiling Textures
-
-  if (item.category) {
-    // returns highest priority match, but doesn't actually matter what the match is, just that something matched
-    if (getFirstCategoryMatch(item.category, allClothingCategories)) {
-      item.itemType = "Clothing";
-    }
-    if (getFirstCategoryMatch(item.category, allFurnitureCategories)) {
-      item.itemType = "Furniture";
-    }
-  }
-  
-  return item;
-}
 
 
 // TODO: clean this up - but at least it's centralized now
@@ -852,78 +830,78 @@ function parseItemSource(item) {
 
       const { character, levelNum, questType, quest, tail } = match.groups;
 
-  item.character = character ? character.trim() : "";
-  item.level = levelNum || "";
-  item.questType = questType || "";
-  item.quest = quest ? quest.trim() : "";
+      item.character = character ? character.trim() : "";
+      item.level = levelNum || "";
+      item.questType = questType || "";
+      item.quest = quest ? quest.trim() : "";
 
   // Initialize outputs
-  item.qtyRewarded = "";
-  item.howObtained = "";
-  item.whenRewarded = "";
-  item.whenCollected = "";
-  item.postQuestMailboxMessageTitle = "";
-  item.maxLimit = "";
+      item.qtyRewarded = "";
+      item.howObtained = "";
+      item.whenRewarded = "";
+      item.whenCollected = "";
+      item.postQuestMailboxMessageTitle = "";
+      item.maxLimit = "";
 
-  if (tail) {
+      if (tail) {
     // Extract quoted strings ("I found this...")
-    const quoteMatch = tail.match(/\("(?<quote>[^"]+)"\)/);
-    if (quoteMatch) {
-      item.postQuestMailboxMessageTitle = quoteMatch.groups.quote.trim();
-    }
+        const quoteMatch = tail.match(/\("(?<quote>[^"]+)"\)/);
+        if (quoteMatch) {
+          item.postQuestMailboxMessageTitle = quoteMatch.groups.quote.trim();
+        }
 
     // Extract all parenthetical contents: (...)
-    const parenBlocks = [...tail.matchAll(/\(([^)]+)\)/g)]
-      .map(m => m[1].trim())
+        const parenBlocks = [...tail.matchAll(/\(([^)]+)\)/g)]
+        .map(m => m[1].trim())
       .filter(text => !text.startsWith('"')); // Ignore quote blocks
 
     // Extract hyphenated tail text: - ...
-    const hyphenMatch = tail.match(/-\s*([^(\n]+)/);
-    const hyphenText = hyphenMatch ? hyphenMatch[1].trim() : "";
+      const hyphenMatch = tail.match(/-\s*([^(\n]+)/);
+      const hyphenText = hyphenMatch ? hyphenMatch[1].trim() : "";
 
     // 1. Process parenthetical blocks
-    parenBlocks.forEach(block => {
+      parenBlocks.forEach(block => {
       // Check for quantity + action verb (e.g., "1 given", "4 crafted")
-      const qtyActionMatch = block.match(/(?:^|\b)(?<qty>\d+)\s+(?<verb>given|crafted|found|made)\b/i);
-      if (qtyActionMatch) {
-        item.qtyRewarded = qtyActionMatch.groups.qty;
-        item.howObtained = qtyActionMatch.groups.verb.toLowerCase();
-      } else {
+        const qtyActionMatch = block.match(/(?:^|\b)(?<qty>\d+)\s+(?<verb>given|crafted|found|made)\b/i);
+        if (qtyActionMatch) {
+          item.qtyRewarded = qtyActionMatch.groups.qty;
+          item.howObtained = qtyActionMatch.groups.verb.toLowerCase();
+        } else {
         // Fallback: standalone action verb (e.g. "crafted during")
-        const verbMatch = block.match(/\b(?<verb>given|crafted|found|made)\b/i);
-        if (verbMatch) item.howObtained = verbMatch.groups.verb.toLowerCase();
-      }
+          const verbMatch = block.match(/\b(?<verb>given|crafted|found|made)\b/i);
+          if (verbMatch) item.howObtained = verbMatch.groups.verb.toLowerCase();
+        }
 
       // Check for collection triggers (e.g., "automatically collected", "pick up after completed")
-      if (block.match(/collected|pick up|unlocks/i)) {
-        item.whenCollected = block;
-      } 
+        if (block.match(/collected|pick up|unlocks/i)) {
+          item.whenCollected = block;
+        } 
       // Otherwise, extract timing (e.g., "during", "reward", "unlisted reward, ...")
-      else if (block.match(/during|reward|post-quest/i)) {
+        else if (block.match(/during|reward|post-quest/i)) {
         // Clean out quantity/verb phrases if they were inside the same block
-        let timing = block
+          let timing = block
           .replace(/\b\d+\s+(?:given|crafted|found|made)\b/gi, "")
           .replace(/,\s*,/g, ",")
           .replace(/^,\s*|\s*,\s*$/g, "")
           .trim();
-        item.whenRewarded = timing;
-      }
-    });
+          item.whenRewarded = timing;
+        }
+      });
 
     // 2. Process hyphenated tail rules (e.g., "- limit 1", "- unlocks recipe")
-    if (hyphenText) {
-      if (hyphenText.match(/^limit/i)) {
-        item.maxLimit = hyphenText;
-      } else if (hyphenText.match(/^unlocks/i)) {
-        item.whenCollected = hyphenText;
+      if (hyphenText) {
+        if (hyphenText.match(/^limit/i)) {
+          item.maxLimit = hyphenText;
+        } else if (hyphenText.match(/^unlocks/i)) {
+          item.whenCollected = hyphenText;
+        }
       }
     }
-  }
-  if (showItemDebug) {
-    console.log(`Quest-related parameters captured for ${item.name} from source:\n"${item.source}":\ncharacter: ${item.character}\nlevel: ${item.level}\nquestType: ${item.questType}\nquest: ${item.quest}\nqtyRewarded: ${item.qtyRewarded}\nhowObtained: ${item.howObtained}\npostQuestMailboxMessageTitle: ${item.postQuestMailboxMessageTitle}\nwhenRewarded: ${item.whenRewarded}\nwhenCollected: ${item.whenCollected}\nmaxLimit: ${item.maxLimit}`)
-  }
-  
-    } else {
+    if (showItemDebug) {
+      console.log(`Quest-related parameters captured for ${item.name} from source:\n"${item.source}":\ncharacter: ${item.character}\nlevel: ${item.level}\nquestType: ${item.questType}\nquest: ${item.quest}\nqtyRewarded: ${item.qtyRewarded}\nhowObtained: ${item.howObtained}\npostQuestMailboxMessageTitle: ${item.postQuestMailboxMessageTitle}\nwhenRewarded: ${item.whenRewarded}\nwhenCollected: ${item.whenCollected}\nmaxLimit: ${item.maxLimit}`)
+    }
+    
+  } else {
       console.warn("Failed to parse quest source for item (", item.name, "): ", string); // NOTE: THIS IS BEING HIT 3X PER RUN PER ITEM - 2026.05.26
     }
 
@@ -2154,8 +2132,8 @@ function output_itemIntro(item) {
     }
 
     if (item.functions.includes('Sit')) {
-        itemUseBody = " Once it is placed in the world, the Player can '''Sit''' on the object.";
-      }
+      itemUseBody = " Once it is placed in the world, the Player can '''Sit''' on the object.";
+    }
 
 
   // TODO: this is overriding any values set above, need to fix
@@ -2164,7 +2142,7 @@ function output_itemIntro(item) {
       itemUseIntro = 'lighting';
 
       itemUseBody = "<!-- Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off. // the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
-    
+      
       if (item.functions.includes('Constant')) {
         itemUseBody = "<!-- Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
       }
@@ -2306,6 +2284,148 @@ function assignRelatedItemsFromInputArray(item, bundleArray) {
 
 
 
+// preparation for allowing to copy/paste directly from sheet without leading Clothing/Furniture column
+function inferItemType(item) {
+  if (showItemDebug) {
+    console.log(`item.itemType of ${item.name} = ${item.itemType}`);
+  }
+  // do nothing if itemType already came from imported data
+  if (item.itemType) return item;
+
+  var allClothingCategories = ["Companions", "Tools", "Hats", "Masks", "Glasses", "Earrings", "Neckwear", "Coats", "Tops", "Back", "Bracelets", "Gloves", "Pants", "Shorts", "Skirts", "Hose Socks", "Shoes", "Dresses", "Costumes", "Gliders"];
+  var allFurnitureCategories = ["House", "Essentials", "Decor", "Trimmings", "Tables", "Beds", "Seating", "Storage", "Appliance", "Electronics", "Utilities", "Art", "Lighting", "Foliage", "Rugs", "Misc.", "Floors", "Windows", "Landscaping", "Wall", "Ceiling Decorations", "Trees", "Rocks", "Fencing", "Attractions"]; // TODO: Ceiling Textures
+
+  if (item.category) {
+    // returns highest priority match, but doesn't actually matter what the match is, just that something matched
+    if (getFirstCategoryMatch(item.category, allClothingCategories)) {
+      item.itemType = "Clothing";
+    }
+    if (getFirstCategoryMatch(item.category, allFurnitureCategories)) {
+      item.itemType = "Furniture";
+    }
+  }
+  
+  return item;
+}
+
+function assignItemType(item) {
+
+//console.log('item: ');
+// todo - why is this not converting input of itemType from Furniture to House?
+  if (isHouse(item)) {
+    item.itemType = "House";
+    item.category = "House";
+    item.collection = 'House Dream Style';
+  }
+
+
+  if (isBuilding(item)) {
+    //console.log(`item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
+    //in game: type=Building Skin, collection=none, category=none
+    item.itemType = 'Building Skin';
+    item.collection = 'none';
+
+    // category for these is technically 'none' in game, but these values are used in sheet and parser - overridden in output_category for article generation
+
+    if ((item.category && item.category.includes("Chez Remy")) || (item.name && item.name.includes("Chez Remy"))) {
+      item.category = "Chez Remy";
+    }
+    if (
+      (item.category && item.category.includes("Scrooge's Store")) ||
+      (item.category && item.category.includes("Scrooge's Shop")) ||
+      (item.name && item.name.includes("Scrooge's Store")) ||
+      (item.name && item.name.includes("Scrooge's Shop")) ||
+      (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Store")) ||
+      (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Shop"))
+      ) {
+      item.category = "Scrooge's Store";
+  }
+
+  // TODO - this is not robust enough, some items can contain the word plaza
+  if ((item.category && item.category.includes("Plaza")) || (item.name && item.name.includes("Plaza")) || (item.category && item.category.includes("Plaza Square")) || (item.name && item.name.includes("Plaza Square"))) {
+    item.category = "Plaza Square";
+  }
+
+//console.log(`LOOP END: item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
+}
+
+// TODO... . THIS IS FEELING A BIT JANKY
+if (isCastle(item)) {
+//in game: type=Dream Castle Skin, collection=none, category=none
+  item.itemType = 'Dream Castle Skin';
+  item.category = 'Dream Castle';
+  item.collection = 'none';
+}
+
+// not entirely sure why uncommenting this breaks stuff
+/*
+if (isCharacterDreamStyle) {
+item.itemType = 'Dream Style';
+item.category = 'Character Dream Style';
+item.universe = 'Character Dream Style';
+}*/
+
+if (isCompanion(item)) {
+//in game: type=Companions, collection=<<>>, category=<<>>
+  item.itemType = 'Companions';
+//item.category = item.category;
+//item.collection = 'Dreamlight Valley'; // item.collection
+}
+
+if (isStall(item)) {
+  item.itemType = "Goofy's Stall Skin";
+item.category = "Goofy's Stall"; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
+item.collection = 'none';
+}
+if (isVisitStation(item)) {
+  item.itemType = 'Valley Visit Station Style';
+item.category = 'Visit Station'; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
+item.collection = 'Visit Station';
+}
+if (isWishingWell(item)) {
+  item.itemType = 'Wishing Well Skin';
+item.category = 'Wishing Well'; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
+item.collection = 'Wishing Well';
+}
+
+if (isHairstyle(item)) {
+  item.category = 'Hairstyle';
+}
+
+if (isAccessory(item)) {
+  item.category = 'Accessories';
+
+// save Accessory "fake" universe to a new param
+  const string = item.universe;
+
+// FORMAT 1: None - Accessory (Aladdin) or None - Accessory
+  const regex = /None - (([\w\W ]+)\(([\w\W ]+)\))/;
+  const result = string.split(regex);
+//console.log(result[2],"      ", result[3]);
+  if (result[3]) {
+    item.groupedUniverse = result[3];
+  } else {
+    item.groupedUniverse = "Other";
+  }
+
+// FORMAT 2: none (Aladdin) or none
+  const regex2 = /none \(([\w\W ]+)\)/;
+  const result2 = string.split(regex2);
+  if (result2[3]) {
+    item.groupedUniverse = result[3];
+  } else {
+    item.groupedUniverse = "Other";
+  }
+
+//console.log("ITEM GROUPED UNIVERSE inside isAccessory = ",item.groupedUniverse);
+  item.universe = 'none';
+}
+
+return item;
+}
+
+
+
 
 /* ============= */
 function renderClothingFurnitureArticle(dataArray) {
@@ -2318,21 +2438,15 @@ function renderClothingFurnitureArticle(dataArray) {
 
 //  todo - check if all of the other isX functions should be moved here? also need to reduce number of loops run...
 
-dataArray.forEach((item) => {
+  dataArray.forEach((item) => {
   //item.name = 'Mutated'; // Modifying a property changes the source object
-  console.log('line 2321 reached')
+  //console.log('line 2321 reached')
 
-  //console.log('item: ');
-  // todo - why is this not converting input of itemType from Furniture to House?
-  if (isHouse(item)) {
-      item.itemType = "House";
-      item.category = "House";
-      item.collection = 'House Dream Style';
-    }
-});
+    item = assignItemType(item);
+  });
 
-console.log('dataArray 2333')
-console.log(dataArray)
+  console.log('dataArray 2333')
+  console.log(dataArray)
 
 
   // get unique bundles with populated items from input array
@@ -2379,115 +2493,9 @@ console.log(dataArray)
       item.universe = "none";
     }
 
-    if (isBuilding(item)) {
-      //console.log(`item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
-      //in game: type=Building Skin, collection=none, category=none
-      item.itemType = 'Building Skin';
-      item.collection = 'none';
-
-      // category for these is technically 'none' in game, but these values are used in sheet and parser - overridden in output_category for article generation
-
-      if ((item.category && item.category.includes("Chez Remy")) || (item.name && item.name.includes("Chez Remy"))) {
-        item.category = "Chez Remy";
-      }
-      if (
-        (item.category && item.category.includes("Scrooge's Store")) ||
-        (item.category && item.category.includes("Scrooge's Shop")) ||
-        (item.name && item.name.includes("Scrooge's Store")) ||
-        (item.name && item.name.includes("Scrooge's Shop")) ||
-        (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Store")) ||
-        (item.name && item.name.includes("Scrooge McDuck") && item.name.includes("Shop"))
-        ) {
-        item.category = "Scrooge's Store";
-    }
-
-      // TODO - this is not robust enough, some items can contain the word plaza
-    if ((item.category && item.category.includes("Plaza")) || (item.name && item.name.includes("Plaza")) || (item.category && item.category.includes("Plaza Square")) || (item.name && item.name.includes("Plaza Square"))) {
-      item.category = "Plaza Square";
-    }
-
-      //console.log(`LOOP END: item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
-  }
-
-    // TODO... . THIS IS FEELING A BIT JANKY
-    if (isCastle(item)) {
-      //in game: type=Dream Castle Skin, collection=none, category=none
-      item.itemType = 'Dream Castle Skin';
-      item.category = 'Dream Castle';
-      item.collection = 'none';
-    }
-
-    // not entirely sure why uncommenting this breaks stuff
-    /*
-    if (isCharacterDreamStyle) {
-      item.itemType = 'Dream Style';
-      item.category = 'Character Dream Style';
-      item.universe = 'Character Dream Style';
-    }*/
-
-    if (isCompanion(item)) {
-      //in game: type=Companions, collection=<<>>, category=<<>>
-      item.itemType = 'Companions';
-      //item.category = item.category;
-      //item.collection = 'Dreamlight Valley'; // item.collection
-    }
-
-
-
-    
-  
-
-
-
-
-  if (isStall(item)) {
-    item.itemType = "Goofy's Stall Skin";
-      item.category = "Goofy's Stall"; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
-      item.collection = 'none';
-    }
-    if (isVisitStation(item)) {
-      item.itemType = 'Valley Visit Station Style';
-      item.category = 'Visit Station'; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
-      item.collection = 'Visit Station';
-    }
-    if (isWishingWell(item)) {
-      item.itemType = 'Wishing Well Skin';
-      item.category = 'Wishing Well'; // technically 'none' in game, but this value is used in sheet and parser - overridden in output_category
-      item.collection = 'Wishing Well';
-    }
-
-    if (isHairstyle(item)) {
-      item.category = 'Hairstyle';
-    }
-
-    if (isAccessory(item)) {
-      item.category = 'Accessories';
-
-      // save Accessory "fake" universe to a new param
-      const string = item.universe;
-      
-      // FORMAT 1: None - Accessory (Aladdin) or None - Accessory
-      const regex = /None - (([\w\W ]+)\(([\w\W ]+)\))/;
-      const result = string.split(regex);
-      //console.log(result[2],"      ", result[3]);
-      if (result[3]) {
-        item.groupedUniverse = result[3];
-      } else {
-        item.groupedUniverse = "Other";
-      }
-
-      // FORMAT 2: none (Aladdin) or none
-      const regex2 = /none \(([\w\W ]+)\)/;
-      const result2 = string.split(regex2);
-      if (result2[3]) {
-        item.groupedUniverse = result[3];
-      } else {
-        item.groupedUniverse = "Other";
-      }
-      
-      //console.log("ITEM GROUPED UNIVERSE inside isAccessory = ",item.groupedUniverse);
-      item.universe = 'none';
-    }
+    // removed if isbuilding/iscastle/isstall/isvalleyvisitstation/iswishingwell/ishairstyle/isaccessory
+    // logic from this location and moved inside assignItemType
+    //item = assignItemType(item);
 
     // =*=*=*=*= PARSING ITEM END =*=*=*=*=
 
