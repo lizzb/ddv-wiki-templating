@@ -1512,6 +1512,8 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
       }
       else {
 
+        // TODO - "reward" items are currently incorrectly outputting "After reaching XX" and need replacement to not create a sentence fragment
+        // ideally want to prevent this from happening rather than replacing after the fact
         if (item.whenRewarded && item.whenRewarded.includes('reward') || item.whenRewarded == 'reward' || item.whenReward == 'post-quest mailbox reward') {
           itemSource = itemSource.replace(/^After reaching/g, 'It is rewarded after reaching');
         }
