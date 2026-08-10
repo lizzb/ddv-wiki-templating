@@ -111,8 +111,10 @@ function determineCharacterFromDreamStyle(itemName) {
     'Cheshire Cat',
     'Belle',
     'Gaston',
+    'Beast',
     'The Beast',
     'Merida',
+    'Cinderella',
     'Godmother',
     'Forgotten',
     'Mirabel',
@@ -126,6 +128,7 @@ function determineCharacterFromDreamStyle(itemName) {
     'Stitch',
     'Daisy',
     'Donald',
+    'Goof',
     'Goofy',
     'Mickey',
     'Minnie',
@@ -139,6 +142,7 @@ function determineCharacterFromDreamStyle(itemName) {
     'Mushu',
     'Oswald',
     'Peter Pan',
+    'Tinker Bell',
     'Remy',
     'Aurora',
     'Maleficent',
@@ -162,12 +166,13 @@ function determineCharacterFromDreamStyle(itemName) {
     'Buzz',
     'Lightyear',
     'Woody',
-    'EVE',
     'Eeyore',
     'Piglet',
     'Tigger',
     'Winnie the Pooh',
+    'EVE',
     'WALL-E',
+    'Ralph',
     'Vanellope',
   ];
 
@@ -199,6 +204,9 @@ function determineCharacterFromDreamStyle(itemName) {
     break;
   case 'Donald':
     charName = 'Donald Duck';
+    break;
+  case 'Goof': // TODO - if "goof" is included, thats sufficient for assuming it is goofy (e.g. "goofini")
+    charName = 'Goofy';
     break;
   case 'Mike':
     charName = 'Mike Wazowski';
@@ -319,6 +327,7 @@ function getCharacterUniverse(charName) {
     case 'Merida':
       universe = 'Brave';
       break;
+    case 'Cinderella':
     case 'The Fairy Godmother':
       universe = 'Cinderella';
       break;
@@ -550,7 +559,6 @@ function determinePremiumBundleType(bundleItemArray) {
       */
 
     }
-
     //console.log(`after: itemType of ${item.name}: ${item.itemType}`)
     //console.log(`itemType given to itemTypeCounter = ${item.itemType}`)
 
@@ -574,20 +582,13 @@ function determinePremiumBundleType(bundleItemArray) {
 
   // TODO - this needs so much cleanup - fri aug 7
 
-
   //console.log(`594 inside determinePremiumBundleType with highestKeys: ${highestKeys}`);
   //console.log(`allKeys at 593 ${allKeys}`)
-    // todo: Companion,Building,Furniture mixes
-    // this isnt working because House is not in highestKeys if its House, Furniture, Furniture - Furniture is
-    //if (highestKeys.includes("House") && highestKeys.includes("Furniture")) output = 'House/Furniture';
-    //if (highestKeys.includes("House")) output = 'House';
+
   if (highestKeys.includes("Building")) output = 'Building / House';
     //else if (highestKeys.includes("Character Dream Style")) output = 'Character Dream Style';
   else if (highestKeys.includes("Character Style")) output = 'Character Style';
   else if (highestKeys.includes("Skin")) output = 'Character Dream Style / Stall / Wishing Well / Castle Dream Style'; // Dream Castle Skin, Goofy's Stall Skin, Wishing Well Skin, Valley Visit Station Style
-  //else if (highestKeys.includes("Companion") && highestKeys.includes("Furniture")) output = 'Companion';
-  //else if (highestKeys.includes("Companion") && highestKeys.includes("Clothing")) output = 'Clothing/Companion';
-  //else if (highestKeys.includes("Companion")) output = 'Companion';
   else if (highestKeys.includes("Glider")) output = 'Glider';
   else if (highestKeys.includes("AvatarFeature")) output = 'Glider';
   else if (highestKeys.includes("Tool")) output = 'Tool Style / Accessory';
@@ -598,21 +599,67 @@ function determinePremiumBundleType(bundleItemArray) {
   else if (highestKeys.includes("MountGear")) output = 'Mount Customization';
   else output = 'bundleTypeTBD';
 
+  /*
+  { "id": "170100016", "name": "Un Poco Loco", "qty": "1", "price": "NA", "itemType": "Goofy's Stall Skin", "universe": "none (Stall)", "collection_icon": "premium", "categories": ["Goofy's Stall"] },
+      { "id": "170200036", "name": "Un Poco Loco Wishing Well", "qty": "1", "price": "NA", "itemType": "Wishing Well Skin", "universe": "none (Well)", "collection_icon": "premium", "categories": ["Wishing Well"] },
+  
+  */
 
-    
+
+// output values of bundleType are read in section_map in wiki_updater.py of project ddv-wiki-weeklyupdates
+/*
+section_map = {
+        "Clothing": "===Clothing===",
+        "Furniture": "===Furniture===",
+        "Character Style": "===Character Dream Styles===",
+        
+        "Building": "===Building Styles===",
+        "Tool Style": "===Tool Dream Styles===",
+        "Mega Bundle": "==Mega Bundles==",
+
+  
+        "Stall": "===Stall Styles===",
+        "Stall/Well": "===Stall Styles===",
+        "Well": "===Well Styles===",
+        "Well/Furniture": "===Well Styles===",
+        "House": "===House Dream Styles===",
+        "House/Furniture": "===House Dream Styles===",
+        "Companion/Clothing": "===Companions===",
+        "Companion/Furniture": "===Companions===",
+        "Companion": "===Companions===",
+    }
+*/
 
     // above is logic for assuming all item categories hold equal weight, but that is not true
-    // if any House is contained, House should be inthe output
+    // if ANY House is contained, House should be inthe output (even if there are more furniture items)
     //console.log(`allKeys.includes("House")? ${allKeys.includes("House")}`)
     if (allKeys.includes("House")) {
       if (allKeys.includes("Furniture")) output = 'House/Furniture';
       else output = 'House';
     }
 
+    if (allKeys.includes("Dream Castle Skin") || allKeys.includes("Building Skin")) {
+      output = 'Building';
+    }
+
     if (allKeys.includes("Companion")) {
       if (allKeys.includes("Furniture")) output = 'Companion/Furniture';
       else if (allKeys.includes("Clothing")) output = 'Clothing/Companion';
       else output = 'Companion';
+    }
+
+    if (allKeys.includes("Wishing Well Skin")) {
+      if (allKeys.includes("Furniture")) output = 'Well/Furniture';
+      else output = 'Well';
+    }
+
+    if (allKeys.includes("Goofy's Stall Skin")) {
+      if (allKeys.includes("Well")) output = 'Stall/Well';
+      else output = 'Stall';
+    }
+
+    if (output == 'bundleTypeTBD'){
+      console.log(`bundle has bundleTypeTBD, allKeys: ${allKeys}`)
     }
 
   return output;
@@ -632,22 +679,22 @@ function determinePremiumBundleType(bundleItemArray) {
 
 
   function parseUniqueBundles(dataArray) {
-  // TODO - add to relatedItems in alpha sort order
+    // TODO - add to relatedItems in alpha sort order
     var resultArray = [];
 
     dataArray.forEach(function (item) {
       let itemID = item.ID || item.id || item.itemID;
 
-    // TODO: parse source value to determine itemQty and msCost per item
+      // TODO: parse source value to determine itemQty and msCost per item
       let bundleQty = item.bundleQty || "TBD";
       let msCost = item.msCost || "NA"
 
-    // bundleQty, msCost 
-    //console.log('line 591');
-    //console.log(item);
+      // bundleQty, msCost 
+      //console.log('line 591');
+      //console.log(item);
 
       const searchItem = item.bundleName;
-    //item = parseItemSource(item); // Item source already parsed for infobox, shouldnt be necessary here ... but think logic flow is wonky
+      //item = parseItemSource(item); // Item source already parsed for infobox, shouldnt be necessary here ... but think logic flow is wonky
       const foundObject = resultArray.find(
         (obj) => obj.bundleName === searchItem
         );
@@ -700,7 +747,7 @@ function determinePremiumBundleType(bundleItemArray) {
 
 
       bundleObj.bundleType = determinePremiumBundleType(bundleObj.itemArray);
-      console.log(`line 705 result of determinePremiumBundleType on ${bundleObj.name}: ${bundleObj.bundleType}`)
+      //console.log(`line 705 result of determinePremiumBundleType on ${bundleObj.name}: ${bundleObj.bundleType}`)
     });
 
 
@@ -808,9 +855,9 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
     //console.log(bundleObj)
 
       output += `\n`;
-    // TODO - i might separately need to output this as property names for premiumShopObj.js in psLineupGenerator?
-    // unclear what my flow is
-    // outputAsNamedPropertyObject = false to make it an array and use for weeklyupdates, true to generate for premiumShopObj.js
+      // TODO - i might separately need to output this as property names for premiumShopObj.js in psLineupGenerator?
+      // unclear what my flow is
+      // outputAsNamedPropertyObject = false to make it an array and use for weeklyupdates, true to generate for premiumShopObj.js
       outputAsNamedPropertyObject = false;
       if (outputAsNamedPropertyObject) {
         output += `"${bundleObj.friendlyName}": `;
@@ -819,9 +866,9 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
       output += `\n\t"protoDbName": "${bundleObj.protoDbName}",`;
       output += `\n\t"friendlyName": "${bundleObj.friendlyName}",`;
       output += `\n\t"bundlePrice": "${bundleObj.bundlePrice}",`;
-    output += `\n\t"versionAdded": "${bundleObj.version}",`; // don't think this is needed for weeklyupdates? - but its good to have
-    output += `\n\t"bundleType": "${bundleObj.bundleType}",`;
-    output += `\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
+      output += `\n\t"versionAdded": "${bundleObj.version}",`; // don't think this is needed for weeklyupdates? - but its good to have
+      output += `\n\t"bundleType": "${bundleObj.bundleType}",`;
+      output += `\n\t"standaloneBundleNaming": ${bundleObj.standaloneBundleNaming},`;
     // why didn't i originally include these properties..? does weeklyupdates generate them itself?
     // no, i think it doesnt need it, weeklyUpdates only inserts new bundle titles/item titles into correct places, not generating bundle articles or historical table
     /*
@@ -869,14 +916,14 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
 
     let bundleItems = bundleObj.itemArray;
 
-  // determine "bundleType" to group bundle in correct invented grouping area on wiki PS page and PS navbox
+    // determine "bundleType" to group bundle in correct invented grouping area on wiki PS page and PS navbox
     bundleObj.bundleType = determinePremiumBundleType(bundleItems);
-    console.log(`bundleObj.bundleType at 876? ${bundleObj.bundleType}`)
+    //console.log(`bundleObj.bundleType at 876? ${bundleObj.bundleType}`)
 
-  // Generate priceString
+    // Generate priceString
     bundleObj.priceString = `{{price|${bundleObj.bundlePrice}|moonstone}}`;
 
-  // Generate contentsString
+    // Generate contentsString
     for (var i=0; i<bundleItems.length; i++) {
       var itemObj = bundleItems[i];
       contentsString += `{{name|${itemObj.name}`;
@@ -886,20 +933,21 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
       contentsString += (i < bundleItems.length-1) ? `<br>\n`: ``;
     }
 
-  // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
+    // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
     bundleObj.standaloneBundleNaming = (bundleItems.length == 1 || useStandaloneNaming(bundleObj));
 
     bundleObj.linkedName = (bundleItems.length == 1 || bundleObj.standaloneBundleNaming) ? `${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}` : `${bundleObj.friendlyName}`;
 
-  // compatibility with old format
-  //bundleObj.linked_name = `Tournament Gown Merida (Bundle)|Tournament Gown Merida`;
+    // compatibility with old format
+    //bundleObj.linked_name = `Tournament Gown Merida (Bundle)|Tournament Gown Merida`;
     bundleObj.linked_name = bundleObj.linkedName;
-  //console.log(`linked_name assigned: ${bundleObj.linked_name}`)
+    //console.log(`linked_name assigned: ${bundleObj.linked_name}`)
 
     bundleObj.contentsString = contentsString;
 
     return bundleObj;
   }
+
 
   function outputBundle_psNavbox(bundleObj) {
   /*
@@ -1611,6 +1659,8 @@ function generateRandomTemplate(item) {
   function generateNewExpansionTemplate(item) {
     var template = 'TODO - generate list of category page articles for new expansion';
 
+    let expansionCollection = "EXPANSIONCOLLECTION";
+
   /*
   // === CATEGORIES in preparation of an expansion:
   Category:EXPANSIONCOLLECTION Store Exclusive
@@ -1623,27 +1673,27 @@ function generateRandomTemplate(item) {
   Category:Sweets from EXPANSIONCOLLECTION
   */
 
-    let category_Foraging = "Category:EXPANSIONCOLLECTION Foraging Collection\n\n{{categoryheader|the [[Foraging]] [[collections|collection]] categorized under [[EXPANSIONCOLLECTION]]}}\n\n[[Category:EXPANSIONCOLLECTION Collection]]";
+    let category_Foraging = `Category:${expansionCollection} Foraging Collection\n\n` + `{{categoryheader|the [[Foraging]] [[collections|collection]] categorized under [[${expansionCollection}]]}}\n\n[[Category:${expansionCollection} Collection]]`;
 
-    let category_StoreExclusive = "{{categoryheader|[[Clothing]], [[Furniture]], [[:Category:Wallpaper|Wallpaper]], and [[:Category:Flooring|Flooring]] items which are only sold at [[Scrooge's Store]] located in [[EXPANSIONCOLLECTION]] and no other location}}\n\n[[Category:Gameplay]]";
+    let category_StoreExclusive = `{{categoryheader|[[Clothing]], [[Furniture]], [[:Category:Wallpaper|Wallpaper]], and [[:Category:Flooring|Flooring]] items which are only sold at [[Scrooge's Store]] located in [[${expansionCollection}]] and no other location}}\n\n[[Category:Gameplay]]`;
 
-    let category_Resources = "{{categoryheader|items that can be found in the '''{{name|EXPANSIONCOLLECTION|link=EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Resource Locations]]";
+    let category_Resources = `{{categoryheader|items that can be found in the '''{{name|${expansionCollection}|link=${expansionCollection}}}'''}}\n\n[[Category: Resource Locations]]`;
 
-    let category_Fish = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fish|link=:Category:Fish}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fish Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Fish = `{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fish|link=:Category:Fish}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category:Fish Locations]] [[Category:${expansionCollection} Resources]]`;
 
-    let category_Fruit = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fruit|link=:Category:Fruit}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Fruit Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Fruit = `{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fruit|link=:Category:Fruit}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category:Fruit Locations]] [[Category:${expansionCollection} Resources]]`;
 
-    let category_Gems = "{{categoryheader|items categorized as '''{{inlineIcon|Gems|link=:Category:Gems}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category: Gem Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Gems = `{{categoryheader|items categorized as '''{{inlineIcon|Gems|link=:Category:Gems}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category: Gem Locations]] [[Category:${expansionCollection} Resources]]`;
 
-    let category_Vegetables = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Vegetables|link=:Category:Vegetables}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Vegetable Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Vegetables = `{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Vegetables|link=:Category:Vegetables}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category:Vegetable Locations]] [[Category:${expansionCollection} Resources]]`;
 
-    let category_Sweets = "{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Sweets|link=:Category:Sweets}}''' that can be found in the '''{{name|EXPANSIONCOLLECTION}}'''}}\n\n[[Category:Sweets Locations]] [[Category:EXPANSIONCOLLECTION Resources]]";
+    let category_Sweets = `{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Sweets|link=:Category:Sweets}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category:Sweets Locations]] [[Category:${expansionCollection} Resources]]`;
 
 
 
-    let template_Memory = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|width=300px\n|type=Memory\n|description=%%description%%\n|universe=%%universe%%\n|collection=%%newExpansionCollection%%\n|found=TBA\n|from=<!--{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}-->\n}}\n'''%%name%%''' is a [[Memories#%%universe%%|%%universe%%]] [[Memories|Memory]].\n\nOnce collected it will be added to the [[:Category:%%newExpansionCollection%% Memories Collection|%%newExpansionCollection%% Memories Collection]]{{cleanup|Verify -- , and can be viewed in items with [[:Category:Memory Frame|Memory Frame]] functionality}}.\n<!--\n==Acquisition==\n:{{quest|QUESTNAME}} - Unlocked after fishing up/picking up/digging up/eating [[xxxx]] which is cooked using [[Ingredients]] and a [[QUESTITEM]] caught during the quest, then reading [[ITEM]] in Inventory.\n\n==Quests==\nThis memory is collected during the following quests:\n*{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}\n-->\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxMemory}}";
+    let template_Memory = `{{stub}}\n{{infobox\n|image=%%name%%.png\n|width=300px\n|type=Memory\n|description=%%description%%\n|universe=%%universe%%\n|collection=%%new${expansionCollection}%%\n|found=TBA\n|from=<!--{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}-->\n}}\n'''%%name%%''' is a [[Memories#%%universe%%|%%universe%%]] [[Memories|Memory]].\n\nOnce collected it will be added to the [[:Category:%%new${expansionCollection}%% Memories Collection|%%new${expansionCollection}%% Memories Collection]]{{cleanup|Verify -- , and can be viewed in items with [[:Category:Memory Frame|Memory Frame]] functionality}}.\n<!--\n==Acquisition==\n:{{quest|QUESTNAME}} - Unlocked after fishing up/picking up/digging up/eating [[xxxx]] which is cooked using [[Ingredients]] and a [[QUESTITEM]] caught during the quest, then reading [[ITEM]] in Inventory.\n\n==Quests==\nThis memory is collected during the following quests:\n*{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}\n-->\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxMemory}}`;
 
-    let template_seed = "{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=%%description%%\n|type=Seed\n|buyprice=\n|sellprice=\n|giftreward=\n|growtime=<!--{{growthTime|15}}<br>{{growthTime|15|biome=PREFERREDBIOME}}-->\n|waterings=\n|yield=<!--{{name|CROPNAME|CROPCOUNT}}-->\n|from={{inlineIcon|Goofy's Stall|size=20|link=Goofy's Stall#%%newExpansionCollection%%}}\n|found={{name|%%newExpansionCollection%%}}\n|gridSize=\n|placement=\n|stackMax=\n}}\n'''%%name%%''' is a [[Crop Seeds|seed]] type which can be planted and harvested to obtain [[Ingredients]].\n\nThey can be purchased from [[Goofy's Stall]] in [[%%newExpansionCollection%%]] after the initial Stall repair.\n<!--\nIt takes XXXX minutes to grow<!-- and XXXX total waterings-- until CROPCOUNT [[CROPNAME]] can be harvested.\n-->\nThey can be planted in any Biome<!--, but will grow 10% faster when planted in either the [[PREFERREDBIOME#REGION1|REGION1]] or [[PREFERREDBIOME#REGION2|REGION2]] biomes in the [[Wishing Alps]]. This accelerated growth is denoted in the UI by a caret (^) icon that appears on the upper left corner of the seed image when choosing a seed to plant in its preferred Biome-->.\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxSeed|%%newExpansionCollection%%}}";
+    let template_seed = `{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=%%description%%\n|type=Seed\n|buyprice=\n|sellprice=\n|giftreward=\n|growtime=<!--{{growthTime|15}}<br>{{growthTime|15|biome=PREFERREDBIOME}}-->\n|waterings=\n|yield=<!--{{name|CROPNAME|CROPCOUNT}}-->\n|from={{inlineIcon|Goofy's Stall|size=20|link=Goofy's Stall#%%new${expansionCollection}%%}}\n|found={{name|%%new${expansionCollection}%%}}\n|gridSize=\n|placement=\n|stackMax=\n}}\n'''%%name%%''' is a [[Crop Seeds|seed]] type which can be planted and harvested to obtain [[Ingredients]].\n\nThey can be purchased from [[Goofy's Stall]] in [[%%new${expansionCollection}%%]] after the initial Stall repair.\n<!--\nIt takes XXXX minutes to grow<!-- and XXXX total waterings-- until CROPCOUNT [[CROPNAME]] can be harvested.\n-->\nThey can be planted in any Biome<!--, but will grow 10% faster when planted in either the [[PREFERREDBIOME#REGION1|REGION1]] or [[PREFERREDBIOME#REGION2|REGION2]] biomes in the [[Wishing Alps]]. This accelerated growth is denoted in the UI by a caret (^) icon that appears on the upper left corner of the seed image when choosing a seed to plant in its preferred Biome-->.\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxSeed|%%new${expansionCollection}%%}}`;
 
     return template;
 
