@@ -688,6 +688,7 @@ section_map = {
       // TODO: parse source value to determine itemQty and msCost per item
       let bundleQty = item.bundleQty || "TBD";
       let msCost = item.msCost || "NA"
+      let houseSize = item.W ? `${item.W}x${item.L}` : item.size; //'WWxLL'
 
       // bundleQty, msCost 
       //console.log('line 591');
@@ -695,16 +696,17 @@ section_map = {
 
       const searchItem = item.bundleName;
       //item = parseItemSource(item); // Item source already parsed for infobox, shouldnt be necessary here ... but think logic flow is wonky
-      const foundObject = resultArray.find(
-        (obj) => obj.bundleName === searchItem
-        );
+      const foundObject = resultArray.find( (obj) => obj.bundleName === searchItem );
       if (foundObject) {
-      //console.log(`'${searchItem}' (bundleName) is already present in our resultArray`);
-      //if (!foundObject.psBundleItems) foundObject.psBundleItems = [];
+        //console.log(`'${searchItem}' (bundleName) is already present in our resultArray`);
+        //if (!foundObject.psBundleItems) foundObject.psBundleItems = [];
         foundObject.psBundleItems.push(item.name);
-      //console.log("psBundleItems: ", foundObject.psBundleItems);
+        //console.log("psBundleItems: ", foundObject.psBundleItems);
 
         let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+        itemObj.size = houseSize; // TODO: is only relevant if item is a house
+        //console.log(`709`)
+        //console.log(item);
         foundObject.itemArray.push(itemObj);
 
       } else {
@@ -716,6 +718,7 @@ section_map = {
         // limited is currently the propertyname being used for icon
         //let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
         let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+        itemObj.size = houseSize; // TODO: is only relevant if item is a house
         item.itemArray = [];
         item.itemArray.push(itemObj);
         //resultArray.push(item);
@@ -727,13 +730,13 @@ section_map = {
           bundleName: item.bundleName,
           bundlePrice: item.bundlePrice,
           psBundleItems: item.psBundleItems,
-        //bundleType: item.itemType,
-        //version: updateNumber, //item.version,
-        version: item.version, // versionAdded should use version of first item added for historical bundles - but this will break with returning star path bundles
+          //bundleType: item.itemType,
+          //version: updateNumber, //item.version,
+          version: item.version, // versionAdded should use version of first item added for historical bundles - but this will break with returning star path bundles! in that case should use column val becameBundle
 
-        protoDbName: "unknown",
-        friendlyName: item.bundleName,
-        itemArray: item.itemArray
+          protoDbName: "unknown",
+          friendlyName: item.bundleName,
+          itemArray: item.itemArray
       };
 
       resultArray.push( bundleObj );
@@ -893,7 +896,10 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
       // TODO - parse SOURCE to see if qty or price is defined
       output += ` "qty": "${itemQty}", "price": "${itemMSPrice}",`;
       output += ` "itemType": "${item.itemType}",`;
-      output += ` "universe": "${item.universe}", "collection_icon": "${item.collection_icon}", "categories": ${JSON.stringify(item.categories)} `;     
+      output += ` "universe": "${item.universe}", "collection_icon": "${item.collection_icon}", "categories": ${JSON.stringify(item.categories)} `;
+      if (item.itemType == 'House') {
+        output += `, "size": "${item.size}",`;
+      }
       output += `},`;
     }
     
