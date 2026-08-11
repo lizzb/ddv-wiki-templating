@@ -861,7 +861,7 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
       // TODO - i might separately need to output this as property names for premiumShopObj.js in psLineupGenerator?
       // unclear what my flow is
       // outputAsNamedPropertyObject = false to make it an array and use for weeklyupdates, true to generate for premiumShopObj.js
-      outputAsNamedPropertyObject = false;
+      outputAsNamedPropertyObject = true;
       if (outputAsNamedPropertyObject) {
         output += `"${bundleObj.friendlyName}": `;
       }

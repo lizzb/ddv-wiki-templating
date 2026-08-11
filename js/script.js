@@ -118,6 +118,8 @@ function renderParent(dataArray, templateType) {
       inlineCategory = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
     }
   }
+  // TODO - evaluate if this is a cleaner approach than setting the actual value if empty to placeholders?
+  // TODO - differentiating between missing data vs genuinely empty fields?
   var output = `|category=${inlineCategory}\n`;
 
   if (isBuilding(item) || isCastle(item) || isWishingWell(item) || isStall(item) || isVisitStation(item)) {
@@ -143,7 +145,7 @@ function output_buyprice(item) {
     output = '';
   }
 
-  // Possibly crafting input values from sheet
+  // Possible crafting input values from sheet
   if (isCraftable(item) || item.buyprice == 'n/a' || item.buyprice == '-') {
     output = '';
   }
@@ -201,6 +203,7 @@ function output_tags(item) {
   }
 
   item.tags = wrapComment(item.tags, !tagsConfirmed);
+  // TODO: implement and call commentOutStarPathTags, especially if the overall tags are commented out
   
   var output = '|tags=%%tags%%\n';
   return output;
@@ -222,20 +225,16 @@ function output_collection(item) {
     break;
   case 'EI':
     item.collection = wrapComment('Eternity Isle', !collectionConfirmed);
-      //item.collection = 'Eternity Isle';
     break;
   case 'SV':
     item.collection = wrapComment('Storybook Vale', !collectionConfirmed);
-      //item.collection = 'Storybook Vale';
     break;
   case 'WM':
   case 'WR':
     item.collection = wrapComment('Wishblossom Mountains', !collectionConfirmed);
-      //item.collection = 'Wishblossom Mountains';
     break;
   case 'HW':
     item.collection = wrapComment('Honeyglow Woods', !collectionConfirmed);
-      //item.collection = 'Honeyglow Woods';
     break;
   case 'Dream Style':
       item.collection = 'remove'; //'n/a - CHARACTER DREAM STYLE';
@@ -314,6 +313,7 @@ function output_traits(item) {
 }
 
 function output_universe(item) {
+  console.log(`item.universe / item.groupedUniverse inside output_universe: ${item.universe} / ${item.groupedUniverse} for ${item.name}`)
   if (!item.universe) {
     item.missingCategories.push('[[Category: Missing Universe]]');
   }
@@ -321,6 +321,12 @@ function output_universe(item) {
 
 
   var output = '|universe=%%universe%%\n'; //`|universe=${item.universe}\n`;
+
+  /*
+    if (item.universe == "(none)") {
+      item.universe = "none";
+    }
+  */
 
   // do not modify the original universe value for accessories - needed for navbox
   if (isAccessory(item)) {
@@ -333,7 +339,6 @@ function output_universe(item) {
 function output_functions(item) {
   var output = '|functions=%%functions%%\n';
   // TODO 2025.09.24 - functions empty
-  // (!item.functions || item.functions == '-')
   if (!item.functions || item.functions == '-') {
     // ****NOTE - usually missing functions indicates there are none, not that they are missing -- || item.functions == '-'
     //item.missingCategories.push('[[Category: Missing Functions]]');
@@ -1272,7 +1277,7 @@ function parseItemSource(item) {
 // **** TODO: condition for including premium/Bundle AND starpath???
 // TODO - INFOBOX FROM NEEDS TO HAVE BOTH BUNDLENAME AND STAR PATH INFO FOR RETURNING ITEMS
 function output_from(item) {
-  item = parseItemSource(item);
+  item = parseItemSource(item); // pretty sure this should have already been called?
 
   /*if (!item.infoboxFrom) {
       item.missingCategories.push('[[Category: Missing From]]');
@@ -1554,11 +1559,17 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
         let clothingObtainTextInline = 'obtained<!--[[Crafting|crafted]]/given by [[CHARACTER]]-->';
 
         //[[Eeyore]] level 7 [[friendship]] quest [[The Shy Villagers Society]]
-        // It is ${clothingObtainTextInline} during the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]].
-        // It is ${clothingObtainTextInline} during the [[${item.character}#Quests|${item.character}]] Level ${item.level} friendship quest [[${item.quest}]].
+        // It is ${clothingObtainTextInline} during the .
+        // It is ${clothingObtainTextInline} during the .
+
+        let inlineQuestLink = `[[${item.character}#Quests|${item.character}]] quest [[${item.quest}]]`;
 
         // TODO - account for story quest vs friendship quest
-        itemSource = `It is ${clothingObtainTextInline} during the [[${item.character}#Quests|${item.character}]] quest [[${item.quest}]].`;
+        // if Story quest --> inlineQuestLink = `[[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]]`;
+        // if friendship quest --> inlineQuestLink = `[[${item.character}#Quests|${item.character}]] Level ${item.level} friendship quest [[${item.quest}]]`;
+
+        
+        itemSource = `It is ${clothingObtainTextInline} during the ${inlineQuestLink}.`;
       }
 
       // quick and hacky for update day use cases - override all logic above and give every item that flags isQuestItem(item) = true with this
@@ -1812,7 +1823,11 @@ function output_collectionStatus(item) {
     collectionText += `.`;
   }
 
-
+  if (isAccessory(item)) {
+    collectionText = " Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].";
+  }
+  // TODO - rather than replacing after the fact, actually deal with this logic before this is inserted
+  
   
   // character dream style
   collectionText = collectionText.replaceAll("Once collected it will be added to the [[:Category:remove Dream Style Sets Collection|remove Dream Style Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "");
@@ -2412,13 +2427,47 @@ if (isHairstyle(item)) {
 if (isAccessory(item)) {
   item.category = 'Accessories';
 
+
+  // Save current universe string (so as not to lose "fake" universe/groupedUniverse)
+  const string = item.universe;
+
+  // Set a default fallback
+  item.groupedUniverse = "Other";
+
+  // Use .match() to extract the capture groups safely
+  // FORMAT 1: None - Accessory (Aladdin) or None - Accessory
+  // FORMAT 2: none (Aladdin) or none
+  const matchFormat1 = string.match(/None - [\w\W ]+\(([\w\W ]+)\)/);
+  const matchFormat2 = string.match(/none \(([\w\W ]+)\)/);
+
+  // Use if / else if to ensure blocks don't overwrite each other
+  if (matchFormat1 && matchFormat1[1]) {
+    // matchFormat1[1] contains the string inside the parentheses
+    item.groupedUniverse = matchFormat1[1]; 
+    
+  } else if (matchFormat2 && matchFormat2[1]) {
+    // If string = "none (Aladdin)", matchFormat2[1] will be "Aladdin"
+    item.groupedUniverse = matchFormat2[1];
+  }
+
+  //console.log(`${item.name} GROUPED UNIVERSE inside isAccessory = ${item.groupedUniverse} (universe=${item.universe}`);
+
+  // Always reset universe to 'none' at the end of the pipeline
+  item.universe = 'none';
+
+
+
+/*
+
 // save Accessory "fake" universe to a new param
   const string = item.universe;
+  //console.log(item);
+  console.log(`2429 ${item.name} universe: ${item.universe}`);
 
 // FORMAT 1: None - Accessory (Aladdin) or None - Accessory
   const regex = /None - (([\w\W ]+)\(([\w\W ]+)\))/;
   const result = string.split(regex);
-//console.log(result[2],"      ", result[3]);
+console.log('2432: ', result[2],"      ", result[3]);
   if (result[3]) {
     item.groupedUniverse = result[3];
   } else {
@@ -2428,6 +2477,7 @@ if (isAccessory(item)) {
 // FORMAT 2: none (Aladdin) or none
   const regex2 = /none \(([\w\W ]+)\)/;
   const result2 = string.split(regex2);
+  console.log('2443: ', result2[2]);
   if (result2[3]) {
     item.groupedUniverse = result[3];
   } else {
@@ -2436,6 +2486,8 @@ if (isAccessory(item)) {
 
 //console.log("ITEM GROUPED UNIVERSE inside isAccessory = ",item.groupedUniverse);
   item.universe = 'none';
+
+  */
 }
 
 return item;
@@ -2454,23 +2506,17 @@ function renderClothingFurnitureArticle(dataArray) {
   //const users = [{ name: 'Alice' }, { name: 'Bob' }];
 
 //  todo - check if all of the other isX functions should be moved here? also need to reduce number of loops run...
+  //console.log(dataArray);
 
   dataArray.forEach((item) => {
   //item.name = 'Mutated'; // Modifying a property changes the source object
-  //console.log('line 2321 reached')
-
-    if (item.universe == "(none)") {
-      item.universe = "none";
-    }
+  console.log('line 2321 reached')
+  //console.log(item);
 
     item = assignItemType(item);
     item = parseItemSource(item);
     item = parseSizePlacementEnv(item);
   });
-
-  console.log('dataArray 2333')
-  console.log(dataArray)
-
 
   // get unique bundles with populated items from input array
   var bundleArray = parseUniqueBundles(dataArray);
@@ -3001,17 +3047,17 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
 
     
-  // TODO replace (\w),(\w) with $1, $2 for psBundleItems fix
+    // TODO replace (\w),(\w) with $1, $2 for psBundleItems fix
 
-  //const regex = /(\w),(\w)/gi;
-  //newStr = newStr.replaceAll(regex, "$1, $2");
-  // TODO replace (\w),(\w) with $1, $2 for psBundleItems fix
+    //const regex = /(\w),(\w)/gi;
+    //newStr = newStr.replaceAll(regex, "$1, $2");
+    // TODO replace (\w),(\w) with $1, $2 for psBundleItems fix
 
-  // TODO - not sure why not working??? saying untehemed is redundant since accessories don't have universes
+    // TODO - not sure why not working??? saying untehemed is redundant since accessories don't have universes
     newStr = newStr.replaceAll('is an unthemed piece of [[:Category:Accessories', 'is a piece of [[:Category:Accessories');
 
 
-  // NOT WORKING
+    // NOT WORKING
     newStr = newStr.replaceAll('\{\{inlineIcon\|\|iconOnly\}\}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
 
     newStr = newStr.replaceAll('energy=-', 'energy=');
@@ -3022,7 +3068,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('|placement=default-', '|placement=default');
 
     newStr = newStr.replaceAll('\n|functions=-', '');
-  //newStr = newStr.replaceAll('\n|functions=-', '\n|functions=none');
+    //newStr = newStr.replaceAll('\n|functions=-', '\n|functions=none');
 
     
 

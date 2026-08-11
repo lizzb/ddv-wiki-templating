@@ -1,5 +1,11 @@
 brave://settings/clearBrowserData
 
+
+limited --> icon or collection_icon
+speculated --> becameBundle
+
+
+
 FIXED - VERIFIED
 - HW scrooge items are not adding "[[Scrooge's Store]] in [[Honeyglow Woods]]." to body
 - make template for level 5 premium companion reward articles. Test cases: Mochi's Cat House, Amelia's Pink Goose House
