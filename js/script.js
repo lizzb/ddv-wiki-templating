@@ -73,7 +73,9 @@ function renderParent(dataArray, templateType) {
 
   function output_image(item) {
     var output = '|image=' + item.name + '.png\n';
-    if (item.itemType == 'Clothing' && !isAccessory(item))
+    //console.log(`76`);
+    //console.log(item);
+    if (item.itemType == 'Clothing' && !isAccessory(item) && !isHairstyle(item))
       output += '|image_m=' + item.name + '_m.png\n';
     return output;
   }
@@ -89,7 +91,7 @@ function renderParent(dataArray, templateType) {
     return output;
   }
 
-// only useful for handling clothing/furniture
+  // only useful for handling clothing/furniture
   function output_category(item) {
 
     /*
@@ -313,12 +315,13 @@ function output_traits(item) {
 }
 
 function output_universe(item) {
-  console.log(`item.universe / item.groupedUniverse inside output_universe: ${item.universe} / ${item.groupedUniverse} for ${item.name}`)
+  if (showItemDebug) {
+    console.log(`item.universe / item.groupedUniverse inside output_universe: ${item.universe} / ${item.groupedUniverse} for ${item.name}`)
+  }
   if (!item.universe) {
     item.missingCategories.push('[[Category: Missing Universe]]');
   }
   if (item.universe == 'General') item.universe = 'Other';
-
 
   var output = '|universe=%%universe%%\n'; //`|universe=${item.universe}\n`;
 
@@ -456,6 +459,9 @@ function output_history(item) {
 
   let inlineVersion = item.wikiVersion ? item.wikiVersion : item.version;
   //var output = '\n\n==History==\n{{history|' + item.version + '|Added}}';
+
+  // TODO - general fixes for including final 0s
+  if (inlineVersion == '1.1') inlineVersion = '1.10';
   var output = `\n\n==History==\n{{history|${inlineVersion}|Added}}`;
   return output;
 }
@@ -493,6 +499,18 @@ function updateAppropriateVersion(item) {
       break;
     case "1.12":
       item.wikiVersion = "Expansion 1-3";
+      break;
+    default:
+      break;
+    }
+  }
+  
+  // TODO - better consolidated logic
+  // if belongs to Merida/Flynn/Hades (friendship/quest) and released 1.14.1, EVEN if collection is DV, not SV, still output {{history|Expansion 2-1|Added}}
+  if (item.source.includes('Merida') || item.source.includes('Flynn') || item.source.includes('Hades')) {
+    switch (item.version) {
+    case "1.14.1":
+      item.wikiVersion = "Expansion 2-1";
       break;
     default:
       break;
@@ -782,6 +800,25 @@ function parseItemSource(item) {
     item.level = result[2]; // friendship level
   }
 
+
+
+  // ===== (Dreamlight) Achievement =====
+  if (item.location == 'achievement' || item.source.includes('Achievement')) {
+    const sourceRegex = /^Achievement \((?<achievementTab>[^)]+)\) - (?<achievementName>.*?)(?<achievementLevel>\s*\([^)]+\))?$/;
+    const match = item.source.match(sourceRegex);
+
+    if (match) {
+    const { achievementTab, achievementName, achievementLevel = '' } = match.groups;
+
+    // Derive achievementIcon (defaults to tab name or a custom mapped icon)
+    const achievementIcon = achievementName.includes("Pooh Sticks") ? "Pooh Sticks" : achievementTab;
+
+    item.achievementTab = achievementTab;
+    item.achievementIcon = achievementIcon;
+    item.achievementName = achievementName;
+    item.achievementLevel = achievementLevel;
+    }
+  }
 
   // ===== Scrooge - Conditional =====
   // Store - after unlocking Pocahontas
@@ -1361,6 +1398,22 @@ function output_from(item) {
     }
     */
 
+    if (item.location == 'achievement' || item.source.includes('Achievement')) {
+      let achievementDescription = "<!--, which requires the player to....-->";
+      // achievementDescription = ", which requires the player to collect and place four pieces of egg-themed [[Eggstravaganza]] [[Crafting#Furniture|crafted furniture]]"
+      // achievementDescription = ", which requires the player to play [[Pooh Sticks]] in the [[Honeyglow Woods]] on seven separate days"
+
+      let achievementTab = item.achievementTab;
+      let achievementIcon = item.achievementIcon;
+      let achievementName = item.achievementName;
+      let achievementLevel = item.achievementLevel;
+      //let achievementDescription = achievementDescription;
+      let inlineTierInfo = "<!-- at the third tier-->";
+
+      infoboxFrom = `|reward={{inlineIcon|${achievementIcon}|iconOnly|link=Dreamlight#${achievementTab}}} [[Dreamlight#${achievementTab}|"${achievementName}"${achievementLevel} Achievement]]`;
+      itemSource = `It is rewarded when redeeming the [[Dreamlight#${achievementTab}|Dreamlight Achievement]] "${achievementName}"${inlineTierInfo}${achievementDescription}.`
+    }
+
 
     if (isCraftable(item)) {
 
@@ -1823,6 +1876,36 @@ function output_collectionStatus(item) {
     collectionText += `.`;
   }
 
+
+  // todo  - move untracked logic here instead of jankycleanup
+  if (item.collection == "none" && item.itemType == 'Clothing') {
+
+    // Once collected it will not be added to the
+    collectionText = ` It is not tracked in the `;
+
+
+//"Once collected it will be added to the [[:Category: none Clothing Sets Collection|none Clothing Sets Collection]]."
+//"Once collected it will not be added to the [[:Category: Untracked Clothing Sets Collection| Clothing Sets Collection]]."
+
+    let inlineItemType = (item.itemType == 'Crafted Furniture') ? 'Furniture' : item.itemType;
+    collectionText += `[[:Category:Untracked ${inlineItemType} Sets Collection|${inlineItemType} Sets Collection]]`;
+
+    if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
+      if (item.location && item.location.includes('crafting')) {
+        collectionText += ` or [[:Category:Untracked Crafting Collection|Crafting Collection]]`;
+      }
+      if (item.source.includes('limit')) {
+        collectionText += `, and more cannot be`;
+        if (item.location && item.location.includes('crafting')) {
+          collectionText += ` crafted or`;
+        }
+        collectionText += ` ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]]`;
+      }
+    }
+
+    collectionText += `.`;
+  }
+
   if (isAccessory(item)) {
     collectionText = " Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].";
   }
@@ -1933,7 +2016,8 @@ function output_itemUsage(item) {
       ', and other objects can be placed upon its ' +
         item.surfaceArea + //'<!--WxD -->' +
         ' surface area.';
-    } // ***** TODO - use case where we know its a table but either don't know surface area or the surface area is weirdly shaped, so leave it generic - check number of spaces
+    } // ***** TODO - use case where we know its a table but either don't know surface area
+    // or the surface area is weirdly shaped/structured in format e.g. "2 slots", so leave it generic - check number of spaces
 
     // TODO - appropriate text for returning SP item wallpaper/flooring - currently not working
     if (isWallpaperFlooring(item)) {
@@ -2086,15 +2170,18 @@ function output_itemIntro(item) {
       itemUseIntro = 'lighting';
       itemUseBody = ' Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]].'; // ....
       break;
+    case 'Light (Interact)':
     case 'Light':
     case 'Lighting':
       itemUseIntro = 'lighting';
+      item.functions = 'Lighting';
       itemUseBody = ""; // assigned below 
       break;
     case 'Arch':
       itemUseIntro = 'arch';
       itemUseBody = ''; // " Once it is placed in the world, the Player can walk underneath and through the object."
       break;
+    case 'Fireplace (Interact)':
     case 'Fireplace':
       itemUseIntro = 'fireplace';
       itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the object to toggle it on and off."; // it vs its fire?
@@ -2155,6 +2242,12 @@ function output_itemIntro(item) {
         itemUseIntro = '';
         itemUseBody = '';
       }
+    }
+
+    if (item.functions.includes('Table') || item.functions.includes('slots')) {
+        itemUseIntro = 'table';
+        //itemUseBody = ', and other objects can be placed upon its ' + '<!--WxD -->' +'surface area.';
+        // pretty sure itemUseBody is done in a different function
     }
 
     // mixed feelings on whether to replace or not, because "bed" vs "seating" has no intrinsic game meaning
@@ -2420,6 +2513,7 @@ item.category = 'Wishing Well'; // technically 'none' in game, but this value is
 item.collection = 'Wishing Well';
 }
 
+//console.log(`${item.name} isHairstyle? called 2426: ${isHairstyle(item)}`)
 if (isHairstyle(item)) {
   item.category = 'Hairstyle';
 }
@@ -2510,7 +2604,7 @@ function renderClothingFurnitureArticle(dataArray) {
 
   dataArray.forEach((item) => {
   //item.name = 'Mutated'; // Modifying a property changes the source object
-  console.log('line 2321 reached')
+  //console.log('line 2321 reached')
   //console.log(item);
 
     item = assignItemType(item);
@@ -3088,10 +3182,12 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
   const replacement = "It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] or [[:Category:Untracked Crafting Collection|Crafting Collection]].";
   newStr = newStr.replaceAll(target, replacement);
 
-
+  // space before/after category:
   var target2 = 'Once collected it will be added to the [[:Category:none Clothing Sets Collection|none Clothing Sets Collection]].';
   var replacement2 = 'Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].';
   newStr = newStr.replaceAll(target2, replacement2);
+  var target3 = 'Once collected it will be added to the [[:Category: none Clothing Sets Collection|none Clothing Sets Collection]].';
+  newStr = newStr.replaceAll(target3, replacement2);
 
 
 

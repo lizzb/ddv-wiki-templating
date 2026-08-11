@@ -2360,13 +2360,17 @@ function generateCompanionTemplateOriginal(item) {
   }
 
   function isHairstyle(item) {
-    return (
+    var isHairstyle = (
       (item.name && item.name.includes('Hairstyle')) ||
       (item.name && item.name.includes('Hairdo')) ||
       (item.name && item.name.includes('Updo')) ||
       (item.name && item.name.includes('Haircut')) ||
-      (item.category && item.category == 'Hairstyle')
+      //(item.category && item.category == 'Hairstyle') || 
+      (item.category && item.category.includes('Hair')) || 
+      (item.tags && item.tags.includes('Hair'))
       );
+    //console.log(`${item.name} isHairstyle? ${isHairstyle} // (category/tags): ${item.category}/${item.tags}`)
+    return isHairstyle;
   }
 
   function isHouse(item) {
@@ -2519,41 +2523,6 @@ function isQuestItem(item) {
   item.source && item.source.includes(' Quest ');
   return isQuestItem;
 }
-
-
-/*
-// THIS IS NOT BEING CALLED
-function generateHairstyleTemplate(item) {
-
-  if (isHairstyle(item)) {
-    item.category = 'Hairstyle';
-
-    template = '';
-    template +=
-      '{{infobox\n' +
-      output_image(item) +
-      output_type(item) +
-      output_category(item) +
-      output_buyprice(item) +
-      output_color(item) +
-      output_tags(item) +
-      output_collection(item) +
-      output_traits(item) +
-      output_universe(item) +
-      output_from(item) +
-      output_sizePlacementEnv(item) +
-      '}}\n' +
-      output_itemIntro(item);
-
-    template +=
-      output_history(item) +
-      output_navbox(item) +
-      output_missingCategories(item);
-  }
-
-  return template;
-}
-*/
 
 
 /*
