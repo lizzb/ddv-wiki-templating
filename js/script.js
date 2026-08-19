@@ -507,7 +507,7 @@ function updateAppropriateVersion(item) {
   
   // TODO - better consolidated logic
   // if belongs to Merida/Flynn/Hades (friendship/quest) and released 1.14.1, EVEN if collection is DV, not SV, still output {{history|Expansion 2-1|Added}}
-  if (item.source.includes('Merida') || item.source.includes('Flynn') || item.source.includes('Hades')) {
+  if (item.source && (item.source.includes('Merida') || item.source.includes('Flynn') || item.source.includes('Hades'))) {
     switch (item.version) {
     case "1.14.1":
       item.wikiVersion = "Expansion 2-1";
@@ -1197,7 +1197,7 @@ function parseItemSource(item) {
     // Group 2: Bundle Price (digits or underscores)
     // Group 3 (Optional): Quantity inside parentheses, e.g., (x3) or (xX)
     // Group 4 (Optional): Per-item price inside brackets, e.g., [250 M] or [___ M]
-    const regexExtended = /(?:(?:Premium Bundle|Mega Bundle)\s*-\s*)+(.+?)\s*\(([\d_]+)\s*M\)(?:\s*\(([xX\d]+)\))?(?:\s*\[([\d_]+)\s*M\])?/gi;
+    const regexExtended = /(?:(?:Premium Bundle|Signature Bundle|Companion Bundle|Mega Bundle)\s*-\s*)+(.+?)\s*\(([\d_]+)\s*M\)(?:\s*\(([xX\d]+)\))?(?:\s*\[([\d_]+)\s*M\])?/gi;
     
     const matches = [...item.source.matchAll(regexExtended)];
     
@@ -1219,6 +1219,13 @@ function parseItemSource(item) {
           bundleQty = parseInt(qtyMatch.replace(/x/i, ''), 10);
         }
       }
+      else {
+        // if !qtyMatch
+        bundleQty = "TBD";
+      }
+
+      // TODO FIX: this looks like its being called 3x per item?
+      //console.log(`qtyMatch: ${qtyMatch} vs bundleQty: ${bundleQty}`);
 
       // Process Per-Item Cost
       let msCost = "NA"; // Default
@@ -2610,6 +2617,10 @@ function renderClothingFurnitureArticle(dataArray) {
     item = assignItemType(item);
     item = parseItemSource(item);
     item = parseSizePlacementEnv(item);
+
+    // TODO - handle this better, columns changed names and purposes, these are fallbacks for old data
+    if (item.limited) item.icon = item.limited;
+    if (item.speculated) item.becameBundle = item.speculated;
   });
 
   // get unique bundles with populated items from input array

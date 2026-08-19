@@ -848,7 +848,10 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
 
 
 // output the properties needed to populate the python ddv-wiki-weeklyupdates script
-  function outputPSBundleJSON(bundleArray) {
+// outputAsNamedPropertyObject = false to make it an array and use for ddv-wiki-weeklyupdates,
+// outputAsNamedPropertyObject = true to generate for premiumShopObj.js
+
+  function outputPSBundleJSON(bundleArray, outputAsNamedPropertyObject=true) {
 
   //let output = JSON.stringify(resultArray);
   //output = output.replaceAll("bundleName", "\nbundleName")
@@ -860,8 +863,8 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
       output += `\n`;
       // TODO - i might separately need to output this as property names for premiumShopObj.js in psLineupGenerator?
       // unclear what my flow is
-      // outputAsNamedPropertyObject = false to make it an array and use for weeklyupdates, true to generate for premiumShopObj.js
-      outputAsNamedPropertyObject = true;
+      // outputAsNamedPropertyObject = false to make it an array and use for ddv-wiki-weeklyupdates, true to generate for premiumShopObj.js
+      //outputAsNamedPropertyObject = false;
       if (outputAsNamedPropertyObject) {
         output += `"${bundleObj.friendlyName}": `;
       }
@@ -906,9 +909,11 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
     output += `\n\t]\n},`;
   })
 
+    let header1 = `PREMIUM SHOP BUNDLES as named properties FOR psShopLineupGenerator/premiumShopObj: (outputAsNamedPropertyObject=${outputAsNamedPropertyObject} = should be true)\n\n`;
+    let header2 = `PREMIUM SHOP BUNDLES as array FOR ddv-wiki-weeklyupdates/new_premium_bundles: (outputAsNamedPropertyObject=${outputAsNamedPropertyObject} = should be false)\n\n`;
+    let header = outputAsNamedPropertyObject ? header1 : header2;
 
-    output = "PREMIUM SHOP BUNDLES FOR ddv-wiki-weeklyupdates:\n\n" + output;
-
+    output = header + output;
 
     return output;
   }
@@ -1162,7 +1167,8 @@ function renderPSBundles(dataArray) {
 
 
   //console.log(bundleArray);
-  console.log(outputPSBundleJSON(bundleArray));
+  console.log(outputPSBundleJSON(bundleArray, true));
+  console.log(outputPSBundleJSON(bundleArray, false));
   //console.log(`bundleArray inside renderPSBundles`);
   //console.log(bundleArray);
 
