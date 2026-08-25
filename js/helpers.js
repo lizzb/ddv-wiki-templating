@@ -2403,7 +2403,7 @@ function generateCompanionTemplateOriginal(item) {
     var result =  (
       (item.collection && item.collection.includes('Accessory')) ||
       (item.universe && item.universe.includes('Accessory')) ||
-      (item.name && item.name.includes('Accessory')) ||
+      //(item.name && item.name.includes('Accessory')) || // remove so "Hannah Montana Accessory Rack" is not flagged
       (item.name && item.name.includes('Handheld')) ||
       (item.category && item.category == 'Accessory') ||
     (item.category && item.category == 'Accessories')); // do NOT catch Umbrella - not safe

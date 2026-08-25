@@ -2135,6 +2135,7 @@ function output_itemIntro(item) {
     break;
   case 'Tops':
     itemUseIntro_clothing = ' piece of ' + 'top' + ' [[clothing]].';
+    break;
   case 'Hairstyle':
     itemUseIntro_clothing = ' piece of ' + '[[:Category:Hairstyle|hairstyle]]' + ' [[clothing]].';
     break;
