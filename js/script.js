@@ -269,7 +269,41 @@ function output_collection(item) {
     }
   }
 
+  //console.log('object at 272');
+  //console.log(item)
+  // // TODO - test with returning star path items, both premium and nonpremium, and not returning of both
+  //console.log(`${item.name}: item.premium = ${item.premium} / item.limited = ${item.limited} / item.icon = ${item.icon} / item.collection_icon = ${item.collection_icon} / item.speculated = ${item.speculated} / item.becameBundle = ${item.becameBundle}`)
+  //Fishing Trinkets Light Fixture: item.premium = no / item.limited =  / item.icon = undefined / item.collection_icon = undefined / item.speculated =  / item.becameBundle = undefined
+  //Giant String Lights: item.premium = undefined / item.limited = Premium / item.icon = Premium / item.collection_icon = undefined / item.speculated =  / item.becameBundle = undefined
+  //Enchanted Holiday Fireplace: item.premium = yes / item.limited =  / item.icon = undefined / item.collection_icon = undefined / item.speculated =  / item.becameBundle = undefined
+
+  // let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
+  // isPremium(item)
+  // limited --> icon or collection_icon
+  // speculated --> becameBundle
+  // limited : "Premium"
+  // location == "premium"
+  
   var output = '|collection=' + wrapComment('%%collection%%', !collectionConfirmed) + '\n';
+
+  // this is really janky, not sure if i should set it when i parse source or here
+  // or only take value from the read column or what
+  let eventOrPremium = isPremium(item) || isStarPath(item);
+
+  if (eventOrPremium) {
+    // Only output collectiontag infobox param if value = premium or event, omit by default (no icon)
+    let collectionIconType = ''; // 'premium'/'event'
+    let columnIconValue = item.icon || item.collection_icon;
+
+    if (item.premium == "yes" || columnIconValue == "b" || isPremium(item)) collectionIconType = 'premium';
+    if (item.premium == "no" || columnIconValue == "c") collectionIconType = 'event';
+
+    // if item.premium is defined and "yes" then icon=premium/b,
+    // if item.premium is defined but "no" then icon=event/c
+
+    output += '|collectiontag=' + wrapComment(collectionIconType, !collectionConfirmed) + '\n';
+  }
+  
   return output;
 }
 
@@ -1054,7 +1088,7 @@ function parseItemSource(item) {
 
   // ===== Star Path =====
   if (isStarPath(item)) {
-
+    // TODO - parse/set tentative icon/collection_icon value
     /*
     // Sample values
 
@@ -1136,6 +1170,7 @@ function parseItemSource(item) {
 
 
   if (isPremium(item)) {
+    // TODO - parse/set tentative icon/collection_icon value
     if (item.location.includes('starpath')) {
       item.returning = true; // both premium and returning star path
     }
