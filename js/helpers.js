@@ -463,6 +463,7 @@ const starpathsObject = {
   "Elements of Nature": { "tokenName": 'earthtoken', "sheetLocationVal": 'starpath - nature', tagName: 'Elements of Nature' },
   "Godly Glamor": { "tokenName": 'lightningtoken', "sheetLocationVal": 'starpath - godly', tagName: 'Godly Glamor' },
   "Pop City": { "tokenName": 'neontoken', "sheetLocationVal": 'starpath - popcity', tagName: 'Pop City' },
+  "Haunting Elegance": { "tokenName": 'pumpkintoken', "sheetLocationVal": 'starpath - haunting', tagName: 'Haunting Elegance' },
 };
 
 function commentOutStarPathTags(item){
@@ -703,7 +704,7 @@ section_map = {
         foundObject.psBundleItems.push(item.name);
         //console.log("psBundleItems: ", foundObject.psBundleItems);
 
-        let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+        let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category ? item.category.split(','): '' };
         itemObj.size = houseSize; // TODO: is only relevant if item is a house
         //console.log(`709`)
         //console.log(item);
@@ -717,7 +718,7 @@ section_map = {
 
         // limited is currently the propertyname being used for icon
         //let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
-        let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category.split(',') };
+        let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category ? item.category.split(','): '' };
         itemObj.size = houseSize; // TODO: is only relevant if item is a house
         item.itemArray = [];
         item.itemArray.push(itemObj);
@@ -1086,8 +1087,10 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
   tempTemplate += output_history(bundleObj);
   tempTemplate += `\n\n{{NavboxPremiumBundle}}`;
 
+  // ===============
   // TODO - detect logic for returning star path premium bundles/items, right now just always adds
-  let isReturningItemBundle = true;
+  let isReturningItemBundle = false;
+  // ================
   if (isReturningItemBundle) {
     tempTemplate += `\n\n[[Category: Returning Star Path Premium Bundles]]`;
   }
