@@ -658,6 +658,7 @@ section_map = {
       if (allKeys.includes("Well")) output = 'Stall/Well';
       else output = 'Stall';
     }
+    //TODO - Mount Customization, Poses
 
     if (output == 'bundleTypeTBD'){
       console.log(`bundle has bundleTypeTBD, allKeys: ${allKeys}`)

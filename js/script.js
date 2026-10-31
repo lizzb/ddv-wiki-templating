@@ -428,6 +428,13 @@ function output_functions(item) {
   return output;
 }
 
+
+
+  
+
+
+
+
 function output_sizePlacementEnv(item) {
   //item = parseSizePlacementEnv(item);
   //console.log(`output_sizePlacementEnv`);
@@ -467,6 +474,21 @@ function output_sizePlacementEnv(item) {
 
   // need to figure out why for crafted items theres extra space?
   newStr = newStr.replaceAll('\n\n|gridSize', '\n|gridSize');
+
+  item.size = wrapComment(item.size, !categoriesColorsTraitsConfirmed);
+  item.placement = wrapComment(item.placement, !categoriesColorsTraitsConfirmed);
+  item.surfaceArea = wrapComment(item.surfaceArea, !categoriesColorsTraitsConfirmed);
+  item.environment = wrapComment(item.environment, !categoriesColorsTraitsConfirmed);
+
+  // TODO - make a separate checkbox for size/placement/surfacearea/environment - just using placeholder traits for all
+  // TODO - should be using a struture similar to the following, but this function has already added missing categories,
+  // which would be added a second time by doing the below
+  /*
+  item.size = applyConfirmationWrap(item, item.size, categoriesColorsTraitsConfirmed, 'Size');
+  item.placement = applyConfirmationWrap(item, item.placement, categoriesColorsTraitsConfirmed, 'Placement');
+  item.surfaceArea = applyConfirmationWrap(item, item.surfaceArea, categoriesColorsTraitsConfirmed, 'Surface Area');
+  item.environment = applyConfirmationWrap(item, item.environment, categoriesColorsTraitsConfirmed, 'Environment');
+  */
 
   return newStr;
 }
@@ -520,11 +542,20 @@ function output_relatedItems(item) {
   //console.log('inside output_relatedItems');
   //console.log(item);
 
+
+  /*// alpha sort related items before outputting
+  resultArray.forEach(function (bundleObj) {
+    bundleObj.psBundleItems.sort(); // alpha sort each bundle's items
+  });
+  */
+
   var output = '';
   //output = '\n<!--\n{{relatedItems | xxx, xxx, xxx}}\n-->\n';
   if (item.bundleName && item.relatedItems && item.relatedItems.length >= 1) {
     //output = `\n<!--\n{{relatedItems | ${item.relatedItems.join(', ')} }}\n-->`;
-    output = `\n\n{{relatedItems | ${item.relatedItems.join(', ')} }}`;
+
+    // alpha size related items before outputting
+    output = `\n\n{{relatedItems | ${item.relatedItems.sort().join(', ')} }}`;
   }
   //output = `\n<!--\n{{relatedItems | ${item.relatedItems} }}\n-->\n`;
 
@@ -2083,6 +2114,7 @@ function output_itemUsage(item) {
         output += '';
       }
 
+      // TODO - in case !categoriesColorsTraitsConfirmed (eventually needs its own variable for size/placement/surfacearea/environment), this text should be wrapped with comment until confirmed
       if (item.environment == 'outdooronly' && item.placement == 'water' ) {
         output += ', and it can only be placed outdoors on water.';
       }
@@ -2117,6 +2149,8 @@ function output_itemUsage(item) {
   }
 
   // janky - create full sentence with environment
+  // TODO - in case !categoriesColorsTraitsConfirmed (eventually needs its own variable for size/placement/surfacearea/environment), this text should be wrapped with comment until confirmed
+
   output = output.replace(', and it can only be placed outdoors\.\,', ', it can only be placed outdoors, ');
 
 
