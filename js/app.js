@@ -99,7 +99,8 @@ DataConverter.prototype.convert = function() {
 		const jsonArray = JSON.parse(jsonString);
 
 		//console.log("renderParent about to be called with global var templateType value:", templateType);
-        this.templateOutputTextArea.val(renderParent(jsonArray, templateType));
+        // the engine (js/engine.js) gets the checkboxes and per-update values as settings (globals.js)
+        this.templateOutputTextArea.val(DDVEngine.render(jsonArray, templateType, readEngineSettings()));
     }
 };
 DataConverter.prototype.insertSampleData = function(dataName) {  

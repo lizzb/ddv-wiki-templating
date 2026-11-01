@@ -230,8 +230,7 @@
 <!--<![endif]-->
 <script src="js/globals.js"></script>
 <script src="js/data.js"></script>
-<script src="js/helpers.js"></script>
-<script src="js/script.js"></script>
+<script src="js/engine.js"></script>
 <script src="js/app.js"></script>
 <script>
 // Wire up instant live-update for the 4 confirmation checkboxes.
@@ -292,7 +291,7 @@ $(document).on('change', '#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB,
       console.warn('#data-output is not valid JSON -- skipping direct render. ' + e.message);
       return;
     }
-    $('#template-output').val(renderParent(parsed, templateType));
+    $('#template-output').val(DDVEngine.render(parsed, templateType, readEngineSettings()));
   }
   $('#data-output').on('change', renderFromDataOutputJSON);
   $('#data-output').on('keyup', function() {
