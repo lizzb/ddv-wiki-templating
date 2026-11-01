@@ -25,12 +25,6 @@ escape quotes in bundle and item names --> i think the problem is in using mr da
 todo - it is quest/crafting, "unlockquest" instead of "from" should be used in the infobox
 - flag "hairstyle" or "hairdo" in name for isHairstyle function
 
-REPORTER
-- reporter outputs "surfaces" for Woodland Hummock
-- limited deals not being found by reporter
-- fishing stand week not found by reporter
-
-
 SHEET
 - rearrange furniture+clothing sheet tab
 - make clothing columns match furniture
@@ -168,7 +162,7 @@ todo - rename character to questCharacter, level to questLevel, quest to questNa
 
 
 
-- add param of recipe to the crafted furniture template but fall back to empty if it isn't present - could generate from reporter
+- add param of recipe to the crafted furniture template but fall back to empty if it isn't present
 
 
 
