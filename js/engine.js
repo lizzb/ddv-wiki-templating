@@ -98,16 +98,35 @@ var mealNavbox, bundleStartDate, bundleEndDate, companionCollection, wikiVersion
 var collectionConfirmed, priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed;
 var showItemDebug, renderPSbundles, customTemplate;
 
-// Variables some functions below assign without declaring them (they used to become page
-// globals). Declared here so they stay inside the engine; reset before and after every render().
-var template, output, placeholderCommentBodyDetailsQuest, itemUseIntro_clothing, bundleArray, tempTemplate;
+// (CR26) template, output, tempTemplate, bundleArray, itemUseIntro_clothing and
+// placeholderCommentBodyDetailsQuest used to be shared here; each function now has its own.
 
 
 // ===== helpers.js =====
 // (DDV-9) getInlineDataTemplate() and getElementId() read the DOM and were not called; they stay
 // in archive/helpers.js.
 
-// Render a template composed of variables defined inline -- TODO - renderflowers looks like the same ??
+// How an item is put down in the world (CR25: was written out in the meal, gem, flower and
+// ingredient articles).
+var DROP_FROM_INVENTORY = "can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''.";
+var PLACE_FROM_INVENTORY = DROP_FROM_INVENTORY + " After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
+
+// The line between two articles in the output.
+var ARTICLE_DELIMITER = '\n\n\n-----------------------------\n\n\n';
+
+// One article per item: makeTemplate(item) gives its template, filled with the item's values, then the
+// article line. (CR25: was the same loop in renderGems, renderFlowers, renderIngredients and
+// renderCompanions.)
+function renderEachItem(dataArray, makeTemplate) {
+  var renderedHTML = '';
+  dataArray.forEach(function (item) {
+    renderedHTML += microTemplate(makeTemplate(item), item);
+    renderedHTML += ARTICLE_DELIMITER;
+  });
+  return renderedHTML;
+}
+
+// The custom template (settings.customTemplate): the same template for every item, nothing between them.
 function renderVariableTemplate(dataArray, template) {
   var renderedHTML = '';
   var separator = ''; // Chars to visually separate template renderings
@@ -756,7 +775,7 @@ section_map = {
     return resultArray;
   }
 
-// (DDV-31) notes on the Wednesday bundle flow moved to the hub, notes/DDV-31-engine-notes.md
+// (DDV-31) the notes on the Wednesday bundle flow that were here were moved out of the engine.
 
 
 
@@ -841,8 +860,8 @@ section_map = {
 
     let bundleItems = bundleObj.itemArray;
 
-    // determine "bundleType" to group bundle in correct invented grouping area on wiki PS page and PS navbox
-    bundleObj.bundleType = determinePremiumBundleType(bundleItems);
+    // bundleType and standaloneBundleNaming were set by parseUniqueBundles (CR25: they were worked out
+    // again here, with the same result: determinePremiumBundleType gives the same answer a second time)
 
     // Generate priceString
     bundleObj.priceString = `{{price|${bundleObj.bundlePrice}|moonstone}}`;
@@ -857,10 +876,7 @@ section_map = {
       contentsString += (i < bundleItems.length-1) ? `<br>\n`: ``;
     }
 
-    // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
-    bundleObj.standaloneBundleNaming = (bundleItems.length == 1 || useStandaloneNaming(bundleObj));
-
-    bundleObj.linkedName = (bundleItems.length == 1 || bundleObj.standaloneBundleNaming) ? `${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}` : `${bundleObj.friendlyName}`;
+    bundleObj.linkedName = bundleObj.standaloneBundleNaming ? `${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}` : `${bundleObj.friendlyName}`;
 
     // compatibility with old format
     //bundleObj.linked_name = `Tournament Gown Merida (Bundle)|Tournament Gown Merida`;
@@ -937,7 +953,7 @@ section_map = {
     // TODO: set to "House Dream Style", "Tool Dream Style", "Character Dream Style", "Companion"
     // currently we do not have a property like that available, must be manually set from sheet as first column - jk we should have this already by determinebundletype
   }
-  tempTemplate = `{{infobox\n|name=${bundleName}\n|image=${imageParam}.png\n|width=350px\n|type=Premium Bundle\n|category=${bundleType}\n|from=Premium Shop\n|sellprice={{price|${bundlePrice}|moonstone}}`;
+  var tempTemplate = `{{infobox\n|name=${bundleName}\n|image=${imageParam}.png\n|width=350px\n|type=Premium Bundle\n|category=${bundleType}\n|from=Premium Shop\n|sellprice={{price|${bundlePrice}|moonstone}}`;
   tempTemplate += `\n|items=${psBundleItemsInline}${itemsParam1}\n}}`;
   tempTemplate += `\n{{BundleDescription\n|${bundleName}\n|type=Premium Bundle\n|category=${bundleType}\n|from=Premium Shop\n|bundlePrice=${bundlePrice}`;
   tempTemplate += `\n|items=${itemsParam2}`;
@@ -967,7 +983,6 @@ section_map = {
 function renderPSBundles(dataArray) {
 
   var renderedHTML = '';
-  var template = '';
 
   var psHistoricalTableRow_price = '\n| {{price|%%bundlePrice%%|moonstone}}';
 
@@ -1004,12 +1019,10 @@ function renderPSBundles(dataArray) {
   });
 
   // get unique bundles with populated items from input array
-  bundleArray = parseUniqueBundles(dataArray);
+  var bundleArray = parseUniqueBundles(dataArray);
 
 
   
-
-  var tempTemplate = '';
 
   psBundleNavbox += '\n\n============ Premium Bundle Navbox ============\n\n';
   psTopTable += '\n\n============ Premium Bundle Top Table ============\n\n';
@@ -1263,7 +1276,7 @@ function renderMeals(dataArray) {
 
 
   renderedHTML += '\n\n===== MEAL ARTICLES =====\n\n';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
+  delimiter = ARTICLE_DELIMITER;
   dataArray.forEach(function (item) {
     templateMealArticle = '';
     // meal article template
@@ -1309,7 +1322,7 @@ function renderMeals(dataArray) {
     templateMealArticle += wrapComment(itemUseBody, !collectionConfirmed);
     templateMealArticle += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Meals Collection|'+newExpansionCollection+' Meals Collection]].';
 
-    templateMealArticle += "\n\n[[Cooking#Meals|Meals]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''.";
+    templateMealArticle += "\n\n[[Cooking#Meals|Meals]] " + DROP_FROM_INVENTORY;
     templateMealArticle += " After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
 
     templateMealArticle += output_history(item);
@@ -1322,7 +1335,7 @@ function renderMeals(dataArray) {
   });
 
   renderedHTML += '\n\n===== COOKING ARTICLE =====\n\n';
-  //delimiter = '\n\n\n-----------------------------\n\n\n';
+  //delimiter = ARTICLE_DELIMITER;
   delimiter = '';//no breaks between items, assumes already in correct category/alpha order
   dataArray.forEach(function (item) {
     template = '';
@@ -1342,19 +1355,9 @@ function renderMeals(dataArray) {
   return renderedHTML;
 }
 
+// Create stub articles for gem items
 function renderGems(dataArray) {
-
-  // Create stub articles for gem items
-  var renderedHTML = '';
-  var delimiter = '';
-  delimiter = '\n\n\n-----------------------------\n\n\n';
-  dataArray.forEach(function (item) {
-    template = generateGemTemplate(item);
-
-    renderedHTML += microTemplate(template, item);
-    renderedHTML += delimiter;
-  });
-  return renderedHTML;
+  return renderEachItem(dataArray, generateGemTemplate);
 }
 
 function generateGemTemplate(item) {
@@ -1385,8 +1388,7 @@ function generateGemTemplate(item) {
   template += '<!--It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. -->';
   template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Gems Collection|'+newExpansionCollection+' Gems Collection]].';
   template += ' ';
-  var defaultItemPlacementText = "can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
-  template += "\n\n[[Mining#Gems|Gems]] " + defaultItemPlacementText;
+  template += "\n\n[[Mining#Gems|Gems]] " + PLACE_FROM_INVENTORY;
   template += ' ';
   template += '\n<!--\nIn nodes where this gem can be found there is a chance to find [[Shiny %%name%%]], which is a less common and more valuable variant. In nodes where this gem can be found there is a chance to find [[NONSHINY]], which is a more common and less valuable variant.-->';
 
@@ -1427,7 +1429,7 @@ function generateFlowerTemplate(item) {
     // line about beast flower shop? template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
     template += ' Once collected it will be added to the [[:Category:'+newExpansionCollection+' Foraging Collection|'+newExpansionCollection+' Foraging Collection]].';
     template += ' ';
-    template += "\n\n[[Foraging#Flowers|Flowers]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''.";
+    template += "\n\n[[Foraging#Flowers|Flowers]] " + DROP_FROM_INVENTORY;
     template += " For many quests which require picking a flower, dropping it from inventory and picking back up will award credit.";
     template += " After a flower has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
     
@@ -1441,17 +1443,8 @@ function generateFlowerTemplate(item) {
 
 
 
- // TODO - renderflowers looks like the same as renderVariableTemplate(dataArray, template) {
   function renderFlowers(dataArray) {
-    var renderedHTML = '';
-    var delimiter = '';
-    delimiter = '\n\n\n-----------------------------\n\n\n';
-    dataArray.forEach(function (item) {
-      var template = generateFlowerTemplate(item);
-      renderedHTML += microTemplate(template, item);
-      renderedHTML += delimiter;
-    });
-    return renderedHTML;
+    return renderEachItem(dataArray, generateFlowerTemplate);
   }
 
   function generateIngredientsTemplate(item) {
@@ -1535,8 +1528,7 @@ function generateFlowerTemplate(item) {
       template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Ingredients Collection|'+newExpansionCollection+' Ingredients Collection]].';
     }
     template += '\n ';
-    var defaultItemPlacementText = "can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After removing from inventory they can be positioned using [[Furniture menu#Placing Furniture|furniture placement mode]].";
-    template += "\n[[Ingredients]] " + defaultItemPlacementText;
+    template += "\n[[Ingredients]] " + PLACE_FROM_INVENTORY;
     template += '\n<!--';
     template += '\n==Ingredient Specific Recipes==';
     template += "\n'''{{PAGENAME}}''' is specifically required in the following [[Meals#Recipes|recipes]], and other [[ingredients]] of the same type can't be substituted.";
@@ -1568,31 +1560,13 @@ function generateFlowerTemplate(item) {
     return template;
   }
 
+  // Create stub articles for ingredients (flowers and gems in the list get their own template)
   function renderIngredients(dataArray) {
-
-  // Create stub articles for quest items
-    var renderedHTML = '';
-    var delimiter = '';
-    delimiter = '\n\n\n-----------------------------\n\n\n';
-    
-    dataArray.forEach(function (item) {
-      var template = '';
-
-      if (isFlower(item)) {
-        template = generateFlowerTemplate(item);
-      }
-      else if (isGem(item)) {
-        template = generateGemTemplate(item);
-      }
-
-      else {
-        template = generateIngredientsTemplate(item);
-      }
-
-      renderedHTML += microTemplate(template, item);
-      renderedHTML += delimiter;
+    return renderEachItem(dataArray, function (item) {
+      if (isFlower(item)) return generateFlowerTemplate(item);
+      if (isGem(item)) return generateGemTemplate(item);
+      return generateIngredientsTemplate(item);
     });
-    return renderedHTML;
   }
 
 
@@ -1612,7 +1586,7 @@ function generateFlowerTemplate(item) {
 
 function generateCompanionTemplate(item) {
 
-  template = '';
+  var template = '';
 
   {
 
@@ -1716,7 +1690,7 @@ function generateCompanionTemplateOriginal(item) {
 
   var isCritter = true;
 
-  template = '';
+  var template = '';
   template += "{{stub}}";
   template += "\n{{Infobox";
   template += "\n|image=%%name%%.png";
@@ -1761,19 +1735,9 @@ function generateCompanionTemplateOriginal(item) {
 
 
 
-  function renderCompanions(dataArray) {
   // Create stub articles for critter items
-    var renderedHTML = '';
-    var delimiter = '';
-    delimiter = '\n\n\n-----------------------------\n\n\n';
-    dataArray.forEach(function (item) {
-
-      template = generateCompanionTemplateOriginal(item);
-
-      renderedHTML += microTemplate(template, item);
-      renderedHTML += delimiter;
-    });
-    return renderedHTML;
+  function renderCompanions(dataArray) {
+    return renderEachItem(dataArray, generateCompanionTemplateOriginal);
   }
 
 
@@ -1782,7 +1746,7 @@ function generateCompanionTemplateOriginal(item) {
   // Create stub articles for quest items
     var renderedHTML = '';
     var delimiter = '';
-    delimiter = '\n\n\n-----------------------------\n\n\n';
+    delimiter = ARTICLE_DELIMITER;
   // It is crafted during the Honeyglow Woods [[Winnie the Pooh]] story quest [[Chapter 11: The Anti-monster Camp]],
     dataArray.forEach(function (item) {
       let name = item.name || 'ITEMNAME';
@@ -1792,7 +1756,7 @@ function generateCompanionTemplateOriginal(item) {
     let questcharacter = item.questcharacter || 'CHARACTER';
     let realmname = item.realmname || 'REALMNAME';
     let characterlevel = item.characterlevel || 'LEVEL';
-    template = ``;
+    var template = ``;
     template += `{{stub}}`;
     template += `\n{{infobox`;
     template += `\n|image=${name}.png`;
@@ -1843,12 +1807,12 @@ function generateCompanionTemplateOriginal(item) {
   function renderSPRewardTable(dataArray) {
     var renderedHTML = '';
     var delimiter = '';
-  //delimiter = '\n\n\n-----------------------------\n\n\n';
+  //delimiter = ARTICLE_DELIMITER;
     dataArray.forEach(function (item) {
     // WHY DID THIS microtemplating STOP WORKING - 2025.09.25 - maybe i modified the output_from?
     // for some reason this function causes a problem!>??!
     //output_from(item); // this function also modifies item to add tile, eventtoken, and premium properties
-      template = '';
+      var template = '';
       template +=
       '{{StarPathRewardRow\n|starpath=' +
       starPathNameShort +
@@ -1873,9 +1837,9 @@ function generateCompanionTemplateOriginal(item) {
 
     var renderedHTML = '';
     var delimiter = '';
-  //delimiter = '\n\n\n-----------------------------\n\n\n';
+  //delimiter = ARTICLE_DELIMITER;
     dataArray.forEach(function (item) {
-      template =
+      var template =
       '|-\n| align="center" | %%num%% || align="center" | {{inlineIcon|%%icon%%|iconOnly}} || %%name%% || %%qty%% || {{price|%%reward%%|' +
       starPathToken +
       '}}\n';
@@ -2075,17 +2039,19 @@ function generateCompanionTemplateOriginal(item) {
       );
   }
 
+  // CR23: only answers the question; setCraftedType() changes the item, once, when its source is parsed.
   function isCraftable(item) {
-    var isCraftable =
-    (item.location && item.location.includes('crafting')) ||
-    (item.source && item.source.includes('Crafting'));
-
-    if (isCraftable) {
-      item.itemType = 'Crafted Furniture';
-    item.craftingCategory = 'Furniture'; // Refined Materials
+    return Boolean(
+      (item.location && item.location.includes('crafting')) ||
+      (item.source && item.source.includes('Crafting')));
   }
-  return isCraftable;
-}
+
+  function setCraftedType(item) {
+    if (isCraftable(item)) {
+      item.itemType = 'Crafted Furniture';
+      item.craftingCategory = 'Furniture'; // Refined Materials
+    }
+  }
 
 function isStarPath(item) {
   var isStarPath = 
@@ -2148,7 +2114,7 @@ function getFirstCategoryMatch(categoryVal, prioritizedCategoryArray) {
 
 // ===== script.js =====
 
-// (DDV-31) the pasted refactoring audit moved to the hub, notes/DDV-31-engine-notes.md
+// (DDV-31) the pasted refactoring audit that was here was moved out of the engine.
 
 
 // https://jsbin.com/regoqaw/edit?html,js,output - straight templating, no logic, can't use ctrl f
@@ -2245,33 +2211,27 @@ function renderParent(dataArray, templateType) {
     return wrapComment(value, !isConfirmed);
   }
 
+  // Placeholder lists for an empty category (CR25: an older commented-out copy is gone). Companions
+  // is left out of the clothing list so items with empty categories are not flagged as companions.
+  var CLOTHING_CATEGORY_OPTIONS = '<!--Accessories, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
+  var FURNITURE_CATEGORY_OPTIONS = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
+
   // only useful for handling clothing/furniture
   function output_category(item) {
 
-    /*
-    if (!item.category) {
-      if (item.itemType == 'Clothing') {
-      // temporary fix: remove Companions, after Accessories to prevent items with empty categories being flagged as companions
-      // TODO: make this more robust - if the value is empty of a param the placeholder shouldn't be inserted until the very end? or something?
-        item.category =
-        '<!--Accessories, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
-      } else {
-      // defaults to furniture
-      item.category = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
-      }
-    }
-    */
+    // (the TODO of the older version: make this more robust - if the value of a param is empty the
+    // placeholder shouldn't be inserted until the very end?)
 
   //var output = '|category=%%category%%\n';
   let inlineCategory = applyConfirmationWrap(item, item.category, categoriesColorsTraitsConfirmed, 'Categories');
   if (!item.category) {
     // output placeholder comment vals for categories
     if (item.itemType == 'Clothing') {
-      inlineCategory = '<!--Accessories, Tools, Hats, Masks, Glasses, Earrings, Neckwear, Coats, Tops, Back, Bracelets, Gloves, Pants, Shorts, Skirts, Hose Socks, Shoes, Dresses, Costumes, Gliders-->';
+      inlineCategory = CLOTHING_CATEGORY_OPTIONS;
     }
     else {
       // defaults to furniture
-      inlineCategory = '<!--OPTIONS: Furniture: House, Essentials, Decor, Trimmings, Tables, Beds, Seating, Storage, Appliance, Electronics, Utilities, Art, Lighting, Foliage, Rugs, Misc., Floors, Windows, Landscaping, Wall, Ceiling Decorations, Trees, Rocks, Fencing, Attractions-->'; // TODO: Ceiling Textures, Ceiling Decorations
+      inlineCategory = FURNITURE_CATEGORY_OPTIONS;
     }
   }
   // TODO - evaluate if this is a cleaner approach than setting the actual value if empty to placeholders?
@@ -2880,6 +2840,11 @@ function parseItemSource(item) {
 
 function parseItemSourceOnce(item) {
 
+  // CR23: the one place a crafted item gets its type (isCraftable used to set it on every call,
+  // so itemType depended on which output_* function asked first). Before the failsafe below, so
+  // an item crafted by location without a source is typed too, as it was.
+  setCraftedType(item);
+
   if (!item.source) return item; // Failsafe for undefined sources
   //if (!item.location) item.location = "";
 
@@ -3059,13 +3024,13 @@ function parseItemSourceOnce(item) {
     }
 
   } else {
-      console.warn("Failed to parse quest source for item (", item.name, "): ", string); // NOTE: THIS IS BEING HIT 3X PER RUN PER ITEM - 2026.05.26
+      console.warn("Failed to parse quest source for item (", item.name, "): ", string); // once per item per render since DDV-31 (CR23); it printed 3 times before
     }
 
 
   }
 
-  // (DDV-31) sample quest sentences and cases moved to the hub, notes/DDV-31-engine-notes.md
+  // (DDV-31) the sample quest sentences and cases that were here were moved out of the engine.
   if (isStarPath(item)) {
     // TODO - parse/set tentative icon/collection_icon value
     /*
@@ -3321,6 +3286,24 @@ function parseItemSourceOnce(item) {
   return item;
 }
 
+// The infobox |from= lines of a star path item, also used for one returning to the premium shop
+// (CR25: was written out twice in output_from).
+function starPathInfoboxFrom(item) {
+  var from = `|from=${item.starpath} Star Path`;
+  if (item.bonus == "yes") {
+    from += `\n|bonus=${item.bonus}`;
+  }
+  return from + `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
+}
+
+// The same for the ItemDescription and WallpaperFloorsDescription templates (premium left as a
+// placeholder): lineBreak '\n' puts each parameter on its own line, '' keeps them on one line.
+// (CR25: was written out in the house, character dream style and wallpaper/flooring templates.)
+function starPathDescriptionFrom(item, lineBreak) {
+  return lineBreak + '|from=' + item.starpath + ' Star Path' + lineBreak + '|tier=' + item.tier +
+    lineBreak + '|premium=%%premium%%' + lineBreak + '|eventTokens=' + item.eventtokens;
+}
+
 // **** TODO: condition for including premium/Bundle AND starpath???
 // TODO - INFOBOX FROM NEEDS TO HAVE BOTH BUNDLENAME AND STAR PATH INFO FOR RETURNING ITEMS
 function output_from(item) {
@@ -3467,7 +3450,7 @@ function output_from(item) {
     if (showItemDebug) {
       console.log(item.name, ' is a quest reward item', item.source);
     }
-    placeholderCommentBodyDetailsQuest = `<!--<<It is rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->`;
+    var placeholderCommentBodyDetailsQuest = `<!--<<It is rewarded after / After>> reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and <<completing / progressing through>> the quest [[QUESTNAME]], it / <<is given/can be crafted>> during the quest, / is placed in the Valley and will remain placed after the quest is completed<<, where it is replaced with a collectible version>>.--><!--It is automatically collected during the quest. / It can be collected by picking it up.--><!--It is sent via in-game mail after reaching [[CHARACTER#Friendship Rewards|Friendship Level LEVELNUM]] with [[CHARACTER]] and completing the quest [[QUESTNAME]]. It is collected upon claiming it from the mailbox.-->`;
 
 
 
@@ -3660,11 +3643,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
     // source should have already been parsed in parseItemSource
     // properties: starpath, tile, tier, premium, eventtokens, bonus
 
-    infoboxFrom = `|from=${item.starpath} Star Path`;
-    if (item.bonus == "yes") {
-      infoboxFrom += `\n|bonus=${item.bonus}`;
-    }
-    infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
+    infoboxFrom = starPathInfoboxFrom(item);
 
     if (showItemDebug) {
       console.log(`Various item props for source ${item.source}:   ===  item.premium: ${item.premium}   item.bonus: ${item.bonus}  `)
@@ -3687,11 +3666,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
 
     // item is a returning star path item to premium shop
     if (item.returning) {
-      infoboxFrom = `|from=${item.starpath} Star Path`;
-      if (item.bonus == "yes") {
-        infoboxFrom += `\n|bonus=${item.bonus}`;
-      }
-      infoboxFrom += `\n|tier=${item.tier}\n|premium=${item.premium}\n|eventTokens=${item.eventtokens}`;
+      infoboxFrom = starPathInfoboxFrom(item);
     } else {
       // item is a premium shop only, not a returning star path item
       infoboxFrom = `|from=Premium Shop`;
@@ -4013,6 +3988,7 @@ function output_mailboxMessage(item) {
 function output_itemIntro(item) {
   var itemUseIntro = '';
   var itemUseBody = '';
+  var itemUseIntro_clothing = '';
 
   switch (item.category) {
   case 'Gloves':
@@ -4466,7 +4442,7 @@ function renderClothingFurnitureArticle(dataArray) {
   // get unique bundles with populated items from input array
   var bundleArray = parseUniqueBundles(dataArray);
 
-  var delimiter = '\n\n\n-----------------------------\n\n\n';
+  var delimiter = ARTICLE_DELIMITER;
 
   // this changes the items in dataArray (objects are passed by reference)
   dataArray.forEach(function(item) {
@@ -4503,7 +4479,7 @@ function renderClothingFurnitureArticle(dataArray) {
     var itemUsage = output_itemUsage(item);
 
     // ===== INFOBOX =====
-    template = '';
+    var template = '';
     template += '{{infobox\n';
     template += output_image(item);
 
@@ -4629,6 +4605,7 @@ function appendBundleFromParams(item) {
 }
 
 function generateHouseTemplate(item) {
+  var template = '';
 
   if (isHouse(item)) {
     template = '';
@@ -4650,7 +4627,7 @@ function generateHouseTemplate(item) {
     itemDescriptionTemplate += '{{ItemDescription\n|%%name%%\n|type=House Dream Style\n|universe=%%universe%%';
 
     if (item.tier) {
-      item.itemFrom = '\n|from=' + item.starpath + ' Star Path\n|tier=' + item.tier + '\n|premium=%%premium%%\n|eventTokens=' + item.eventtokens + '';
+      item.itemFrom = starPathDescriptionFrom(item, '\n');
     }
 
     appendBundleFromParams(item);
@@ -4692,7 +4669,7 @@ function generateHouseTemplate(item) {
 
 
 function generateBuildingSkinTemplate(item) {
-  template = '';
+  var template = '';
 
   if (isBuilding(item) || isCastle(item) || isVisitStation(item) || isWishingWell(item) || isStall(item)) {
 
@@ -4795,6 +4772,7 @@ function generateBuildingSkinTemplate(item) {
   }
 
 function generateCharacterDreamStyleTemplate(item) {
+  var template = '';
 
   // TODO - returning bundle items should have both star path original token value in infobox AND bundle info
   // item = parseItemSource(item);
@@ -4816,8 +4794,7 @@ function generateCharacterDreamStyleTemplate(item) {
       template +=
       '{{ItemDescription\n|%%name%%\n|type=Character Dream Style\n|character=%%appliedto%%\n|universe=%%universe%%';
       if (item.tier) {
-        item.itemFrom +=
-        '\n|from=' + item.starpath + ' Star Path\n|tier=' + item.tier + '\n|premium=%%premium%%\n|eventTokens=' + item.eventtokens + '';
+        item.itemFrom += starPathDescriptionFrom(item, '\n');
       }
 
       appendBundleFromParams(item);
@@ -4836,6 +4813,7 @@ function generateCharacterDreamStyleTemplate(item) {
 }
 
 function generateWallpaperFloorsDescriptionTemplate(item) {
+  var template = '';
   if (isWallpaper(item)) {
     item.category = 'Wallpaper';
   }
@@ -4874,8 +4852,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
     // Note: this is building the WallpaperFloorsDescription, not hte infobox params - no line breaks
     if (item.tier) {
-      item.itemSource =
-      '|from=' + item.starpath + ' Star Path|tier=' + item.tier + '|premium=%%premium%%|eventTokens=' + item.eventtokens + '';
+      item.itemSource = starPathDescriptionFrom(item, '');
     }
 
     if (item.inStore) {
@@ -5095,7 +5072,6 @@ function resetState() {
   mealNavbox = bundleStartDate = bundleEndDate = companionCollection = wikiVersionLabels = undefined;
   collectionConfirmed = priceConfirmed = categoriesColorsTraitsConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = undefined;
   showItemDebug = renderPSbundles = customTemplate = undefined;
-  template = output = placeholderCommentBodyDetailsQuest = itemUseIntro_clothing = bundleArray = tempTemplate = undefined;
   sourceParsed = null;
 }
 
