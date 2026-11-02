@@ -535,11 +535,8 @@ function determinePremiumBundleType(bundleItemArray) {
   for (let i = 0; i < bundleItemArray.length; i++) {
     //let item = itemsById[bundleItemArray[i].id];
     let item = bundleItemArray[i];
-    //console.log(item);
     //let itemType = item ? item.itemType : '';
 
-    //console.log(`item.category: ${item.category}`)
-    //console.log(item);
     // account for the fact that character dream styles are stored on the clothing sheet, and this value will populate once it gets into the sheet because i populate first column with sheet it came from
     if (item.itemType == "Clothing" || item.itemType == "Dream Style") {
       if (item.collection == "Character Dream Style" || item.categories.includes("Character") ) item.itemType = 'Character Style';
@@ -566,8 +563,6 @@ function determinePremiumBundleType(bundleItemArray) {
       */
 
     }
-    //console.log(`after: itemType of ${item.name}: ${item.itemType}`)
-    //console.log(`itemType given to itemTypeCounter = ${item.itemType}`)
 
     // Update tally
     itemTypeCounter[item.itemType] = (itemTypeCounter[item.itemType] ?? 0) + 1;
@@ -589,8 +584,6 @@ function determinePremiumBundleType(bundleItemArray) {
 
   // TODO - this needs so much cleanup - fri aug 7
 
-  //console.log(`594 inside determinePremiumBundleType with highestKeys: ${highestKeys}`);
-  //console.log(`allKeys at 593 ${allKeys}`)
 
   if (highestKeys.includes("Building")) output = 'Building / House';
     //else if (highestKeys.includes("Character Dream Style")) output = 'Character Dream Style';
@@ -639,7 +632,6 @@ section_map = {
 
     // above is logic for assuming all item categories hold equal weight, but that is not true
     // if ANY House is contained, House should be inthe output (even if there are more furniture items)
-    //console.log(`allKeys.includes("House")? ${allKeys.includes("House")}`)
     if (allKeys.includes("House")) {
       if (allKeys.includes("Furniture")) output = 'House/Furniture';
       else output = 'House';
@@ -666,7 +658,7 @@ section_map = {
     }
     //TODO - Mount Customization, Poses
 
-    if (output == 'bundleTypeTBD'){
+    if (output == 'bundleTypeTBD' && showItemDebug){
       console.log(`bundle has bundleTypeTBD, allKeys: ${allKeys}`)
     }
 
@@ -694,26 +686,19 @@ section_map = {
       let houseSize = item.W ? `${item.W}x${item.L}` : item.size; //'WWxLL'
 
       // bundleQty, msCost 
-      //console.log('line 591');
-      //console.log(item);
 
       const searchItem = item.bundleName;
       //item = parseItemSource(item); // Item source already parsed for infobox, shouldnt be necessary here ... but think logic flow is wonky
       const foundObject = resultArray.find( (obj) => obj.bundleName === searchItem );
       if (foundObject) {
-        //console.log(`'${searchItem}' (bundleName) is already present in our resultArray`);
         //if (!foundObject.psBundleItems) foundObject.psBundleItems = [];
         foundObject.psBundleItems.push(item.name);
-        //console.log("psBundleItems: ", foundObject.psBundleItems);
 
         let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category ? item.category.split(','): '' };
         itemObj.size = houseSize; // TODO: is only relevant if item is a house
-        //console.log(`709`)
-        //console.log(item);
         foundObject.itemArray.push(itemObj);
 
       } else {
-        //console.log(`'${searchItem}' is not present in our resultArray, adding.`);
         // **** TODO - single-item bundles seem to have duplicate values??? or perhaps just using the wrong template - also not including one of the items in multi-item bundles??
         item.psBundleItems = [];
         item.psBundleItems.push(item.name);
@@ -753,7 +738,6 @@ section_map = {
 
 
       bundleObj.bundleType = determinePremiumBundleType(bundleObj.itemArray);
-      //console.log(`line 705 result of determinePremiumBundleType on ${bundleObj.name}: ${bundleObj.bundleType}`)
     });
 
 
@@ -861,7 +845,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
 
     let output = '';
     bundleArray.forEach(function (bundleObj) {
-    //console.log(bundleObj)
 
       output += `\n`;
       // TODO - i might separately need to output this as property names for premiumShopObj.js in psLineupGenerator?
@@ -932,7 +915,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
 
     // determine "bundleType" to group bundle in correct invented grouping area on wiki PS page and PS navbox
     bundleObj.bundleType = determinePremiumBundleType(bundleItems);
-    //console.log(`bundleObj.bundleType at 876? ${bundleObj.bundleType}`)
 
     // Generate priceString
     bundleObj.priceString = `{{price|${bundleObj.bundlePrice}|moonstone}}`;
@@ -955,7 +937,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
     // compatibility with old format
     //bundleObj.linked_name = `Tournament Gown Merida (Bundle)|Tournament Gown Merida`;
     bundleObj.linked_name = bundleObj.linkedName;
-    //console.log(`linked_name assigned: ${bundleObj.linked_name}`)
 
     bundleObj.contentsString = contentsString;
 
@@ -1027,7 +1008,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
   if (bundleType) {
     // TODO: set to "House Dream Style", "Tool Dream Style", "Character Dream Style", "Companion"
     // currently we do not have a property like that available, must be manually set from sheet as first column - jk we should have this already by determinebundletype
-    //console.log(item);
   }
   tempTemplate = `{{infobox\n|name=${bundleName}\n|image=${imageParam}.png\n|width=350px\n|type=Premium Bundle\n|category=${bundleType}\n|from=Premium Shop\n|sellprice={{price|${bundlePrice}|moonstone}}`;
   tempTemplate += `\n|items=${psBundleItemsInline}${itemsParam1}\n}}`;
@@ -1057,8 +1037,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
 
 
 function renderPSBundles(dataArray) {
-  //console.log(`dataArray inside renderPSBundles`);
-  //console.log(dataArray);
 
   var renderedHTML = '';
   var template = '';
@@ -1087,7 +1065,6 @@ function renderPSBundles(dataArray) {
     item = parseItemSource(item);
     //renderedHTML += '\n\n'; THIS WAS THE ISSUE OF EXTRA SPACE
     
-    //console.log(`item.standalone before loop: ${item.name}:  ${item.standalone}`)
     if (item.name == item.bundleName) {
       if (showItemDebug) { console.log(item.bundleName, ' IS A STANDALONE ITEM'); }
       // don't think this assignment will leave this function since modified dataArray is not passed out of function, a different one is
@@ -1096,7 +1073,6 @@ function renderPSBundles(dataArray) {
       item.standalone = false;
       if (showItemDebug) { console.log('psBundleItems: ', item.psBundleItems); }
     }
-    //console.log(`item.standalone after loop: ${item.name}:  ${item.standalone}`)
   });
 
   // get unique bundles with populated items from input array
@@ -1123,11 +1099,8 @@ function renderPSBundles(dataArray) {
   });
 
 
-  //console.log(bundleArray);
   console.log(outputPSBundleJSON(bundleArray, true));
   console.log(outputPSBundleJSON(bundleArray, false));
-  //console.log(`bundleArray inside renderPSBundles`);
-  //console.log(bundleArray);
 
   // '\n\n'
   renderedHTML += psBundleNavbox + '' + psTopTable + '' + psPageListing + '' + psHistoricalTableRow + '' + psBundleArticle;
@@ -1139,7 +1112,6 @@ function renderPSBundles(dataArray) {
 
 
 function insertCookingLink(input) {
-  //console.log("insertCookingLink called with: ", input)
   var output = '';
   switch (input) {
   case 'Appetizers':
@@ -1237,7 +1209,6 @@ function isVersatileRecipe(item) {
     // TODO: loop through item ingredients and check for versatile ingredients
   for (var i=0; i<item.ingredientArray.length; i++) {
     if (isVersatileIngredient(item.ingredientArray[i])) {
-        //console.log(`detected that ${item.ingredientArray[i]} is versatile ingredient`);
       return true;
     }
   }
@@ -1312,7 +1283,7 @@ function renderMeals(dataArray) {
     for (var i=0; i<ingredientArray.length; i++) {
       if (isVersatileIngredient(tempArray[i])){
         tempArray[i] = 'A VERSATILE INGREDIENT'; // is this happening? dont think so
-        console.log('temparray[i] = ', tempArray[i]);
+        if (showItemDebug) { console.log('temparray[i] = ', tempArray[i]); }
       }
       else {
         //tempArray[i] = '{{name|'+ingredientArray[i]+'}}';
@@ -1324,7 +1295,7 @@ function renderMeals(dataArray) {
     for (var i=0; i<ingredientArray.length; i++) {
       // for versatile ingredients, add correct category link format
       if (isVersatileIngredient(ingredientArray[i])) {
-        console.log('detect versatile ingredient: ', ingredientArray[i]);
+        if (showItemDebug) { console.log('detect versatile ingredient: ', ingredientArray[i]); }
         tempArray[i] = insertCookingLink(ingredientArray[i]);
       }
       else {
@@ -1371,9 +1342,7 @@ function renderMeals(dataArray) {
     //templateMealArticle += '\n{{stub}}';
     templateMealArticle += '\n{{infobox\n|image=%%name%%.png';
     templateMealArticle += '\n|description=';
-    //console.log(`isVersatileRecipe(item) && item.stars && item.stars == 5 ${isVersatileRecipe(item)} ${item.stars} `);
     if (!isVersatileRecipe(item) && item.stars && item.stars == 5) {
-      //console.log(`${item.name} successfully triggered as non-versatile recipe with 5 stars.`);
       // If recipe is 5 stars and does NOT include versatile ingredients, do plural "Meals" instead of "Meal"
       // prevents "and more" on the energy display when rendered in infobox
       templateMealArticle += '\n|type=Meals'; 
@@ -2053,13 +2022,11 @@ function generateCompanionTemplateOriginal(item) {
       (item.category && item.category.includes('Hair')) || 
       (item.tags && item.tags.includes('Hair'))
       );
-    //console.log(`${item.name} isHairstyle? ${isHairstyle} // (category/tags): ${item.category}/${item.tags}`)
     return isHairstyle;
   }
 
   function isHouse(item) {
 
-  //console.log(`got into isHouse with item: name=${item.name}, itemType=${item.itemType}, category=${item.category}`);
 
     var isHouse =
     /*(item.name && item.name.includes('House')) ||*/ // TODO - make more robust, currently grabs furniture items iwth house in title
@@ -2223,7 +2190,6 @@ function getFirstCategoryMatch(categoryVal, prioritizedCategoryArray) {
 
   // version 1: case insensitive
   const containsAny = keywords.some(k => str.toLowerCase().includes(k.toLowerCase()) );
-  console.log(containsAny); // true
 
   // version 2
   // const regex = new RegExp(keywords.join("|"));
@@ -2377,15 +2343,12 @@ function renderParent(dataArray, templateType) {
 
   function output_image(item) {
     var output = '|image=' + item.name + '.png\n';
-    //console.log(`76`);
-    //console.log(item);
     if (item.itemType == 'Clothing' && !isAccessory(item) && !isHairstyle(item))
       output += '|image_m=' + item.name + '_m.png\n';
     return output;
   }
 
   function output_type(item) {
-  //console.log("type, itemtype, craftingcategory", item.type, item.itemType, item.craftingcategory, item.category)
     var output = '|type=%%itemType%%\n';
   // if  crafting then
     if (isCraftable(item)) {
@@ -2567,10 +2530,7 @@ function output_collection(item) {
     }
   }
 
-  //console.log('object at 272');
-  //console.log(item)
   // // TODO - test with returning star path items, both premium and nonpremium, and not returning of both
-  //console.log(`${item.name}: item.premium = ${item.premium} / item.limited = ${item.limited} / item.icon = ${item.icon} / item.collection_icon = ${item.collection_icon} / item.speculated = ${item.speculated} / item.becameBundle = ${item.becameBundle}`)
   //Fishing Trinkets Light Fixture: item.premium = no / item.limited =  / item.icon = undefined / item.collection_icon = undefined / item.speculated =  / item.becameBundle = undefined
   //Giant String Lights: item.premium = undefined / item.limited = Premium / item.icon = Premium / item.collection_icon = undefined / item.speculated =  / item.becameBundle = undefined
   //Enchanted Holiday Fireplace: item.premium = yes / item.limited =  / item.icon = undefined / item.collection_icon = undefined / item.speculated =  / item.becameBundle = undefined
@@ -2612,7 +2572,6 @@ function output_recipe(item) {
   if (item.npcInterest) {
     try {
     var stringifiedObjArray = JSON.parse(item.npcInterest); // parse a string that was created using JSON.Stringify backinto JSON object
-    //console.log(stringifiedObjArray);
     // int id, name, int qty, bool is_category
     for (var i=0; i<stringifiedObjArray.length; i++) {
       var ingredient = stringifiedObjArray[i];
@@ -2687,7 +2646,6 @@ function output_functions(item) {
 
 function output_sizePlacementEnv(item) {
   //item = parseSizePlacementEnv(item);
-  //console.log(`output_sizePlacementEnv`);
   if (!item.size) {
     item.size = '<!--WxD*<!--DIMENSIONS NOT FILLED-->';
     if (item.itemType != 'Clothing') {
@@ -2781,8 +2739,6 @@ function parseSizePlacementEnv(item) {
 // TODO: output related items alphabetically for premium bundle items
 // TODO: do NOT output "relatedItems" that are part of an unnamed bundle
 function output_relatedItems(item) {
-  //console.log('inside output_relatedItems');
-  //console.log(item);
 
 
   /*// alpha sort related items before outputting
@@ -3094,7 +3050,6 @@ function parseItemSource(item) {
   // Store - only after Peter Pan Realm Quest (The Music's On the Walls)
   if (item.inStore) {
     const string = item.source;
-    //console.log(`item.source inside item.inStore ${item.inStore} / ${item.source}`);
     const regex = /Store - after unlocking ([\w\W ]+)/;
     const result = string.split(regex);
     item.character = result[1]; // friendship character - TODO - need to catch more conditions, e.g. quests
@@ -3488,7 +3443,6 @@ function parseItemSource(item) {
       }
 
       // TODO FIX: this looks like its being called 3x per item?
-      //console.log(`qtyMatch: ${qtyMatch} vs bundleQty: ${bundleQty}`);
 
       // Process Per-Item Cost
       let msCost = "NA"; // Default
@@ -3524,8 +3478,6 @@ function parseItemSource(item) {
       item.msCost = item.bundles[0].msCost;
     }
     // bundleQty, msCost
-    //console.log('1218')
-    //console.log(item)
 
 
 // --------------------------------
@@ -3738,9 +3690,6 @@ function output_from(item) {
       Crafting after Joy Level 7 quest (Imagination Land) (reward) // Imagination Land Arch
       */
 
-      //console.log('item inside isQuestItem');
-      //console.log(item);
-      //console.log(`whenRewarded: ${item.whenRewarded}, whenCollected: ${item.whenCollected}, whenCollected includes "pick up"? ${item.whenCollected.includes("pick up")}`)
 
 
 /*
@@ -3810,9 +3759,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
         let tempItemQty = item.qtyRewarded ? insertNumberWord(item.qtyRewarded) : 'one';
         // one is crafted during the quest, placed in the [[Nectar Apiary]],
         // and will remain placed after the quest is completed.
-        //console.log(`tempItemQty of ${item.name}: ${tempItemQty} from ${item.qtyRewarded}`)
         tempItemQty = (tempItemQty=='one') ? 'it is' : tempItemQty + ' are'
-        //console.log(`item.qtyRewarded vs tempItemQty: ${item.qtyRewarded} vs ${tempItemQty}`)
         itemSource += ` ${tempItemQty} ${item.howObtained} during the quest`;
 
         if (item.itemType != 'Clothing') {
@@ -4242,8 +4189,6 @@ function output_QuestTemplate(item) {
 }
 
 function output_itemUsageTables(item) {
-  //console.log(`item inside output_itemUsageTables`);;
-  //console.log(`source for ${item.name}: ${item.source}`);
 
   var questObjectiveTable = `\n<!--\n`;
   questObjectiveTable += `==Quest Objectives==\n{{Objectives|header}}`;
@@ -4324,7 +4269,6 @@ function output_itemIntro(item) {
   case 'Character':
   case 'Character Dream Style':
       // this case does not seem to be catching?
-      //console.log("we got here");
     itemUseIntro_clothing = '';
     break;
   default:
@@ -4339,11 +4283,6 @@ function output_itemIntro(item) {
   /*// no idea why this isn't being caught in switch above
   if (isCharacterDreamStyle(item)) {
     itemUseIntro_clothing = '';
-  }*/
-  /*console.log(item);
-  console.log( `item category is ${item.category} and the itemUseIntro_clothing was set to : ${itemUseIntro_clothing}`)
-  if (item.category == 'Character Dream Style') {
-    console.log("we got here 2");
   }*/
 
   switch (item.functions) {
@@ -4467,7 +4406,6 @@ function output_itemIntro(item) {
 
   // override default filler content for wallpaper and flooring, which don't use "function"
     if (isWallpaperFlooring(item)) {
-    //console.log('DETECTED WALLPAPER/FLOORING FOR ', item.name);
 
     // TODO - these are not catching 2025.08.19
       if (
@@ -4491,7 +4429,6 @@ function output_itemIntro(item) {
 }
   // Once collected it can be applied to rooms inside the [[Player's House]] using the [[Furniture menu]] inside the [[Inventory]].
 
-  //console.log('VALUES OF ITEMUSEINTRO AND ITEMUSEBODY',itemUseIntro, itemUseBody, "and category=", item.category)
 
 var output = '';
 output += "'''" + item.name + "'''";
@@ -4547,10 +4484,8 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
     output += ".";
   }
 
-  //console.log(`item info for ${item.name}:   category: ${item.category}   universe: ${item.universe}    itemType: ${item.itemType}.    universe:${item.universe}`)
   
   if (isCharacterDreamStyle(item)) {
-    //console.log(`item info for ${item.name}:   category: ${item.category}   universe: ${item.universe}    itemType: ${item.itemType}.    universe:${item.universe}`)
     var charProperName = determineCharacterFromDreamStyle(item.name);
     var uni = getCharacterUniverse(charProperName);
 
@@ -4570,8 +4505,6 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
 function assignRelatedItemsFromInputArray(item, bundleArray) {
 
   item.relatedItems = [];
-  //console.log('inside assignRelatedItemsFromInputArray bundleArray object')
-  //console.log(bundleArray);
   bundleArray.forEach(function(bundleItem) {
 
     // make sure the name of bundle is defined, otherwise everything without a bundle will lump together
@@ -4592,7 +4525,6 @@ function assignRelatedItemsFromInputArray(item, bundleArray) {
 
 function assignItemType(item) {
 
-//console.log('item: ');
 // todo - why is this not converting input of itemType from Furniture to House?
   if (isHouse(item)) {
     item.itemType = "House";
@@ -4602,7 +4534,6 @@ function assignItemType(item) {
 
 
   if (isBuilding(item)) {
-    //console.log(`item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
     //in game: type=Building Skin, collection=none, category=none
     item.itemType = 'Building Skin';
     item.collection = 'none';
@@ -4628,7 +4559,6 @@ function assignItemType(item) {
     item.category = "Plaza Square";
   }
 
-//console.log(`LOOP END: item name=${item.name}, category=${item.category}, universe=${item.universe}, itemType${item.itemType} `);
 }
 
 // TODO... . THIS IS FEELING A BIT JANKY
@@ -4670,7 +4600,6 @@ item.category = 'Wishing Well'; // technically 'none' in game, but this value is
 item.collection = 'Wishing Well';
 }
 
-//console.log(`${item.name} isHairstyle? called 2426: ${isHairstyle(item)}`)
 if (isHairstyle(item)) {
   item.category = 'Hairstyle';
 }
@@ -4701,44 +4630,12 @@ if (isAccessory(item)) {
     item.groupedUniverse = matchFormat2[1];
   }
 
-  //console.log(`${item.name} GROUPED UNIVERSE inside isAccessory = ${item.groupedUniverse} (universe=${item.universe}`);
 
   // Always reset universe to 'none' at the end of the pipeline
   item.universe = 'none';
 
 
 
-/*
-
-// save Accessory "fake" universe to a new param
-  const string = item.universe;
-  //console.log(item);
-  console.log(`2429 ${item.name} universe: ${item.universe}`);
-
-// FORMAT 1: None - Accessory (Aladdin) or None - Accessory
-  const regex = /None - (([\w\W ]+)\(([\w\W ]+)\))/;
-  const result = string.split(regex);
-console.log('2432: ', result[2],"      ", result[3]);
-  if (result[3]) {
-    item.groupedUniverse = result[3];
-  } else {
-    item.groupedUniverse = "Other";
-  }
-
-// FORMAT 2: none (Aladdin) or none
-  const regex2 = /none \(([\w\W ]+)\)/;
-  const result2 = string.split(regex2);
-  console.log('2443: ', result2[2]);
-  if (result2[3]) {
-    item.groupedUniverse = result[3];
-  } else {
-    item.groupedUniverse = "Other";
-  }
-
-//console.log("ITEM GROUPED UNIVERSE inside isAccessory = ",item.groupedUniverse);
-  item.universe = 'none';
-
-  */
 }
 
 return item;
@@ -4757,12 +4654,9 @@ function renderClothingFurnitureArticle(dataArray) {
   //const users = [{ name: 'Alice' }, { name: 'Bob' }];
 
 //  todo - check if all of the other isX functions should be moved here? also need to reduce number of loops run...
-  //console.log(dataArray);
 
   dataArray.forEach((item) => {
   //item.name = 'Mutated'; // Modifying a property changes the source object
-  //console.log('line 2321 reached')
-  //console.log(item);
 
     item = assignItemType(item);
     item = parseItemSource(item);
@@ -4903,7 +4797,7 @@ function renderClothingFurnitureArticle(dataArray) {
       template = generateBuildingSkinTemplate(item);
     }
     if (isCompanion(item)) {
-      console.log(`${item.name} is a companion!!!`)
+      if (showItemDebug) { console.log(`${item.name} is a companion`); }
       template = generateCompanionTemplate(item);
     }
 
@@ -4925,7 +4819,6 @@ function generateBodyFromPremiumShop(item) {
 
   if (isPremium(item)) {
     // item.standalone is not yet defined here!!! -- i think it is now
-    //console.log(`${item.name} -- is standalone? (use fx) -- ${isStandalone(item)}`);
     //template = 'It is available to purchase from the [[Premium Shop]] in the [[%%bundleName%%]] bundle for {{price|%%bundlePrice%%|moonstone|showLabel}}.';
     template =
   `It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
@@ -5195,7 +5088,6 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     '{{WallpaperFloorsDescription|wftype=%%category%%|universe=%%universe%%';
 
     // todo: check for player level
-    //console.log("item character,",item.character)
 
     if (item.character) {
       item.itemSource =
