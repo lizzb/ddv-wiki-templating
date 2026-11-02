@@ -703,10 +703,13 @@ section_map = {
 
 
 
-  function useStandaloneNaming(bundleObj) {
-    return bundleObj.itemArray.some(
-      item => item.name === bundleObj.friendlyName
-      );
+  // CR25: the one "is this a standalone bundle" test, used by the bundle tables, the bundle article and
+  // every item article. A bundle's wiki page is "<name> (Bundle)" when its name is also the name of another
+  // article: a row pasted in this render (the bundle's own item, or any other item with that name) or a
+  // companion. A one-item bundle with a name of its own (Sweet Bee Bundle: Beehive Box) is not standalone.
+  function isStandaloneBundle(bundleName) {
+    if (!bundleName) return false;
+    return Boolean((renderRowNames && renderRowNames.has(bundleName)) || isKnownCompanion(bundleName));
   }
 
   function parseUniqueBundles(dataArray) {
@@ -769,8 +772,8 @@ section_map = {
 
 
     resultArray.forEach(function (bundleObj) {
-    // Also catch the use case where an included item in the bundle exactly matches the title of the bundle (e.g. Percy, Regal Prowess Ensemble)
-      bundleObj.standaloneBundleNaming = (bundleObj.itemArray.length == 1 || useStandaloneNaming(bundleObj));
+    // CR25: named like an item or a companion (e.g. Percy, Regal Prowess Ensemble); one item alone no longer counts
+      bundleObj.standaloneBundleNaming = isStandaloneBundle(bundleObj.bundleName);
 
 
       bundleObj.bundleType = determinePremiumBundleType(bundleObj.itemArray);
@@ -1020,9 +1023,9 @@ function renderPSBundles(dataArray) {
     item = parseItemSource(item);
     //renderedHTML += '\n\n'; THIS WAS THE ISSUE OF EXTRA SPACE
     
-    if (item.name == item.bundleName) {
+    // item is the row object itself (objects are passed by reference), so this sticks for the rest of the render
+    if (isStandaloneBundle(item.bundleName)) {
       if (showItemDebug) { console.log(item.bundleName, ' IS A STANDALONE ITEM'); }
-      // item is the row object itself (objects are passed by reference), so this sticks for the rest of the render
       item.standalone = true;
     } else {
       item.standalone = false;
@@ -2042,15 +2045,6 @@ function generateCompanionTemplateOriginal(item) {
     return isDreamStyle;
   }
 
-  function isStandalone(item) {
-  //item isnt parsed yet, below wont work?  not sure
-
-    return (
-      (item.name == item.bundleName && (item.source && item.source.includes('Premium Bundle - ' + item.name))) ||
-      item.standalone
-      );
-  }
-
   // CR23: only answers the question; setCraftedType() changes the item, once, when its source is parsed.
   function isCraftable(item) {
     return Boolean(
@@ -2854,7 +2848,7 @@ function generateReturningPremiumStarPathBodyText(item) {
   var inlineBundleLink = `[[${item.bundleName}]]`;
 
   // item is a standalone item premium bundle - returning or not
-  if (item.name == item.bundleName) {
+  if (isStandaloneBundle(item.bundleName)) {
     inlineBundleLink = `[[${item.bundleName} (Bundle)|${item.bundleName}]]`;
   }
 
@@ -2895,6 +2889,8 @@ function generateReturningPremiumStarPathBodyText(item) {
 // templates through output_from) all ask for the parsed source; it is parsed once per item
 // per render, so its warnings print once.
 var sourceParsed = null;
+// CR25: names of the rows given to this render(), for isStandaloneBundle
+var renderRowNames = null;
 function parseItemSource(item) {
   if (sourceParsed && item && typeof item === 'object') {
     if (sourceParsed.has(item)) return item;
@@ -3311,8 +3307,7 @@ function parseItemSourceOnce(item) {
     if (showItemDebug) {
       console.log(item.bundleName, ' contains the item: ', item.name);
     }
-    // item.name == item.bundleName
-    if (isStandalone(item)) { 
+    if (isStandaloneBundle(item.bundleName)) { 
       item.standalone = true;
       if (showItemDebug) { console.log(item.bundleName, ' IS A STANDALONE ITEM'); }
     }
@@ -3738,7 +3733,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
     }
 
     // standalone item
-    if (item.standalone) {
+    if (isStandaloneBundle(item.bundleName)) {
       if (showItemDebug) {
         console.log('ITEM IS STANDALONE:  ', item.name);
       }
@@ -3762,8 +3757,8 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
 
     let infoboxBundleLink = `${item.bundleName} (Bundle){{!}}${item.bundleName}`;
     let bodyBundleLink = `${item.bundleName} (Bundle)|${item.bundleName}`;
-    if (!isKnownCompanion(item.bundleName)) {
-      // if item.bundleName != any of the known companion names, assume the bundle it is included in is not named identically to the companion
+    if (!isStandaloneBundle(item.bundleName)) {
+      // if item.bundleName != any of the known companion names (or pasted item names, CR25), assume the bundle it is included in is not named identically to the companion
       // e.g. Amelia's Pink Goose House --> inside Abigail and Amelia the Geese != Abigail the Goose
       // e.g. Mochi's Cat House --> inside Mochi (Bundle) == Mochi
       // e.g. Figaro's House --> inside Figaro Bundle != Figaro
@@ -3817,6 +3812,7 @@ function isKnownCompanion(name) {
   case 'Amelia the Goose':
   case 'Baby Pegasus':
   case 'BB—8':
+  case 'BB-8': // CR25: the wiki and the sheet write BB-8 with a hyphen
   case 'Dinah':
   case 'Figaro':
   case 'Heihei':
@@ -4485,6 +4481,26 @@ item.universe = 'Character Dream Style';
 
 
 
+// CR01: which special template builds this item's article instead of the furniture/clothing one, or
+// null. Same tests and the same order as before (the last match wins).
+function specialArticleTemplate(item) {
+  var generate = null;
+  if (isWallpaperFlooring(item)) generate = generateWallpaperFloorsDescriptionTemplate;
+  // NOTE: a returning character dream style keeps the furniture/clothing article. A collection of only
+  // "Dream Style" (tool dream styles, some accessories) never chose this template: before CR01 the
+  // furniture article had already turned that collection into "remove" when this was decided.
+  if (isCharacterDreamStyle(item) && !item.returning &&
+      !(item.collection == 'Dream Style' && !isCharacterDreamStyle(Object.assign({}, item, { collection: '' })))) {
+    generate = generateCharacterDreamStyleTemplate;
+  }
+  if (isHouse(item)) generate = generateHouseTemplate;
+  if (isStall(item) || isWishingWell(item) || isBuilding(item) || isCastle(item) || isVisitStation(item)) {
+    generate = generateBuildingSkinTemplate;
+  }
+  if (isCompanion(item)) generate = generateCompanionTemplate;
+  return generate;
+}
+
 /* ============= */
 function renderClothingFurnitureArticle(dataArray) {
   var renderedHTML = '';
@@ -4540,6 +4556,18 @@ function renderClothingFurnitureArticle(dataArray) {
 
     // =*=*=*=*= PARSING ITEM END =*=*=*=*=
 
+    // CR01: a special article (wallpaper/flooring, character dream style, house, building skin,
+    // companion) is built once, by its own template. The furniture article used to be built first and
+    // thrown away, and its output_* calls had already changed the item (wrapped values, collection,
+    // missing categories), so the special template wrapped them a second time.
+    var specialTemplate = specialArticleTemplate(item);
+    if (specialTemplate) {
+      if (isCompanion(item) && showItemDebug) { console.log(`${item.name} is a companion`); }
+      renderedHTML += microTemplate(specialTemplate(item), item);
+      renderedHTML += delimiter;
+      return;
+    }
+
     //make sure these are only called once
     var itemFrom = output_from(item);
     var itemIntro = output_itemIntro(item);
@@ -4589,42 +4617,6 @@ function renderClothingFurnitureArticle(dataArray) {
       */
     }
 
-    if (isWallpaperFlooring(item)) {
-      template = generateWallpaperFloorsDescriptionTemplate(item);
-    }
-
-    if (isCharacterDreamStyle(item)) {
-      //todo further
-      // NOTE: generated template uses ItemDescription wiki template for non-returning items
-      if (!item.returning) {
-        template = generateCharacterDreamStyleTemplate(item);
-      }
-    }
-    if (isHouse(item)) {
-      //todo further
-      template = generateHouseTemplate(item);
-    }
-    if (isStall(item)) {
-      template = generateBuildingSkinTemplate(item);
-    }
-    if (isWishingWell(item)) {
-      template = generateBuildingSkinTemplate(item);
-    }
-    if (isBuilding(item)) {
-      template = generateBuildingSkinTemplate(item);
-    }
-    if (isCastle(item)) {
-      template = generateBuildingSkinTemplate(item);
-    }
-    if (isVisitStation(item)) {
-      template = generateBuildingSkinTemplate(item);
-    }
-    if (isCompanion(item)) {
-      if (showItemDebug) { console.log(`${item.name} is a companion`); }
-      template = generateCompanionTemplate(item);
-    }
-
-
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
   });
@@ -4648,7 +4640,7 @@ function generateBodyFromPremiumShop(item) {
 
     // 2025.08.19 this is not catching, item.standalone isn't defined yet
     // this is catching... sometimes??
-  if (isStandalone(item)) {
+  if (isStandaloneBundle(item.bundleName)) {
     template =`It is available to purchase from the [[Premium Shop]] in the [[${item.bundleName} (Bundle)|${item.bundleName}]] bundle for {{price|${item.bundlePrice}|moonstone|showLabel}}.`;
   }
 }
@@ -4660,14 +4652,14 @@ return template;
 // was duplicated verbatim (with the same unresolved TODO) at 2+ call sites
 // across generateHouseTemplate and generateCharacterDreamStyleTemplate.
 // Mutates item.itemFrom directly, matching what both call sites did anyway.
-// NOTE: preserves original "last write wins" behavior -- if bundleName ==
-// item.name, that overwrites the plain bundleName case, it does not stack.
+// NOTE: preserves original "last write wins" behavior -- a standalone bundle
+// (isStandaloneBundle, CR25) overwrites the plain bundleName case, it does not stack.
 function appendBundleFromParams(item) {
   var addText = '';
   if (item.bundleName) {
     addText = '\n|from=Premium Shop\n|bundleName=%%bundleName%%\n|bundlePrice=%%bundlePrice%%';
   }
-  if (item.bundleName == item.name) {
+  if (isStandaloneBundle(item.bundleName)) {
     addText = '\n|from=Premium Shop\n|bundleName=%%bundleName%% (Bundle){{!}}%%bundleName%%\n|bundlePrice=%%bundlePrice%%';
   }
   item.itemFrom += addText;
@@ -5140,6 +5132,7 @@ function resetState() {
   collectionConfirmed = priceConfirmed = categoriesColorsTraitsConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = undefined;
   showItemDebug = renderPSbundles = customTemplate = undefined;
   sourceParsed = null;
+  renderRowNames = null;
 }
 
 function render(rows, templateType, settings) {
@@ -5170,6 +5163,7 @@ function render(rows, templateType, settings) {
   renderPSbundles = s.renderPSbundles;
   customTemplate = s.customTemplate;
   sourceParsed = new Set();
+  renderRowNames = new Set(rows.filter(function (row) { return row && row.name; }).map(function (row) { return row.name; }));
 
   try {
     return renderParent(rows, templateType);
