@@ -276,6 +276,8 @@ function determineCharacterFromDreamStyle(itemName) {
     'WALL-E',
     'Ralph',
     'Vanellope',
+    'Snow White', // CR07: were missing
+    'Cruella',
   ];
 
   for (let i = 0; i < characters.length; i++) {
@@ -323,7 +325,11 @@ function determineCharacterFromDreamStyle(itemName) {
     charName = 'Jack Skellington';
     break;
   case 'Buzz':
+  case 'Lightyear': // CR07: "Buzz Lightyear ..." matches Lightyear last
     charName = 'Buzz Lightyear';
+    break;
+  case 'Skellington': // CR07: "Jack Skellington ..." matches Skellington last
+    charName = 'Jack Skellington';
     break;
   default: {
       break;
@@ -378,7 +384,7 @@ function getCharacterUniverse(charName) {
     universe = 'Inside Out';
     break;
   case 'Stitch':
-    universe = 'Lilo & Stich';
+    universe = 'Lilo & Stitch'; // CR07: was 'Lilo & Stich'
     break;
   case 'Daisy':
   case 'Donald Duck':
@@ -412,7 +418,7 @@ function getCharacterUniverse(charName) {
     break;
   case 'Aurora':
   case 'Maleficent':
-    universe = 'Beauty';
+    universe = 'Sleeping Beauty'; // CR07: was 'Beauty'
     break;
   case 'Flynn':
   case 'Mother Gothel':
@@ -433,10 +439,16 @@ function getCharacterUniverse(charName) {
     universe = 'The Little Mermaid';
     break;
   case 'Tiana':
-    universe = 'Princess and the Frog';
+    universe = 'The Princess and the Frog'; // CR07: the wiki's names
     break;
   case 'Merlin':
-    universe = 'Sword in the Stone';
+    universe = 'The Sword in the Stone';
+    break;
+  case 'Snow White':
+    universe = 'Snow White';
+    break;
+  case 'Cruella':
+    universe = 'One Hundred and One Dalmatians';
     break;
   case 'Jack Skellington':
   case 'Sally':
@@ -1019,10 +1031,9 @@ function renderPSBundles(dataArray) {
   });
 
   // get unique bundles with populated items from input array
-  var bundleArray = parseUniqueBundles(dataArray);
-
-
-  
+  // B20 (CR09): rows with no bundle name are not a bundle (they used to make one named "undefined")
+  var bundleArray = parseUniqueBundles(dataArray.filter(function (item) { return item && item.bundleName; }));
+  if (!bundleArray.length) return '';
 
   psBundleNavbox += '\n\n============ Premium Bundle Navbox ============\n\n';
   psTopTable += '\n\n============ Premium Bundle Top Table ============\n\n';
@@ -1372,7 +1383,7 @@ function generateGemTemplate(item) {
   template += '\n|sellprice=';
   template += '\n|giftreward=';
   template += '\n|color=';
-  template += '\n|from=mining';
+  // CR22: one |from= (the wiki uses the last of two, so the inlineIcon one is kept)
   template += '\n<!--|from=<span id="nametemplate">[[File:Goofy\'s Stall.png|20x20px|link=]] [[Aladdin\'s Gem Stall]] (5)</span><br>-->';
   template += '\n|from={{inlineIcon|Mining|size=20|link=Mining}}';
   //template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
@@ -1414,7 +1425,8 @@ function generateFlowerTemplate(item) {
   template += '\n|giftreward=';
   template += '\n|color=';
   template += '\n|from={{name|Foraging}}';
-  template += '\n|biomes=<!--{{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}-->';
+  // CR22: one |biomes= (the wiki used the last of two); the multi-biome form stays as a hint
+  template += '\n<!--|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}-->';
   template += '\n|biomes=%%biome%%';
   template += '\n|spawnTimer={{growthTime|}}';
   template += '\n|spawnMax=';
@@ -2186,7 +2198,10 @@ function renderParent(dataArray, templateType) {
 
   function output_image(item) {
     var output = '|image=' + item.name + '.png\n';
-    if (item.itemType == 'Clothing' && !isAccessory(item) && !isHairstyle(item))
+    // B06: hairstyles, accessories and character dream styles have one image, no _m (tool dream
+    // styles, which isCharacterDreamStyle also catches, CR06, keep theirs until DDV-24/25 sort them out)
+    var characterStyle = isCharacterDreamStyle(item) && !(item.category && item.category.includes('Tool'));
+    if (item.itemType == 'Clothing' && !isAccessory(item) && !isHairstyle(item) && !characterStyle)
       output += '|image_m=' + item.name + '_m.png\n';
     return output;
   }
@@ -2351,6 +2366,11 @@ function output_collection(item) {
       item.collection = 'none';
       break;
     default: {
+      // Q2 (B13): "-- (trees)" and other "--" notes: no collection
+      if (isNoCollectionValue(item.collection)) {
+        item.collection = 'none';
+        break;
+      }
       if (showItemDebug) {
         console.log('Unusual item.collection value:', item.collection);
       }
@@ -2451,7 +2471,45 @@ function output_universe(item) {
     output = '|universe=none\n';
   }
 
+  // Q2 (B12): "none (Hercules)", "none - Landscaping (Trees)": no universe of its own, so the infobox
+  // says none; the navbox still groups the item with the universe in brackets (output_navbox)
+  if (inferredUniverse(item) !== null) {
+    output = '|universe=none\n';
+  }
+
   return output;
+}
+
+// Q2 (B04, B12): for an item with no universe of its own ("none", "None", "(none)",
+// "none (Hercules)", "none - Landscaping (Trees)"), the universe its navbox groups it with: the one in
+// brackets of "none (X)", else 'Other' (navbox by category). null when the item has a universe.
+function inferredUniverse(item) {
+  var u = typeof item.universe === 'string' ? item.universe.trim() : '';
+  if (!/^\(?none\)?(\s|$)/i.test(u)) return null;
+  var m = u.match(/^none \((.+)\)$/i);
+  return m ? m[1].trim() : 'Other';
+}
+
+// Q2 (B13, CR02): a collection cell of "--" with a note ("-- (trees)", "-- DV", "-- (EI)") means
+// the item is in no collection.
+function isNoCollectionValue(value) {
+  return typeof value === 'string' && /^--/.test(value.trim());
+}
+
+// CR18 (B04): navbox slug of a universe: lower case, no spaces, then the wiki's own spelling for
+// the names whose punctuation the navbox templates leave out (same for clothing and furniture).
+var NAVBOX_SLUGS = {
+  "timburton'sthenightmarebeforechristmas": 'nightmarebeforechristmas',
+  'lilo&stitch': 'liloandstitch',
+  'mickey&friends': 'mickeyandfriends',
+  "abug'slife": 'abugslife',
+  'monsters,inc.': 'monstersinc',
+  'wall-e': 'walle',
+  'wreck-itralph': 'wreckitralph'
+};
+function navboxSlug(name) {
+  var slug = String(name).toLowerCase().trim().replace(/\s/g, '');
+  return Object.prototype.hasOwnProperty.call(NAVBOX_SLUGS, slug) ? NAVBOX_SLUGS[slug] : slug;
 }
 
 function output_functions(item) {
@@ -2482,7 +2540,7 @@ function output_sizePlacementEnv(item) {
     }
   }
 
-  if (!item.placement) {
+  if (!item.placement && !item.placementBlank) {
     item.placement = '<!--default-->';
     if (item.itemType != 'Clothing') {
       item.missingCategories.push('[[Category: Missing Placement]]');
@@ -2508,7 +2566,7 @@ function output_sizePlacementEnv(item) {
 
   // their own confirmation box since DDV-28 (placementConfirmed)
   item.size = wrapComment(item.size, !placementConfirmed);
-  item.placement = wrapComment(item.placement, !placementConfirmed);
+  if (!item.placementBlank) item.placement = wrapComment(item.placement, !placementConfirmed); // CR16: nothing to wrap
   item.surfaceArea = wrapComment(item.surfaceArea, !placementConfirmed);
   item.environment = wrapComment(item.environment, !placementConfirmed);
 
@@ -2525,6 +2583,14 @@ function output_sizePlacementEnv(item) {
 }
 
 function parseSizePlacementEnv(item) {
+  // CR03 (B09): a functions cell that starts with "-" ("-", "--", "-- (no table)", "--?") means no
+  // functions; "(no table)" also means no surface area. Printed as it was, the cell left
+  // "- (no table)" glued to the line above once the empty functions line was removed.
+  if (typeof item.functions === 'string' && /^\s*-/.test(item.functions)) {
+    if (/no table/i.test(item.functions)) item.surfaceArea = 'none';
+    item.functions = '';
+  }
+
   if (item.size && item.size.includes('(not full)')) {
     item.size = item.size.split(' ')[0] + '*<!--DIMENSIONS NOT FILLED-->';
   }
@@ -2538,6 +2604,13 @@ function parseSizePlacementEnv(item) {
   } else {
     //item.placement = "";
     item.environment = '';
+  }
+
+  // CR16: a cell that is only "(outdoor)" or "(indoor)" gives the environment and no placement
+  // (an empty |placement=, as the old "|placement=(outdoor)" patch in jankyCleanup did with the box on)
+  if (item.placement == '(outdoor)' || item.placement == '(indoor)') {
+    item.placement = '';
+    item.placementBlank = true;
   }
 
   // **** todo. if either of these, also get rid of surfaceArea
@@ -2627,7 +2700,7 @@ function output_prioritizedCategory(categoryVal) {
   // TODO: verify prioritization of categories
 
   // contain both furniture and clothing categories
-  var prioritizedCategories = ["House", "Wallpaper", "Flooring", "Attractions", "Windows", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Foliage", "Landscaping", "Rocks", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings", "Companions", "Tools", "Hats", "Masks", "Glasses", "Earrings", "Neckwear", "Coats", "Tops", "Back", "Bracelets", "Gloves", "Pants", "Shorts", "Skirts", "Hose Socks", "Shoes", "Dresses", "Costumes", "Gliders"];
+  var prioritizedCategories = ["House", "Wallpaper", "Flooring", "Attractions", "Windows", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Foliage", "Landscaping", "Rocks", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings", "Companions", "Tools", "Hats", "Masks", "Glasses", "Earrings", "Neckwear", "Coats", "Tops", "Back", "Bracelets", "Gloves", "Pants", "Shorts", "Skirts", "Hose Socks", "Shoes", "Dresses", "Costumes", "Gliders", "Hairstyles"];
   //TODO: "Floors", "Ceiling Textures", "Ceiling Decorations", "Trees", "Fencing"... Paths?
 
   output = getFirstCategoryMatch(categoryVal, prioritizedCategories);
@@ -2639,6 +2712,8 @@ function output_navbox(item) {
   var itemType = item.itemType;
   var universe = item.universe;
   var category = item.category;
+  // Q2: an item with no universe of its own goes with the universe in brackets (or by category)
+  if (inferredUniverse(item) !== null) universe = inferredUniverse(item);
 
   var genericNavClothing = '<!--{{NavboxClothing|back|nondisney}}-->';
   var genericNavFurniture = '<!--{{NavboxFurniture|seating|general}}-->'; // not sure if this will ever be used becase the default category is being set to a placeholder comment? 2026.04.01 check
@@ -2662,16 +2737,17 @@ function output_navbox(item) {
     }
 
     // Other universe items use their type in the navbox insteaad of their universe
-    output = '{{Navbox' + itemType + '|' + output_prioritizedCategory(stripHTMLComments(item.category)) + '|general}}';
+    // (CR05: reads the local category, so hairstyles get the hairstyles section; B05)
+    output = '{{Navbox' + itemType + '|' + output_prioritizedCategory(stripHTMLComments(category || '')) + '|general}}';
 
   } else {
     if (itemType == 'Clothing' || itemType == 'Furniture') {
-      output = '{{Navbox' + itemType + '|' + universe.toLowerCase().trim().replace(/\s/g, '') + '|disney}}';
+      output = '{{Navbox' + itemType + '|' + navboxSlug(universe) + '|disney}}';
     } else output = disneyNavClothing + disneyNavFurniture;
   }
   if (isCraftable(item)) {
     // TODO: do not display with {{navboxcrafting}} if i is not in the crafting collection
-    output = `{{NavboxCrafting|${item.collection.toLowerCase().trim().replace(/\s/g, '')}}}`;
+    output = `{{NavboxCrafting|${(item.collection || '').toLowerCase().trim().replace(/\s/g, '')}}}`; // CR17: no collection no longer throws
 
     /// todo - wrap conditional
     output += `\n\n` + wrapComment(`[[Category:${item.collection} Furniture Sets Collection]]`, !collectionConfirmed);
@@ -2705,7 +2781,7 @@ function output_navbox(item) {
       output = `{{Navbox${item.itemType}|${item.category.toLowerCase().trim().replace(/\s/g, '')}|general}}`;
     } else {
       // use universe|disney if disney universe
-      output = `{{Navbox${item.itemType}|${item.groupedUniverse.toLowerCase().trim().replace(/\s/g, '')}|disney}}`;
+      output = `{{Navbox${item.itemType}|${navboxSlug(item.groupedUniverse)}|disney}}`;
     }
   }
 
@@ -2716,18 +2792,7 @@ function output_navbox(item) {
   // TODO - need to group accessory items with their thematic unvierse even though they techncially don't have one
   output = '\n\n' + output;
 
-  // navbox fixes - need to make a more robust regex for comma, period, ampersand removal
-  var newStr = output;
-  newStr = newStr.replaceAll("timburton\'sthenightmarebeforechristmas", 'nightmarebeforechristmas');
-  newStr = newStr.replaceAll('lilo&stitch', 'liloandstitch');
-  newStr = newStr.replaceAll('mickey&friends', 'mickeyandfriends');
-  newStr = newStr.replaceAll('abug\'slife', 'abugslife');
-  newStr = newStr.replaceAll('{{NavboxFurniture|monsters,inc.|disney}}', '{{NavboxFurniture|monstersinc|disney}}');
-  newStr = newStr.replaceAll('{{NavboxFurniture|wall-e|disney}}', '{{NavboxFurniture|walle|disney}}');
-  newStr = newStr.replaceAll('wreck-itralph', 'wreckitralph');
-
-  output = newStr;
-
+  // (CR18: the punctuation patches that were here are the NAVBOX_SLUGS table, used for clothing too)
   return output;
 
   //item.universe = 'none';
@@ -3115,7 +3180,7 @@ function parseItemSourceOnce(item) {
 
   if (isPremium(item)) {
     // TODO - parse/set tentative icon/collection_icon value
-    if (item.location.includes('starpath')) {
+    if (item.location && item.location.includes('starpath')) { // CR17: a row with no location no longer throws
       item.returning = true; // both premium and returning star path
     }
 
@@ -3820,7 +3885,11 @@ function output_collectionStatus(item) {
     collectionText = "";
   }
   // todo  - move untracked logic here instead of jankycleanup
-  if (item.collection == "" || item.collection == "none" || item.collection == "--") { // do NOT check for "includes" -- because might flag with comments
+  // CR02 (B13): "-- (trees)", "-- DV" are no collection too; this runs before output_collection turns
+  // them into 'none'. Clothing with such a value keeps the sentence jankyCleanup gives it.
+  var noCollection = item.collection == "" || item.collection == "none" || item.collection == "--" ||
+    (item.itemType != 'Clothing' && isNoCollectionValue(item.collection));
+  if (noCollection) { // do NOT check for "includes" -- because might flag with comments
 
     collectionText = ` It is not tracked in the `;
     //collectionText = `Once collected it will not be added to the `;
@@ -3831,7 +3900,7 @@ function output_collectionStatus(item) {
       if (item.location && item.location.includes('crafting')) {
         collectionText += ` or [[:Category:Untracked Crafting Collection|Crafting Collection]]`;
       }
-      if (item.source.includes('limit')) {
+      if (item.source && item.source.includes('limit')) {
         collectionText += `, and more cannot be`;
         if (item.location && item.location.includes('crafting')) {
           collectionText += ` crafted or`;
@@ -3913,7 +3982,7 @@ function output_itemUsage(item) {
     }
 
     // item.functions.includes('Table') || item.surfaceArea
-    if (item.surfaceArea) {
+    if (item.surfaceArea && item.surfaceArea != 'none') {
       output +=
       ', and other objects can be placed upon its ' +
         item.surfaceArea + //'<!--WxD -->' +
@@ -4930,7 +4999,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('\n|functions=Fireplace (Interact)', '\n|functions=Fireplace');
 
     
-    newStr = newStr.replaceAll('|placement=(outdoor)\n|environment=outdooronly', '|placement=\n|environment=outdooronly');
+    // (CR16: the "|placement=(outdoor)" patch that was here is done where the cell is parsed)
 
     // TEMPORARY - comment out empty infobox recipes
     newStr = newStr.replaceAll('|recipe=\n', '');
@@ -4953,10 +5022,8 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('energy=-', 'energy=');
     
 
-    // TODO - fix functions=- at the source
-    newStr = newStr.replaceAll('|placement=surfaces-', '|placement=surfaces');
-    newStr = newStr.replaceAll('|placement=default-', '|placement=default');
-
+    // (CR03: "-" functions are now dropped where the cell is parsed, parseSizePlacementEnv; the
+    // two "|placement=surfaces-"/"default-" patches that were here could never match)
     newStr = newStr.replaceAll('\n|functions=-', '');
     //newStr = newStr.replaceAll('\n|functions=-', '\n|functions=none');
 
