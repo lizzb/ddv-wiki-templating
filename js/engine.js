@@ -172,28 +172,11 @@ function stripHTMLComments(html) {
   return html;
 }
 
-function makeHTMLComment(text) {
-  return '<!--' + text + '-->';
-}
-
 function wrapComment(input, doWrap) {
   if (doWrap) return '<!--' + input + '-->';
   else return input;
 }
 
-function getFirstLetters(sentence) {
-  if (!sentence) {
-    return '';
-  }
-  const words = sentence.split(' ');
-  let firstLetters = '';
-  for (const word of words) {
-    firstLetters += word.charAt(0);
-  }
-  // dont use quotes in abbreviation
-  firstLetters = firstLetters.replaceAll('"', '');
-  return firstLetters;
-}
 
 
 function determineCharacterFromDreamStyle(itemName) {
@@ -325,85 +308,10 @@ function determineCharacterFromDreamStyle(itemName) {
 return charName;
 }
 
-/*
-function getCharacterProperName(charName) {
-  return 
-}
-*/
-
+// charName is a proper name from determineCharacterFromDreamStyle
 function getCharacterUniverse(charName) {
-  var charactersProperNames = [
-    'Aladdin',
-    'Jafar',
-    'Jasmine',
-    'Alice',
-    'Cheshire Cat',
-    'Belle',
-    'Gaston',
-    'The Beast',
-    'Merida',
-    'The Fairy Godmother',
-    'The Forgotten',
-    'Mirabel',
-    'Anna',
-    'Elsa',
-    'Kristoff',
-    'Olaf',
-    'Hades',
-    'Joy',
-    'Sadness',
-    'Stitch',
-    'Daisy',
-    'Donald Duck',
-    'Goofy',
-    'Mickey Mouse',
-    'Minnie Mouse',
-    'Scrooge McDuck',
-    'Maui',
-    'Moana',
-    'Mike Wazowski',
-    'Sulley',
-    'Mulan',
-    'Mushu',
-    'Oswald',
-    'Peter Pan',
-    'Tinker Bell',
-    'Remy',
-    'Aurora',
-    'Maleficent',
-    'Flynn',
-    'Mother Gothel',
-    'Rapunzel',
-    'Nala',
-    'Pumbaa',
-    'Scar',
-    'Simba',
-    'Timon',
-    'Ariel',
-    'Prince Eric',
-    'Ursula',
-    'Vanessa',
-    'Tiana',
-    'Merlin',
-    'Jack Skellington',
-    'Sally',
-    'Buzz Lightyear',
-    'Woody',
-    'EVE',
-    'WALL-E',
-    'Eeyore',
-    'Piglet',
-    'Tigger',
-    'Winnie the Pooh',
-    'Vanellope',
-    'Snow White',
-    'Tigger',
-    'Cruella de Vil'
-  ];
-
   var universe = 'TODO_UNIVERSE';
 
-  for (let i = 0; i < charactersProperNames.length; i++) {
     switch (charName) {
     case 'Aladdin':
     case 'Jafar':
@@ -529,7 +437,6 @@ function getCharacterUniverse(charName) {
       universe = 'Wreck-It Ralph';
       break;
     }
-  }
   return universe;
 }
 
@@ -773,11 +680,6 @@ section_map = {
       item => item.name === bundleObj.friendlyName
       );
   }
-
-  function isSingleItemBundle(item) {
-    return (item.psBundleItems.length == 1);
-  }
-
 
   function parseUniqueBundles(dataArray) {
     // TODO - add to relatedItems in alpha sort order
@@ -1062,15 +964,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
 
 
   function outputBundle_psNavbox(bundleObj) {
-  /*
-  if (isSingleItemBundle(item)) {
-      tempTemplate = "'''[[%%bundleName%% (Bundle)|%%bundleName%%]]''' •";
-    }
-    else {
-      tempTemplate = "'''[[%%bundleName%%]]''' • ";
-    }
-  return microTemplate(tempTemplate, item) + '\n\n\n';
-  */
     let output = `'''[[${bundleObj.friendlyName}]]''' •`;
     if (bundleObj.standaloneBundleNaming) {
       output = `'''[[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]''' •`;
@@ -1079,15 +972,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
   }
 
   function outputBundle_topTable(bundleObj) {
-  /*
-    if (isSingleItemBundle(item)) {
-      tempTemplate = '| [[File:%%bundleName%% Store.png|450px|right|link=%%bundleName%% (Bundle)]]<!--row X leftright-->';
-    }
-    else {
-      tempTemplate = '| [[File:%%bundleName%%.png|450px|right|link=%%bundleName%%]]<!--row x leftright-->';
-    }
-  return microTemplate(tempTemplate, item) + '\n\n\n';
-  */
     let output = `| [[File:${bundleObj.friendlyName}.png|450px|right|link=${bundleObj.friendlyName}]]`;
     if (bundleObj.standaloneBundleNaming) {
       output = `| [[File:${bundleObj.friendlyName} Store.png|450px|right|link=${bundleObj.friendlyName} (Bundle)]]`;
@@ -1097,15 +981,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
   }
 
   function outputBundle_psPageListing(bundleObj) {
-  /*
-  if (isSingleItemBundle(item)) {
-      tempTemplate = "File:%%bundleName%% Store.png|'''[[%%bundleName%% (Bundle)|%%bundleName%%]]'''|link=%%bundleName%% (Bundle)";
-    }
-    else {
-      tempTemplate = "File:%%bundleName%%.png|'''[[%%bundleName%%]]'''|link=%%bundleName%%";
-    }
-   return microTemplate(tempTemplate, item) + '\n\n\n';
-  */
     let output = `File:${bundleObj.friendlyName}.png|'''[[${bundleObj.friendlyName}]]'''|link=${bundleObj.friendlyName}`;
     if (bundleObj.standaloneBundleNaming) {
       output = `File:${bundleObj.friendlyName} Store.png|'''[[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]'''|link=${bundleObj.friendlyName} (Bundle)`;
@@ -1114,27 +989,6 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
   }
 
   function outputBundle_historicalTable(bundleObj) {
-  /*
-    if (isSingleItemBundle(item)) {
-    item.psHistoricalTableRow = '|-\n| [[%%bundleName%% (Bundle)|%%bundleName%%]]\n| {{name|%%bundleName%%}}'; //+ psHistoricalTableRow_price;
-  }
-  else {
-    item.psHistoricalTableRow = '|-\n| [[%%bundleName%%]]\n|'; // + psHistoricalTableRow_price;
-  }
-  psHistoricalTableRow += microTemplate(item.psHistoricalTableRow, item);
-
-  if (item.psBundleItems && item.psBundleItems.length > 1) {
-    item.psBundleItems.forEach(function (bundleItem) {
-      psHistoricalTableRow += '\n{{name|' + bundleItem + '}}';
-      if (item.returning)
-        // TODO - and not standalone
-        psHistoricalTableRow += '<!-- ({{price|XXXXXXX|moonstone}})-->';
-      psHistoricalTableRow += '<br>';
-    });
-  }
-
-  return microTemplate(psHistoricalTableRow_price, item) + '\n\n\n';
-*/
     let output = `|-\n| [[${bundleObj.friendlyName}]]`;
     if (bundleObj.standaloneBundleNaming) {
       output = `|-\n| [[${bundleObj.friendlyName} (Bundle)|${bundleObj.friendlyName}]]`;
@@ -1361,12 +1215,6 @@ function insertIngredientCategoryLink(input) {
 //const str = "hello world testing";
 //const keywords = ["hello", "bye", "test"];
 
-// function includesFromArray
-function getFirstCategoryMatch(input, priorityStringArray) {
-  const values = input.split(",").map(s => s.trim());
-  return priorityStringArray.find(p => values.includes(p));
-  // const containsAny = (str, arr) => arr.some(s => str.includes(s));
-};
 
 
 function oxfordJoin(arr) {
@@ -1429,28 +1277,6 @@ function wrapNameTemplate(ing, ingQty) {
   return output;
 }
 
-// for making infobox |recipe for crafted items with ing1, ing1qty, ing2, ing2qty...
-//function createIngredientList(item, wrapType, joinType) {
-function createInfoboxRecipe(item) {
-
-  /*
-  |recipe={{name|Petrified Wood|10}}<br>
-{{name|Moss|2}}<br>
-{{name|Pine Cone|5}}<br>
-{{name|Crimson Eternal Poppies|2}}*/
-  var output = '|recipe=';
-  var ingredientArray = [];
-  if (item["ing1"] && item["ing1"] != "-") ingredientArray.push(wrapNameTemplate(item["ing1"], item["ing1qty"]));
-  if (item["ing2"] && item["ing2"] != "-") ingredientArray.push(wrapNameTemplate(item["ing2"], item["ing2qty"]));
-  if (item["ing3"] && item["ing3"] != "-") ingredientArray.push(wrapNameTemplate(item["ing3"], item["ing3qty"]));
-  if (item["ing4"] && item["ing4"] != "-") ingredientArray.push(wrapNameTemplate(item["ing4"], item["ing4qty"]));
-  if (item["ing5"] && item["ing5"] != "-") ingredientArray.push(wrapNameTemplate(item["ing5"], item["ing5qty"]));
-  if (item["ing6"] && item["ing6"] != "-") ingredientArray.push(wrapNameTemplate(item["ing6"], item["ing6qty"]));
-    //item.ingredientArray = ingredientArray;
-  output = ingredientArray.join("<br>\n");
-
-  return output;
-}
 
 
 function renderMeals(dataArray) {
@@ -1506,7 +1332,6 @@ function renderMeals(dataArray) {
       } 
     }
     item.articleListString = oxfordJoin(tempArray);
-    item.articleListString = item.articleListString.replaceAll('Any Fish', 'FISH REPLACED IN BODY TEXT');
 
     //[[:Category:Vegetables|any Vegetable]]
 
@@ -1620,35 +1445,6 @@ function renderMeals(dataArray) {
   return renderedHTML;
 }
 
-function insertRecipeDefaults(dataArray) {
-  var template = ''
-  template += '\n==Crafting Recipes==';
-  template += "\n'''{{PAGENAME}}''' is a required material in the following [[Crafting|crafting recipe]].";
-  template += "\n{| class='wikitable sortable' id='recipe-table'";
-  template += '\n! class=unsortable | Image';
-  template += '\n!Name';
-  template += '\n!Crafting Recipe';
-  template += '\n|-';
-  template += '\n|[[File:CRAFTEDITEMNAME.png|50px|center|link=CRAFTEDITEMNAME]]';
-  template += '\n|[[CRAFTEDITEMNAME]]';
-  template += '\n|';
-  template += '\n{{name|ING1NAME|ING1QUANTITY}}<br>';
-  template += '\n{{name|ING2NAME|ING2QUANTITY}}<br>';
-  template += '\n{{name|ING3NAME|ING3QUANTITY}}';
-  template += '\n|}';
-  template += '\n';
-  template += '\n==Quest Objectives==';
-  template += '\n{{Objectives|header}}';
-  template += '\n{{ObjectivesRow|{{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUMBER}}|COUNT|USE OBJECTIVE}}';
-  template += '\n{{Objectives|footer}}';
-  template += '\n';
-  template += '\n==Quest Recipes==';
-  template += '\n{{Recipe|header|quest}}';
-  template += '\n{{RecipeRow|RECIPENAME|quest={{quest|QUESTNAME|friendship=CHARACTERNAME|level=LEVELNUMBER}}}}';
-  template += '\n{{Recipe|footer}}';
-  return template;
-}
-
 function renderGems(dataArray) {
 
   // Create stub articles for gem items
@@ -1698,7 +1494,6 @@ function generateGemTemplate(item) {
   template += '\n<!--\nIn nodes where this gem can be found there is a chance to find [[Shiny %%name%%]], which is a less common and more valuable variant. In nodes where this gem can be found there is a chance to find [[NONSHINY]], which is a more common and less valuable variant.-->';
 
   //crafting recipes, quest objectives, quest recipes
-  //template += insertRecipeDefaults(dataArray);
 
   template += output_history(item);
   template += '\n\n{{NavboxGem}}';
@@ -1740,8 +1535,7 @@ function generateFlowerTemplate(item) {
     template += " After a flower has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
     
     //crafting recipes, quest objectives, quest recipes - easier workflow to add later as needed than to delete from a bunch of pages?
-    //template += insertRecipeDefaults(dataArray);
-
+  
     template += output_history(item);
     template += '\n\n{{NavboxForage}}';
     template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]] [[Category:Missing Colors]]';
@@ -1762,59 +1556,6 @@ function generateFlowerTemplate(item) {
     });
     return renderedHTML;
   }
-
-/*
-function generateRandomTemplate(item) {
-  var template = '';
-  return template;
-}
-*/
-
-
-// TODO - generateNewExpansionTemplate is not used yet anywhere
-  function generateNewExpansionTemplate(item) {
-    var template = 'TODO - generate list of category page articles for new expansion';
-
-    let expansionCollection = "EXPANSIONCOLLECTION";
-
-  /*
-  // === CATEGORIES in preparation of an expansion:
-  Category:EXPANSIONCOLLECTION Store Exclusive
-  Category:EXPANSIONCOLLECTION Resources
-  Category:EXPANSIONCOLLECTION Foraging Collection
-  Category:Fish from EXPANSIONCOLLECTION
-  Category:Fruit from EXPANSIONCOLLECTION
-  Category:Gems from EXPANSIONCOLLECTION
-  Category:Vegetables from EXPANSIONCOLLECTION
-  Category:Sweets from EXPANSIONCOLLECTION
-  */
-
-    let category_Foraging = `Category:${expansionCollection} Foraging Collection\n\n` + `{{categoryheader|the [[Foraging]] [[collections|collection]] categorized under [[${expansionCollection}]]}}\n\n[[Category:${expansionCollection} Collection]]`;
-
-    let category_StoreExclusive = `{{categoryheader|[[Clothing]], [[Furniture]], [[:Category:Wallpaper|Wallpaper]], and [[:Category:Flooring|Flooring]] items which are only sold at [[Scrooge's Store]] located in [[${expansionCollection}]] and no other location}}\n\n[[Category:Gameplay]]`;
-
-    let category_Resources = `{{categoryheader|items that can be found in the '''{{name|${expansionCollection}|link=${expansionCollection}}}'''}}\n\n[[Category: Resource Locations]]`;
-
-    let category_Fish = `{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fish|link=:Category:Fish}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category:Fish Locations]] [[Category:${expansionCollection} Resources]]`;
-
-    let category_Fruit = `{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Fruit|link=:Category:Fruit}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category:Fruit Locations]] [[Category:${expansionCollection} Resources]]`;
-
-    let category_Gems = `{{categoryheader|items categorized as '''{{inlineIcon|Gems|link=:Category:Gems}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category: Gem Locations]] [[Category:${expansionCollection} Resources]]`;
-
-    let category_Vegetables = `{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Vegetables|link=:Category:Vegetables}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category:Vegetable Locations]] [[Category:${expansionCollection} Resources]]`;
-
-    let category_Sweets = `{{categoryheader|[[Ingredients]] categorized as '''{{inlineIcon|Sweets|link=:Category:Sweets}}''' that can be found in the '''{{name|${expansionCollection}}}'''}}\n\n[[Category:Sweets Locations]] [[Category:${expansionCollection} Resources]]`;
-
-
-
-    let template_Memory = `{{stub}}\n{{infobox\n|image=%%name%%.png\n|width=300px\n|type=Memory\n|description=%%description%%\n|universe=%%universe%%\n|collection=%%new${expansionCollection}%%\n|found=TBA\n|from=<!--{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}-->\n}}\n'''%%name%%''' is a [[Memories#%%universe%%|%%universe%%]] [[Memories|Memory]].\n\nOnce collected it will be added to the [[:Category:%%new${expansionCollection}%% Memories Collection|%%new${expansionCollection}%% Memories Collection]]{{cleanup|Verify -- , and can be viewed in items with [[:Category:Memory Frame|Memory Frame]] functionality}}.\n<!--\n==Acquisition==\n:{{quest|QUESTNAME}} - Unlocked after fishing up/picking up/digging up/eating [[xxxx]] which is cooked using [[Ingredients]] and a [[QUESTITEM]] caught during the quest, then reading [[ITEM]] in Inventory.\n\n==Quests==\nThis memory is collected during the following quests:\n*{{quest|QUESTNAME|friendship=CHARACTERNAME|realm=Story}}\n-->\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxMemory}}`;
-
-    let template_seed = `{{stub}}\n{{infobox\n|image=%%name%%.png\n|description=%%description%%\n|type=Seed\n|buyprice=\n|sellprice=\n|giftreward=\n|growtime=<!--{{growthTime|15}}<br>{{growthTime|15|biome=PREFERREDBIOME}}-->\n|waterings=\n|yield=<!--{{name|CROPNAME|CROPCOUNT}}-->\n|from={{inlineIcon|Goofy's Stall|size=20|link=Goofy's Stall#%%new${expansionCollection}%%}}\n|found={{name|%%new${expansionCollection}%%}}\n|gridSize=\n|placement=\n|stackMax=\n}}\n'''%%name%%''' is a [[Crop Seeds|seed]] type which can be planted and harvested to obtain [[Ingredients]].\n\nThey can be purchased from [[Goofy's Stall]] in [[%%new${expansionCollection}%%]] after the initial Stall repair.\n<!--\nIt takes XXXX minutes to grow<!-- and XXXX total waterings-- until CROPCOUNT [[CROPNAME]] can be harvested.\n-->\nThey can be planted in any Biome<!--, but will grow 10% faster when planted in either the [[PREFERREDBIOME#REGION1|REGION1]] or [[PREFERREDBIOME#REGION2|REGION2]] biomes in the [[Wishing Alps]]. This accelerated growth is denoted in the UI by a caret (^) icon that appears on the upper left corner of the seed image when choosing a seed to plant in its preferred Biome-->.\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxSeed|%%new${expansionCollection}%%}}`;
-
-    return template;
-
-  }
-
 
   function generateIngredientsTemplate(item) {
     var template = '';
@@ -1920,8 +1661,7 @@ function generateRandomTemplate(item) {
     //template += '\n';
 
     //crafting recipes, quest objectives, quest recipes
-    //template += insertRecipeDefaults(dataArray);
-
+  
     template += '\n-->';
 
     template += output_history(item);
@@ -1959,10 +1699,6 @@ function generateRandomTemplate(item) {
   }
 
 
-  function determineCritterType(itemName) {
-    return "TODO - determineCritterType";
-  }
-
   function isCompanion(item) {
 
   // return false; // TEMPORARY FOR UPDATE DAY
@@ -1977,86 +1713,23 @@ function generateRandomTemplate(item) {
     return isCompanion;
   }
 
-  function generateCritterSchedule(item){
-    let template = '';
-    template += "\n{{CritterSchedule";
-    template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
-    template += "\n|sunday=TBA";
-    template += "\n|monday=TBA";
-    template += "\n|tuesday=TBA";
-    template += "\n|wednesday=TBA";
-    template += "\n|thursday=TBA";
-    template += "\n|friday=TBA";
-    template += "\n|saturday=TBA";
-    template += "\n}}<!--";
-    template += "\n";
-    template += "\n==Yield==";
-    template += "\n{| class=wikitable id='recipe-table'";
-    template += '\n!style="" | Food Type';
-    template += '\n!style="" | Item';
-    template += '\n!style="" | Possible Rewards';
-    template += "\n|-";
-    template += "\n| Favorite";
-    template += "\n| TBA";
-    template += "\n|";
-  //template += "\nTBA";
-    template += "\n{{name|Dream Shard|2}}<br>";
-    template += "\n{{name|Memory Shard}}<br>";
-    template += "\n{{name|Motif Bag}}";
-    template += "\n|-";
-    template += "\n| Liked";
-    template += "\n| TBA";
-    template += "\n|";
-  //template += "\nTBA";
-    template += "\n{{name|Dream Shard}}<br>";
-    template += "\n{{name|Memory Shard}}<br>";
-    template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
-    template += "\n|}-->";
-    template += "\n{{cleanup|Missing Love and Like rewards}}";
-    template += "\n";
-    return template;
-  }
-
   function generateCompanionTemplate(item) {
 
-  //let template_critter = "{{stub}}\n{{Infobox\n|image=%%name%%.png\n|type=Companions\n|category=<!--Animal Companions, Critter-->\n|collection=%%newExpansionCollection%%\n|hangout=<!--Foraging-->\n|critterType=<!--Hedgehog-->\n|found={{name|BIOMENAME}}<!--<br>(REGION)--><!--<br>M, T, W, Th, F, Sat, Sun PM-->\n|favfood=<!--{{name|XXXXXX}}-->\n|likedfoods=<!--{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}<br>{{name|XXXXXX}}-->\n|minfeedings=1\n}}\n{{ItemDescription\n|%%name%%\n|type=Companion\n|critterType=<!--Hedgehog-->\n|from=Feeding Critters\n|found=in <!--the '''REGION''' area of-->[[BIOMENAME]]<!--all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->\n|favoriteFood=<!--Red Currants-->\n|likedFoods=<!--[[Blueberry]], [[Gooseberry]], [[Raspberry]], [[Strawberry]]-->\n|critterCollection=%%newExpansionCollection%%\n|hangout=[[Foraging]]\n|numFeedings=one<!--(1)-->\n}}\n{{CritterSchedule\n|location=BIOMENAME\n|sunday=TBA\n|monday=TBA\n|tuesday=TBA\n|wednesday=TBA\n|thursday=TBA\n|friday=TBA\n|saturday=TBA\n}}\n\n==Yield==\n{| class=wikitable id='recipe-table'\n!style="" | Food Type\n!style="" | Item\n!style="" | Possible Rewards\n|-\n| Favorite\n| <!--{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard|2}}<br>\n{{name|Memory Shard}}<br>\n{{name|Motif Bag}}-->\n|-\n| Liked\n|\n<!--{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}<br>\n{{name|XXXXXX}}-->\n|\n<!--{{name|Dream Shard}}<br>\n{{name|Memory Shard}}<br>\n{{name|Wheat Seed}}-->\n|}\n\n==Friendship Rewards==\n'''{{PAGENAME}}''' will award the following rewards when [[Friendship]] levels are reached. Friendship can be leveled up through activities while the companion is equipped.\n{| class=wikitable id='recipe-table'\n!Lvl\n!Image\n!Name\n!Type\n|-\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:REWARDITEM.png| 50x50px| center]]--> || <!--[[REWARDITEM]] (COUNT)--> || <!--[[Foraging#Flowers|Flower]]-->\n|-\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]\n|-\n|[[File:Friendship_4.png|32px|center|link=Friendship]] || [[File:Companion Gather Foraging Icon.png| 50x50px| center]] || [[Foraging|Foraging Gathering Bonus]] || [[Foraging|Resource Collection]]\n|-\n|[[File:Friendship_5.png|32px|center|link=Friendship]] || [[File:Companion Decor Reward.png| 50x50px| center]] || [[Companion Decor Reward]] || [[Furniture]]\n|}\n\n==History==\n{{history|%%version%%|Added}}\n\n{{NavboxCompanion}}\n__noTOC__"
-
-
-  var isCritter = false; // TODO: LOGIC FOR THIS
   template = '';
 
-  if (true) {
-    item.critterType = determineCritterType(item.name);
+  {
 
     //template += "{{stub}}";
     template += '{{infobox\n';
     template += output_image(item); // template += '\n|image=%%name%%.png';
     template += output_type(item); // "\n|type=Companions"; // PLURAL Companions
     template += "|category=<!--Animal/Notable Companions"; //output_category(item); // Animal Companions / Notable Companions
-    if (isCritter) { template += ", Critter"; }
     template += "-->\n";
     template += '|critterType=<!--Capybara-->\n';
     template += output_collection(item);  // Dreamlight Valley
     template += output_universe(item);
     template += '|hangout=<!--Flowers-->';
     template += '\n'+output_from(item);
-
-    if (isCritter) {
-      template += "\n|from=Feeding Critters";
-      template += "\n|found=in the '''Honeyglow Woods''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
-      template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
-      ////template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]], [[:Category:Spices|Spices & Herbs]], and [[:Category:Vegetables|Vegetables]] as they are defined on the Ingredients tab of the '''Collection Menu''' - e.g. [[Vanilla]] is included, and [[Seaweed]] is not. They will additionally eat Fruit grown from [[Crop Seeds|seeds]], i.e. [[Cosmic Figs]], [[Grapes]], [[Melon]], [[Pineapple]]-->";
-      //template += "\n|likedFoods=[[:Category:Grains|Grains]] as they are defined on the '''Ingredients''' section of the '''Collection Menu''' (not as they are grouped at a [[:Category:Cooking Stations|Cooking Station]])";
-      template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
-      template += "\n|numFeedings=<!--(%%numFeedings%%)--><!--three <!--(3)-->";
-      template += "\n|critterCollection="+newExpansionCollection;
-      template += "\n|hangout=<!--[[Mining#Resources|Ore]] / [[Foraging#Flowers{{!}}Flowers]]-->";
-      template += "\n}}";
-    }
-
-    if (isCritter) {
-      template += generateCritterSchedule(item); 
-    }
 
     template += '}}'; // END OF INFOBOX
     //template += `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`;
@@ -2135,10 +1808,6 @@ function generateRandomTemplate(item) {
     template += output_history(item) + output_navbox(item);
 
     //template += '\n\n[[Category:Missing xxxxx]]';
-
-    if (isCritter) {
-      template += "\n__noTOC__"; // TODO: do not include for premium?
-    }
   }
 
   return template;
@@ -2217,38 +1886,6 @@ function generateCompanionTemplateOriginal(item) {
     var renderedHTML = '';
     var delimiter = '';
     delimiter = '\n\n\n-----------------------------\n\n\n';
-  /*
-  dataArray.forEach(function (item) {
-    // TODO: let questname = 'QUESTNAME', questcharacter = 'CHARACTER', realmname = 'REALMNAME', characterlevel = 'LEVEL';
-    // is all currently coming from data, should choose here instead whether to use placeholders or not
-    template = '';
-    template += '{{stub}}';
-    template += '\n{{infobox';
-    template += '\n|image=%%name%%.png';
-    template += '\n|description=%%description%%';
-    template += '\n|type=Quest Item';
-    template += '\n|found=<!--Given by {{name|%%questcharacter%%}} / Found in [[%%realmname%%]]-->';
-    template += '\n|from=<!--{{quest|%%questname%%|friendship=%%questcharacter%%|level=%%characterlevel%%|realm=%%realmname%%}}-->'; // TODO - LOGIC ON WHETHER COMMENTED OR NOT
-    template += '\n|recipe=';
-    template += '\n}}';
-    template += "\n'''%%name%%''' is a [[Quests|quest]] item<!--which is collected during // which is given by [[%%questcharacter%%]] during the [[%%realmname%%]] quest [[%%questname%%]] // which is crafted during the [[%%questcharacter%%#Friendship Quests|%%questcharacter%% Level %%characterlevel%% Friendship quest]] [[%%questname%%]]. // item which is [[Fishing|fished up]] in the [[%%realmname%%]] during the realm quest [[%%questname%%]]-->.";
-    template += '\n';
-    template += '\n==Acquisition==';
-    template += '\n:{{quest|%%questname%%}} - TBA<!--Crafted during quest / Given by [[%%questcharacter%%]]-->';
-    template += '\n';
-    template += '\n<!--==Quest Objectives==';
-    template += '\n{{Objectives|header}}';
-    template += "\n{{ObjectivesRow|{{quest|%%questname%%|friendship=%%questcharacter%%|level=%%characterlevel%%|realm=%%realmname%%}}|1|'''Use''' from Inventory.}} '''Interact''' with item, then '''Transfer''' from Inventory to keyhole labeled \"Keyhole Label\"";
-    template += '\n{{Objectives|footer}}';
-    template += '\n-->';
-    template += '\n==History==';
-    template += '\n{{history|'+updateNumber+'|Added}}';
-    template += '\n';
-    template += '\n{{NavboxQuestItem}}';
-    renderedHTML += microTemplate(template, item);
-    renderedHTML += delimiter;
-  });
-  */
   // It is crafted during the Honeyglow Woods [[Winnie the Pooh]] story quest [[Chapter 11: The Anti-monster Camp]],
     dataArray.forEach(function (item) {
       let name = item.name || 'ITEMNAME';
@@ -2303,69 +1940,6 @@ function generateCompanionTemplateOriginal(item) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
-
-
-  function renderUpdatedFlooring(dataArray) {
-
-  //{{WallpaperFloorsDescription|wftype=Floors|universe=%%universe%%|from=Scrooge's Store|collection=Dreamlight Valley|preUpdate5=yes}}
-
-  // Create stub articles for quest items
-    var renderedHTML = '';
-    var delimiter = '';
-    delimiter = '\n\n\n-----------------------------\n\n\n';
-    dataArray.forEach(function (item) {
-
-      item.missingCategories = [];
-      item = parseItemSource(item);
-      item = item = parseSizePlacementEnv(item);
-
-    // ===== Quest =====
-      if (item.notes) {
-        const string = item.notes;
-    // Note: capital Q in quest source value
-        const regex = /Renamed from ###([\w\W ]+)###;/;
-        const result = string.split(regex);
-    item.originalName = result[1]; //character value
-    console.log(item.originalName);
-  }
-
-  template = '';
-  template += '{{rename|%%name%%|Renamed in 1.18}}';
-  template += '\n{{infobox';
-  template += '\n|image=%%name%%.png';
-  template += '\n'+output_type(item);
-  template += '|category=Flooring, Ceiling Texture';
-  template += '\n'+output_buyprice(item);
-  template += output_color(item);
-  template += output_tags(item);
-  template += output_collection(item);
-  template += output_traits(item);
-  template += output_universe(item);
-  template += '|storeSlots=paint';
-  template += '\n|placement=flooring';
-  template += '\n|environment=indooronly';
-  template += '\n}}';
-
-    // template += output_from(item); //necessary vals set/defined in output_from(item);
-
-  template +=
-  "\n{{WallpaperFloorsDescription|wftype=Floors|universe=%%universe%%|from=Scrooge's Store|collection=Dreamlight Valley";
-  if (item.version == "1.5") {
-    template += "|preUpdate5=yes";
-  }
-
-  template += "}}";
-  template += '\n\n==History==';
-  template += `\n{{history|${item.version}|Added}}`;
-  template += `\n{{history|1.18|Changed name from ''${item.originalName}'', added as [[:Category:Ceiling Texture|ceiling texture]]}}`;
-  template += output_navbox(item);
-  renderedHTML += microTemplate(template, item);
-  renderedHTML += delimiter;
-});
-    return jankyCleanup(renderedHTML);
-  //return renderedHTML;
-  }
-
 
 
 // TODO - also generate the separating column row breaks for html table
@@ -3142,14 +2716,8 @@ function output_sizePlacementEnv(item) {
   // these params not applicable for clothing
   if (item.itemType == 'Clothing') output = '';
 
-  // move logic from jankyCleanup
+  // the placeholders are filled later (microTemplate), so the wrapped values below end up in this text
   let newStr = output;
-  newStr = newStr.replaceAll('|placement=indoor (wall)', '|placement=walls\n|environment=indooronly');
-  newStr = newStr.replaceAll('\n|size=remove', '');
-  newStr = newStr.replaceAll('\n|gridSize=remove', '');
-
-  // need to figure out why for crafted items theres extra space?
-  newStr = newStr.replaceAll('\n\n|gridSize', '\n|gridSize');
 
   // their own confirmation box since DDV-28 (placementConfirmed)
   item.size = wrapComment(item.size, !placementConfirmed);
@@ -3173,8 +2741,6 @@ function parseSizePlacementEnv(item) {
   if (item.size && item.size.includes('(not full)')) {
     item.size = item.size.split(' ')[0] + '*<!--DIMENSIONS NOT FILLED-->';
   }
-
-  //newStr = newStr.replaceAll('|placement=indoor (wall)', '|placement=walls\n|environment=indooronly');
 
   if (item.placement && item.placement.includes('(outdoor)')) {
     item.placement = item.placement.split(' ')[0]; // todo - more robust logic
@@ -3389,14 +2955,6 @@ function output_missingCategories(item) {
   return output;
 }
 
-// EMPTY FUNCTION ATM - refactoring needed
-function parseItemUsage(item) {
-  return item;
-}
-
-
-
-
 // TODO: clean this up - but at least it's centralized now
 // isStarpath(item) =true comes here, then isPremium
 function generateReturningPremiumStarPathBodyText(item) {
@@ -3540,13 +3098,6 @@ function parseItemSource(item) {
     const regex = /Store - after unlocking ([\w\W ]+)/;
     const result = string.split(regex);
     item.character = result[1]; // friendship character - TODO - need to catch more conditions, e.g. quests
-  }
-
-  // ===== Grand Exhibition =====
-  if (item.source.includes("Grand Exhibition") || item.location == "exhibition") {
-    //item.location=exhibition
-    // TODO - Grand Exhibition
-    // TODO: The Grand Exhibition: Dazzle Beach - TBA
   }
 
   // ===== Quest =====
@@ -3991,14 +3542,6 @@ function parseItemSource(item) {
       item.standalone = false; // TODO - will be undefined for non-premium items, is this desired?
     }
 
-    /*
-    if (item.bundlePrice == '____') {
-      item.bundlePrice = 'XXX___XXX';
-      // TODO - MAKE THIS placeholder val MORE ROBUST IN CASE TOO SHORT/NOT UNIQUE - should be 3+ characters
-      item.bundlePrice = 'TBA_' + getFirstLetters(item.bundleName);
-    }
-    */
-
   } // end isPremium
 
 
@@ -4141,7 +3684,6 @@ function output_from(item) {
       }
 
       // TODO - check if need to call output_recipe here?
-      //infoboxFrom = '|recipe=' + createInfoboxRecipe(item) + '\n';
 
       if (item.event) {
       // if regex Crafting \(([\w+\!]\)
@@ -4399,7 +3941,6 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
 
       // source should have already been parsed in parseItemSource
       // properties: bundleName, bundlePrice, also adjusted for placeholder vals
-      itemSource = generateBodyFromPremiumShop(item);
 
       // item is a returning star path item to premium shop
       if (item.returning) {
@@ -4512,11 +4053,6 @@ function isKnownCompanion(name) {
 }
 
 
-function generateFrom_Crafting(item) {
-
-}
-
-
 function output_itemSource(item) {
 
   // TODO - pull logging into here for premium, star path, star path returning to premium, etc
@@ -4565,12 +4101,6 @@ function output_collectionStatus(item) {
     // overwrite the collection value
     collectionText = "";
   }
-  //console.log(`${item.name} iswallpaperflooring? ${isWallpaperFlooring(item)}`)
-  if (isWallpaperFlooring(item)) {
-    // TODO: wallpaper/flooirng can't be reordered
-    collectionText = "sdsdfasdfads Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
-  }
-
   // todo  - move untracked logic here instead of jankycleanup
   if (item.collection == "" || item.collection == "none" || item.collection == "--") { // do NOT check for "includes" -- because might flag with comments
 
@@ -4596,75 +4126,9 @@ function output_collectionStatus(item) {
   }
 
 
-  // todo  - move untracked logic here instead of jankycleanup
-  if (item.collection == "none" && item.itemType == 'Clothing') {
-
-    // Once collected it will not be added to the
-    collectionText = ` It is not tracked in the `;
-
-
-//"Once collected it will be added to the [[:Category: none Clothing Sets Collection|none Clothing Sets Collection]]."
-//"Once collected it will not be added to the [[:Category: Untracked Clothing Sets Collection| Clothing Sets Collection]]."
-
-    let inlineItemType = (item.itemType == 'Crafted Furniture') ? 'Furniture' : item.itemType;
-    collectionText += `[[:Category:Untracked ${inlineItemType} Sets Collection|${inlineItemType} Sets Collection]]`;
-
-    if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
-      if (item.location && item.location.includes('crafting')) {
-        collectionText += ` or [[:Category:Untracked Crafting Collection|Crafting Collection]]`;
-      }
-      if (item.source.includes('limit')) {
-        collectionText += `, and more cannot be`;
-        if (item.location && item.location.includes('crafting')) {
-          collectionText += ` crafted or`;
-        }
-        collectionText += ` ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]]`;
-      }
-    }
-
-    collectionText += `.`;
-  }
-
   if (isAccessory(item)) {
     collectionText = " Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].";
   }
-  // TODO - rather than replacing after the fact, actually deal with this logic before this is inserted
-  
-  
-  // character dream style
-  collectionText = collectionText.replaceAll("Once collected it will be added to the [[:Category:remove Dream Style Sets Collection|remove Dream Style Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "");
-
-  //let newStr = collectionText;
-
-  // TODO: CATCH THIS before it happens
-  collectionText = collectionText.replaceAll('Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].',"xxxxxxxxIt is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].");
-  
-  // todo: Once collected it will not be added to the [[:Category:Untracked..... vs it is not tracked?
-  collectionText = collectionText.replaceAll("Once collected it will be added to the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].", "yyyyyyyyyIt is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].");
-
-  // no idea why this isn't working as a fallback??? for welcoming signpost
-  const target = "Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].";
-  const replacement = "It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
-  collectionText = collectionText.replaceAll(target, replacement);
-
-  //collectionText = newStr;
-  
-  /*
-  // todo - substitute none collection text with untracked text
-
-  // It can be crafted using using seasonal [[ingredients]] that are available during the [[Lucky You!]] event at a [[:Category:Crafting Stations|Crafting Station]]. Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].
-  //[[Category:none Furniture Sets Collection]]
-
-  newStr = newStr.replaceAll(/Once collected it will be added to the \[\[\:Category: none ([\w]+) Sets Collection\|none ([\w]+) Sets Collection\]\]\./gi, '');
-
-
-  // Global flag required when calling replaceAll with regex
-  // do not think this is working - 2026.04.05
-    const regex = /Once collected it will be added to the \[\[\:Category: none ([\w]+) Sets Collection\|none ([\w]+) Sets Collection\]\]\./gi;
-  // todo - should move this into output_collection function
-    newStr = newStr.replaceAll(regex, 'Once collected it will not be added to the [[:Category:Untracked $1 Sets Collection|$2 Sets Collection]].');
-*/    
-  
 
   return collectionText;
 }
@@ -4790,7 +4254,7 @@ function output_itemUsageTables(item) {
   questObjectiveTable += `\n{{Objectives|footer}}\n-->`;
 
   if (isQuestItem(item) && item.whenRewarded && item.whenRewarded != 'reward' && !item.whenRewarded.includes('post-quest mailbox reward')) {
-    return questObjectiveTable.replaceAll('|level=LEVELNUM');
+    return questObjectiveTable;
   }
   return '';
 }
@@ -5102,12 +4566,6 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
 }
 
 
-function parseItem(item) {
-
-
-  return item;
-}
-
 // may not be ALL related items total, will be limited to whatevers in bundleArray
 function assignRelatedItemsFromInputArray(item, bundleArray) {
 
@@ -5131,30 +4589,6 @@ function assignRelatedItemsFromInputArray(item, bundleArray) {
 }
 
 
-
-// preparation for allowing to copy/paste directly from sheet without leading Clothing/Furniture column
-function inferItemType(item) {
-  if (showItemDebug) {
-    console.log(`item.itemType of ${item.name} = ${item.itemType}`);
-  }
-  // do nothing if itemType already came from imported data
-  if (item.itemType) return item;
-
-  var allClothingCategories = ["Companions", "Tools", "Hats", "Masks", "Glasses", "Earrings", "Neckwear", "Coats", "Tops", "Back", "Bracelets", "Gloves", "Pants", "Shorts", "Skirts", "Hose Socks", "Shoes", "Dresses", "Costumes", "Gliders"];
-  var allFurnitureCategories = ["House", "Essentials", "Decor", "Trimmings", "Tables", "Beds", "Seating", "Storage", "Appliance", "Electronics", "Utilities", "Art", "Lighting", "Foliage", "Rugs", "Misc.", "Floors", "Windows", "Landscaping", "Wall", "Ceiling Decorations", "Trees", "Rocks", "Fencing", "Attractions"]; // TODO: Ceiling Textures
-
-  if (item.category) {
-    // returns highest priority match, but doesn't actually matter what the match is, just that something matched
-    if (getFirstCategoryMatch(item.category, allClothingCategories)) {
-      item.itemType = "Clothing";
-    }
-    if (getFirstCategoryMatch(item.category, allFurnitureCategories)) {
-      item.itemType = "Furniture";
-    }
-  }
-  
-  return item;
-}
 
 function assignItemType(item) {
 
@@ -5355,7 +4789,6 @@ function renderClothingFurnitureArticle(dataArray) {
     if (!item) return;
     item.missingCategories = [];
 
-    //item = inferItemType(item); // assigns either "Clothing" or "Furniture" if itemType column is not provided
     //item = parseItemSource(item);
     //item = parseSizePlacementEnv(item);
 
@@ -5708,9 +5141,7 @@ function generateBuildingSkinTemplate(item) {
   `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`
 
     // this could be more elegant.... usually use the itemdescription, unless it is a returning starpath item
-  if (item.returning) {
-    template += "THIS IS A RETURNING SP ITEM - should use regular article generation";
-  } else {
+  {
     template +=
     '{{ItemDescription\n|%%name%%\n|type=Character Dream Style\n|character=%%appliedto%%\n|universe=%%universe%%';
     if (item.tier) {
@@ -5877,9 +5308,6 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     // TODO - not sure why not working??? saying untehemed is redundant since accessories don't have universes
     newStr = newStr.replaceAll('is an unthemed piece of [[:Category:Accessories', 'is a piece of [[:Category:Accessories');
 
-
-    // NOT WORKING
-    newStr = newStr.replaceAll('\{\{inlineIcon\|\|iconOnly\}\}', '<!--{{inlineIcon|ICON_TBA|iconOnly}}-->');
 
     newStr = newStr.replaceAll('energy=-', 'energy=');
     
