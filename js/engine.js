@@ -1241,7 +1241,7 @@ return false;
 
 
 function wrapNameTemplate(ing, ingQty) {
-  output = '';
+  var output = ''; // CR26: was the engine-wide scratch variable
   output += '{{name|'+ing;
   if (ingQty>1) output += '|'+ingQty;
   output += '}}';
@@ -2997,7 +2997,19 @@ function generateReturningPremiumStarPathBodyText(item) {
 
 
 // Set other item properties based on the value of item.location - parsing and interpreting logic
+// CR23: renderPSBundles, renderClothingFurnitureArticle and output_from (and the special
+// templates through output_from) all ask for the parsed source; it is parsed once per item
+// per render, so its warnings print once.
+var sourceParsed = null;
 function parseItemSource(item) {
+  if (sourceParsed && item && typeof item === 'object') {
+    if (sourceParsed.has(item)) return item;
+    sourceParsed.add(item);
+  }
+  return parseItemSourceOnce(item);
+}
+
+function parseItemSourceOnce(item) {
 
   if (!item.source) return item; // Failsafe for undefined sources
   //if (!item.location) item.location = "";
@@ -5312,6 +5324,7 @@ function resetState() {
   collectionConfirmed = priceConfirmed = categoriesColorsTraitsConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = undefined;
   showItemDebug = renderPSbundles = customTemplate = undefined;
   template = output = placeholderCommentBodyDetailsQuest = itemUseIntro_clothing = bundleArray = tempTemplate = undefined;
+  sourceParsed = null;
 }
 
 function render(rows, templateType, settings) {
@@ -5341,6 +5354,7 @@ function render(rows, templateType, settings) {
   showItemDebug = s.showItemDebug;
   renderPSbundles = s.renderPSbundles;
   customTemplate = s.customTemplate;
+  sourceParsed = new Set();
 
   try {
     return renderParent(rows, templateType);
