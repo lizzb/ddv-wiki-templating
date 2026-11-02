@@ -99,8 +99,21 @@ DataConverter.prototype.convert = function() {
 		const jsonArray = JSON.parse(jsonString);
 
 		//console.log("renderParent about to be called with global var templateType value:", templateType);
-        // the engine (js/engine.js) gets the checkboxes and per-update values as settings (globals.js)
-        this.templateOutputTextArea.val(DDVEngine.render(jsonArray, templateType, readEngineSettings()));
+        // the engine (js/engine.js) gets the checkboxes and per-update values as settings (globals.js);
+        // a setting it refuses is shown in the output box instead of the article (DDV-28)
+        var engineSettings;
+        try {
+            engineSettings = readEngineSettings();
+        } catch (e) {
+            this.templateOutputTextArea.val('Settings problem: ' + e.message);
+            return;
+        }
+        try {
+            this.templateOutputTextArea.val(DDVEngine.render(jsonArray, templateType, engineSettings));
+        } catch (e) {
+            if (String(e && e.message).indexOf('DDVEngine.render') !== 0) throw e;
+            this.templateOutputTextArea.val('Settings problem: ' + e.message);
+        }
     }
 };
 DataConverter.prototype.insertSampleData = function(dataName) {  

@@ -83,8 +83,23 @@
             <label><input type="checkbox" id="functionsConfirmedCB" class="settings-element"> Functions Confirmed</label>
           </p>
           <p>
+            <label><input type="checkbox" id="placementConfirmedCB" class="settings-element"> Size/Placement/Surface Area/Environment Confirmed</label>
+          </p>
+          <p>
             <label><input type="checkbox" id="showItemDebugCB" class="settings-element"> Show Item Debug</label>
           </p>
+          <fieldset id="updateSettings">
+            <legend>This update (remembered by this browser)</legend>
+            <p><label>Update number <input type="text" id="updateNumberInput" class="settings-element" value="1.25" size="12"></label></p>
+            <p><label>Newest village <input type="text" id="newExpansionCollectionInput" class="settings-element" value="Honeyglow Woods" size="20"></label></p>
+            <p><label>Meal navbox <input type="text" id="mealNavboxInput" class="settings-element" value="" size="20" placeholder="from the village"></label></p>
+            <p><label>Star path (short) <input type="text" id="starPathNameShortInput" class="settings-element" value="Haunting Elegance" size="20"></label></p>
+            <p><label>Star path <input type="text" id="starPathNameInput" class="settings-element" value="Haunting Elegance" size="20"></label></p>
+            <p><label>Star path token <input type="text" id="starPathTokenInput" class="settings-element" value="pumpkintoken" size="20"></label></p>
+            <p><label>Shop week from <input type="text" id="bundleStartDateInput" class="settings-element" value="" size="12" placeholder="2026-MM-DD"></label>
+              <label>to <input type="text" id="bundleEndDateInput" class="settings-element" value="" size="12" placeholder="2026-MM-DD"></label></p>
+            <p><label>Wiki version labels <input type="text" id="wikiVersionLabelsInput" class="settings-element" value="" size="28" placeholder="1.24.1=Adventure Pack 1; 1.24.11=1.24"></label></p>
+          </fieldset>
         
         
         <div id="description">
@@ -236,7 +251,7 @@
 // Wire up instant live-update for the 4 confirmation checkboxes.
 // When ANY of these change, immediately re-render the wiki output.
 // This is delegated so it works even if DOM elements are added/changed later.
-$(document).on('change', '#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #showItemDebugCB', function() {
+$(document).on('change', '#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #placementConfirmedCB, #showItemDebugCB', function() {
   if (typeof d !== 'undefined' && d && typeof d.convert === 'function') {
     d.convert();
   }

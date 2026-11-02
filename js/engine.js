@@ -11,42 +11,90 @@
  *                 TSV with CSVParser, see app.js)
  *   templateType  spDuties, spRewards, questItems, meals, ingredients, gems, flowers,
  *                 companions, clothingFurniture
- *   settings      priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed,
- *                 collectionConfirmed, functionsConfirmed, showItemDebug (booleans, default false)
- *                 updateNumber, newExpansionCollection, starPathNameShort, starPathName,
- *                 starPathToken (per-update text; the page takes them from globals.js)
- *                 renderPSbundles (default true), customTemplate (default empty: when set, it is
- *                 used instead of the built-in template, %%column%% placeholders)
+ *   settings      an object; every name, type, required or default is in SETTINGS below.
+ *                 render() refuses an unknown name, a missing required value and a value of the
+ *                 wrong type, with a message that names it (DDV-28).
+ *
+ *   DDVEngine.settings()         -> copy of SETTINGS (for pages and tests)
+ *   DDVEngine.defaultSettings()  -> the defaults of the optional settings
+ *
+ * render() keeps nothing between calls: it works on copies of the rows it is given (the caller's
+ * rows are not changed) and resets every engine variable before and after each call.
  *
  * The code below is helpers.js followed by script.js as they were before the split (originals in
  * archive/), wrapped in one function so nothing leaks onto the page. It is not re-indented.
  */
 var DDVEngine = (function () {
 
-// ===== settings (were globals.js variables and checkbox reads) =====
-// Set from `settings` at the start of every render() call.
+// ===== settings (DDV-28: one description, checked on every render) =====
+//   type      'string', 'boolean' or 'labels' (an object of sheet version -> wiki label, all text)
+//   required  the caller must pass it: per-update text with no safe default
+//   nonEmpty  a required text that may not be blank either
+//   default   used when an optional setting is not passed
+// The page shows the per-update values as fields it remembers (index.html, js/globals.js).
 
-var DEFAULT_SETTINGS = {
-  // toggle to wrap in cleanup tag
-  collectionConfirmed: false,
-  // toggles for wrapping in comments in infobox
-  priceConfirmed: false,
-  categoriesColorsTraitsConfirmed: false,
-  tagsConfirmed: false,
-  // whether or not to include filler copy pasta for furniture functions
-  functionsConfirmed: false,
-  // whether to console print out source of item as detected
-  showItemDebug: false,
-  renderPSbundles: true,
-  customTemplate: ''
+var SETTINGS = {
+  // per-update text, required
+  updateNumber: { type: 'string', required: true, nonEmpty: true,
+    about: 'game update of the new items, for {{history}} when a row has no version (e.g. 1.25)' },
+  newExpansionCollection: { type: 'string', required: true, nonEmpty: true,
+    about: 'village of the newest expansion, for the meal, gem, flower and ingredient collections (e.g. Honeyglow Woods)' },
+  starPathNameShort: { type: 'string', required: true, about: 'current star path, short name (may be blank)' },
+  starPathName: { type: 'string', required: true, about: 'current star path, full name (may be blank)' },
+  starPathToken: { type: 'string', required: true, about: 'current star path token icon, e.g. pumpkintoken (may be blank)' },
+
+  // per-update text, optional
+  mealNavbox: { type: 'string', default: '',
+    about: 'value in {{NavboxMeal|...}}; blank = newExpansionCollection in lower case without spaces' },
+  bundleStartDate: { type: 'string', default: '2026-MM-DD', about: 'first day of the shop week, in premium bundle articles' },
+  bundleEndDate: { type: 'string', default: '2026-MM-DD', about: 'last day of the shop week, in premium bundle articles' },
+  companionCollection: { type: 'string', default: 'Dreamlight Valley',
+    about: 'collection named in the companion article sentence ("... Companions Collection")' },
+  wikiVersionLabels: { type: 'labels', default: {},
+    about: 'extra sheet version -> {{history}} label pairs; they win over the built-in WIKI_VERSION_RULES' },
+
+  // confirmation boxes: false = the value is still to check, so it is wrapped in <!-- -->
+  priceConfirmed: { type: 'boolean', default: false, about: 'price confirmed' },
+  categoriesColorsTraitsConfirmed: { type: 'boolean', default: false, about: 'categories, colors and traits confirmed' },
+  tagsConfirmed: { type: 'boolean', default: false, about: 'tags confirmed' },
+  collectionConfirmed: { type: 'boolean', default: false, about: 'collection confirmed (else wrapped in a cleanup tag)' },
+  functionsConfirmed: { type: 'boolean', default: false, about: 'furniture functions confirmed (else filler text)' },
+  placementConfirmed: { type: 'boolean', default: false,
+    about: 'size, placement, surface area and environment confirmed (part of categoriesColorsTraitsConfirmed before DDV-28)' },
+
+  // other
+  showItemDebug: { type: 'boolean', default: false, about: 'print the detected item source to the console' },
+  renderPSbundles: { type: 'boolean', default: true, about: 'add the premium shop bundle blocks' },
+  customTemplate: { type: 'string', default: '', about: 'template used instead of the built-in one (%%column%% placeholders)' }
 };
 
+// Sheet version -> the label the wiki's {{history}} template uses (CR28: was four switch blocks in
+// updateAppropriateVersion). Checked in order; a later match wins, as in the switches it replaces.
+// A version only matches as text, as the switches did. New pairs for an update can be passed in
+// the wikiVersionLabels setting instead of editing this table.
+var WIKI_VERSION_RULES = [
+  { labels: { '1.14.3': '1.14', '1.20.11': '1.20', '1.24.1': 'Adventure Pack 1' /* "temporary hard force" */, '1.24.11': '1.24' } },
+  { when: function (item) { return item.collection == 'EI' || item.collection == 'Eternity Isle'; },
+    labels: { '1.8': 'Expansion 1-1', '1.10': 'Expansion 1-2', '1.12': 'Expansion 1-3' } },
+  // Merida/Flynn/Hades friendship or quest items released in 1.14.1 count as Expansion 2-1 even in DV
+  { when: function (item) { return item.source && (item.source.includes('Merida') || item.source.includes('Flynn') || item.source.includes('Hades')); },
+    labels: { '1.14.1': 'Expansion 2-1' } },
+  { when: function (item) { return item.collection == 'SV' || item.collection == 'Storybook Vale'; },
+    labels: { '1.14.1': 'Expansion 2-1', '1.17.11': 'Expansion 2-2' } },
+  { when: function (item) { return item.collection && (item.collection.includes('WR') || item.collection.includes('WM') || item.collection == 'Wishblossom Mountains'); },
+    labels: { '1.20': 'Expansion 3', '1.20.1': 'Expansion 3', '1.20.2': 'Expansion 3' } },
+  // 1.24 is temporary, the sheet should not have that value
+  { when: function (item) { return item.collection == 'HW' || item.collection == 'Honeyglow Woods'; },
+    labels: { '1.24': 'Adventure Pack 1', '1.24.1': 'Adventure Pack 1' } }
+];
+
 var updateNumber, newExpansionCollection, starPathNameShort, starPathName, starPathToken;
-var collectionConfirmed, priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed, functionsConfirmed;
+var mealNavbox, bundleStartDate, bundleEndDate, companionCollection, wikiVersionLabels;
+var collectionConfirmed, priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed;
 var showItemDebug, renderPSbundles, customTemplate;
 
 // Variables some functions below assign without declaring them (they used to become page
-// globals). Declared here so they stay inside the engine; reset on every render().
+// globals). Declared here so they stay inside the engine; reset before and after every render().
 var template, output, placeholderCommentBodyDetailsQuest, itemUseIntro_clothing, bundleArray, tempTemplate;
 
 
@@ -527,9 +575,13 @@ function commentOutStarPathTags(item){
   return output;
 }
 
+// The current star path's token comes from the settings, so a new season needs no edit here
+// (CR28); starpathsObject keeps the past seasons.
 function lookupToken(starpathName) {
   var output = 'ORIGINALTOKENNAME'; // "starpath - ......"
-  if (starpathsObject[starpathName]) {
+  if (starpathName && starPathToken && (starpathName == starPathName || starpathName == starPathNameShort)) {
+    output = starPathToken;
+  } else if (starpathsObject[starpathName]) {
     output = starpathsObject[starpathName].tokenName;
   }
   return output;
@@ -1100,8 +1152,8 @@ TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsSt
   function outputBundle_bundleArticle(bundleObj) {
     let output = '';
 
-    let startWeekDate = '2026-MM-DD';
-    let endWeekDate = '2026-MM-DD';
+    let startWeekDate = bundleStartDate;
+    let endWeekDate = bundleEndDate;
     let bundlePrice = bundleObj.bundlePrice;
     let bundleName = bundleObj.bundleName;
     let bundleType = bundleObj.bundleType;
@@ -1539,7 +1591,8 @@ function renderMeals(dataArray) {
     templateMealArticle += " After a meal has been removed from inventory it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
 
     templateMealArticle += output_history(item);
-    templateMealArticle += '\n\n{{NavboxMeal|honeyglowwoods}}';// {{NavboxMeal|wishblossommountains}} // {{NavboxMeal|storybookvale}} // {{NavboxMeal|eternityisle}}
+    // e.g. honeyglowwoods, wishblossommountains, storybookvale, eternityisle
+    templateMealArticle += '\n\n{{NavboxMeal|' + (mealNavbox || newExpansionCollection.toLowerCase().replace(/[^a-z0-9]/g, '')) + '}}';
     templateMealArticle += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
 
     renderedHTML += microTemplate(templateMealArticle, item);
@@ -2048,7 +2101,7 @@ function generateRandomTemplate(item) {
     */
 
     var companionCollectionText = ' Once collected it will be added to the [[:Category: %%collection%% %%itemType%% Collection|%%collection%% %%itemType%% Collection]].';
-    companionCollectionText = ' Once collected it will be added to the [[:Category:Dreamlight Valley Companions Collection|Dreamlight Valley Companions Collection]].';
+    companionCollectionText = ' Once collected it will be added to the [[:Category:' + companionCollection + ' Companions Collection|' + companionCollection + ' Companions Collection]].';
     template += companionCollectionText;
     
     template += `\n\nIt can be equipped using the [[Wardrobe menu]] inside the [[Inventory]], under the '''Companions''' category.`;
@@ -3098,12 +3151,12 @@ function output_sizePlacementEnv(item) {
   // need to figure out why for crafted items theres extra space?
   newStr = newStr.replaceAll('\n\n|gridSize', '\n|gridSize');
 
-  item.size = wrapComment(item.size, !categoriesColorsTraitsConfirmed);
-  item.placement = wrapComment(item.placement, !categoriesColorsTraitsConfirmed);
-  item.surfaceArea = wrapComment(item.surfaceArea, !categoriesColorsTraitsConfirmed);
-  item.environment = wrapComment(item.environment, !categoriesColorsTraitsConfirmed);
+  // their own confirmation box since DDV-28 (placementConfirmed)
+  item.size = wrapComment(item.size, !placementConfirmed);
+  item.placement = wrapComment(item.placement, !placementConfirmed);
+  item.surfaceArea = wrapComment(item.surfaceArea, !placementConfirmed);
+  item.environment = wrapComment(item.environment, !placementConfirmed);
 
-  // TODO - make a separate checkbox for size/placement/surfacearea/environment - just using placeholder traits for all
   // TODO - should be using a struture similar to the following, but this function has already added missing categories,
   // which would be added a second time by doing the below
   /*
@@ -3192,6 +3245,7 @@ function output_history(item) {
   //var output = '\n\n==History==\n{{history|' + item.version + '|Added}}';
 
   // TODO - general fixes for including final 0s
+  // (not a per-update value: the sheet's number format turns 1.10 into 1.1)
   if (inlineVersion == '1.1') inlineVersion = '1.10';
   var output = `\n\n==History==\n{{history|${inlineVersion}|Added}}`;
   return output;
@@ -3200,89 +3254,15 @@ function output_history(item) {
 function updateAppropriateVersion(item) {
   if (!item.version) item.version = updateNumber;
 
-  // different wiki user-facing version values than actual
-  switch (item.version) {
-  case "1.14.3":
-    item.wikiVersion = "1.14";
-    break;
-  case "1.20.11":
-    item.wikiVersion = "1.20";
-    break;
-  // temporary hard force
-  case "1.24.1":
-    item.wikiVersion = "Adventure Pack 1";
-    break;
-  case "1.24.11":
-    item.wikiVersion = "1.24";
-    break;
-  default:
-    break;
+  // different wiki user-facing version values than actual: WIKI_VERSION_RULES (top of the file),
+  // then the pairs from the wikiVersionLabels setting
+  var own = Object.prototype.hasOwnProperty;
+  for (var i = 0; i < WIKI_VERSION_RULES.length; i++) {
+    var rule = WIKI_VERSION_RULES[i];
+    if (rule.when && !rule.when(item)) continue;
+    if (typeof item.version === 'string' && own.call(rule.labels, item.version)) item.wikiVersion = rule.labels[item.version];
   }
-
-  // Replace correct sheet version number with generalized version label for wiki history template
-  if (item.collection == "EI" || item.collection == "Eternity Isle") {
-    switch (item.version) {
-    case "1.8":
-      item.wikiVersion = "Expansion 1-1";
-      break;
-    case "1.10":
-      item.wikiVersion = "Expansion 1-2";
-      break;
-    case "1.12":
-      item.wikiVersion = "Expansion 1-3";
-      break;
-    default:
-      break;
-    }
-  }
-  
-  // TODO - better consolidated logic
-  // if belongs to Merida/Flynn/Hades (friendship/quest) and released 1.14.1, EVEN if collection is DV, not SV, still output {{history|Expansion 2-1|Added}}
-  if (item.source && (item.source.includes('Merida') || item.source.includes('Flynn') || item.source.includes('Hades'))) {
-    switch (item.version) {
-    case "1.14.1":
-      item.wikiVersion = "Expansion 2-1";
-      break;
-    default:
-      break;
-    }
-  }
-  if (item.collection == "SV" || item.collection == "Storybook Vale") {
-    switch (item.version) {
-    case "1.14.1":
-      item.wikiVersion = "Expansion 2-1";
-      break;
-    case "1.17.11":
-      item.wikiVersion = "Expansion 2-2";
-      break;
-    default:
-      break;
-    }
-  }
-  if (item.collection && (item.collection.includes("WR") || item.collection.includes("WM") || item.collection == "Wishblossom Mountains")) {
-    switch (item.version) {
-      //case "1.2":
-    case "1.20":
-    case "1.20.1":
-    case "1.20.2":
-      item.wikiVersion = "Expansion 3";
-      break;
-    default:
-      break;
-    }
-  }
-  if (item.collection == "HW" || item.collection == "Honeyglow Woods") {
-    switch (item.version) {
-      // 1.24 is temporary, sheet should not have that value
-    case "1.24":
-    case "1.24.1":
-      item.wikiVersion = "Adventure Pack 1";
-      break;
-    default:
-      break;
-    }
-  }
-
+  if (item.version != null && own.call(wikiVersionLabels, String(item.version))) item.wikiVersion = wikiVersionLabels[String(item.version)];
 
   return item;
 }
@@ -5945,42 +5925,129 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
 // ===== public API =====
 
-function render(rows, templateType, settings) {
-  var s = {};
-  var key;
-  for (key in DEFAULT_SETTINGS) s[key] = DEFAULT_SETTINGS[key];
-  if (settings) {
-    for (key in settings) s[key] = settings[key];
-  }
+var own = Object.prototype.hasOwnProperty;
 
+function describeValue(v) {
+  if (v === null) return 'null';
+  if (Array.isArray(v)) return 'a list';
+  if (typeof v === 'string') return 'the text ' + JSON.stringify(v.length > 40 ? v.slice(0, 40) + '...' : v);
+  return typeof v === 'object' ? 'an object' : 'the ' + typeof v + ' ' + String(v);
+}
+
+function settingProblem(name, spec, v) {
+  if (spec.type === 'labels') {
+    if (v === null || typeof v !== 'object' || Array.isArray(v)) return '"' + name + '" must be an object of version -> label pairs, not ' + describeValue(v);
+    for (var k in v) {
+      if (own.call(v, k) && typeof v[k] !== 'string') return '"' + name + '": the label for ' + JSON.stringify(k) + ' must be text, not ' + describeValue(v[k]);
+    }
+    return '';
+  }
+  if (typeof v !== spec.type) return '"' + name + '" must be ' + (spec.type === 'boolean' ? 'true or false' : 'text') + ', not ' + describeValue(v);
+  if (spec.nonEmpty && v.trim() === '') return '"' + name + '" is blank (' + spec.about + ')';
+  return '';
+}
+
+function copyValue(v) {
+  if (v === null || typeof v !== 'object') return v;
+  var c = {};
+  for (var k in v) if (own.call(v, k)) c[k] = v[k];
+  return c;
+}
+
+// The settings render() runs with, or an Error naming every problem (DDV-28).
+function checkSettings(given) {
+  if (given === undefined || given === null) given = {};
+  if (typeof given !== 'object' || Array.isArray(given)) {
+    throw new Error('DDVEngine.render: settings must be an object, not ' + describeValue(given));
+  }
+  var problems = [];
+  var key;
+  for (key in given) {
+    if (own.call(given, key) && !own.call(SETTINGS, key)) problems.push('unknown setting "' + key + '"');
+  }
+  var s = {};
+  for (key in SETTINGS) {
+    var spec = SETTINGS[key];
+    var v = own.call(given, key) ? given[key] : undefined;
+    if (v === undefined) {
+      if (spec.required) problems.push('missing setting "' + key + '" (' + spec.about + ')');
+      else s[key] = copyValue(spec.default);
+      continue;
+    }
+    var problem = settingProblem(key, spec, v);
+    if (problem) problems.push(problem);
+    else s[key] = copyValue(v);
+  }
+  if (problems.length) {
+    throw new Error('DDVEngine.render refused the settings:\n- ' + problems.join('\n- ') +
+      '\nKnown settings: ' + Object.keys(SETTINGS).join(', '));
+  }
+  return s;
+}
+
+// Every engine variable back to empty, so no render sees anything from an earlier one.
+function resetState() {
+  updateNumber = newExpansionCollection = starPathNameShort = starPathName = starPathToken = undefined;
+  mealNavbox = bundleStartDate = bundleEndDate = companionCollection = wikiVersionLabels = undefined;
+  collectionConfirmed = priceConfirmed = categoriesColorsTraitsConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = undefined;
+  showItemDebug = renderPSbundles = customTemplate = undefined;
+  template = output = placeholderCommentBodyDetailsQuest = itemUseIntro_clothing = bundleArray = tempTemplate = undefined;
+}
+
+function render(rows, templateType, settings) {
+  var s = checkSettings(settings);
+  if (!Array.isArray(rows)) throw new Error('DDVEngine.render: rows must be a list of row objects, not ' + describeValue(rows));
+  // the functions below change the items they work on; they get copies, the caller's rows stay as given
+  rows = rows.map(function (row) { return row && typeof row === 'object' ? copyValue(row) : row; });
+
+  resetState();
   updateNumber = s.updateNumber;
   newExpansionCollection = s.newExpansionCollection;
   starPathNameShort = s.starPathNameShort;
   starPathName = s.starPathName;
   starPathToken = s.starPathToken;
+  mealNavbox = s.mealNavbox;
+  bundleStartDate = s.bundleStartDate;
+  bundleEndDate = s.bundleEndDate;
+  companionCollection = s.companionCollection;
+  wikiVersionLabels = s.wikiVersionLabels;
 
-  collectionConfirmed = !!s.collectionConfirmed;
-  priceConfirmed = !!s.priceConfirmed;
-  categoriesColorsTraitsConfirmed = !!s.categoriesColorsTraitsConfirmed;
-  tagsConfirmed = !!s.tagsConfirmed;
-  functionsConfirmed = !!s.functionsConfirmed;
-  showItemDebug = !!s.showItemDebug;
-  renderPSbundles = !!s.renderPSbundles;
-  customTemplate = s.customTemplate || '';
+  collectionConfirmed = s.collectionConfirmed;
+  priceConfirmed = s.priceConfirmed;
+  categoriesColorsTraitsConfirmed = s.categoriesColorsTraitsConfirmed;
+  tagsConfirmed = s.tagsConfirmed;
+  functionsConfirmed = s.functionsConfirmed;
+  placementConfirmed = s.placementConfirmed;
+  showItemDebug = s.showItemDebug;
+  renderPSbundles = s.renderPSbundles;
+  customTemplate = s.customTemplate;
 
-  template = output = placeholderCommentBodyDetailsQuest = itemUseIntro_clothing = bundleArray = tempTemplate = undefined;
+  try {
+    return renderParent(rows, templateType);
+  } finally {
+    resetState();
+  }
+}
 
-  return renderParent(rows, templateType);
+// Copy of the settings description: name -> { type, required, nonEmpty, default, about }.
+function settingsDescription() {
+  var out = {};
+  for (var key in SETTINGS) {
+    out[key] = {};
+    for (var k in SETTINGS[key]) out[key][k] = copyValue(SETTINGS[key][k]);
+  }
+  return out;
 }
 
 function defaultSettings() {
   var s = {};
-  for (var key in DEFAULT_SETTINGS) s[key] = DEFAULT_SETTINGS[key];
+  for (var key in SETTINGS) if (!SETTINGS[key].required) s[key] = copyValue(SETTINGS[key].default);
   return s;
 }
 
 return {
   render: render,
+  settings: settingsDescription,
   defaultSettings: defaultSettings
 };
 
