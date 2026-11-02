@@ -88,6 +88,9 @@ var WIKI_VERSION_RULES = [
     labels: { '1.24': 'Adventure Pack 1', '1.24.1': 'Adventure Pack 1' } }
 ];
 
+// Sheet village code -> village name (CR25: was two switch blocks). WR is the old code for WM.
+var VILLAGE_NAMES = { DV: 'Dreamlight Valley', EI: 'Eternity Isle', SV: 'Storybook Vale', WM: 'Wishblossom Mountains', HW: 'Honeyglow Woods' };
+
 var updateNumber, newExpansionCollection, starPathNameShort, starPathName, starPathToken;
 var mealNavbox, bundleStartDate, bundleEndDate, companionCollection, wikiVersionLabels;
 var collectionConfirmed, priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed;
@@ -751,84 +754,7 @@ section_map = {
     return resultArray;
   }
 
-/*
-Information flow:
-
-Pre-Wednesday prep:
-
-// todo: can be generated: priceString, contentsString (but first check if already defined/exists --> was probably copy/pasted and is already verified)
-// generate contentsString - take itemArray, join with `\n{{name|itemName|qty}}<br>`, no trailing <br>, no qty if = 1
-// ignore price if not defined or price = 0, comment out qty if = "XXX"
-// todo: assemble this table based on row input from sheet
-
-// Regal Prowess Ensemble, Clinging Vines Set, Fantasia Broomstick, Main Street Buildings, Butterfly Costume Piglet, Glowing Gifts
-// Sunflower Crochet Skirt, Sunflower Crochet Kerchief, Sunflower Crochet Boots, Sunflower Crochet Top
-
-// focus JUST on Clinging Vines Set atm
-// we do NOT know /unknown before wednesday: bundlePrice, item order, item quantities
-// we DO know before wednesday: likely items, bundle name+link, item categories+universes
-
-
-ddv-wiki-weeklyupdates script needs:
-- if bundle uses standalone naming/linking formatting (relevant on PremiumShop body, NavboxPremiumBundle, currentlyAvailable table, historical table)
-- bundleType (to know where to insert bundle names on PremiumShop body and NavboxPremiumBundle)
-- item universes + categories (to know where to insert item names on Furniture/Clothing + NavboxFurniture/NavboxClothing)
-- currently does not generate historical table or top currently available table - but it SHOULD? i think??
---> item orders + quantities within bundle (to order correctly inside historical table)
-
-- currently does not generate bundle articles - but maybe it should?
-- currently does not have access to all historical bundles, which it would need if we wanted to generate the FULL historical table not just rows for new bundles added
-
-
-CURRENT FUNCTIONS OF EACH:
-
-ddv-wiki-templating:
-- generate premium bundle articles from data of given rows of items (relies on all rows of bundle items to be provided for completeness)
-- generate item articles from data of given rows of items (including related items from bundle if all are provided)
-- also generate navbox and premium shop page formatting for optional manual insertion
-- output bundle objects JSON with vertical-space-condensed/select properties in console to use in ddv-wiki-weeklyupdates (outputPSBundleJSON) --> items inside the bundle are single line so they are easy to rearrange based on actual in-game bundle order
-
-
-ddv-wiki-weeklyupdates:
-- inserts newly added bundles onto PremiumShop main page + NavboxPremiumBundles
-- inserts newly added clothing/furniture onto Clothing/Furniture + NavboxClothing/NavboxFurniture
-
-
-psShopLineupGenerator:
-- generate full top currentAvailability table, historicalAvailability table by using string input of bundle names and historical data of past bundles
-
-
-
-in advance, we don't know the order or quantity of items, or which precise bundles will be chosen
-need to be able to quickly review new bundles in-game wednesday morning,
-change placeholder values (bundlePrice), fix item order, add cleanup for checking item quantity
-then regenerate bundle articles + historical table (both dependent on item order+bundleprice)
-and regenerate item articles (dependent on bundleprice)
-
-need to also be able to easily/quickly provide names of other returning bundles and generate currentAvailability and historical tables based on existing data
-
-*/
-
-/*
-// do i really need the script to decide what type of bundle it is? maybe i should manually set that in this file instead for clarity
-
-// Properties script-generated and added: bundleType, standaloneBundleNaming, priceString, contentsString
-// currently i think that it might be auto-adding qty and price but those should be manually listed here so that i can update them accordingly
-
-// priceString really only needs to be defined separately for mega bundles so the price displayed might be different
-// {{price|4400|moonstone}} (20% off)
-// bundles with multiple items still display the total normally
-
-// TODO: pass WWxLL (not full) or similar - don't know "not full" before update day though...
-// todo: dont forget to create mega bundle articles as well, and companion bundles
-
-// should i actually be generating bundleType or should i self-assign? maybe just assign?
-
-TODO - change workflow so that i dont have duplicate premium shop data in diff places
-
-TODO - insert {{cleanup|TODO - verify order and counts}} in generated contentsString, but NOT for ones that are already defined
-
-*/
+// (DDV-31) notes on the Wednesday bundle flow moved to the hub, notes/DDV-31-engine-notes.md
 
 
 
@@ -1067,7 +993,7 @@ function renderPSBundles(dataArray) {
     
     if (item.name == item.bundleName) {
       if (showItemDebug) { console.log(item.bundleName, ' IS A STANDALONE ITEM'); }
-      // don't think this assignment will leave this function since modified dataArray is not passed out of function, a different one is
+      // item is the row object itself (objects are passed by reference), so this sticks for the rest of the render
       item.standalone = true;
     } else {
       item.standalone = false;
@@ -2220,58 +2146,7 @@ function getFirstCategoryMatch(categoryVal, prioritizedCategoryArray) {
 
 // ===== script.js =====
 
-/*
------
-
-from: TODO Audit & Refactoring Recommendations - generated by claude Aug 18, literally took weeks of running multiple times a day to get the prompt to go through, i have zero idea why
-
-
-🔴 Theme 1 — Confirmation-checkbox logic never reconciled after being added (10+ mentions, touches nearly every output_* function)
-
-🔴 Theme 2 — functions= / furniture-function body text is the most patched-over code path (12+ mentions, one function)
-
-🟡 Theme 3 — from/bundleName/bundlePrice params duplicated "wayyyy too many places" (author's own words, 2x verbatim + helpers.js equivalents)
-
-🟡 Theme 4 — Returning Star Path + Premium Bundle dual-source items (5 mentions, output_from's known biggest gap)
-
-🟢 Theme 5 — Placement/size string normalization (self-contained, parseSizePlacementEnv)
-
-
-✅ Low-Hanging Fruit — Concrete, Safe, Ready to Apply
-1. Duplicate regex TODO, described twice, never done
-2. Trailing whitespace before line breaks
-3. Confirmed-dead code flagged by the author themselves
-4. |functions=Rug removal
-5. gridSize still carrying (wall)/(ceiling) suffix
-
-
-Suggested Order of Operations
-Theme 1 fix (confirmation-checkbox helper) — highest repeat-count, touches the most functions, mechanical once you commit to the pattern.
-Low-hanging fruit #1–2 (regex/whitespace cleanup) — trivial, zero risk, clears 4 TODOs in one sitting.
-Theme 3 fix (bundle param dedup) — contained, well-understood duplication.
-Theme 2 fix (functions/body-text rule ordering) — highest value but a real refactor, not a quick patch; budget the most time here since it's actively producing wrong output today (per the author's own :1670 comment).
-Bring Theme 4 + the placement-wording decisions back to me once you've decided the intended behavior, and I'll implement them.
-
------
-
-
-- Theme 1 (confirmation-checkbox helper)  ✅ Applied, adapted to your already-renamed variables
-
-- Low-hanging fruit #1 (comma-spacing)  ✅ Investigated — already fixed at the source; removed stale TODO instead of risking a blanket regex
-
-- Low-hanging fruit #2 (trailing whitespace)  - ✅ Applied
-
-- Theme 3 (bundle param dedup) - ✅ Applied
-
-
-Theme 1 fix (confirmation-checkbox helper) — highest repeat-count, touches the most functions, mechanical once you commit to the pattern.
---> applyConfirmationWrap
-
-Low-hanging fruit #1–2 (regex/whitespace cleanup) — trivial, zero risk, clears 4 TODOs in one sitting.
---> literally a 1 line change at end of file
-
-Theme 3 fix (bundle param dedup) — contained, well-understood duplication.
-*/
+// (DDV-31) the pasted refactoring audit moved to the hub, notes/DDV-31-engine-notes.md
 
 
 // https://jsbin.com/regoqaw/edit?html,js,output - straight templating, no logic, can't use ctrl f
@@ -2478,26 +2353,18 @@ function output_collection(item) {
   }
 
   // TODO - think calling this at wrong time, some values entering are <!--Dreamlight Valley-->
-  // TODO - since item isnt the thing returned from this function, nothing happens below
+  // the switch below writes item.collection itself (objects are passed by reference), so later functions see the new value
   switch (item.collection) {
   case 'Tracked Wall':
   case 'Tracked Floor':
+  case 'Dreamlight Valley': // the article loop has already turned DV into the full name
   case 'DV':
-  case 'Dreamlight Valley': // still not sure why this is getting fed sometimes, must be modified somewhere
-    item.collection = wrapComment('Dreamlight Valley', !collectionConfirmed);
-    break;
   case 'EI':
-    item.collection = wrapComment('Eternity Isle', !collectionConfirmed);
-    break;
   case 'SV':
-    item.collection = wrapComment('Storybook Vale', !collectionConfirmed);
-    break;
   case 'WM':
   case 'WR':
-    item.collection = wrapComment('Wishblossom Mountains', !collectionConfirmed);
-    break;
   case 'HW':
-    item.collection = wrapComment('Honeyglow Woods', !collectionConfirmed);
+    item.collection = wrapComment(VILLAGE_NAMES[item.collection == 'WR' ? 'WM' : item.collection] || 'Dreamlight Valley', !collectionConfirmed);
     break;
   case 'Dream Style':
       item.collection = 'remove'; //'n/a - CHARACTER DREAM STYLE';
@@ -3196,92 +3063,7 @@ function parseItemSourceOnce(item) {
 
   }
 
-  // GOLD STANDARD - 
-  // After reaching [[CHARACTERNAME#Friendship Rewards|Friendship Level FRIENDSHIPLEVEL]] with [[CHARACTERNAME]] and progressing through the quest [[QUESTNAME]],
-  // it is placed in the Valley
-  // it is given to be placed on [[Dazzle Beach]]
-  // and will remain placed after the quest is completed.
-  // It is automatically collected during the quest.
-  // Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]]
-  // and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].
-
-  /*
-
-
-  // sample cases
-
-  todo
-  - The Fairy Godmother Quest (The Pumpkin and the Princess) - mailbox post quest ("A Grateful Gift")
-  - Cinderella Level 10 Quest (The Friendship Ball) (post-quest mailbox reward) ("I found this...")
-
-  Fairy Godmother Quest (A Grateful Gift) - mailbox post quest
-  Quest - Pocahontas Level 4 quest (Working Together) (reward)
-  Pocahontas Level 4 quest (Working Together) (reward)
-  Pocahontas Level 4 quest (Working Together) (pick up after completed)
-  Cinderella Level 10 Quest (The Friendship Ball) (post-quest mailbox reward)
-  
-
-  Cinderella Level 2 quest (Cinderella's Custom Creation) (reward)
-  Tramp Level 2 Quest (Not Your Average Squeaky Toy) (during?)
-  Pocahontas Level 10 quest (A Raccoon's Return) (4 during)
-  Pocahontas Level 10 Quest (A Raccoon's Return) (during)
-  */
-
-  // Crafting after Tiana Level 4 quest (Little Louis's Big Break) (unlocked during or after?)
-  // It required to craft during [[Tiana|Tiana's]] level 4 [[friendship]] quest [[Little Louis's Big Break]], and after crafting during that quest the recipe will be permanently unlocked.<!--It will not be available in Crafting Recipes prior to the relevant quest step.-->
-  // It can be collected during and crafted after completing the quest Home is Where the Art Is.
-
-  // Fox and Raccoon Sculpture
-  // Display Pillar
-  // Romantic Arch
-  // Lost Boys Audition Sign
-  // Harmonious Screen
-  // The [[Lost Boys Audition Sign (2)|Lost Boys Audition Sign]] which is crafted and placed during the quest [[The New Lost Boys]] will not remain in the valley after the quest is complete, but the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted after the quest it will be unlocked in both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
-  // It can be [[Crafting|crafted]] at a [[:Category:Crafting_Stations|Crafting Station]] during the quest, and after the quest is complete it will remain in the Valley and the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted it will not be added to the [[:Category:Untracked Crafting Collection|Crafting Collection]].
-  // It can be [[Crafting|crafted]] at a [[:Category:Crafting_Stations|Crafting Station]] during the quest, and after the quest is complete it will remain in the Valley and the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted it will not be added to the [[:Category:Untracked Crafting Collection|Crafting Collection]].
-  // The '''Wonderland Candles''' crafted and placed during the quest will remain in the valley after the quest is complete, and the [[Crafting|crafting recipe]] will be permanently unlocked. It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] or [[:Category:Untracked Crafting Collection|Crafting Collection]], and more cannot be ordered from [[Scrooge's Store|Scrooge]].
-  // During [[Pumbaa]]'s level 4 [[friendship]] quest [[Fine Arts for Warthogs]] 4 of these are given by [[Scrooge McDuck]], and after that quest it can be crafted using a [[:Category:Crafting_Stations|crafting station]]. Once collected it will not be added to the [[:Category:Untracked Crafting Collection|Crafting Collection]].
-  // Icy Counter
-  // After the quest is complete the [[Crafting|crafting recipe]] will be permanently unlocked. Once crafted it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]], and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
-  // It can be positioned and placed using furniture placement mode. It can be crafted and collected using a [[:Category:Crafting_Stations|crafting station]] during the quest, and after completing the quest the recipe will remain in the crafting menu. Once collected it is not tracked in either the '''Crafting Collection''' or '''Furniture Colletion'''.
-
-  // Ariel's Crafting Station
-
-  /*
-  '''Flowery Wishblossom Garden''' is a [[Furniture#Snow White|Snow White]] themed piece of crafted furniture which is unlocked after completing [[Snow White]]'s level 10 [[friendship]] quest [[The Wishblossom Fair]].
-
-  It can be crafted using a [[:Category:Crafting Stations|Crafting Station]] after the quest has been completed.
-  Once collected it will be added to both the [[:Category:${collection} Crafting Collection|${collection} Crafting Collection]] and the [[:Category:${collection} Furniture Sets Collection|${collection} Furniture Sets Collection]].
-
-  */
-  /*
-  '''Modular Dragon Body''' is a [[Furniture#Mulan|Mulan]] themed piece of [[Crafting#Furniture|craftable furniture]].
-
-  The crafting recipe for it is unlocked after completing the quest [[The Guardian Party]].
-  The [[Modular Dragon Body (2)|furniture item]] which is crafted during that quest with same name and appearance has different attributes and will appear as a separate entry inside Inventory.
-
-  It can be positioned and placed using furniture placement mode.
-  It can be crafted using a [[:Category:Crafting_Stations|crafting station]], and once collected it will be added to both the [[:Category:Dreamlight Valley Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
-  */
-  // Saucery extract
-  /*
-  '''Saucery Extract''' is a [[Furniture#Lady_and_the_Tramp|Lady and the Tramp]] themed piece of [[Crafting#Furniture|craftable furniture]] which is unlocked during the [[Lady#Friendship Quests|Lady]] quest [[A Curious Dish]].
-
-  It is given by [[Lady]] as a reward after completing the [[friendship]] quest [[A Curious Dish]], and after collecting the recipe will be unlocked and it can be crafted using a [[:Category:Crafting Stations|Crafting Station]].
-  Once collected it will be added to both the [[:Category:${collection} Crafting Collection|Dreamlight Valley Crafting Collection]] and the [[:Category:${collection} Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]].
-  */
-  // blank sandwich board - all over the place
-  /*
-  '''Blank Sandwich Board''' is a [[The Princess and the Frog]] themed piece of [[Crafting#Furniture|craftable furniture]] that can be made using a [[:Category:Crafting_Stations|crafting station]]. 
-
-  A similar quest item, [[Sandwich Board]], requiring the same materials is [[Crafting|crafted]] during [[Tiana|Tiana's]] level 7 [[friendship]] quest [[Dreamlight Gastronomy]], and after crafting that item the recipe will be permanently unlocked.
-
-  It can be positioned and placed using furniture placement mode.
-  Once collected it will be added to both the [[:Category:${collection} Crafting Collection|${collection} Crafting Collection]] and the [[:Category:${collection} Furniture Sets Collection|${collection} Furniture Sets Collection]].
-  */
-
-
-  // ===== Star Path =====
+  // (DDV-31) sample quest sentences and cases moved to the hub, notes/DDV-31-engine-notes.md
   if (isStarPath(item)) {
     // TODO - parse/set tentative icon/collection_icon value
     /*
@@ -3979,7 +3761,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
       itemSource = `It can be collected as a reward after reordering the [[Snippets#Lorekeeper Tales| ${item.taleUniverse} Lorekeeper Tale]].`;
     }
 
-  // Assign values created in this function to the item object -- but these won't actually be saved i dont think? not sure when the microtemplating actually happens
+  // Saved on the item (objects are passed by reference); microTemplate fills %%infoboxFrom%% and %%itemSource%% when the article is put together
     item.infoboxFrom = infoboxFrom;
   item.itemSource = itemSource; // TODO: i think this is being reverted to an empty string?
 
@@ -4390,7 +4172,7 @@ function output_itemIntro(item) {
 
     // mixed feelings on whether to replace or not, because "bed" vs "seating" has no intrinsic game meaning
     if (itemUseIntro == 'seating' && item.category.includes("Bed")) {
-      // todo: fix, not catching
+      // CR04: `==` compares instead of assigning, so beds stay "seating" (fix is DDV-24, B35)
       itemUseIntro == 'bed'
     }
 
@@ -4505,7 +4287,7 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
     output += itemUseIntro;
   }
 
-  // i'm not sure how these assignments are actually working? is item a global object or something?
+  // item is the row object itself (objects are passed by reference), so these are seen by the functions that run after this one
   item.itemUseIntro = itemUseIntro;
   item.itemUseBody = itemUseBody;
 
@@ -4581,7 +4363,7 @@ if (isCastle(item)) {
   item.collection = 'none';
 }
 
-// not entirely sure why uncommenting this breaks stuff
+// Left commented: `isCharacterDreamStyle` without `(item)` is a function, so always true; uncommented, every item would become a Character Dream Style
 /*
 if (isCharacterDreamStyle) {
 item.itemType = 'Dream Style';
@@ -4684,7 +4466,7 @@ function renderClothingFurnitureArticle(dataArray) {
 
   var delimiter = '\n\n\n-----------------------------\n\n\n';
 
-  // this does nOT modify the dataArray, i dont think
+  // this changes the items in dataArray (objects are passed by reference)
   dataArray.forEach(function(item) {
 
     // possibly assigning itself recursively...??
@@ -4698,25 +4480,7 @@ function renderClothingFurnitureArticle(dataArray) {
     //item = parseItemSource(item);
     //item = parseSizePlacementEnv(item);
 
-    switch (item.collection) {
-    case 'DV':
-      item.collection = 'Dreamlight Valley';
-      break;
-    case 'EI':
-      item.collection = 'Eternity Isle';
-      break;
-    case 'SV':
-      item.collection = 'Storybook Vale';
-      break;
-    case 'WM':
-      item.collection = 'Wishblossom Mountains';
-      break;
-    case 'HW':
-      item.collection = 'Honeyglow Woods';
-      break;
-    default:
-      break;
-    }
+    if (own.call(VILLAGE_NAMES, item.collection)) item.collection = VILLAGE_NAMES[item.collection];
     /*
     if (item.universe == "(none)") {
       item.universe = "none";
@@ -5156,10 +4920,6 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('<!--<!--', '<!--');
     newStr = newStr.replaceAll('-->-->', '-->');
 
-    // TODO - make more robust, e.g. ensure only replacing |gridSize=(\d+)×(\d+)
-    // for now, assume if theres a "×", it came from my sheet
-    // replace with "x" which is easier for wiki users
-    newStr = newStr.replaceAll('×', 'x');
 
 
     // AI assist
@@ -5174,10 +4934,12 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     // remove extra spaces
     ////newStr = newStr.replace(/\[\[:Category:\s+/g, '[[:Category:');
 
-
-
-    // main culprit of double space is itemUseIntro
+    // main culprit of double space is itemUseIntro. Stays here, not in normalizeText: the
+    // patches below are written for single-spaced text
     newStr = newStr.replaceAll('  ', ' ');
+
+
+
     
 
     // TODO: double check this in output - need to make functions value streamlining more robust, and not here
@@ -5197,8 +4959,6 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll("{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}","{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}");
 
 
-    // for crafted furniture
-    newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');
 
 
     // NOTE: comma-spacing in psBundleItems lists is already handled correctly at
@@ -5209,8 +4969,6 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     // If a missing-space comma still shows up in generated output, it's coming
     // from a literal comma inside a raw name/data string from the sheet itself.
 
-    // TODO - not sure why not working??? saying untehemed is redundant since accessories don't have universes
-    newStr = newStr.replaceAll('is an unthemed piece of [[:Category:Accessories', 'is a piece of [[:Category:Accessories');
 
 
     newStr = newStr.replaceAll('energy=-', 'energy=');
@@ -5235,7 +4993,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
 
   newStr = newStr.replaceAll('|collection=Accessory', '|collection=none');
-    // no idea why this isn't working when in the collection function, but seems to work here??
+    // must run here, not in output_collectionStatus: there the text still holds %%collection%% (filled later by microTemplate), so it cannot match (CR02)
   // TODO - needs more logic - if the item is not crafted initially or recipe does not unlock, add " and more cannot be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]]"
   const target = "Once collected it will be added to both the [[:Category:none Crafting Collection|none Crafting Collection]] and the [[:Category:none Furniture Sets Collection|none Furniture Sets Collection]].";
   const replacement = "It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] or [[:Category:Untracked Crafting Collection|Crafting Collection]].";
@@ -5250,6 +5008,18 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
 
 
 
+  return normalizeText(newStr);
+}
+
+// CR32: deliberate wording and character normalizing of every clothing/furniture article, as
+// one named last step (the patches above fix generated text; these are house style).
+function normalizeText(newStr) {
+  // "×" in sizes comes from the sheet; "x" is easier for wiki users
+  newStr = newStr.replaceAll('×', 'x');
+  // crafted furniture links to the Furniture page
+  newStr = newStr.replaceAll('[[Crafted Furniture#', '[[Furniture#');
+  // accessories have no universe, so "unthemed" is dropped
+  newStr = newStr.replaceAll('is an unthemed piece of [[:Category:Accessories', 'is a piece of [[:Category:Accessories');
   newStr = newStr.replace(/[ \t]+\n/g, '\n'); // strip trailing whitespace before line breaks
   return newStr;
 }
