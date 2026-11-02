@@ -577,7 +577,7 @@ function determinePremiumBundleType(bundleItemArray) {
   // TODO - this needs more work, both in the logic and in the sheet inputs/standardization
 
 
-  // from reporter tsv export for character dream style: itemType="Dream Style", collection="Character Dream Style", category.includes("Character")
+  // from the TSV export for character dream style: itemType="Dream Style", collection="Character Dream Style", category.includes("Character")
   // TODO - not exporting 
   // "categories": ["Character"]
 
