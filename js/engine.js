@@ -477,22 +477,23 @@ function getCharacterUniverse(charName) {
   return universe;
 }
 
-// tagName: the item tag the game gives that star path's items (empty: none known)
+// tagName: the item tag the game gives that star path's items (empty: none known); a list when the tag is
+// written more than one way
 const starpathsObject = {
   "Pixar Fest": { "tokenName": 'pixartoken', "sheetLocationVal": 'starpath - pixar', tagName: 'Pixar Fest' },
-  "Villains'": {"tokenName": 'villaintoken', "sheetLocationVal": 'starpath - villains', tagName: '' },
-  "Festive": { "tokenName": 'festivetoken', "sheetLocationVal": 'starpath - festive', tagName: '' },
-  "Centennial": { "tokenName": 'centennialtoken', "sheetLocationVal": 'starpath - centennial', tagName: '' },
-  "Disney Parks": { "tokenName": 'parkstoken', "sheetLocationVal": 'starpath - parks', tagName: '' },
-  "Wonder of Pixar": { "tokenName": 'wonderpixartoken', "sheetLocationVal": 'starpath - wonder', tagName: '' },
+  "Villains'": {"tokenName": 'villaintoken', "sheetLocationVal": 'starpath - villains', tagName: 'Villains' },
+  "Festive": { "tokenName": 'festivetoken', "sheetLocationVal": 'starpath - festive', tagName: 'Festive' },
+  "Centennial": { "tokenName": 'centennialtoken', "sheetLocationVal": 'starpath - centennial', tagName: 'Centennial' },
+  "Disney Parks": { "tokenName": 'parkstoken', "sheetLocationVal": 'starpath - parks', tagName: 'Disney Parks' },
+  "Wonder of Pixar": { "tokenName": 'wonderpixartoken', "sheetLocationVal": 'starpath - wonder', tagName: 'The Wonder of Pixar' },
   "Haunted Holiday": { "tokenName": 'hauntedtoken', "sheetLocationVal": 'starpath - haunted', tagName: 'Haunted Holiday' },
-  "Royal Winter": { "tokenName": 'royalwintertoken', "sheetLocationVal": 'starpath - royal', tagName: '' },
+  "Royal Winter": { "tokenName": 'royalwintertoken', "sheetLocationVal": 'starpath - royal', tagName: 'Royal Winter' },
   "Lovely Monsters": { "tokenName": 'monstertoken', "sheetLocationVal": 'starpath - monsters', tagName: 'Lovely Monsters' },
   "A Day at Disney": { "tokenName": 'dayatdisneytoken', "sheetLocationVal": 'starpath - adad', tagName: 'A Day at Disney' },
-  "Majesty and Magnolias": { "tokenName": 'magnoliatoken', "sheetLocationVal": 'starpath - majesty', tagName: '' },
-  "Dapper Delights": { "tokenName": 'lilypadtoken', "sheetLocationVal": 'starpath - dapper', tagName: '' },
+  "Majesty and Magnolias": { "tokenName": 'magnoliatoken', "sheetLocationVal": 'starpath - majesty', tagName: 'Majesty and Magnolias' },
+  "Dapper Delights": { "tokenName": 'lilypadtoken', "sheetLocationVal": 'starpath - dapper', tagName: 'Dapper Delights' },
   "The Night Show": { "tokenName": 'rockstartoken', "sheetLocationVal": 'starpath - nightshow', tagName: 'The Night Show' },
-  "Frost & Fairies": { "tokenName": 'icecrystaltoken', "sheetLocationVal": 'starpath - frost', tagName: 'Frost and Fairies' },
+  "Frost & Fairies": { "tokenName": 'icecrystaltoken', "sheetLocationVal": 'starpath - frost', tagName: ['Frost and Fairies', 'Frost & Fairies'] },
   "Oasis Retreat": { "tokenName": 'tranquiltoken', "sheetLocationVal": 'starpath - oasis', tagName: 'Oasis Retreat' },
   "Garden of Whimsy": { "tokenName": 'pocketwatchtoken', "sheetLocationVal": 'starpath - whimsy', tagName: 'Garden of Whimsy' },
   "Adventures in Never Land": { "tokenName": 'compasstoken', "sheetLocationVal": 'starpath - neverland', tagName: 'Adventures in Never Land' },
@@ -514,7 +515,7 @@ var ALWAYS_HIDDEN_TAGS = ['Wall Inset'];
 function hiddenTagNames(item) {
   var names = ALWAYS_HIDDEN_TAGS.slice();
   for (var key in starpathsObject) {
-    if (starpathsObject[key].tagName) names.push(starpathsObject[key].tagName);
+    names = names.concat(starpathsObject[key].tagName || []);
   }
   if (starPathName) names.push(starPathName);
   if (item && typeof item.starpath === 'string' && item.starpath) names.push(item.starpath);
