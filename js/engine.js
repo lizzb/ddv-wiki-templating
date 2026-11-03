@@ -1299,6 +1299,12 @@ function renderMeals(dataArray) {
   renderedHTML += '\n\n===== MEAL ARTICLES =====\n\n';
   delimiter = ARTICLE_DELIMITER;
   dataArray.forEach(function (item) {
+    // DDV-25 (T03): a meal cooked for a quest is a quest item, not a meal
+    if (isQuestMeal(item)) {
+      renderedHTML += generateQuestMealArticle(item);
+      renderedHTML += delimiter;
+      return;
+    }
     templateMealArticle = '';
     // meal article template
     //templateMealArticle += '\n{{stub}}';
@@ -1374,6 +1380,28 @@ function renderMeals(dataArray) {
   renderedHTML = renderedHTML.replaceAll('ntree', 'ntrée');
 
   return renderedHTML;
+}
+
+// DDV-25 (T03): the sheet's recipe category "Quest" marks a meal cooked for a quest
+function isQuestMeal(item) {
+  return String(item.category || '').trim() == 'Quest';
+}
+
+// As on Icy-Red Stew... Yuck. The quest comes from the row's quest (or questname) value.
+function generateQuestMealArticle(item) {
+  var quest = item.quest || item.questname || '';
+  var t = '\n{{infobox\n|image=' + item.name + '.png\n|width=160px\n|description=' + (item.description || '') + '\n';
+  t += '|stars=' + (item.stars || '') + '\n|type=Quest Item\n|found=Cooked\n';
+  t += '|from=' + (quest ? '{{quest|' + quest + '}}' : '<!--{{quest|QUESTNAME}}-->') + '\n';
+  t += '|ingredients=' + item.ingredientArray.map(function (ing) { return '{{name|' + ing + '}}'; }).join('<br>\n') + '\n}}\n';
+  t += "'''" + item.name + "''' is a [[Quests|quest]] item [[Cooking|cooked]]" + (quest ? ' during the quest [[' + quest + ']]' : '<!-- during the quest [[QUESTNAME]]-->') + '.';
+  t += '\n\n==Acquisition==\n:Cooked using ' + item.articleListString + '.';
+  t += '\n\n<!--==Use==\n:TBA-->';
+  t += output_history(item);
+  t += '\n\n{{NavboxQuestItem}}\n[[Category: Quest Item]]';
+  if (!item.description) t += ' [[Category: Missing Description]]';
+  t += '\n__NOTOC__';
+  return t;
 }
 
 // Create stub articles for gem items
@@ -1946,7 +1974,8 @@ function generateCompanionTemplateOriginal(item) {
     /* do NOT do this - if category is set to commented value this will flag true - (item.category && item.category.includes('House')) ||*/
     (item.category && item.category.includes('House') || item.collection && item.collection.includes('House Dream Style'));
 
-    return isHouse;
+    // DDV-25 (T07): a villager's house is a place, not a House Dream Style (generateVillagerHouseTemplate)
+    return isHouse && !isVillagerHouse(item);
   }
 
   function isStall(item) {
@@ -2986,6 +3015,15 @@ function parseItemSourceOnce(item) {
     }
   }
 
+  // ===== Floating festival puzzle (DDV-25, T08) =====
+  // Event - Springtime Floating Festival - "Rotating Statues" puzzle (unlocked 2026.04.29)
+  // A placeholder name ("XXXX") is not a puzzle yet: the source stays a TODO.
+  const puzzleMatch = String(item.source).split('\n')[0].match(/^Event - (.+?) - "([^"]+)" puzzle\b/i);
+  if (puzzleMatch && !/^x+$/i.test(puzzleMatch[2].trim())) {
+    item.puzzleEvent = puzzleMatch[1].trim();
+    item.puzzle = puzzleMatch[2].trim();
+  }
+
   // ===== Scrooge - Conditional =====
   item.storeCondition = parseStoreCondition(item.source); // DDV-24: every "Store ... after ..." form, see output_from
   // Store - after unlocking Pocahontas
@@ -3508,12 +3546,22 @@ function output_from(item) {
     let achievementTab = item.achievementTab;
     let achievementIcon = item.achievementIcon;
     let achievementName = item.achievementName;
-    let achievementLevel = item.achievementLevel;
+    // DDV-25 (T04, as on Sunflower Hopscotch): the sheet's count "(x3)" is "(3)" on the wiki, and an
+    // achievement of a village's tab is a "Village Dreamlight Achievement"
+    let achievementLevel = (item.achievementLevel || '').replace(/\(\s*x\s*(\d+)\s*\)/i, '($1)');
+    let achievementKind = isVillageName(achievementTab) ? 'Village Dreamlight Achievement' : 'Dreamlight Achievement';
     //let achievementDescription = achievementDescription;
     let inlineTierInfo = "<!-- at the third tier-->";
 
     infoboxFrom = `|reward={{inlineIcon|${achievementIcon}|iconOnly|link=Dreamlight#${achievementTab}}} [[Dreamlight#${achievementTab}|"${achievementName}"${achievementLevel} Achievement]]`;
-    itemSource = `It is rewarded when redeeming the [[Dreamlight#${achievementTab}|Dreamlight Achievement]] "${achievementName}"${inlineTierInfo}${achievementDescription}.`
+    itemSource = `It is rewarded when redeeming the [[Dreamlight#${achievementTab}|${achievementKind}]] "${achievementName}"${inlineTierInfo}${achievementDescription}.`
+  }
+
+  // DDV-25 (T08): a floating festival puzzle reward, as js/todos and Horse Topiary have it
+  if (item.puzzle) {
+    let anchor = `${item.puzzleEvent}#${item.puzzle.replace(/ /g, '_')}`;
+    infoboxFrom = `|from=[[${item.puzzleEvent}]]\n|reward=[[${anchor}|"${item.puzzle}" puzzle]]`;
+    itemSource = `It is a reward for solving the [[${anchor}|${item.puzzle}]] puzzle during the limited time [[${item.puzzleEvent}]] event.<!--Puzzle solving details, including link to Pouch object.-->`;
   }
 
 
@@ -4643,24 +4691,230 @@ var LANDSCAPING_SLOT = '\u0000LANDSCAPING_ARTICLE_';
 var LANDSCAPING_SLOT_END = '\u0000';
 var LANDSCAPING_SLOT_RE = /\u0000LANDSCAPING_ARTICLE_(\d+)\u0000/g;
 
-// CR01: which special template builds this item's article instead of the furniture/clothing one, or
-// null. Same tests and the same order as before (the last match wins).
+// ===== more article templates (DDV-25) =====
+// Each template is written to give the infobox and opening text of one live wiki article (named at the
+// template). The tests that hold them to those articles live with the other engine tests.
+
+function isVillageName(name) {
+  for (var k in VILLAGE_NAMES) if (own.call(VILLAGE_NAMES, k) && VILLAGE_NAMES[k] == name) return true;
+  return false;
+}
+
+// T01: a premade decor preset
+function isPreset(item) {
+  return item.itemType == 'Preset' || item.category == 'Preset' || item.category == 'Presets';
+}
+
+// T01: mount gear (the "Mount Customization" bundle type)
+function isMountGear(item) {
+  return item.itemType == 'MountGear' || item.itemType == 'Mount Equipment' || item.universe == 'Mount Gear';
+}
+
+// T01: a sky effect from the Environment section of the furniture menu (the "Special" bundle type)
+function isEnvironmentEffect(item) {
+  return item.itemType == 'Environment';
+}
+
+// T02: a glider (sprint effect). Accessories never are.
+function isGlider(item) {
+  if (item.itemType != 'Clothing' || isAccessory(item) || item.collection == 'Pose') return false; // poses: not a template yet
+  var category = String(item.category || '');
+  return category == 'Glider' || category == 'Gliders' || item.collection == 'Glider' ||
+    /^(Gliders?|Glider \(.*\))$/.test(String(item.universe || ''));
+}
+
+// CR06: the look of a tool (fishing rod, shovel, ...). The game files handheld accessories (umbrellas,
+// popcorn buckets) as tool dream styles too, but the wiki has those as accessories: a row the sheet
+// calls a "Tool Dream Style" is a tool's look only when its name names a tool.
+var TOOL_NAMES = ['Fishing Rod', 'Watering Can', 'Pickaxe', 'Shovel'];
+function toolOf(item) {
+  return TOOL_NAMES.filter(function (n) { return String(item.name || '').indexOf(n) >= 0; })[0] || '';
+}
+function isToolDreamStyle(item) {
+  if (item.itemType != 'Clothing' || item.collection == 'Accessory') return false;
+  var category = String(item.category || '');
+  if (category == 'Tool' || category == 'Tools') return true;
+  return (category == 'Tool Dream Style' || item.universe == 'Tool Dream Style') && !!toolOf(item);
+}
+
+// T07: a villager's house (Lady and Tramp's House, Hercules' Villa)
+function isVillagerHouse(item) {
+  return item.collection == 'Villager House' || item.category == 'Villager House';
+}
+
+var BUILDING_SKIN_TESTS = [isStall, isWishingWell, isBuilding, isCastle, isVisitStation];
+function isBuildingSkin(item) {
+  return BUILDING_SKIN_TESTS.some(function (test) { return test(item); });
+}
+
+// A returning character dream style keeps the furniture/clothing article. A collection of only
+// "Dream Style" (some accessories) never chose this template: before CR01 the furniture article had
+// already turned that collection into "remove" when this was decided.
+function isCharacterDreamStyleArticle(item) {
+  return isCharacterDreamStyle(item) && !item.returning &&
+    !(item.collection == 'Dream Style' && !isCharacterDreamStyle(Object.assign({}, item, { collection: '' })));
+}
+
+// The |from= lines and the source sentence of any item (output_from fills both on the item)
+function itemFromAndSource(item) {
+  output_from(item);
+  return { from: item.infoboxFrom, source: item.itemSource };
+}
+
+// T01, as on Tulip Town Preset: the owner's PRESET ARTICLE TEMPLATE
+function generatePresetTemplate(item) {
+  var src = itemFromAndSource(item);
+  var premium = isPremium(item) && item.bundleName;
+  var t = '{{infobox\n|image=' + item.name + '.png\n|width=350px\n|type=Preset\n|category=none\n' +
+    '|description=<!--{{PremiumShopDescription|Decor Preset}}-->\n';
+  t += src.from + '\n';
+  t += '|gridSize=\n|placement=\n|environment=<!--outdooronly-->\n}}\n';
+  t += "'''" + item.name + "''' is a premade set of [[furniture]]<!--'''Decor Preset'''--><!--[[Decor Preset]] / Premade Decor Presets-->.\n\n";
+  t += premium ? generateBodyFromPremiumShop(item) : src.source;
+  t += "<!-- Once collected it will not be added to the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more can not be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].-->";
+  t += "\n\nIt can be positioned and placed using the [[Furniture menu]] inside the [[Inventory]], in the '''{{inlineIcon|Presets}}''' category under '''Premade Decor Presets'''.<!--, and it can only be placed outdoors. -->{{cleanup|Needs new information about placement/use}}";
+  t += '\n\n==Includes==\n*TBA {{cleanup|Add list of items included in preset with counts}}';
+  t += output_history(item);
+  t += '\n\n{{NavboxFurniture|presets|general}}';
+  return t;
+}
+
+// T01, as on Night Mare Saddle: the sheet's category is the slot the gear goes in
+function generateMountGearTemplate(item) {
+  var src = itemFromAndSource(item);
+  var slot = stripHTMLComments(String(item.category || '')).trim();
+  var t = '{{infobox\n|image=' + item.name + '.png\n|type=Mount Equipment\n|category=' + (slot || '<!--Head Gear/Saddle/Blanket/Back-->') + '\n|collection=\n';
+  t += src.from + '\n}}\n';
+  t += "'''" + item.name + "''' is a piece of [[Mounts#Gear Customization|Mount Equipment]]";
+  t += slot ? " which applies to the '''" + slot + "''' slot." : '<!-- which applies to the SLOT slot-->.';
+  t += '\n\n' + src.source;
+  t += '\n\nIt can be equipped using the [[Wardrobe menu]] inside the [[Inventory]].';
+  t += output_relatedItems(item);
+  t += output_history(item);
+  t += '\n\n{{NavboxMount}}';
+  return t;
+}
+
+// T01, as on Haunted Sky and Meteor Shower (their "an piece of [[:Category:Enviornment|enviornmental]]"
+// is written correctly here)
+function generateEnvironmentTemplate(item) {
+  var src = itemFromAndSource(item);
+  var t = '{{infobox\n|image=' + item.name + '.png\n|type=Environment\n|category=Special\n|color=none\n|tags=none\n|traits=none\n|universe=none\n';
+  t += src.from + '\n|environment=outdooronly\n}}\n';
+  t += "'''" + item.name + "''' is a piece of [[:Category:Environment|environmental]] sky effect [[furniture]].\n\n";
+  t += src.source + " Once collected it will not be added to the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]] and more can not be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
+  t += "\n\nIt can be activated using the [[Furniture menu]] inside the [[Inventory]], by selecting it from the ''Environment'' section. Once selected, it will apply to the sky in the current biome or [[Floating Islands|floating island]]. Only one environment effect can be active at one time.";
+  t += output_history(item);
+  t += '\n\n{{NavboxFurniture|special|general}}';
+  return t;
+}
+
+// T02, as on Mythical Cloud Glider: no color, traits, universe or collection of its own; the navbox
+// goes with the universe in brackets ("none (Hercules)"), else with the other gliders
+function generateGliderTemplate(item) {
+  var src = itemFromAndSource(item);
+  var tags = item.tags ? applyConfirmationWrap(item, item.tags, tagsConfirmed, 'Tags') : 'Gliders';
+  var t = '{{infobox\n|image=' + item.name + '.png\n|type=Clothing\n|category=Gliders\n|color=none\n|tags=' + tags +
+    '\n|collection=none\n|traits=none\n|universe=none\n';
+  t += src.from + '\n}}\n';
+  t += "'''" + item.name + "''' is an unthemed piece of glider [[clothing]]";
+  if (item.starpath) t += ' unlocked during the [[' + item.starpath + ' Star Path]]';
+  t += '.\n\n' + src.source + ' Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].';
+  t += '\n\nIt can be equipped using the [[Wardrobe menu]] inside the [[Inventory]].';
+  t += output_history(item);
+  var grouped = inferredUniverse(item);
+  t += '\n\n' + (grouped ? '{{NavboxClothing|' + navboxSlug(grouped) + '|disney}}' : '{{NavboxClothing|gliders|general}}');
+  return t;
+}
+
+// CR06, as on Motunui Fishing Rod: the tool is read from the name
+function generateToolDreamStyleTemplate(item) {
+  var src = itemFromAndSource(item);
+  var tool = toolOf(item);
+  var params = '|tool=' + (tool ? '[[' + tool + ']]' : '<!--TOOL-->') + '\n|category=Tools\n|universe=none\n' + src.from + '\n';
+  var t = '{{infobox\n|image=' + item.name + '.png\n|type=[[Dream Styles#Tool Dream Styles|Tool Dream Style]]\n' + params + '}}\n';
+  t += '{{ItemDescription\n|' + item.name + '\n|type=Tool Dream Style\n' + params.replace(/\[\[([^\]]*)\]\]/, '$1') + '|clothingCollection=no\n}}';
+  t += output_history(item);
+  t += '\n\n{{NavboxDreamStyle|tools}}';
+  return t;
+}
+
+// T07, as on Lady and Tramp's House: residents from the name ("Lady and Tramp's House", "Hercules' Villa"),
+// the unlock quest from the source ("... (Meatballs)" or "Quest - A Real Godly Mess")
+function villagerHouseResidents(name) {
+  var m = String(name).match(/^(.+?)'s? [^']+$/);
+  return m ? m[1].split(/\s+and\s+/) : [];
+}
+function villagerHouseQuest(item) {
+  var source = String(item.source || '').split('\n')[0];
+  var m = source.match(/\(([^)]+)\)\s*$/) || source.match(/^Quest\s*-\s*(.+)$/i);
+  if (!m) return null;
+  var who = source.match(/-\s*([^-(]+?)\s*\([^)]+\)\s*$/);
+  return { quest: m[1].trim(), character: who ? who[1].trim() : '', realm: /\brealm\b/i.test(source) ? stripHTMLComments(String(item.universe || '')).trim() : '' };
+}
+function generateVillagerHouseTemplate(item) {
+  var residents = villagerHouseResidents(item.name);
+  var q = villagerHouseQuest(item);
+  var size = item.W && item.L ? item.W + 'x' + item.L : '';
+  var t = '{{infobox\n|image=' + item.name + '.png\n|name=' + item.name + '\n|type=Houses\n|category=Villager House\n';
+  t += '|residents=' + residents.map(function (r) { return '{{name|' + r + '}}'; }).join('<br>') + '\n';
+  t += '|universe=\n|unlocks={{name|Star Coins|link=Villagers\'_Houses#Unlock_Costs{{!}}Dynamic}} based on unlock order\n';
+  t += '|gridSize=' + (size || '<!--WxD-->') + '\n';
+  t += '|unlockquest=' + (q ? '{{quest|' + q.quest + (q.character ? '|friendship=' + q.character : '') + (q.realm ? '|realm=' + q.realm : '') + '}}' : '<!--{{quest|QUESTNAME}}-->') + '\n}}\n';
+  t += "'''" + item.name + "''' is a [[Villagers' Houses|Villager House]]";
+  if (residents.length) t += ' where ' + oxfordJoin(residents.map(function (r) { return '[[' + r + ']]'; })) + ' live' + (residents.length == 1 ? 's' : '');
+  t += '. It is unlocked during the ';
+  t += q ? (q.realm ? '[[' + q.realm + ' Realm]] quest [[' + q.quest + ']]' : 'quest [[' + q.quest + ']]') : '<!--QUEST-->';
+  t += ' and costs [[Star Coins]] to construct. It can be placed anywhere in the Village on land on paved or unpaved ground.';
+  t += output_history(item);
+  t += '\n\n{{NavboxLocation}}';
+  if (!size) t += '\n\n[[Category: Missing Size]]';
+  return t;
+}
+
+// T05: the body of a wallpaper or flooring that came back to the premium shop after a star path
+function returningWallpaperFloorsBody(item) {
+  var universe = stripHTMLComments(String(item.universe || '')).trim();
+  var theme = universe == 'Other' || !universe ? '[[Furniture#Other|non-themed]]' : '[[Furniture#' + universe + '|' + universe + ']] themed';
+  var kind = isWallpaper(item) ? 'wallpaper' : 'flooring';
+  var collection = stripHTMLComments(String(item.collection || '')).trim();
+  var collected = !collection || collection == 'none'
+    ? ' It is not tracked in the [[:Category:Untracked Furniture Sets Collection|Furniture Sets Collection]].'
+    : ' Once collected it will be added to the [[:Category:' + collection + ' Furniture Sets Collection|' + collection + ' Furniture Sets Collection]].';
+  return "'''" + item.name + "''' is a " + theme + ' piece of ' + kind + ' [[furniture]].\n\n' +
+    // js/todos and the live articles: "for a limited time" stays for a returning wallpaper or flooring
+    generateReturningPremiumStarPathBodyText(item).replace('to unlock and collect during', 'to unlock and collect for a limited time during') + collected +
+    "\n\nOnce collected it can be applied to rooms inside the [[Player's House]] using the [[Furniture menu]] inside the [[Inventory]].";
+}
+
+// CR01 / DDV-25: the one place that picks which template builds an item's article instead of the
+// furniture/clothing one. The first test that matches wins (landscaping is picked before this, in
+// renderClothingFurnitureArticle, because its article skips the furniture cleanup).
+var ARTICLE_TEMPLATES = [
+  { name: 'companion', test: isCompanion, generate: generateCompanionTemplate },
+  { name: 'preset', test: isPreset, generate: generatePresetTemplate },
+  { name: 'mount gear', test: isMountGear, generate: generateMountGearTemplate },
+  { name: 'environment (special)', test: isEnvironmentEffect, generate: generateEnvironmentTemplate },
+  { name: 'building skin', test: isBuildingSkin, generate: generateBuildingSkinTemplate },
+  { name: 'villager house', test: isVillagerHouse, generate: generateVillagerHouseTemplate },
+  { name: 'house dream style', test: isHouse, generate: generateHouseTemplate },
+  { name: 'glider', test: isGlider, generate: generateGliderTemplate },
+  { name: 'tool dream style', test: isToolDreamStyle, generate: generateToolDreamStyleTemplate },
+  { name: 'character dream style', test: isCharacterDreamStyleArticle, generate: generateCharacterDreamStyleTemplate },
+  { name: 'wallpaper/flooring', test: isWallpaperFlooring, generate: generateWallpaperFloorsDescriptionTemplate }
+];
+
+// The template entry for this item, or null for the furniture/clothing article
+function articleTemplateFor(item) {
+  for (var i = 0; i < ARTICLE_TEMPLATES.length; i++) {
+    if (ARTICLE_TEMPLATES[i].test(item)) return ARTICLE_TEMPLATES[i];
+  }
+  return null;
+}
+
 function specialArticleTemplate(item) {
-  var generate = null;
-  if (isWallpaperFlooring(item)) generate = generateWallpaperFloorsDescriptionTemplate;
-  // NOTE: a returning character dream style keeps the furniture/clothing article. A collection of only
-  // "Dream Style" (tool dream styles, some accessories) never chose this template: before CR01 the
-  // furniture article had already turned that collection into "remove" when this was decided.
-  if (isCharacterDreamStyle(item) && !item.returning &&
-      !(item.collection == 'Dream Style' && !isCharacterDreamStyle(Object.assign({}, item, { collection: '' })))) {
-    generate = generateCharacterDreamStyleTemplate;
-  }
-  if (isHouse(item)) generate = generateHouseTemplate;
-  if (isStall(item) || isWishingWell(item) || isBuilding(item) || isCastle(item) || isVisitStation(item)) {
-    generate = generateBuildingSkinTemplate;
-  }
-  if (isCompanion(item)) generate = generateCompanionTemplate;
-  return generate;
+  var entry = articleTemplateFor(item);
+  return entry ? entry.generate : null;
 }
 
 /* ============= */
@@ -4912,7 +5166,8 @@ function generateBuildingSkinTemplate(item) {
     output_image(item) +
     output_type(item) +
     output_category(item) +
-    output_collection(item) +
+    // DDV-25 (T07): a skin is in no collection, so it has no collection icon (as on the Cherry Blossom skins)
+    output_collection(item).replace(/\|collectiontag=.*\n/, '') +
     output_from(item);
 
     if (isWishingWell(item)) {
@@ -5074,8 +5329,16 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     output_universe(item) +
     output_from(item) +
     output_sizePlacementEnv(item) +
-    '}}\n' +
-    '{{WallpaperFloorsDescription|wftype=%%category%%|universe=%%universe%%';
+    '}}\n';
+
+    // DDV-25 (T05): {{WallpaperFloorsDescription}} cannot say that a star path item returned to the
+    // premium shop, so a returning one gets the text written out (js/todos, as on Blooming Magnolia Wallpaper)
+    if (item.returning) {
+      return template + returningWallpaperFloorsBody(item) + output_history(item) + output_navbox(item) +
+        output_missingCategories(item);
+    }
+
+    template += '{{WallpaperFloorsDescription|wftype=%%category%%|universe=%%universe%%';
 
     // todo: check for player level
 
