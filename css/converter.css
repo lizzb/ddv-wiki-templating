@@ -105,6 +105,27 @@ p {
 #settings .settings-group p {
   padding-left: 1rem;
 }
+/* The premium box changes which items the boxes above apply to, not what a value says, so it sits in its own panel. */
+#settings .premium-setting {
+  margin: 1.25rem 0 1rem;
+  padding: 0.25rem 0.75rem 0.5rem;
+  border-left: 4px solid #f0b429;
+  background: rgba(255, 255, 255, 0.1);
+}
+#settings .premium-setting h5 {
+  margin: 0.5rem 0 0;
+  color: #f0b429;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+#settings .premium-setting p.setting-note {
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.4;
+  color: #ccc;
+  margin: 0;
+}
 
 /*** Converter ***/
 .group-header {
