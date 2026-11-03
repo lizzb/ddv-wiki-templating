@@ -148,7 +148,7 @@ function microTemplate(templateStr, objData) {
   return templateStr;
 }
 
-// TODO: do NOT return true if universe is One Hundred.... because that uses an "a" not an "an"
+// CR21 (B46): "One ..." and "Once ..." start with a "w" sound, so they take "a" (a One Hundred Acre Wood themed ...); see createUniverseLink
 function isVowel(x) {
   return x == 'A' || x == 'E' || x == 'I' || x == 'O' || x == 'U';
 }
@@ -178,7 +178,7 @@ function createUniverseLink(itemType, universe) {
   ) {
     output += 'n unthemed';
   } else {
-    if (universe!= "One Hundred and One Dalmatians" && isVowel(universe.substr(0, 1))) {
+    if (!/^(One|Once)\b/.test(universe) && isVowel(universe.substr(0, 1))) {
       output += 'n';
     }
     output += ' [[' + itemType + '#' + universe + '|' + universe + ']] themed';
@@ -1088,6 +1088,7 @@ function insertCookingLink(input) {
     return '[[:Category:Spices|any Spice]]';
   case 'Any Seafood':
     return '[[:Category:Seafood|any Seafood]]';
+  case 'Any Vegetable':
   case 'Any Vegetables':
     return '[[:Category:Vegetables|any Vegetable]]';
   case 'Any Grain':
@@ -1145,6 +1146,7 @@ function insertIngredientCategoryLink(input) {
 
 
 function oxfordJoin(arr) {
+  if (arr.length == 2) return arr[0] + ' and ' + arr[1]; // CR11 (B45): no comma for two
   return arr.join(', ').replace(/, ([^,]*)$/, ', and $1');
 }
 /*
@@ -1217,6 +1219,11 @@ function renderMeals(dataArray) {
     if (item["ing5"] && item["ing5"] != "-") ingredientArray.push(item["ing5"]);
     if (item["ing6"] && item["ing6"] != "-") ingredientArray.push(item["ing6"]);
 
+    // CR11 (B45): "Any Vegetables", "Any Fruits" and other plural forms become the one name each link uses
+    ingredientArray = ingredientArray.map(function (ing) {
+      var any = /^Any (Vegetable|Fruit|Sweet|Spice|Grain|Meat|Fish)s?$/.exec(String(ing).trim());
+      return any ? 'Any ' + any[1] : ing;
+    });
     item.ingredientArray = ingredientArray;
     item.ingredientListString = ingredientArray.join(", ");
 
@@ -1667,7 +1674,7 @@ function generateCompanionTemplate(item) {
     template += ` Once equipped, it will follow the Player as they move between Biomes and wander nearby.`;
     template += ` It can collect`;
     template += `<!-- ${inlineLink1}-->`;
-    template += ` resources near to the player, and after reaching [[friendship]] level 4 it can has a chance to produce bonus `;
+    template += ` resources near to the player, and after reaching [[friendship]] level 4 it has a chance to produce bonus `;
     template += `<!-- ${inlineLink2}-->`
     template+= ` resources when gathering.`;
     template += ` Companions can also be photographed in unique poses using [[Phone#Photo Mode|Photo Mode]], or housed in a [[:Category:Companion Home|Companion Home]].`;
@@ -1737,8 +1744,7 @@ function generateCompanionTemplateOriginal(item) {
     template += "\n|%%name%%";
     template += "\n|type=Companion";
     template += "\n|critterType=%%type%%"; //<!--Goose/Bee/Skunk/Sunbird/Capybara-->;
-    
-   //remmoved stuff
+    template += "\n}}"; // CR08: ItemDescription was never closed
 
 
     template += output_history(item);
@@ -2066,7 +2072,35 @@ function isStarPath(item) {
   return  isStarPath;
 }
 
+// DDV-24: a one-line source "Store - after ...", "Store «- after ...»", "Store (Timegate ...) - after ...",
+// "Store - only after ..." or "Store after ..." is a Scrooge's Store item whose stock depends on a condition,
+// never a quest item. Returns null for any other source. hidden: the condition sits inside the « » marker
+// (shown in the sheet, hidden on the wiki), so the sentence built from it is written as a comment.
+function parseStoreCondition(source) {
+  if (typeof source !== 'string' || source.indexOf('\n') >= 0) return null;
+  var m = source.replace(/[«»]/g, '').trim().match(/^Store\b(?:\s*\([^)]*\))?\s*(?:-\s*)?(?:only\s+)?after\s+(.+)$/i);
+  if (!m) return null;
+  var cond = m[1].trim();
+  var c = { hidden: /«[^»]*\bafter\b/.test(source), raw: cond };
+  var r;
+  if ((r = cond.match(/\bquest\s*\(([^)]+)\)$/i))) c.quest = r[1].trim();
+  else if ((r = cond.match(/^(?:unlocking\s+)?any\s+(.+?)\s+character$/i))) c.anyOf = r[1].trim();
+  else if ((r = cond.match(/^unlocking\s+(.+)$/i))) c.character = r[1].trim();
+  return c;
+}
+
+// The words after "rotating stock from [[Scrooge's Store]]" for a parseStoreCondition() result.
+function storeConditionText(c) {
+  var text;
+  if (c.quest) text = ` after completing the quest [[${c.quest}]]`;
+  else if (c.character) text = ` after [[${c.character}]] has joined the Valley`;
+  else if (c.anyOf) text = ` after any ${c.anyOf} character has joined the Valley`;
+  else return `<!-- after ${c.raw}-->`;
+  return c.hidden ? `<!--${text}-->` : text;
+}
+
 function isQuestItem(item) {
+  if (parseStoreCondition(item.source)) return false; // DDV-24 (B26, B48): a quest named as a store condition is not a reward
   var isQuestItem = 
   item.location && item.location.includes('quest') ||
   item.source && item.source.includes(' quest ') ||
@@ -2953,6 +2987,7 @@ function parseItemSourceOnce(item) {
   }
 
   // ===== Scrooge - Conditional =====
+  item.storeCondition = parseStoreCondition(item.source); // DDV-24: every "Store ... after ..." form, see output_from
   // Store - after unlocking Pocahontas
   // Store - only after Peter Pan Realm Quest (The Music's On the Walls)
   if (item.inStore) {
@@ -2999,8 +3034,10 @@ function parseItemSourceOnce(item) {
     
     //const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<questType>story))\s*(?:quest)?\s+\((?<quest>[^)]+)\)(?:\s*\((?:(?<qty>\d+)\s+)?(?:(?<actionVerb>crafted|given|found|made)\s+)?(?<whenParen>[^)]+?)\))?(?:\s*\("(?<quote>[^"]+)"\))?(?:\s*-\s*(?<tailHyphen>[^(\n]+))?/i;
     
-    const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<questType>story))\s*(?:quest)?\s+\((?<quest>[^)]+)\)(?<tail>.*)$/i;
-    const match = string.match(regex);
+    // B26: "Aladdin Realm quest (Monkey Business) (during)" and "Hercules quest - Realm - Speedrun Crash Course" too
+    const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<questType>story|realm))\s*(?:quest)?\s+\((?<quest>[^)]+)\)(?<tail>.*)$/i;
+    const dashRealm = string.match(/^(?<character>.+?)\s+quest\s*-\s*(?<questType>Realm)\s*-\s*(?<quest>[^(\n]+?)\s*(?<tail>\(.*)?$/i);
+    const match = string.match(regex) || dashRealm;
 
     if (match) {
 
@@ -3015,7 +3052,7 @@ function parseItemSourceOnce(item) {
 
       item.character = character ? character.trim() : "";
       item.level = levelNum || "";
-      item.questType = questType || "";
+      item.questType = questType ? capitalize(questType.toLowerCase()) : ""; // Story or Realm
       item.quest = quest ? quest.trim() : "";
 
   // Initialize outputs
@@ -3085,6 +3122,7 @@ function parseItemSourceOnce(item) {
     }
 
   } else {
+      item.questParseFailed = true; // B26: output_from writes the source as a placeholder instead of [[undefined]]
       console.warn("Failed to parse quest source for item (", item.name, "): ", string); // once per item per render since DDV-31 (CR23); it printed 3 times before
     }
 
@@ -3391,7 +3429,12 @@ function output_from(item) {
   // TODO - items from default scrooge catalog
   // It is one of the items available by default to order from [[Scrooge's Catalog]], and is also available to purchase from [[Scrooge's Store]].
 
-  switch (item.inStore) {
+  // DDV-24: a "Store ... after ..." source is a conditional Scrooge's Store item even when the store
+  // column is empty or holds a clothing slot (table, trio, window)
+  var storeKind = item.inStore;
+  if (item.storeCondition && ['EI', 'SV', 'WM', 'HW', 'HW - C', 'x - C'].indexOf(storeKind) < 0) storeKind = 'x - C';
+
+  switch (storeKind) {
   case 'EI':
   case 'SV':
   case 'WM':
@@ -3402,12 +3445,15 @@ function output_from(item) {
     }
     infoboxFrom += "|from=Scrooge's Store (" + item.collection + ")\n|storeSlots=";
     itemSource = itemSource_scroogeDefault + ' in [[' + item.collection + ']]';
-    // TODO - more conditional statements, also cosolidate in one place
-    if (item.character) {
-      itemSource += ` after [[${item.character}]] has joined the Valley`;
-    }
-    if (item.quest) {
-      itemSource += ` after completing the quest [[${item.quest}]]`;
+    if (item.storeCondition) {
+      itemSource += storeConditionText(item.storeCondition);
+    } else {
+      if (item.character) {
+        itemSource += ` after [[${item.character}]] has joined the Valley`;
+      }
+      if (item.quest) {
+        itemSource += ` after completing the quest [[${item.quest}]]`;
+      }
     }
     itemSource += '. ';
     break;
@@ -3427,12 +3473,15 @@ function output_from(item) {
     infoboxFrom = "|from=Scrooge's Store\n|storeSlots=";
     itemSource = itemSource_scroogeDefault + ` under certain conditions. `;
 
-    // TODO - more conditional statements, also cosolidate in one place
-    if (item.character) {
-      itemSource = itemSource_scroogeDefault + ` after [[${item.character}]] has joined the Valley`;
-    }
-    if (item.quest) {
-      itemSource = itemSource_scroogeDefault + ` after completing the quest [[${item.quest}]]`;
+    if (item.storeCondition) {
+      itemSource = itemSource_scroogeDefault + storeConditionText(item.storeCondition);
+    } else {
+      if (item.character) {
+        itemSource = itemSource_scroogeDefault + ` after [[${item.character}]] has joined the Valley`;
+      }
+      if (item.quest) {
+        itemSource = itemSource_scroogeDefault + ` after completing the quest [[${item.quest}]]`;
+      }
     }
     itemSource += '. ';
     break;
@@ -3579,6 +3628,9 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
     if ( capitalize(item.questType) == 'Story' ) {
       itemSource += ` ${actionVerb} the [[${item.character}#Quests|${item.character}]] story quest [[${item.quest}]]`;
     }
+    else if (item.questType == 'Realm') { // B26
+      itemSource += ` ${actionVerb} the [[${item.character}#Quests|${item.character}]] Realm quest [[${item.quest}]]`;
+    }
     else {
       itemSource += ` reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
       itemSource += ` and ${actionVerb} the quest [[${item.quest}]]`;
@@ -3614,8 +3666,16 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
 
       // TODO - "reward" items are currently incorrectly outputting "After reaching XX" and need replacement to not create a sentence fragment
       // ideally want to prevent this from happening rather than replacing after the fact
-      if (item.whenRewarded && item.whenRewarded.includes('reward') || item.whenRewarded == 'reward' || item.whenReward == 'post-quest mailbox reward') {
-        itemSource = itemSource.replace(/^After reaching/g, 'It is rewarded after reaching');
+      if (item.whenRewarded && item.whenRewarded.includes('reward')) { // CR12: also covers "post-quest mailbox reward" (the old third test read a misspelled field)
+        itemSource = itemSource.replace(/^After /, 'It is rewarded after ');
+      }
+      // CR13, B27: with no verb in the source the "After ..." clause had no main clause: "..., Once collected"
+      // after "(during)", or "After ... completing the quest [[X]]." on its own
+      else if (/,$/.test(itemSource)) {
+        itemSource += ' it is obtained during the quest.';
+      }
+      else {
+        itemSource = itemSource.replace(/^After /, 'It is obtained after ');
       }
       /*else {
           itemSource += ` it is made available.`;
@@ -3638,9 +3698,10 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
       itemSource += ` It is unique and is limited to one.`;
     }
     if (item.whenRewarded && item.whenRewarded.includes('post-quest mailbox reward')) {
-      let postQuestMessageTitle = item.postQuestMessageTitle || 'MESSAGETITLE';
+      // CR12: the parser stores the title as postQuestMailboxMessageTitle; a space was missing before "It is collected"
+      let postQuestMessageTitle = item.postQuestMailboxMessageTitle || 'MESSAGETITLE';
       itemSource += ` After the quest is complete, [[${item.character}]] will send a mail message <!-- titled ''"${postQuestMessageTitle}"''--> with this item attached.`;
-      itemSource += `It is collected upon claiming it from the mailbox.`;
+      itemSource += ` It is collected upon claiming it from the mailbox.`;
     }
 
 
@@ -3686,6 +3747,11 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
       // itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
       itemSource += placeholderCommentBodyDetailsQuest;
 
+    }
+
+    if (item.questParseFailed) { // B26: an unparsed quest source is a placeholder, never [[undefined]]
+      infoboxFrom = `|from=${output_QuestTemplate(item)}`;
+      itemSource = '<!--SOURCE TODO.-->' + '<!--' + item.source + '-->';
     }
 
   }
@@ -3796,6 +3862,13 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
     infoboxFrom = '|from=Lorekeeper Tale';
     // parseitemsource should have provided item.taleUniverse
     itemSource = `It can be collected as a reward after reordering the [[Snippets#Lorekeeper Tales| ${item.taleUniverse} Lorekeeper Tale]].`;
+  }
+
+  // B37: a pair of shoes, earrings, ... is "they" in the first sentence of the source paragraph
+  if (item.itemType == 'Clothing' && ['Gloves', 'Glasses', 'Earrings', 'Pants', 'Shoes', 'Shorts', 'Hose Socks'].indexOf(item.category) >= 0) {
+    itemSource = itemSource.replace(/^It (is|has|can|was)\b/, function (m, verb) {
+      return 'They ' + { is: 'are', has: 'have', can: 'can', was: 'were' }[verb];
+    });
   }
 
   // Saved on the item (objects are passed by reference); microTemplate fills %%infoboxFrom%% and %%itemSource%% when the article is put together
@@ -4016,7 +4089,7 @@ function output_QuestTemplate(item) {
 
   let output = `{{quest|${questName}|friendship=${characterName}`;
   output += item.level ? `|level=${item.level}` : ``;
-  output += questType ? `|realm=${capitalize(questType)}`: ``;
+  output += (questType && questType != 'Realm') ? `|realm=${capitalize(questType)}`: ``; // B26: the wiki has no realm= value for realm quests
   output += `}}`;
 
   //`|reward={{quest|${item.quest}|friendship=${item.character}|level=${item.level}}}`;
@@ -4214,9 +4287,9 @@ function output_itemIntro(item) {
     }
 
     // mixed feelings on whether to replace or not, because "bed" vs "seating" has no intrinsic game meaning
-    if (itemUseIntro == 'seating' && item.category.includes("Bed")) {
-      // CR04: `==` compares instead of assigning, so beds stay "seating" (fix is DDV-24, B35)
-      itemUseIntro == 'bed'
+    // CR04 (B35): a Beds category or the word "bed" in the name says bed, not seating
+    if (itemUseIntro == 'seating' && ((item.category && item.category.includes("Bed")) || /\bbed\b/i.test(item.name || ''))) {
+      itemUseIntro = 'bed';
     }
 
     if (item.functions && item.functions.includes('Sit')) {
@@ -4226,6 +4299,8 @@ function output_itemIntro(item) {
 
   // TODO: this is overriding any values set above, need to fix
   // janky catch for more lighting objects - this is not robust!!!! cases where i've written extra info in the box
+    // B41: a light value that says it can be switched (on/off, toggle, interact) gets the Interact sentence;
+    // the rest stays commented as before
     if (item.functions && item.functions.includes('Light')) {
       itemUseIntro = 'lighting';
 
@@ -4234,7 +4309,7 @@ function output_itemIntro(item) {
       if (item.functions.includes('Constant')) {
         itemUseBody = "<!-- Once it is placed in the world, the object acts as a light source, but the Player cannot interact with it. It will automatically turn on or off depending on the [[Environment#Time-Based Lighting Effects|time of day]]. -->";
       }
-      if (item.functions == 'Lighting') {
+      if (item.functions == 'Lighting' || /on\/off|toggle|interact/i.test(item.functions)) {
         itemUseBody = " Once it is placed in the world, the Player can '''Interact''' with the object to toggle its light on and off.";
       }
       
@@ -4307,8 +4382,9 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
 
       //const str = "functions=Gathering (3)";
 
-      const match = item.functions.match(/\((\d+)\)/);
-      const numVillagers = match ? parseInt(match[1], 10) : null;
+      // CR14 (B14): the sheet writes "Gathering - 3"; older cells "Gathering (3)"
+      const match = item.functions.match(/Gather(?:ing)?\s*(?:\((\d+)\)|-\s*(\d+))/i);
+      const numVillagers = match ? parseInt(match[1] || match[2], 10) : '<!--NUMBER-->';
 
       itemUseBody = '\n\nIt has a special gathering function. When the player stands beside it will highlight and prompt to gather villagers, and activating the [[Camera]] will fade the screen out and teleport ' + numVillagers + ' random villagers to the location.';
       // also i hate this wording
@@ -4327,7 +4403,8 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
     var uni = getCharacterUniverse(charProperName);
 
     itemUseIntro = ` that can be applied to the [[Dream Styles#${uni}|${uni}]] Character [[${charProperName}]].`;
-    output += itemUseIntro;
+    // CR06 (B07): the clothing intro above ends with a full stop; this clause continues that sentence
+    output = output.replace(/\.$/, '') + itemUseIntro;
   }
 
   // item is the row object itself (objects are passed by reference), so these are seen by the functions that run after this one
@@ -5159,6 +5236,38 @@ function normalizeText(newStr) {
 }
 
 
+// DDV-24: text between « and » in a cell is kept in the sheet but hidden on the wiki. Every paired
+// «...» in the finished article becomes <!--...-->. Inside an existing comment (a value the
+// confirmation boxes wrap, or a <!-- --> written in the cell) the markers are dropped and the text stays
+// in that comment, so no comment is nested. A « or » without its partner is left as it is.
+function hiddenMarkersToComments(text) {
+  if (typeof text !== 'string' || text.indexOf('«') < 0) return text;
+  var paired = {}, open = [], i;
+  for (i = 0; i < text.length; i++) {
+    if (text[i] === '«') open.push(i);
+    else if (text[i] === '»' && open.length) { paired[open.pop()] = true; paired[i] = true; }
+  }
+  var out = '', inComment = false, depth = 0, markComment = false, skipClose = 0;
+  for (i = 0; i < text.length; i++) {
+    if (text.startsWith('<!--', i)) {
+      if (markComment) skipClose++; // a comment inside a marker: its text joins the marker's comment
+      else { inComment = true; out += '<!--'; }
+      i += 3;
+    } else if (text.startsWith('-->', i)) {
+      if (skipClose) skipClose--;
+      else { inComment = false; out += '-->'; }
+      i += 2;
+    } else if (text[i] === '«' && paired[i]) {
+      if (depth++ === 0 && !inComment) { markComment = true; out += '<!--'; }
+    } else if (text[i] === '»' && paired[i]) {
+      if (--depth === 0 && markComment) { markComment = false; out += '-->'; }
+    } else {
+      out += text[i];
+    }
+  }
+  return out;
+}
+
 // ===== public API =====
 
 var own = Object.prototype.hasOwnProperty;
@@ -5262,7 +5371,7 @@ function render(rows, templateType, settings) {
   renderRowNames = new Set(rows.filter(function (row) { return row && row.name; }).map(function (row) { return row.name; }));
 
   try {
-    return renderParent(rows, templateType);
+    return hiddenMarkersToComments(renderParent(rows, templateType));
   } finally {
     resetState();
   }
