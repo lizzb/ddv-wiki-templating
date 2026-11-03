@@ -42,22 +42,22 @@ function readEngineSettings() {
     renderPSbundles: true,
 
     // toggle to wrap in cleanup tag
-    collectionConfirmed: $("#collectionConfirmedCB").prop("checked"),
+    collectionConfirmed: document.getElementById("collectionConfirmedCB").checked,
 
     // toggle for wrapping in comments in infobox
-    priceConfirmed: $("#priceConfirmedCB").prop("checked"),
-    categoriesColorsTraitsConfirmed: $("#categoriesColorsTraitsConfirmedCB").prop("checked"),
+    priceConfirmed: document.getElementById("priceConfirmedCB").checked,
+    categoriesColorsTraitsConfirmed: document.getElementById("categoriesColorsTraitsConfirmedCB").checked,
 
-    tagsConfirmed: $("#tagsConfirmedCB").prop("checked"),
+    tagsConfirmed: document.getElementById("tagsConfirmedCB").checked,
 
     // whether or not to include filler copy pasta for furniture functions
-    functionsConfirmed: $("#functionsConfirmedCB").prop("checked"),
+    functionsConfirmed: document.getElementById("functionsConfirmedCB").checked,
 
     // size, placement, surface area and environment (own box since DDV-28)
-    placementConfirmed: $("#placementConfirmedCB").prop("checked"),
+    placementConfirmed: document.getElementById("placementConfirmedCB").checked,
 
     // whether to console print out source of item as detected
-    showItemDebug: $("#showItemDebugCB").prop("checked"),
+    showItemDebug: document.getElementById("showItemDebugCB").checked,
 
     // optional template typed into "Template input" (%%column%% placeholders)
     customTemplate: document.getElementById("template-input").value
