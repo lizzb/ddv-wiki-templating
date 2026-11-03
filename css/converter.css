@@ -281,3 +281,46 @@ p {
     transform: rotate(360deg);
   }
 }
+
+/*** Line numbers beside the input box, and the leftover warning above the output (DDV-27) ***/
+#data-input-wrap {
+  position: relative;
+}
+#data-input {
+  display: block;
+  box-sizing: border-box;
+  padding-left: 52px;
+  white-space: pre;
+  overflow: auto;
+}
+#data-input-lines {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 44px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1; /* the textarea is a positioned .panel too */
+  background: rgba(95, 37, 92, 0.08);
+  border-right: 1px solid rgba(95, 37, 92, 0.25);
+  box-sizing: border-box;
+}
+#data-input-lines > div {
+  padding: 10px 6px 10px 0;
+  text-align: right;
+  white-space: pre;
+  font-family: Andale Mono, Courier, monospace;
+  font-size: 12px;
+  line-height: 18px;
+  color: #8a6f87;
+}
+#output-warning {
+  background: #fff3cd;
+  color: #7a4b00;
+  border-top: 2px solid #e0a800;
+  border-bottom: 2px solid #e0a800;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: bold;
+}
