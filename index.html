@@ -237,12 +237,6 @@
     </div>
   </div>
 </div>
-<!--[if lt IE 9]>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.3/jquery.min.js"></script>
-<![endif]-->
-<!--[if IE 9]><!-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
-<!--<![endif]-->
 <script src="js/globals.js"></script>
 <script src="js/data.js"></script>
 <script src="js/engine.js"></script>
@@ -251,7 +245,8 @@
 // Wire up instant live-update for the 4 confirmation checkboxes.
 // When ANY of these change, immediately re-render the wiki output.
 // This is delegated so it works even if DOM elements are added/changed later.
-$(document).on('change', '#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #placementConfirmedCB, #showItemDebugCB', function() {
+document.addEventListener('change', function(e) {
+  if (!e.target.matches('#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #placementConfirmedCB, #showItemDebugCB')) return;
   if (typeof d !== 'undefined' && d && typeof d.convert === 'function') {
     d.convert();
   }

@@ -5,7 +5,7 @@
  *
  * Input CSV or Tab-delimited data and this will parse it into a Data Grid Javascript object
  */
-function DataConverter(n){this.nodeId=n;this.node=$("#"+n);this.outputDataType="json";this.rowDelimiter="\n";this.inputText="";this.outputText="";this.indent="  ";this.tableName="your_table_name";this.headersProvided=!0;this.safeHeaders=!0;this.downcaseHeaders=!1;this.upcaseHeaders=!1;this.includeWhiteSpace=!0;this.useTabsForIndent=!1}function saveSettings(){for(var n,i,t={},r=0;r<settings.length;++r){n=settings[r];i=n.name||n.id;switch(n.type){case"button":continue;case"checkbox":t[i]=n.checked;break;case"radio":n.checked&&(t[i]=n.value);break;default:t[i]=n.value}}t.outputDataType=$("#data-selector").val();localStorage.settings=JSON.stringify(t)}var isDecimalRe=/^\s*(\+|-)?((\d+([,\.]\d+)?)|([,\.]\d+))\s*$/,CSVParser={escapeText:function(n,t){return n===undefined?"":(t===undefined&&(t="html"),t==="xml"&&(n=n.replace(/&/g,"&amp;"),n=n.replace(/'/g,"&apos;")),t==="rtf"?(n=n.replace(/\\/g,"\\'5c"),n=n.replace(/\{/g,"\\'7b"),n=n.replace(/\}/g,"\\'7d"),n=n.replace(/~/g,"\\'98")):(n=n.replace(/</g,"&lt;"),n=n.replace(/>/g,"&gt;")),n=n.replace(/…/g,t==="rtf"?"\\'85":"&hellip;"),n=n.replace(/‘/g,t==="rtf"?"\\'91":"&lsquo;"),n=n.replace(/’/g,t==="rtf"?"\\'92":"&rsquo;"),n=n.replace(/“/g,t==="rtf"?"\\'93":"&ldquo;"),n=n.replace(/”/g,t==="rtf"?"\\'94":"&rdquo;"),n=n.replace(/–/g,t==="rtf"?"\\'96":"&ndash;"),n=n.replace(/—/g,t==="rtf"?"\\'97":"&mdash;"),n=n.replace(/‹/g,t==="rtf"?"\\'8b":"&lsaquo;"),n=n.replace(/›/g,t==="rtf"?"\\'9b":"&rsaquo;"),n=n.replace(/«/g,t==="rtf"?"\\'ab":"&laquo;"),n=n.replace(/»/g,t==="rtf"?"\\'bb":"&raquo;"),n=n.replace(/¡/g,t==="rtf"?"\\'a1":"&iexcl;"),n=n.replace(/¿/g,t==="rtf"?"\\'bf":"&iquest;"),n=n.replace(/ /g,t==="rtf"?"\\~":"&nbsp;"),n=n.replace(/€/g,t==="rtf"?"\\'80":"&euro;"),n=n.replace(/†/g,t==="rtf"?"\\'86":"&dagger;"),n=n.replace(/‡/g,t==="rtf"?"\\'87":"&Dagger;"),n=n.replace(/•/g,t==="rtf"?"\\'95":"&bull;"),n=n.replace(/™/g,t==="rtf"?"\\'99":"&trade;"),n=n.replace(/¢/g,t==="rtf"?"\\'a2":"&cent;"),n=n.replace(/£/g,t==="rtf"?"\\'a3":"&pound;"),n=n.replace(/¤/g,t==="rtf"?"\\'a4":"&curren;"),n=n.replace(/¥/g,t==="rtf"?"\\'a5":"&yen;"),n=n.replace(/§/g,t==="rtf"?"\\'a7":"&sect;"),n=n.replace(/©/g,t==="rtf"?"\\'a9":"&copy;"),n=n.replace(/®/g,t==="rtf"?"\\'ae":"&reg;"),n=n.replace(/°/g,t==="rtf"?"\\'b0":"&deg;"),n=n.replace(/±/g,t==="rtf"?"\\'b1":"&plusmn;"),n=n.replace(/²/g,t==="rtf"?"\\'b2":"&sup2;"),n=n.replace(/³/g,t==="rtf"?"\\'b3":"&sup3;"),n=n.replace(/µ/g,t==="rtf"?"\\'b5":"&micro;"),n=n.replace(/¶/g,t==="rtf"?"\\'b6":"&para;"),n=n.replace(/·/g,t==="rtf"?"\\'b7":"&middot;"),n=n.replace(/¼/g,t==="rtf"?"\\'bc":"&frac14;"),n=n.replace(/½/g,t==="rtf"?"\\'bd":"&frac12;"),n=n.replace(/¾/g,t==="rtf"?"\\'be":"&frac34;"),n=n.replace(/×/g,t==="rtf"?"\\'d7":"&times;"),n=n.replace(/÷/g,t==="rtf"?"\\'f7":"&divide;"),n=n.replace(/á/g,t==="rtf"?"\\'e1":"&aacute;"),n=n.replace(/Á/g,t==="rtf"?"\\'c1":"&Aacute;"),n=n.replace(/à/g,t==="rtf"?"\\'e0":"&agrave;"),n=n.replace(/À/g,t==="rtf"?"\\'c0":"&Agrave;"),n=n.replace(/â/g,t==="rtf"?"\\'e2":"&acirc;"),n=n.replace(/Â/g,t==="rtf"?"\\'c2":"&Acirc;"),n=n.replace(/ä/g,t==="rtf"?"\\'e4":"&auml;"),n=n.replace(/Ä/g,t==="rtf"?"\\'c4":"&Auml;"),n=n.replace(/ã/g,t==="rtf"?"\\'e3":"&atilde;"),n=n.replace(/Ã/g,t==="rtf"?"\\'c3":"&Atilde;"),n=n.replace(/å/g,t==="rtf"?"\\'e5":"&aring;"),n=n.replace(/Å/g,t==="rtf"?"\\'c5":"&Aring;"),n=n.replace(/æ/g,t==="rtf"?"\\'e6":"&aelig;"),n=n.replace(/Æ/g,t==="rtf"?"\\'c6":"&AElig;"),n=n.replace(/ç/g,t==="rtf"?"\\'e7":"&ccedil;"),n=n.replace(/Ç/g,t==="rtf"?"\\'c7":"&Ccedil;"),n=n.replace(/ð/g,t==="rtf"?"\\'f0":"&eth;"),n=n.replace(/Ð/g,t==="rtf"?"\\'d0":"&ETH;"),n=n.replace(/é/g,t==="rtf"?"\\'e9":"&eacute;"),n=n.replace(/É/g,t==="rtf"?"\\'c9":"&Eacute;"),n=n.replace(/è/g,t==="rtf"?"\\'e8":"&egrave;"),n=n.replace(/È/g,t==="rtf"?"\\'c8":"&Egrave;"),n=n.replace(/ê/g,t==="rtf"?"\\'ea":"&ecirc;"),n=n.replace(/Ê/g,t==="rtf"?"\\'ca":"&Ecirc;"),n=n.replace(/ë/g,t==="rtf"?"\\'eb":"&euml;"),n=n.replace(/Ë/g,t==="rtf"?"\\'cb":"&Euml;"),n=n.replace(/í/g,t==="rtf"?"\\'ed":"&iacute;"),n=n.replace(/Í/g,t==="rtf"?"\\'cd":"&Iacute;"),n=n.replace(/ì/g,t==="rtf"?"\\'ec":"&igrave;"),n=n.replace(/Ì/g,t==="rtf"?"\\'cc":"&Igrave;"),n=n.replace(/î/g,t==="rtf"?"\\'ee":"&icirc;"),n=n.replace(/Î/g,t==="rtf"?"\\'ce":"&Icirc;"),n=n.replace(/ï/g,t==="rtf"?"\\'ef":"&iuml;"),n=n.replace(/Ï/g,t==="rtf"?"\\'cf":"&Iuml;"),n=n.replace(/ñ/g,t==="rtf"?"\\'f1":"&ntilde;"),n=n.replace(/Ñ/g,t==="rtf"?"\\'d1":"&Ntilde;"),n=n.replace(/ó/g,t==="rtf"?"\\'f3":"&oacute;"),n=n.replace(/Ó/g,t==="rtf"?"\\'d3":"&Oacute;"),n=n.replace(/ò/g,t==="rtf"?"\\'f2":"&ograve;"),n=n.replace(/Ò/g,t==="rtf"?"\\'d2":"&Ograve;"),n=n.replace(/ô/g,t==="rtf"?"\\'f4":"&ocirc;"),n=n.replace(/Ô/g,t==="rtf"?"\\'d4":"&Ocirc;"),n=n.replace(/ö/g,t==="rtf"?"\\'f6":"&ouml;"),n=n.replace(/Ö/g,t==="rtf"?"\\'d6":"&Ouml;"),n=n.replace(/õ/g,t==="rtf"?"\\'f5":"&otilde;"),n=n.replace(/Õ/g,t==="rtf"?"\\'d5":"&Otilde;"),n=n.replace(/ø/g,t==="rtf"?"\\'f8":"&oslash;"),n=n.replace(/Ø/g,t==="rtf"?"\\'d8":"&Oslash;"),n=n.replace(/œ/g,t==="rtf"?"\\'9c":"&#339;"),n=n.replace(/Œ/g,t==="rtf"?"\\'8c":"&#338;"),n=n.replace(/ß/g,t==="rtf"?"\\'df":"&szlig;"),n=n.replace(/ú/g,t==="rtf"?"\\'fa":"&uacute;"),n=n.replace(/Ú/g,t==="rtf"?"\\'da":"&Uacute;"),n=n.replace(/ù/g,t==="rtf"?"\\'f9":"&ugrave;"),n=n.replace(/Ù/g,t==="rtf"?"\\'d9":"&Ugrave;"),n=n.replace(/û/g,t==="rtf"?"\\'fb":"&ucirc;"),n=n.replace(/Û/g,t==="rtf"?"\\'db":"&Ucirc;"),n=n.replace(/ü/g,t==="rtf"?"\\'fc":"&uuml;"),n=n.replace(/Ü/g,t==="rtf"?"\\'dc":"&Uuml;"),n=n.replace(/ý/g,t==="rtf"?"\\'fd":"&yacute;"),n=n.replace(/Ý/g,t==="rtf"?"\\'dd":"&Yacute;"),n=n.replace(/ÿ/g,t==="rtf"?"\\'ff":"&yuml;"),n=n.replace(/Ÿ/g,t==="rtf"?"\\'9f":"&#376;"),n=n.replace(/´/g,t==="rtf"?"\\'b4":"&acute;"),t!=="rtf"&&(n=n.replace(/`/g,"&#96;")),n)},isNumber:function(n){return n!==""&&!(isNaN(n)||/^0\d/.test(n))},repeat:function(n,t){if(t<1)return"";for(var i="";t>1;)t&1&&(i+=n),t>>=1,n+=n;return i+n},parse:function(n,t,i,r,u,f,e){var a,s=[],w,l,k,g,o,v,c;switch(t){case"comma":a=",";break;case"tab":a="\t";break;default:a=/\t/.test(n)?"\t":","}for(n.indexOf(a)>-1&&(w=new RegExp("^"+d.rowDelimiter+"+|"+d.rowDelimiter+"+$","g"),n=n.replace(w,"")),s=this.CSVToArray(n,a),o=s.length-1;o>=0;--o)for(l=s[o].length-1;l>=0;--l)s[o][l]=s[o][l].replace("\t","\\t"),s[o][l]=s[o][l].replace("\n","\\n"),s[o][l]=s[o][l].replace("\r","\\r");var h=[],y=[],b=s[0].length,it=s.length;if(r)h=s.splice(0,1)[0],it=s.length;else for(o=0;o<b;++o)h.push("val"+o),y.push("");for(o=h.length-1;o>=0;--o)h[o]=$.trim(h[o]),u&&(h[o]=h[o].replace(/[^\w -]|&quot;/g,""),h[o]=h[o].replace(/ +/g,"_"),/^[^a-z]/i.test(h[o])&&(h[o]="col"+h[o])),e?h[o]=h[o].toUpperCase():f&&(h[o]=h[o].toLowerCase());for(o=0,v=s.length;o<v;++o)k=s[o].length,k!==b&&this.log("Error parsing row "+o+". Wrong number of columns.");for(g=s.length,o=0,v=h.length;o<v;++o){var nt=0,tt=0,p=0;for(c=0;c<g;++c)s[c]&&(i==="comma"&&isDecimalRe.test(s[c][o])&&(s[c][o]=s[c][o].replace(",",".")),CSVParser.isNumber(s[c][o])?(++tt,(s[c][o]+"").indexOf(".")>-1&&++p):s[c][o]!==""&&++nt);y[o]=nt||!tt&&!p?"string":p===0?"int":"float"}return{dataGrid:s,headerNames:h,headerTypes:y,errors:this.getLog()}},errorLog:[],resetLog:function(){this.errorLog=[]},log:function(n){this.errorLog.push(n)},getLog:function(){var t="",n,i;if(this.errorLog.length>0){for(n=0,i=this.errorLog.length;n<i;++n)t+="!!"+this.errorLog[n]+"!!\n";t+="\n"}return t},CSVToArray:function(n,t){var u,f;t=t||",";var e=new RegExp("(\\"+t+'|\\r?\\n|\\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^"\\'+t+"\\r\\n]*))","gi"),r=[[]],i=null;for(t==="\t"&&(n=n.replace(/(\t|\r?\n|\r|^)(".+?")([\t\n\r])/g,function(n,t,i,r){return t+i.replace(/\t/g,"\\t")+r}),n=n.replace(/(\t|\r?\n|\r|^)([^\t"][^\t]+)/g,function(n,t,i){return t+i.replace(/"/g,"&quot;")}));i=e.exec(n);)u=i[1],u.length&&u!==t&&r.push([]),f=i[2]?i[2].replace(/""/g,"&quot;"):i[3],r[r.length-1].push(f);return r}},DataGridRenderer,d,settings;
+function DataConverter(n){this.nodeId=n;this.node=document.getElementById(n);this.outputDataType="json";this.rowDelimiter="\n";this.inputText="";this.outputText="";this.indent="  ";this.tableName="your_table_name";this.headersProvided=!0;this.safeHeaders=!0;this.downcaseHeaders=!1;this.upcaseHeaders=!1;this.includeWhiteSpace=!0;this.useTabsForIndent=!1}function saveSettings(){for(var n,i,t={},r=0;r<settings.length;++r){n=settings[r];i=n.name||n.id;switch(n.type){case"button":continue;case"checkbox":t[i]=n.checked;break;case"radio":n.checked&&(t[i]=n.value);break;default:t[i]=n.value}}t.outputDataType=(document.getElementById("data-selector")||{}).value;localStorage.settings=JSON.stringify(t)}var isDecimalRe=/^\s*(\+|-)?((\d+([,\.]\d+)?)|([,\.]\d+))\s*$/,CSVParser={escapeText:function(n,t){return n===undefined?"":(t===undefined&&(t="html"),t==="xml"&&(n=n.replace(/&/g,"&amp;"),n=n.replace(/'/g,"&apos;")),t==="rtf"?(n=n.replace(/\\/g,"\\'5c"),n=n.replace(/\{/g,"\\'7b"),n=n.replace(/\}/g,"\\'7d"),n=n.replace(/~/g,"\\'98")):(n=n.replace(/</g,"&lt;"),n=n.replace(/>/g,"&gt;")),n=n.replace(/…/g,t==="rtf"?"\\'85":"&hellip;"),n=n.replace(/‘/g,t==="rtf"?"\\'91":"&lsquo;"),n=n.replace(/’/g,t==="rtf"?"\\'92":"&rsquo;"),n=n.replace(/“/g,t==="rtf"?"\\'93":"&ldquo;"),n=n.replace(/”/g,t==="rtf"?"\\'94":"&rdquo;"),n=n.replace(/–/g,t==="rtf"?"\\'96":"&ndash;"),n=n.replace(/—/g,t==="rtf"?"\\'97":"&mdash;"),n=n.replace(/‹/g,t==="rtf"?"\\'8b":"&lsaquo;"),n=n.replace(/›/g,t==="rtf"?"\\'9b":"&rsaquo;"),n=n.replace(/«/g,t==="rtf"?"\\'ab":"&laquo;"),n=n.replace(/»/g,t==="rtf"?"\\'bb":"&raquo;"),n=n.replace(/¡/g,t==="rtf"?"\\'a1":"&iexcl;"),n=n.replace(/¿/g,t==="rtf"?"\\'bf":"&iquest;"),n=n.replace(/ /g,t==="rtf"?"\\~":"&nbsp;"),n=n.replace(/€/g,t==="rtf"?"\\'80":"&euro;"),n=n.replace(/†/g,t==="rtf"?"\\'86":"&dagger;"),n=n.replace(/‡/g,t==="rtf"?"\\'87":"&Dagger;"),n=n.replace(/•/g,t==="rtf"?"\\'95":"&bull;"),n=n.replace(/™/g,t==="rtf"?"\\'99":"&trade;"),n=n.replace(/¢/g,t==="rtf"?"\\'a2":"&cent;"),n=n.replace(/£/g,t==="rtf"?"\\'a3":"&pound;"),n=n.replace(/¤/g,t==="rtf"?"\\'a4":"&curren;"),n=n.replace(/¥/g,t==="rtf"?"\\'a5":"&yen;"),n=n.replace(/§/g,t==="rtf"?"\\'a7":"&sect;"),n=n.replace(/©/g,t==="rtf"?"\\'a9":"&copy;"),n=n.replace(/®/g,t==="rtf"?"\\'ae":"&reg;"),n=n.replace(/°/g,t==="rtf"?"\\'b0":"&deg;"),n=n.replace(/±/g,t==="rtf"?"\\'b1":"&plusmn;"),n=n.replace(/²/g,t==="rtf"?"\\'b2":"&sup2;"),n=n.replace(/³/g,t==="rtf"?"\\'b3":"&sup3;"),n=n.replace(/µ/g,t==="rtf"?"\\'b5":"&micro;"),n=n.replace(/¶/g,t==="rtf"?"\\'b6":"&para;"),n=n.replace(/·/g,t==="rtf"?"\\'b7":"&middot;"),n=n.replace(/¼/g,t==="rtf"?"\\'bc":"&frac14;"),n=n.replace(/½/g,t==="rtf"?"\\'bd":"&frac12;"),n=n.replace(/¾/g,t==="rtf"?"\\'be":"&frac34;"),n=n.replace(/×/g,t==="rtf"?"\\'d7":"&times;"),n=n.replace(/÷/g,t==="rtf"?"\\'f7":"&divide;"),n=n.replace(/á/g,t==="rtf"?"\\'e1":"&aacute;"),n=n.replace(/Á/g,t==="rtf"?"\\'c1":"&Aacute;"),n=n.replace(/à/g,t==="rtf"?"\\'e0":"&agrave;"),n=n.replace(/À/g,t==="rtf"?"\\'c0":"&Agrave;"),n=n.replace(/â/g,t==="rtf"?"\\'e2":"&acirc;"),n=n.replace(/Â/g,t==="rtf"?"\\'c2":"&Acirc;"),n=n.replace(/ä/g,t==="rtf"?"\\'e4":"&auml;"),n=n.replace(/Ä/g,t==="rtf"?"\\'c4":"&Auml;"),n=n.replace(/ã/g,t==="rtf"?"\\'e3":"&atilde;"),n=n.replace(/Ã/g,t==="rtf"?"\\'c3":"&Atilde;"),n=n.replace(/å/g,t==="rtf"?"\\'e5":"&aring;"),n=n.replace(/Å/g,t==="rtf"?"\\'c5":"&Aring;"),n=n.replace(/æ/g,t==="rtf"?"\\'e6":"&aelig;"),n=n.replace(/Æ/g,t==="rtf"?"\\'c6":"&AElig;"),n=n.replace(/ç/g,t==="rtf"?"\\'e7":"&ccedil;"),n=n.replace(/Ç/g,t==="rtf"?"\\'c7":"&Ccedil;"),n=n.replace(/ð/g,t==="rtf"?"\\'f0":"&eth;"),n=n.replace(/Ð/g,t==="rtf"?"\\'d0":"&ETH;"),n=n.replace(/é/g,t==="rtf"?"\\'e9":"&eacute;"),n=n.replace(/É/g,t==="rtf"?"\\'c9":"&Eacute;"),n=n.replace(/è/g,t==="rtf"?"\\'e8":"&egrave;"),n=n.replace(/È/g,t==="rtf"?"\\'c8":"&Egrave;"),n=n.replace(/ê/g,t==="rtf"?"\\'ea":"&ecirc;"),n=n.replace(/Ê/g,t==="rtf"?"\\'ca":"&Ecirc;"),n=n.replace(/ë/g,t==="rtf"?"\\'eb":"&euml;"),n=n.replace(/Ë/g,t==="rtf"?"\\'cb":"&Euml;"),n=n.replace(/í/g,t==="rtf"?"\\'ed":"&iacute;"),n=n.replace(/Í/g,t==="rtf"?"\\'cd":"&Iacute;"),n=n.replace(/ì/g,t==="rtf"?"\\'ec":"&igrave;"),n=n.replace(/Ì/g,t==="rtf"?"\\'cc":"&Igrave;"),n=n.replace(/î/g,t==="rtf"?"\\'ee":"&icirc;"),n=n.replace(/Î/g,t==="rtf"?"\\'ce":"&Icirc;"),n=n.replace(/ï/g,t==="rtf"?"\\'ef":"&iuml;"),n=n.replace(/Ï/g,t==="rtf"?"\\'cf":"&Iuml;"),n=n.replace(/ñ/g,t==="rtf"?"\\'f1":"&ntilde;"),n=n.replace(/Ñ/g,t==="rtf"?"\\'d1":"&Ntilde;"),n=n.replace(/ó/g,t==="rtf"?"\\'f3":"&oacute;"),n=n.replace(/Ó/g,t==="rtf"?"\\'d3":"&Oacute;"),n=n.replace(/ò/g,t==="rtf"?"\\'f2":"&ograve;"),n=n.replace(/Ò/g,t==="rtf"?"\\'d2":"&Ograve;"),n=n.replace(/ô/g,t==="rtf"?"\\'f4":"&ocirc;"),n=n.replace(/Ô/g,t==="rtf"?"\\'d4":"&Ocirc;"),n=n.replace(/ö/g,t==="rtf"?"\\'f6":"&ouml;"),n=n.replace(/Ö/g,t==="rtf"?"\\'d6":"&Ouml;"),n=n.replace(/õ/g,t==="rtf"?"\\'f5":"&otilde;"),n=n.replace(/Õ/g,t==="rtf"?"\\'d5":"&Otilde;"),n=n.replace(/ø/g,t==="rtf"?"\\'f8":"&oslash;"),n=n.replace(/Ø/g,t==="rtf"?"\\'d8":"&Oslash;"),n=n.replace(/œ/g,t==="rtf"?"\\'9c":"&#339;"),n=n.replace(/Œ/g,t==="rtf"?"\\'8c":"&#338;"),n=n.replace(/ß/g,t==="rtf"?"\\'df":"&szlig;"),n=n.replace(/ú/g,t==="rtf"?"\\'fa":"&uacute;"),n=n.replace(/Ú/g,t==="rtf"?"\\'da":"&Uacute;"),n=n.replace(/ù/g,t==="rtf"?"\\'f9":"&ugrave;"),n=n.replace(/Ù/g,t==="rtf"?"\\'d9":"&Ugrave;"),n=n.replace(/û/g,t==="rtf"?"\\'fb":"&ucirc;"),n=n.replace(/Û/g,t==="rtf"?"\\'db":"&Ucirc;"),n=n.replace(/ü/g,t==="rtf"?"\\'fc":"&uuml;"),n=n.replace(/Ü/g,t==="rtf"?"\\'dc":"&Uuml;"),n=n.replace(/ý/g,t==="rtf"?"\\'fd":"&yacute;"),n=n.replace(/Ý/g,t==="rtf"?"\\'dd":"&Yacute;"),n=n.replace(/ÿ/g,t==="rtf"?"\\'ff":"&yuml;"),n=n.replace(/Ÿ/g,t==="rtf"?"\\'9f":"&#376;"),n=n.replace(/´/g,t==="rtf"?"\\'b4":"&acute;"),t!=="rtf"&&(n=n.replace(/`/g,"&#96;")),n)},isNumber:function(n){return n!==""&&!(isNaN(n)||/^0\d/.test(n))},repeat:function(n,t){if(t<1)return"";for(var i="";t>1;)t&1&&(i+=n),t>>=1,n+=n;return i+n},parse:function(n,t,i,r,u,f,e){var a,s=[],w,l,k,g,o,v,c;switch(t){case"comma":a=",";break;case"tab":a="\t";break;default:a=/\t/.test(n)?"\t":","}for(n.indexOf(a)>-1&&(w=new RegExp("^"+d.rowDelimiter+"+|"+d.rowDelimiter+"+$","g"),n=n.replace(w,"")),s=this.CSVToArray(n,a),o=s.length-1;o>=0;--o)for(l=s[o].length-1;l>=0;--l)s[o][l]=s[o][l].replace("\t","\\t"),s[o][l]=s[o][l].replace("\n","\\n"),s[o][l]=s[o][l].replace("\r","\\r");var h=[],y=[],b=s[0].length,it=s.length;if(r)h=s.splice(0,1)[0],it=s.length;else for(o=0;o<b;++o)h.push("val"+o),y.push("");for(o=h.length-1;o>=0;--o)h[o]=String(h[o]).trim(),u&&(h[o]=h[o].replace(/[^\w -]|&quot;/g,""),h[o]=h[o].replace(/ +/g,"_"),/^[^a-z]/i.test(h[o])&&(h[o]="col"+h[o])),e?h[o]=h[o].toUpperCase():f&&(h[o]=h[o].toLowerCase());for(o=0,v=s.length;o<v;++o)k=s[o].length,k!==b&&this.log("Error parsing row "+o+". Wrong number of columns.");for(g=s.length,o=0,v=h.length;o<v;++o){var nt=0,tt=0,p=0;for(c=0;c<g;++c)s[c]&&(i==="comma"&&isDecimalRe.test(s[c][o])&&(s[c][o]=s[c][o].replace(",",".")),CSVParser.isNumber(s[c][o])?(++tt,(s[c][o]+"").indexOf(".")>-1&&++p):s[c][o]!==""&&++nt);y[o]=nt||!tt&&!p?"string":p===0?"int":"float"}return{dataGrid:s,headerNames:h,headerTypes:y,errors:this.getLog()}},errorLog:[],resetLog:function(){this.errorLog=[]},log:function(n){this.errorLog.push(n)},getLog:function(){var t="",n,i;if(this.errorLog.length>0){for(n=0,i=this.errorLog.length;n<i;++n)t+="!!"+this.errorLog[n]+"!!\n";t+="\n"}return t},CSVToArray:function(n,t){var u,f;t=t||",";var e=new RegExp("(\\"+t+'|\\r?\\n|\\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^"\\'+t+"\\r\\n]*))","gi"),r=[[]],i=null;for(t==="\t"&&(n=n.replace(/(\t|\r?\n|\r|^)(".+?")([\t\n\r])/g,function(n,t,i,r){return t+i.replace(/\t/g,"\\t")+r}),n=n.replace(/(\t|\r?\n|\r|^)([^\t"][^\t]+)/g,function(n,t,i){return t+i.replace(/"/g,"&quot;")}));i=e.exec(n);)u=i[1],u.length&&u!==t&&r.push([]),f=i[2]?i[2].replace(/""/g,"&quot;"):i[3],r[r.length-1].push(f);return r}},DataGridRenderer,d,settings;
 /*!
  * DataGridRenderer.js
  * Part of Mr-Data-Converter
@@ -21,48 +21,53 @@ DataGridRenderer={asp:function(n,t,i,r,u){var o="",c=n.length,l=t.length,e,s,f,h
  */
 DataConverter.prototype.init = function() {
     var n = this;
-    this.inputTextArea = $("#data-input");
-    this.outputTextArea = $("#data-output");
-    this.dataSelector = $("#data-selector");
-    this.outputNotes = $("#output-notes");
-    this.templateOutputTextArea = $('#template-output');
-    $("#converter > .wrapper").append('<div class="loader">  <span class="loader-text">Loading...</span>  <i class="loader-icon"></i></div>');
-    this.outputTextArea.val() && (n.outputDataType = this.dataSelector.children("option:selected").val(), n.convert());
-    this.inputTextArea.add(this.outputTextArea).click(function() {
-        this.select()
+    this.inputTextArea = document.getElementById("data-input");
+    this.outputTextArea = document.getElementById("data-output");
+    this.dataSelector = document.getElementById("data-selector");
+    this.outputNotes = document.getElementById("output-notes");
+    this.templateOutputTextArea = document.getElementById("template-output");
+    document.querySelector("#converter > .wrapper").insertAdjacentHTML("beforeend", '<div class="loader">  <span class="loader-text">Loading...</span>  <i class="loader-icon"></i></div>');
+    this.outputTextArea.value && (this.dataSelector && (n.outputDataType = this.dataSelector.value), n.convert());
+    [this.inputTextArea, this.outputTextArea].forEach(function(box) {
+        box.addEventListener("click", function() {
+            this.select()
+        })
     });
-    $(".insert-sample").click(function(t) {
-        t.preventDefault();
-        const value = $(this).data('value');
-        n.insertSampleData(value);
-        n.convert();
-        //ga("send", "event", "SampleData", "InsertGeneric")
+    document.querySelectorAll(".insert-sample").forEach(function(link) {
+        link.addEventListener("click", function(t) {
+            t.preventDefault();
+            const value = this.dataset.value;
+            n.insertSampleData(value);
+            n.convert();
+            //ga("send", "event", "SampleData", "InsertGeneric")
+        })
     });
 
-    this.inputTextArea.on({
-        change: function() {
-            n.convert();
-            //ga("send", "event", "DataType", n.outputDataType)
-        },
-        keyup: function() {
-            var t = $(this);
-            t.data("wait") || (t.data("wait", !0), n.convert(), setTimeout(function() {
-                t.data("wait", !1)
-            }, 500))
-        }
+    this.inputTextArea.addEventListener("change", function() {
+        n.convert();
+        //ga("send", "event", "DataType", n.outputDataType)
     });
-    this.dataSelector.change(function() {
-        n.outputDataType = $(this).val();
-        n.outputDataType === "xmlSmart" ? (n.outputNotes.text("This format requires safe header names to be disabled."), $("#headersUnsafe").click()) : n.outputNotes.text("");
+    var keyupWait = !1;
+    this.inputTextArea.addEventListener("keyup", function() {
+        keyupWait || (keyupWait = !0, n.convert(), setTimeout(function() {
+            keyupWait = !1
+        }, 500))
+    });
+    // the output format dropdown is commented out in index.html; wire it only if it is there
+    this.dataSelector && this.dataSelector.addEventListener("change", function() {
+        n.outputDataType = this.value;
+        n.outputDataType === "xmlSmart" ? (n.outputNotes.textContent = "This format requires safe header names to be disabled.", document.getElementById("headersUnsafe").click()) : n.outputNotes.textContent = "";
         n.convert();
         n.outputTextArea.select();
         saveSettings()
     });
-    $(".loader").remove();
-    this.node.addClass("loaded")
+    document.querySelectorAll(".loader").forEach(function(el) {
+        el.remove()
+    });
+    this.node.classList.add("loaded")
 };
 DataConverter.prototype.convert = function() {
-    if (this.inputText = this.inputTextArea.val(), this.inputText.length > 0) {
+    if (this.inputText = this.inputTextArea.value, this.inputText.length > 0) {
         this.includeWhiteSpace ? this.newLine = "\n" : (this.indent = "", this.newLine = "");
         CSVParser.resetLog();
         var inputText = this.inputText;
@@ -89,7 +94,7 @@ DataConverter.prototype.convert = function() {
             r = n.headerTypes,
             u = n.errors;
         this.outputText = DataGridRenderer[this.outputDataType](t, i, r, this.indent, this.newLine);
-        this.outputTextArea.val(u + this.outputText);
+        this.outputTextArea.value = u + this.outputText;
 
         // TODO add onchange event handling for priceCategoriesColorsTraitsConfirmed, tagsConfirmed, collectionConfirmed, functionsConfirmed
 
@@ -105,14 +110,14 @@ DataConverter.prototype.convert = function() {
         try {
             engineSettings = readEngineSettings();
         } catch (e) {
-            this.templateOutputTextArea.val('Settings problem: ' + e.message);
+            this.templateOutputTextArea.value = 'Settings problem: ' + e.message;
             return;
         }
         try {
-            this.templateOutputTextArea.val(DDVEngine.render(jsonArray, templateType, engineSettings));
+            this.templateOutputTextArea.value = DDVEngine.render(jsonArray, templateType, engineSettings);
         } catch (e) {
             if (String(e && e.message).indexOf('DDVEngine.render') !== 0) throw e;
-            this.templateOutputTextArea.val('Settings problem: ' + e.message);
+            this.templateOutputTextArea.value = 'Settings problem: ' + e.message;
         }
     }
 };
@@ -455,7 +460,7 @@ outputString ='itemType\tcollection\tversion\tversionRemoved\tname\tobtainable\t
 	outputString = "itemType\titemID\tVLOOKUP\tcollection\tversion\tversionRemoved\tobtainable\tID\tsheetOrder\tuniverse\tlimited\tspeculated\tSubgroup\tname\tcategory\ttagsConfirmed\ttags\tcolor\ttraits\tChecklist\tverified\tbuyprice\tMSCost\tsource\tplacement\tsize\tW\tL\tfunctions\tnpcInterest\tlocation\tinStore\tDSChestItem\nFurniture\t40005644\t40005644\tDV\t1.22\t\t\t40005644\t20.0638\tOther\t\t\t\tMoontide Glow Banner\tDecor\tyes\tCute, Outdoors, Rustic\tblue, pink, brown\tLavish, Playful, Strong, Wondrous\tFALSE\t2026.04.09 - 9e\t20000\t\tPocahontas Level 10 quest (A Raccoon's Return) (during)\tdefault (outdoor)\t20x2 (not full) (16x2 cutout)\t20\t2\tArch\t\tquest\t\t\nFurniture\t40005122\t40005122\tDV\t1.20.11\t\t--\t40005122\t17.113\tMickey & Friends\t\t\t\tEnchanted Holiday Fireplace\tDecor\tyes - created\t<!--Winter Warmth 2025, -->Rustic, Bold, Living Room, Study\tbrown\tSimple, Calm, Strong, Familiar\tFALSE\t2025.12.10 - 1j\t25000\t\tStar Path - Winter Warmth - 4C - T4 Premium (35 tokens)\tdefault\t12x6\t12\t6\tFireplace, also additional animation when turned on\t\tstarpath - warmth\t\t\nFurniture\t40005260\t40005260\tDV\t1.21\t\tx\t40005260\t12.804\tLady and the Tramp\t\t\t\tDarling Golden Lamp\tLighting\tyes\tElegant, Living Room, Rec Room, Study\tblue, yellow\tSimple, Calm, Delicate, Familiar\tFALSE\t2026.02.13 - 7a\t2040\t\tStore\tdefault\t2x2\t2\t2\tLighting\t\ttable 1\tx\t\nFurniture\t40005160\t40005160\tDV\t1.20.11\t\tx\t40005160\t5.014\tCinderella\t\t\t\tGlass Shoe\tDecor\tyes\tBedroom, Elegant, Living Room\twhite\tLavish, Calm, Delicate, Wondrous\tFALSE\t2025.12.15 (tt to 12.16) - 2a\t3000\t\tCinderella Level 10 Quest (The Friendship Ball) (post-quest mailbox reward) (\"I found this...\")\tsurfaces\t2x2\t2\t2\t\t\tquest\t\t\nFurniture\t40004040\t40004040\tDV\t1.17\t\tx\t40004040\t0.204\tA Bug's Life\tPremium\t\t\tGiant String Lights\tLighting\tyes - created\tCute, Modern, Outdoors\tblue, green, red, yellow, brown\tSimple, Playful, Strong, Wondrous\tFALSE\t2025.04.26 - 5a\t5440\tdupe\tPremium Bundle - A Bug's Life Decor Bundle (2000 M) (x4)\tdefault (outdoor)\t20x2 (not full)\t20\t2\tLighting, Arch\t\tpremium\t\t\nFurniture\t40004772\t40004772\t--\t1.20.11\t\tx\t40004772\t5.072\tCinderella\t\t\t\tCinderella's Room Divider\tMisc.\t\tElegant, Bathroom, Bedroom, Outdoors\tbrown, purple\tLavish, Calm, Delicate, Familiar\tFALSE\t2025.12.13? - 1a\t-\t\tCinderella Level 2 quest (Cinderella's Custom Creation) (reward)\tdefault\t8x2\t8\t2\t\t\tquest\t\t\nFurniture\t40004768\t40004768\t--\t1.20.11\t\tx\t40004768\t5.076\tCinderella\t\t\t\tSpell Pumpkin\tDecor, Misc.\t\t\tblue\tLavish, Calm, Strong, Wondrous\tFALSE\t2025.12.10 - 4a\t-\t\tThe Fairy Godmother Quest (The Pumpkin and the Princess) - mailbox post quest (\"A Grateful Gift\")\tdefault\t6x6 (not full)\t6\t6\t\t\tquest\t\t\nFurniture\t40005279\t40005279\tDV\t1.21\t\tx\t40005279\t12.814\tLady and the Tramp\t\t\t\tEdwardian Dog Toy\tDecor\t\tTraditional, Rec Room, Living Room, Rustic, Bedroom\tgreen, red, black\tSimple, Playful, Strong, Familiar\tFALSE\t2026.02.24 - 4a\t5000\t\tTramp Level 2 Quest (Not Your Average Squeaky Toy) (during?)\tdefault\t10x8 (not full)\t10\t8\tGather (3), Interact (nonfunctional)\t\tquest\t\t\nFurniture\t40005455\t40005455\t--\t1.22\t\t\t40005455\t20.1521\tOther\t\t\t\tDazzle Beach Companion Home\tDecor\t\tCasual, Outdoors\tgreen, red, brown\tSimple, Playful, Strong, Familiar\tFALSE\t2026.04.18? - 8a\t-\t\tThe Grand Exhibition: Dazzle Beach - TBA\tdefault (outdoor)\t24x24 (not full)\t24\t24\tCompanion Home\t\tquest\t\t\nFurniture\t40005570\t40005570\tDV\t1.22\t\t\t40005570\t20.0639\tOther\t\t\t\tMoontide Glow Lamppost\tDecor, Lighting, Trees\tyes\tCute, Outdoors, Rustic\tblue, green, brown\tSimple, Playful, Strong, Wondrous\tFALSE\t2026.04.09 - 9d\t8000\t\tPocahontas Level 10 quest (A Raccoon's Return) (4 during)\tdefault (outdoor)\t8x6 (not full)\t8\t6\tLighting (Constant)<!-- (Animation)-->\t\tquest\t\t\nFurniture\t40005417\t40005417\tDV\t1.22\t\t\t40005417\t20.0640\tOther\t\t\t\tMoontide Glow Stage\tDecor, Utilities, Misc.\tyes - added\tOutdoors, Casual\tred, black, brown\tLavish, Playful, Strong, Familiar\tFALSE\t2026.04.09 - 9b\t6000\t\tPocahontas Level 4 quest (Working Together) (pick up after completed)\tdefault (outdoor)\t32x36 (not full)\t32\t36\tGathering (3) - TODO - VERIFY\t\tquest\t\t\nFurniture\t40005585\t40005585\tDV\t1.22\t\t\t40005585\t21.403\tPocahontas\t\t\t\tChair of the Chieftain\tEssentials, Decor, Seating\tyes - added\tTraditional, Outdoors\tbrown, gray\tLavish, Calm, Strong, Wondrous\tFALSE\t2026.04.09 - 8z\t25000\t\tPocahontas Level 8\tdefault\t12x6\t12\t6\tSit\t\tfriendship\t\t\nFurniture\t40005634\t40005634\tDV\t1.22\t\t\t40005634\t21.404\tPocahontas\t\t\t\tDecorative Powhatan Cradleboard\tDecor, Wall\tyes\tRustic, Rec Room, Living Room, Bedroom\tblue, red, brown\tLavish, Calm, Strong, Familiar\tFALSE\t2026.04.12 - 1b\t3000\t\tStore - after unlocking Pocahontas\twall (indoor)\t2x6 (wall)\t2\t6\t-\t\twall - M\tx - C\t\nFurniture\t40005380\t40005380\tDV\t1.17\t\t--\t40004261\t21.239\tPeter Pan\t\t\t\tFishing Trinkets Light Fixture\tDecor, Lighting, Ceiling\tyes - created/added\tStudy, Quirky, Rec Room, Living Room, Rustic<!--, Adventures in Never Land-->\tred, yellow, brown\tSimple, Calm, Delicate, Familiar\tFALSE\t2025.06.18 - 1r\t8000\t\tStar Path - Adventures in Never Land - 6E - T6 (10 tokens)\tceiling (indoor)\t8x8\t8\t8\tLighting (Automatic)\t\tstarpath - neverland\t\t\nFurniture\t40005435\t40005435\tDV\t1.22\t\t\t40005435\t21.301\tPirates of the Caribbean\t\t\t\tPirate Throne\t\t\t\t\t\tFALSE\t\t\t\tevent - TreasureHunt_CompleteXFishMaps: Fishing for Adventure / Complete X Fishing Treasure Maps.\t\t\t\t\t\t\tevent\t\t\nFurniture\t40005249\t40005249\tDV\t1.21\t\tx\t40005249\t12.835\tLady and the Tramp\t\t\t\tZoo Fountain\tDecor\t\tElegant, Traditional, Outdoors\tblue, green\tLavish, Calm, Strong, Familiar\tFALSE\t2026.02.24 - 8a -- 2026.03.14 - 2a\t10000\t\tTramp Level 7 Quest (And How Did That Make You Feel?) (during, pick up after quest)\t\t10x16 (not full)\t10\t16\tGather (3)\t\tquest\t\t\nFurniture\t40004993\t40004993\tWM\t1.20.2\t\tx\t40004993\t20.0471\tOther\t\t\t\tGreen Gulch Curved Hedge\tFoliage, Fencing\tyes\tTraditional, Outdoors\tgreen\tSimple, Calm, Strong, Familiar\tFALSE\t2025.11.22 - 1i\t3600\t\tStore, pick up in Glamour Gulch (Cruella's Fortress)\t\t\t\t\t\t\tSize 4\tWM\t\nFurniture\t40005177\t40005177\tDV\t1.21\t\tx\t40005177\t2.201\tBig Hero 6\t\t\t\tMochi's Cat House\tEssentials, Decor\tyes\tRustic, Traditional, Outdoors\tblue, green\tLavish, Calm, Strong, Familiar\tFALSE\t2026.03.06 -- TBA - 2026.03.02\t10000\tdupe\tMochi Level 5 / Premium Bundle - Mochi (3000 M)\tdefault (outdoor)\t8x10\t8\t10\tCompanion Home\t\tpremium/friendship\t\t\nFurniture\t40004845\t40004845\tWM\t1.20.2\t\tx\t40004845\t22.319\tSnow White\t\t\t\tFlowery Wishblossom Garden\tDecor\t\t\tblue, green, yellow\tSimple, Calm, Delicate, Familiar\tFALSE\t2025.11.30 - 9a\tn/a\t\tCrafting after Snow White Level 10 Quest (Flowery Wishblossom Garden)\tdefault (outdoor)\t26x26 (not full)\t26\t26\t\t\tquest/crafting\t\t\nFurniture\t40002937\t40002937\t--\t1.13\t\tx\t40002937\t25.062\tThe Lion King\t\t\t\tDisplay Pillar\tDecor, Tables\t\tElegant, Rustic, Outdoors\twhite, yellow\tLavish, Calm, Strong, Wondrous\tFALSE\t2024.11.07 - 1\tn/a\t\tCrafting after Pumbaa Level 4 Quest (Fine Arts for Warthogs) (during) - 4 given\tdefault\t2x2\t2\t2\tTable - 1x1\t\tquest/crafting\t\t\nFurniture\t40003256\t40003256\tDV\t1.12\t\tx\t40003256\t27.001\tThe Princess and the Frog\t\t\t\tBayou Companion Home\tEssentials, Misc.\t\tRustic, Outdoors\tyellow, brown\tSimple, Calm, Strong, Familiar\tFALSE\t2024.09.06 - 1\tn/a\t\tCrafting after Tiana Level 4 quest (Little Louis's Big Break) (unlocked during or after?)\tdefault (outdoor)\t6x6\t6\t6\tCompanion Home\t\tquest/crafting\t\t\nFurniture\t40004468\t40004468\t--\t1.18\t\tx\t40004468\t12.531\tInside Out\t\t\t\tJoy and Sadness's Fireworks\tDecor, Art\t\tCasual, Outdoors\tblue, yellow\tSimple, Playful, Delicate, Familiar\tFALSE\t2025.09.08-15?19 - 2a\t-\t\tSadness Level 10 Quest (Create a Bear) (during?)\tdefault\t10x10\t10\t10\tGathering (2), Fireworks (yellow, blue, green)\t\tquest\t\t\nFurniture\t40002397\t40002397\tEI\t1.8\t1.9, back 1.10\tx\t40002397\t20.0036\tOther\t\t\t\tBasic Canvas\t\t\t\t\t\tFALSE\t2024.01.22\tn/a\t\tCrafting after Rapunzel Level 10 quest (Home is Where The Art Is) (1 during)\twalls (indoor)\t4x4\t4\t4\t-\t\tquest/crafting\t\t";
  	}
 
-  this.inputTextArea.val(outputString);
+  this.inputTextArea.value = outputString;
 };
 
 
@@ -465,7 +470,22 @@ outputString ='itemType\tcollection\tversion\tversionRemoved\tname\tobtainable\t
  * Controller.js
  * 
  */
-$(document).ready(function() {
+// value of the checked radio in a group (undefined when none is checked)
+function checkedValue(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : undefined
+}
+
+function setGroupDisabled(groupId, disabled) {
+    document.querySelectorAll("#" + groupId + " input").forEach(function(el) {
+        el.disabled = disabled
+    })
+}
+
+function onPageReady(fn) {
+    document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", fn) : fn()
+}
+onPageReady(function() {
     function r(n) {
         n /*&& ga("send", "event", "Restore Defaults", n.currentTarget.id)*/;
         localStorage.clear();
@@ -473,12 +493,12 @@ $(document).ready(function() {
     }
 
     function i(n) {
-        if (n /*&& ga("send", "event", "Settings", n.currentTarget.id)*/,d.delimiter = $("input[name=delimiter]:checked").val(), d.decimal = $("input[name=decimal]:checked").val(), d.headersProvided = $("#headersProvidedCB").prop("checked"), d.headersProvided) {
-            $("#headerGroup input").prop("disabled", !1);
-            d.safeHeaders = $("input[name=headerType]:checked").val() === "safe";
+        if (n /*&& ga("send", "event", "Settings", n.currentTarget.id)*/,d.delimiter = checkedValue("delimiter"), d.decimal = checkedValue("decimal"), d.headersProvided = document.getElementById("headersProvidedCB").checked, d.headersProvided) {
+            setGroupDisabled("headerGroup", !1);
+            d.safeHeaders = checkedValue("headerType") === "safe";
 
             // this is janky, i'm overriding the header modifications (upcase, downcase, none) so that i dont have to do my own event handlers atm...
-            var headerModVal = $("input[name=headerModifications]:checked").val();
+            var headerModVal = checkedValue("headerModifications");
             switch (headerModVal) {
                 case "none":
                 	templateType = headerModVal;
@@ -507,31 +527,33 @@ $(document).ready(function() {
                     break;
             }
 
-        } else $("#headerGroup input").prop("disabled", !0);
-        if (d.includeWhiteSpace = $("#includeWhiteSpaceCB").prop("checked"), d.includeWhiteSpace) {
-            $("#indentGroup input").prop("disabled", !1);
-            switch ($("input[name=indentType]:checked").val()) {
+        } else setGroupDisabled("headerGroup", !0);
+        if (d.includeWhiteSpace = document.getElementById("includeWhiteSpaceCB").checked, d.includeWhiteSpace) {
+            setGroupDisabled("indentGroup", !1);
+            switch (checkedValue("indentType")) {
                 case "spaces":
                     d.indent = "  ";
                     break;
                 case "tabs":
                     d.indent = "\t"
             }
-        } else $("#indentGroup input").prop("disabled", !0);
-        d.includeHtmlClass = $("#includeHtmlClassCB").prop("checked");
+        } else setGroupDisabled("indentGroup", !0);
+        d.includeHtmlClass = document.getElementById("includeHtmlClassCB").checked;
         d.convert();
         saveSettings()
     }
     var t, n;
-    if (d = new DataConverter("converter"), d.init(), settings = $("#settings-form")[0], localStorage.settings) {
+    if (d = new DataConverter("converter"), d.init(), settings = document.getElementById("settings-form"), localStorage.settings) {
         try {
             t = JSON.parse(localStorage.settings)
         } catch (u) {}
         if (t)
-            for (n in t) n === "outputDataType" ? $("#data-selector").val(t[n]).change() : typeof t[n] == "boolean" ? settings[n].checked = t[n] : settings[n].value = t[n]
+            for (n in t) n === "outputDataType" ? (document.getElementById("data-selector") && (document.getElementById("data-selector").value = t[n], document.getElementById("data-selector").dispatchEvent(new Event("change")))) : typeof t[n] == "boolean" ? settings[n].checked = t[n] : settings[n].value = t[n]
         	// TODO: comment out original (above) once a bunch of settings are removed from interface and instead have code defined defaults? 
     }
-    $(".settings-element").change(i);
-    $("#restore").click(r);
+    document.querySelectorAll(".settings-element").forEach(function(el) {
+        el.addEventListener("change", i)
+    });
+    document.getElementById("restore").addEventListener("click", r);
     i()
 });// todo: check for values coming from the settings panel and assign defaults, then hide settings panel
