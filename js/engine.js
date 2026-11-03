@@ -140,12 +140,11 @@ function renderVariableTemplate(dataArray, template) {
 
 function microTemplate(templateStr, objData) {
   /* ===== DEFINE DELIMITERS HERE ===== */
-  for (var prop in objData)
-    templateStr = templateStr.replace(
-      new RegExp('%%' + prop + '%%', 'g'),
-      objData[prop]
-      );
-  return templateStr;
+  // One pass over the template: each %%name%% that is a column of the item is filled with its value,
+  // inserted as it is ($&, $1 ... are not special) and never searched again; any other %%name%% stays.
+  return templateStr.replace(/%%(\w+)%%/g, function (match, name) {
+    return Object.prototype.hasOwnProperty.call(objData, name) ? objData[name] : match;
+  });
 }
 
 // CR21 (B46): "One ..." and "Once ..." start with a "w" sound, so they take "a" (a One Hundred Acre Wood themed ...); see createUniverseLink
