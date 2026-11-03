@@ -61,6 +61,8 @@ var SETTINGS = {
   tagsConfirmed: { type: 'boolean', default: false, about: 'tags confirmed' },
   collectionConfirmed: { type: 'boolean', default: false, about: 'collection confirmed (else wrapped in a cleanup tag)' },
   functionsConfirmed: { type: 'boolean', default: false, about: 'furniture functions confirmed (else filler text)' },
+  premiumConfirmed: { type: 'boolean', default: false,
+    about: 'premium items: the collection, tags, price, size, functions and placement boxes apply to them too (off: all of those are commented out on a premium article)' },
   placementConfirmed: { type: 'boolean', default: false,
     about: 'size, placement, surface area and environment confirmed (part of categoriesColorsTraitsConfirmed before DDV-28)' },
 
@@ -95,7 +97,7 @@ var VILLAGE_NAMES = { DV: 'Dreamlight Valley', EI: 'Eternity Isle', SV: 'Storybo
 
 var updateNumber, newExpansionCollection, starPathNameShort, starPathName, starPathToken;
 var mealNavbox, bundleStartDate, bundleEndDate, companionCollection, wikiVersionLabels;
-var collectionConfirmed, priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed;
+var collectionConfirmed, priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed, premiumConfirmed;
 var showItemDebug, renderPSbundles, customTemplate;
 
 // (CR26) template, output, tempTemplate, bundleArray, itemUseIntro_clothing and
@@ -1946,6 +1948,15 @@ function generateCompanionTemplateOriginal(item) {
       (item.location && item.location == 'premium') ||
       (item.source && item.source.includes('Bundle'))
       );
+  }
+
+  // DDV-27: the collection icon the article gets is "premium" (same rule as the |collectiontag= line:
+  // a premium source, the premium icon, or premium=yes; an event icon or premium=no wins).
+  function isPremiumArticle(item) {
+    if (!item) return false;
+    var icon = item.icon || item.collection_icon;
+    if (item.premium == 'no' || icon == 'c') return false;
+    return item.premium == 'yes' || icon == 'b' || String(icon).toLowerCase() == 'premium' || isPremium(item);
   }
 
   function isTale(item) {
@@ -4946,7 +4957,7 @@ function renderClothingFurnitureArticle(dataArray) {
   var delimiter = ARTICLE_DELIMITER;
 
   // this changes the items in dataArray (objects are passed by reference)
-  dataArray.forEach(function(item) {
+  var renderOneArticle = function(item) {
 
     // possibly assigning itself recursively...??
     item = assignRelatedItemsFromInputArray(item, bundleArray);
@@ -5043,6 +5054,23 @@ function renderClothingFurnitureArticle(dataArray) {
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
+  };
+
+  // DDV-27: a premium article comments out collection, tags, price, size, functions and placement
+  // unless the "premium confirmed" box is ticked as well as the field's own box (colors, traits and
+  // categories are not held back). The boxes are module variables, so they are switched off for
+  // this one article and put back after it.
+  dataArray.forEach(function(item) {
+    var saved = [collectionConfirmed, priceConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed];
+    if (!premiumConfirmed && isPremiumArticle(item)) {
+      collectionConfirmed = priceConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = false;
+    }
+    try {
+      renderOneArticle(item);
+    } finally {
+      collectionConfirmed = saved[0]; priceConfirmed = saved[1]; tagsConfirmed = saved[2];
+      functionsConfirmed = saved[3]; placementConfirmed = saved[4];
+    }
   });
 
   var cleaned = jankyCleanup(renderedHTML);
@@ -5596,7 +5624,7 @@ function checkSettings(given) {
 function resetState() {
   updateNumber = newExpansionCollection = starPathNameShort = starPathName = starPathToken = undefined;
   mealNavbox = bundleStartDate = bundleEndDate = companionCollection = wikiVersionLabels = undefined;
-  collectionConfirmed = priceConfirmed = categoriesColorsTraitsConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = undefined;
+  collectionConfirmed = priceConfirmed = categoriesColorsTraitsConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = premiumConfirmed = undefined;
   showItemDebug = renderPSbundles = customTemplate = undefined;
   sourceParsed = null;
   renderRowNames = null;
@@ -5626,6 +5654,7 @@ function render(rows, templateType, settings) {
   tagsConfirmed = s.tagsConfirmed;
   functionsConfirmed = s.functionsConfirmed;
   placementConfirmed = s.placementConfirmed;
+  premiumConfirmed = s.premiumConfirmed;
   showItemDebug = s.showItemDebug;
   renderPSbundles = s.renderPSbundles;
   customTemplate = s.customTemplate;
