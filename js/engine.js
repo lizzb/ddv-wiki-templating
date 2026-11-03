@@ -477,23 +477,24 @@ function getCharacterUniverse(charName) {
   return universe;
 }
 
+// tagName: the item tag the game gives that star path's items (empty: none known)
 const starpathsObject = {
-  "Pixar Fest": { "tokenName": 'pixartoken', "sheetLocationVal": 'starpath - pixar', tagName: '' },
+  "Pixar Fest": { "tokenName": 'pixartoken', "sheetLocationVal": 'starpath - pixar', tagName: 'Pixar Fest' },
   "Villains'": {"tokenName": 'villaintoken', "sheetLocationVal": 'starpath - villains', tagName: '' },
   "Festive": { "tokenName": 'festivetoken', "sheetLocationVal": 'starpath - festive', tagName: '' },
   "Centennial": { "tokenName": 'centennialtoken', "sheetLocationVal": 'starpath - centennial', tagName: '' },
   "Disney Parks": { "tokenName": 'parkstoken', "sheetLocationVal": 'starpath - parks', tagName: '' },
   "Wonder of Pixar": { "tokenName": 'wonderpixartoken', "sheetLocationVal": 'starpath - wonder', tagName: '' },
-  "Haunted Holiday": { "tokenName": 'hauntedtoken', "sheetLocationVal": 'starpath - haunted', tagName: '' },
+  "Haunted Holiday": { "tokenName": 'hauntedtoken', "sheetLocationVal": 'starpath - haunted', tagName: 'Haunted Holiday' },
   "Royal Winter": { "tokenName": 'royalwintertoken', "sheetLocationVal": 'starpath - royal', tagName: '' },
-  "Lovely Monsters": { "tokenName": 'monstertoken', "sheetLocationVal": 'starpath - monsters', tagName: '' },
-  "A Day at Disney": { "tokenName": 'dayatdisneytoken', "sheetLocationVal": 'starpath - adad', tagName: '' },
+  "Lovely Monsters": { "tokenName": 'monstertoken', "sheetLocationVal": 'starpath - monsters', tagName: 'Lovely Monsters' },
+  "A Day at Disney": { "tokenName": 'dayatdisneytoken', "sheetLocationVal": 'starpath - adad', tagName: 'A Day at Disney' },
   "Majesty and Magnolias": { "tokenName": 'magnoliatoken', "sheetLocationVal": 'starpath - majesty', tagName: '' },
   "Dapper Delights": { "tokenName": 'lilypadtoken', "sheetLocationVal": 'starpath - dapper', tagName: '' },
-  "The Night Show": { "tokenName": 'rockstartoken', "sheetLocationVal": 'starpath - nightshow', tagName: '' },
-  "Frost & Fairies": { "tokenName": 'icecrystaltoken', "sheetLocationVal": 'starpath - frost', tagName: '' },
-  "Oasis Retreat": { "tokenName": 'tranquiltoken', "sheetLocationVal": 'starpath - oasis', tagName: '' },
-  "Garden of Whimsy": { "tokenName": 'pocketwatchtoken', "sheetLocationVal": 'starpath - whimsy', tagName: '' },
+  "The Night Show": { "tokenName": 'rockstartoken', "sheetLocationVal": 'starpath - nightshow', tagName: 'The Night Show' },
+  "Frost & Fairies": { "tokenName": 'icecrystaltoken', "sheetLocationVal": 'starpath - frost', tagName: 'Frost and Fairies' },
+  "Oasis Retreat": { "tokenName": 'tranquiltoken', "sheetLocationVal": 'starpath - oasis', tagName: 'Oasis Retreat' },
+  "Garden of Whimsy": { "tokenName": 'pocketwatchtoken', "sheetLocationVal": 'starpath - whimsy', tagName: 'Garden of Whimsy' },
   "Adventures in Never Land": { "tokenName": 'compasstoken', "sheetLocationVal": 'starpath - neverland', tagName: 'Adventures in Never Land' },
   "Retro Roadtrip": { "tokenName": 'maltshoptoken', "sheetLocationVal": 'starpath - roadtrip', tagName: 'Retro Roadtrip' },
   "Witchful Thinking": { "tokenName": 'brewtoken', "sheetLocationVal": 'starpath - witchful', tagName: 'Witchful Thinking 2025' },
@@ -505,18 +506,92 @@ const starpathsObject = {
   "Haunting Elegance": { "tokenName": 'pumpkintoken', "sheetLocationVal": 'starpath - haunting', tagName: 'Haunting Elegance' },
 };
 
-function commentOutStarPathTags(item){
-  //TODO
-  // if item contains a tag that is the value of a star path tag,
-  // don't show it on the wiki, comment it out
-  // (previous alternative was commenting out within the spreadsheet itself)
-  // Rec Room, Study, Rustic, Elegant<!--, Witchful Thinking 2025-->
-  // <!--Winter Warmth 2025, -->Outdoors, Traditional, Cute
-  // Elegant, <!--The Night Show, -->Quirky, Rec Room, Living Room, Study
-  // Casual, Cute, Outdoors, Pop City
-  // ensure that tags are not double-wrapped in case the sheet values are already wrapped in html comments
-  let output = '';
-  return output;
+// DDV-35: tags the wiki never shows although they are not a star path's tag
+var ALWAYS_HIDDEN_TAGS = ['Wall Inset'];
+
+// The tags hidden on the wiki for this item, lower case: every star path's tagName (past seasons too),
+// the current star path from the settings, the item's own star path, and ALWAYS_HIDDEN_TAGS.
+function hiddenTagNames(item) {
+  var names = ALWAYS_HIDDEN_TAGS.slice();
+  for (var key in starpathsObject) {
+    if (starpathsObject[key].tagName) names.push(starpathsObject[key].tagName);
+  }
+  if (starPathName) names.push(starPathName);
+  if (item && typeof item.starpath === 'string' && item.starpath) names.push(item.starpath);
+  return names.map(function (n) { return n.trim().toLowerCase(); });
+}
+
+// A tags cell as a list of tags in order, each marked hidden when the cell itself hides it (inside
+// <!-- --> or a paired « » marker). A comment edge ends a tag, as a comma does. A tag that is only
+// dashes ("-") counts as no tag. wellFormed is false when the cell's own hiding nests, is not closed
+// or closes something it never opened.
+function splitTags(value) {
+  var paired = {}, open = [], i;
+  for (i = 0; i < value.length; i++) {
+    if (value[i] === '«') open.push(i);
+    else if (value[i] === '»' && open.length) { paired[open.pop()] = true; paired[i] = true; }
+  }
+  var tags = [], cur = '', depth = 0, wellFormed = true;
+  function endTag() {
+    var t = cur.trim();
+    if (t && !/^-+$/.test(t)) tags.push({ name: t, hidden: depth > 0 });
+    cur = '';
+  }
+  for (i = 0; i < value.length; i++) {
+    if (value.startsWith('<!--', i) || (value[i] === '«' && paired[i])) {
+      endTag();
+      if (++depth > 1) wellFormed = false;
+      if (value[i] === '<') i += 3;
+    } else if (value.startsWith('-->', i) || (value[i] === '»' && paired[i])) {
+      endTag();
+      if (depth) depth--; else wellFormed = false;
+      if (value[i] === '-') i += 2;
+    } else if (value[i] === ',') {
+      endTag();
+    } else {
+      cur += value[i];
+    }
+  }
+  endTag();
+  if (depth) wellFormed = false;
+  return { tags: tags, wellFormed: wellFormed };
+}
+
+// DDV-35: the |tags= value. Star path tags are kept in the sheet in their real order; the wiki does not
+// show them, because the star path is indicated in a separate line item.
+// - tags box off: one comment around the whole list and nothing inside it, e.g. <!--Elegant, Pop City, Cute-->
+// - tags box on: only the hidden tags are commented, a run of them as one comment:
+//   Rustic<!--, Pop City-->, Cute   /   <!--Pop City, -->Rustic, Cute   /   Rustic<!--, Pop City-->   /   <!--Pop City-->
+// A cell that already hides exactly what would be hidden (with <!-- --> or « ») is kept as written. Any
+// other comment or marker in the cell is taken out first, so no comment is ever nested; a tag the cell
+// hid stays hidden.
+function commentOutStarPathTags(value, isConfirmed, item) {
+  if (typeof value !== 'string') return wrapComment(value, !isConfirmed);
+  var cellHides = /<!--|-->|[«»]/.test(value);
+  var split = splitTags(value);
+  if (!split.tags.length) {
+    // blank, or only "-": as written
+    return (cellHides && !isConfirmed) ? '<!--' + value.replace(/<!--|-->|[«»]/g, '') + '-->' : wrapComment(value, !isConfirmed);
+  }
+  if (!isConfirmed) {
+    if (!cellHides) return wrapComment(value, true);
+    return '<!--' + split.tags.map(function (t) { return t.name; }).join(', ') + '-->';
+  }
+  var hiddenNames = hiddenTagNames(item);
+  var tags = split.tags.map(function (t) {
+    return { name: t.name, hidden: t.hidden || hiddenNames.indexOf(t.name.toLowerCase()) >= 0, cellHid: t.hidden };
+  });
+  if (split.wellFormed && tags.every(function (t) { return t.hidden === t.cellHid; })) return value;
+  var out = '', run = [], shown = 0;
+  tags.forEach(function (t) {
+    if (t.hidden) { run.push(t.name); return; }
+    if (run.length) out += shown ? '<!--, ' + run.join(', ') + '-->' : '<!--' + run.join(', ') + ', -->';
+    run = [];
+    out += (shown ? ', ' : '') + t.name;
+    shown++;
+  });
+  if (run.length) out += shown ? '<!--, ' + run.join(', ') + '-->' : '<!--' + run.join(', ') + '-->';
+  return out;
 }
 
 // The current star path's token comes from the settings, so a new season needs no edit here
@@ -2371,8 +2446,10 @@ function output_color(item) {
 
 function output_tags(item) {
 
+  var placeholder = false;
   if (!item.tags && !(isHairstyle(item) || isAccessory(item))) {
     item.tags = '<!--xxx, xxx, xxx-->';
+    placeholder = true;
   }
   if (isHairstyle(item)) {
     // Hairstyles/Accessories have no tags
@@ -2383,8 +2460,9 @@ function output_tags(item) {
     item.tags = '';
   }
 
-  item.tags = applyConfirmationWrap(item, item.tags, tagsConfirmed, 'Tags');
-  // TODO: implement and call commentOutStarPathTags, especially if the overall tags are commented out
+  // DDV-35: star path tags are hidden here, the rest follows the tags box
+  var wrapped = applyConfirmationWrap(item, item.tags, tagsConfirmed, 'Tags');
+  item.tags = placeholder ? wrapped : commentOutStarPathTags(item.tags, tagsConfirmed, item);
 
   var output = '|tags=%%tags%%\n';
   return output;
@@ -4823,7 +4901,11 @@ function generateEnvironmentTemplate(item) {
 // goes with the universe in brackets ("none (Hercules)"), else with the other gliders
 function generateGliderTemplate(item) {
   var src = itemFromAndSource(item);
-  var tags = item.tags ? applyConfirmationWrap(item, item.tags, tagsConfirmed, 'Tags') : 'Gliders';
+  var tags = 'Gliders';
+  if (item.tags) {
+    applyConfirmationWrap(item, item.tags, tagsConfirmed, 'Tags'); // the Missing Tags category
+    tags = commentOutStarPathTags(item.tags, tagsConfirmed, item); // DDV-35
+  }
   var t = '{{infobox\n|image=' + item.name + '.png\n|type=Clothing\n|category=Gliders\n|color=none\n|tags=' + tags +
     '\n|collection=none\n|traits=none\n|universe=none\n';
   t += src.from + '\n}}\n';
