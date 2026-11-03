@@ -88,6 +88,8 @@ DataConverter.prototype.convert = function() {
         var downcaseHeaders = this.downcaseHeaders;
         var upcaseHeaders = this.upcaseHeaders;
         //console.log(delimiter, decimal, headersProvided, safeHeaders, downcaseHeaders, upcaseHeaders);
+        // DDV-27: a paste with no itemType column gets one (clothing/furniture only); line breaks inside quoted cells are collapsed first
+        inputText = DDVPage.addMissingItemType(DDVPage.collapseNewlinesInsideQuotedCells(inputText), templateType, headersProvided);
         var n = CSVParser.parse(inputText, delimiter, decimal, headersProvided, safeHeaders, downcaseHeaders, upcaseHeaders),
             t = n.dataGrid,
             i = n.headerNames,
@@ -111,6 +113,7 @@ DataConverter.prototype.convert = function() {
             engineSettings = readEngineSettings();
         } catch (e) {
             this.templateOutputTextArea.value = 'Settings problem: ' + e.message;
+            DDVPage.showLeftovers('');
             return;
         }
         try {
@@ -119,7 +122,10 @@ DataConverter.prototype.convert = function() {
             if (String(e && e.message).indexOf('DDVEngine.render') !== 0) throw e;
             this.templateOutputTextArea.value = 'Settings problem: ' + e.message;
         }
+        // DDV-27: say what the output still holds of %%...%%, TODO_ and undefined (the output itself is not changed)
+        DDVPage.showLeftovers(this.templateOutputTextArea.value);
     }
+    DDVPage.updateLineNumbers();
 };
 DataConverter.prototype.insertSampleData = function(dataName) {  
 

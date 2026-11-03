@@ -85,6 +85,13 @@
           <p>
             <label><input type="checkbox" id="placementConfirmedCB" class="settings-element"> Size/Placement/Surface Area/Environment Confirmed</label>
           </p>
+          <div class="premium-setting">
+            <h5>Premium items</h5>
+            <p>
+              <label><input type="checkbox" id="premiumConfirmedCB" class="settings-element"> Follow the boxes above</label>
+            </p>
+            <p class="setting-note">Off: premium articles keep collection, tags, price, size, functions and placement commented out, whatever the boxes above say.</p>
+          </div>
           <p>
             <label><input type="checkbox" id="showItemDebugCB" class="settings-element"> Show Item Debug</label>
           </p>
@@ -179,7 +186,10 @@
           </span>
         </p>
       </div>
-      <textarea id="data-input" class="text-input panel" autofocus></textarea>
+      <div id="data-input-wrap">
+        <div id="data-input-lines" aria-hidden="true"><div></div></div>
+        <textarea id="data-input" class="text-input panel" wrap="off" autofocus></textarea>
+      </div>
       <div id="output-header" class="group-header panel">
         <p class="group-headline">
           <label for="data-output">Output as</label> <b>JSON - Properties</b>
@@ -233,6 +243,7 @@
           </span>
         </p>
       </div>
+      <div id="output-warning" role="alert" style="display:none"></div>
       <textarea id="template-output" class="text-input panel" autofocus></textarea>
     </div>
   </div>
@@ -241,51 +252,19 @@
 <script src="js/data.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/app.js"></script>
+<script src="js/page-helpers.js"></script>
 <script>
 // Wire up instant live-update for the 4 confirmation checkboxes.
 // When ANY of these change, immediately re-render the wiki output.
 // This is delegated so it works even if DOM elements are added/changed later.
 document.addEventListener('change', function(e) {
-  if (!e.target.matches('#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #placementConfirmedCB, #showItemDebugCB')) return;
+  if (!e.target.matches('#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #placementConfirmedCB, #premiumConfirmedCB, #showItemDebugCB')) return;
   if (typeof d !== 'undefined' && d && typeof d.convert === 'function') {
     d.convert();
   }
 });
 </script>
-<script>
-// === FEATURE 1 (corrected): collapse line breaks inside quoted TSV cells ===
-// This must run BEFORE parsing, not after -- the parser's tab-delimiter
-// multi-line-quote handling is buggy and corrupts data if it ever sees a
-// real embedded newline. This pre-scans the raw pasted text, tracks
-// quote-open/close state character by character, and only collapses
-// newlines that are actually inside an open quote.
-(function() {
-  function collapseNewlinesInsideQuotedCells(text) {
-    var result = '';
-    var inQuotes = false;
-    for (var i = 0; i < text.length; i++) {
-      var ch = text[i];
-      if (ch === '"') {
-        inQuotes = !inQuotes;
-        result += ch;
-      } else if ((ch === '\n' || ch === '\r') && inQuotes) {
-        if (ch === '\r' && text[i + 1] === '\n') i++; // treat \r\n as one break
-        result += ' // ';
-      } else {
-        result += ch;
-      }
-    }
-    return result;
-  }
-
-  var originalParse = CSVParser.parse;
-  CSVParser.parse = function(inputText) {
-    var args = Array.prototype.slice.call(arguments);
-    args[0] = collapseNewlinesInsideQuotedCells(inputText);
-    return originalParse.apply(this, args);
-  };
-})();
-</script>
+<!-- line breaks inside quoted cells: DDVPage.collapseNewlinesInsideQuotedCells in js/page-helpers.js, called from convert() in js/app.js -->
 <!--
 <script>
 // === FEATURE 2: type/paste JSON directly into #data-output, skip TSV entirely ===
