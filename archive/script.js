@@ -961,7 +961,7 @@ function parseItemSource(item) {
     // (.+?)            -> Captures the text (whenRewarded)
     // \)/              -> Matches the closing paren
     
-    // TODO: also parse if the source is still generic, fed from the reporter data
+    // TODO: also parse if the source is still generic, fed from imported data
     // Quest - Pocahontas Level 10 Quest (A Raccoon's Return)
     */
 
@@ -1184,7 +1184,7 @@ function parseItemSource(item) {
     */
 
     // TODO - Giant Lotus Flower House = 9A - T9 Premium Bonus (desired)
-    // OR B3A - Bonus Items 3 (could more closely match reporter-provided data)
+    // OR B3A - Bonus Items 3 (could more closely match imported data)
     // ...report.html: DATA.starpath.reward_pages[8].name = "Bonus Page 3" .is_bonus = true
     // ...report.html: DATA.starpath.reward_pages[5].name = "Page 6" .is_bonus = false
 
@@ -3219,7 +3219,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     newStr = newStr.replaceAll('-->-->', '-->');
 
     // TODO - make more robust, e.g. ensure only replacing |gridSize=(\d+)×(\d+)
-    // for now, assume if theres a "×", it came from my sheet, which came from reporter data
+    // for now, assume if theres a "×", it came from my sheet, which came from imported data
     // replace with "x" which is easier for wiki users
     newStr = newStr.replaceAll('×', 'x');
 
