@@ -4481,6 +4481,91 @@ item.universe = 'Character Dream Style';
 
 
 
+// ===== landscaping (DDV-40) =====
+// Landscaping items (trees, underbrush, rocks placed from the Landscaping section of the furniture
+// menu) have their own article format. A row is one when its item ID is in the 402xxxxx range and its
+// category names a landscaping type. Furniture whose category only includes Landscaping (topiaries,
+// waterfalls, carriages: other ID ranges) stays furniture.
+// The first type the category names wins: a composition of trees and rocks is a Rock on the wiki.
+var LANDSCAPING_TYPES = [
+  { category: 'Rocks', type: 'Rock', navbox: 'rocks' },
+  { category: 'Trees', type: 'Tree', navbox: 'trees' },
+  { category: 'Underbrush', type: 'Underbrush', navbox: 'underbrush' }
+];
+
+function landscapingType(item) {
+  var cats = String(item.category || '').split(',').map(function (c) { return c.trim(); });
+  for (var i = 0; i < LANDSCAPING_TYPES.length; i++) {
+    if (cats.indexOf(LANDSCAPING_TYPES[i].category) >= 0) return LANDSCAPING_TYPES[i];
+  }
+  return null;
+}
+
+function isLandscaping(item) {
+  if (item.itemType != 'Furniture' && item.itemType != 'Landscaping') return false;
+  var id = String(item.ID || item.id || item.itemID || '');
+  return /^402\d{5}$/.test(id) && !!landscapingType(item);
+}
+
+// gridSize: the size cell if it shows a value, else W x L (the cell may hold the size only as a comment)
+function landscapingSize(item) {
+  var shown = item.size ? String(item.size).replace(/<!--[\s\S]*?-->/g, '').trim() : '';
+  if (shown) return String(item.size).trim();
+  if (item.W && item.L) return item.W + 'x' + item.L;
+  var hidden = item.size ? stripHTMLComments(String(item.size)).trim() : '';
+  return hidden;
+}
+
+// The whole article. Not passed through microTemplate or jankyCleanup (the variant table line keeps its
+// two-space indent). Variants stay a commented placeholder until the sheet has the variant columns.
+function generateLandscapingArticle(item) {
+  var kind = landscapingType(item);
+  // a blank color is a missing one even with the box on (as on the wiki's landscaping articles)
+  var color;
+  if (!item.color) {
+    color = '<!--OPTIONS: blue, green, red, pink, white, black, yellow, orange, brown, purple, gray-->';
+    item.missingCategories.push('[[Category: Missing Colors]]');
+  } else {
+    color = applyConfirmationWrap(item, item.color, categoriesColorsTraitsConfirmed, 'Colors');
+  }
+  var size = landscapingSize(item);
+  if (!size) {
+    size = '<!--WxD-->';
+    item.missingCategories.push('[[Category: Missing Size]]');
+  }
+  // a cell of only "(outdoor)" leaves placement blank: landscaping is placed like default furniture
+  var placement = item.placement ? item.placement : 'default';
+  var environment = item.environment ? item.environment : 'outdooronly';
+
+  var t = '';
+  t += '{{infobox\n';
+  t += '|image=' + item.name + '.png\n';
+  t += '|type=Landscaping\n';
+  t += '|landscapingtype=' + kind.type + '\n';
+  t += '|color=' + color + '\n';
+  t += '|biomeunlock=\n';
+  t += '|gridSize=' + wrapComment(size, !placementConfirmed) + '\n';
+  t += '|placement=' + wrapComment(placement, !placementConfirmed) + '\n';
+  t += '|environment=' + wrapComment(environment, !placementConfirmed) + '\n';
+  t += '}}\n';
+  t += '{{landscapingDescription|landscapingtype=' + kind.type + '}}\n';
+  t += '\n==Variants==\n';
+  t += '{{landscapingVariantDescription|variantCount=1|similarItems=|similarItemsAdditionalText=<br>\n}}\n';
+  t += '<!--{{landscapingVariantTable|landscapingtype=' + kind.type + '|\n';
+  t += '  img1={{PAGENAME}}.png|name1={{PAGENAME}}|size1=1x1|tile1=yes|walkthrough1=no|landscapingSubtype1=|biome1=\n';
+  t += '}}-->';
+  t += output_history(item);
+  t += '\n\n{{NavboxLandscaping|' + kind.navbox + '}}\n';
+  t += '__noTOC__';
+  if (item.missingCategories.length) t += '\n\n' + item.missingCategories.join(' ');
+  return t.replaceAll('×', 'x').replaceAll('<!--<!--', '<!--').replaceAll('-->-->', '-->');
+}
+
+// Where a landscaping article goes in the clothing/furniture output until the cleanup has run.
+var LANDSCAPING_SLOT = '\u0000LANDSCAPING_ARTICLE_';
+var LANDSCAPING_SLOT_END = '\u0000';
+var LANDSCAPING_SLOT_RE = /\u0000LANDSCAPING_ARTICLE_(\d+)\u0000/g;
+
 // CR01: which special template builds this item's article instead of the furniture/clothing one, or
 // null. Same tests and the same order as before (the last match wins).
 function specialArticleTemplate(item) {
@@ -4504,6 +4589,7 @@ function specialArticleTemplate(item) {
 /* ============= */
 function renderClothingFurnitureArticle(dataArray) {
   var renderedHTML = '';
+  var landscapingArticles = []; // DDV-40
 
   // TODO - at this point itemType has not been reset from Furniture-->House, etc
 
@@ -4555,6 +4641,14 @@ function renderClothingFurnitureArticle(dataArray) {
     //item = assignItemType(item);
 
     // =*=*=*=*= PARSING ITEM END =*=*=*=*=
+
+    // DDV-40: a landscaping item gets its own article, put in after the furniture cleanup (a slot here)
+    if (isLandscaping(item)) {
+      landscapingArticles.push(generateLandscapingArticle(item));
+      renderedHTML += LANDSCAPING_SLOT + (landscapingArticles.length - 1) + LANDSCAPING_SLOT_END;
+      renderedHTML += delimiter;
+      return;
+    }
 
     // CR01: a special article (wallpaper/flooring, character dream style, house, building skin,
     // companion) is built once, by its own template. The furniture article used to be built first and
@@ -4621,7 +4715,9 @@ function renderClothingFurnitureArticle(dataArray) {
     renderedHTML += delimiter;
   });
 
-return jankyCleanup(renderedHTML);
+  var cleaned = jankyCleanup(renderedHTML);
+  if (!landscapingArticles.length) return cleaned;
+  return cleaned.replace(LANDSCAPING_SLOT_RE, function (m, i) { return landscapingArticles[Number(i)]; });
 }
 
 
