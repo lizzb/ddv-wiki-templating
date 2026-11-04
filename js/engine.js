@@ -2214,6 +2214,21 @@ function storeConditionText(c) {
   return c.hidden ? `<!--${text}-->` : text;
 }
 
+// DDV-50 (B32): a crafted item that is not available to craft until after a quest gets |unlockquest=, not |from=.
+// Rule: the source names a quest, the item is crafted, there is no "limit N" and it is not crafted or given
+// only during the quest. A limit or a "during" keeps |from=. The older wording ("Crafting after ...",
+// "unlocks recipe") always counted.
+function questUnlocksCrafting(item) {
+  const s = String(item.source || '');
+  if (s.includes('unlocks recipe') || s.includes('Crafting after ')) return true;
+  if (/\bCrafting \(Quest\)/i.test(s)) return false; // "Crafting (Quest) - ...": crafted only during the quest
+  const loc = String(item.location || '');
+  if (!/quest/i.test(s) && !loc.includes('quest')) return false;
+  if (!/\bcraft/i.test(s) && !loc.includes('craft')) return false;
+  if (/\blimit\b/i.test(s) || /\bduring\b/i.test(s)) return false;
+  return true;
+}
+
 function isQuestItem(item) {
   if (parseStoreCondition(item.source)) return false; // DDV-24 (B26, B48): a quest named as a store condition is not a reward
   var isQuestItem = 
@@ -2677,8 +2692,20 @@ function output_functions(item) {
 
 
 
+// DDV-50 (B44): a house that lists a size is marked as not measured, as the sizeless ones are:
+// "32x32" -> "32x32*<!--DIMENSIONS NOT FILLED-->", "<!--40x48-->" -> "<!--40x48*<!--DIMENSIONS NOT FILLED-->".
+// A size that already carries the marker ("28x28 (not full)") is left as it is.
+var DIMENSIONS_NOT_FILLED_MARKER = '*<!--DIMENSIONS NOT FILLED-->';
+function markHouseSize(size) {
+  size = String(size);
+  if (size.includes('DIMENSIONS NOT FILLED')) return size;
+  var m = size.match(/^\s*<!--([\s\S]*?)-->\s*$/);
+  return m ? '<!--' + m[1].trim() + DIMENSIONS_NOT_FILLED_MARKER : size.trim() + DIMENSIONS_NOT_FILLED_MARKER;
+}
+
 function output_sizePlacementEnv(item) {
   //item = parseSizePlacementEnv(item);
+  if (item.size && isHouse(item)) item.size = markHouseSize(item.size); // DDV-50 (B44)
   if (!item.size) {
     item.size = '<!--WxD*<!--DIMENSIONS NOT FILLED-->';
     if (item.itemType != 'Clothing') {
@@ -3164,7 +3191,10 @@ function parseItemSourceOnce(item) {
     // B26: "Aladdin Realm quest (Monkey Business) (during)" and "Hercules quest - Realm - Speedrun Crash Course" too
     const regex = /^\d*\s*(?:(?:[A-Za-z]+\s+)*?(?:after|during|for)\s+)?(?<character>.+?)\s+(?:Level\s+(?<levelNum>\d+)|(?<questType>story|realm))\s*(?:quest)?\s+\((?<quest>[^)]+)\)(?<tail>.*)$/i;
     const dashRealm = string.match(/^(?<character>.+?)\s+quest\s*-\s*(?<questType>Realm)\s*-\s*(?<quest>[^(\n]+?)\s*(?<tail>\(.*)?$/i);
-    const match = string.match(regex) || dashRealm;
+    // DDV-50: "Crafting after Tigger Quest (A Honey of a Problem)": a quest with no level and no story/realm word (also the
+    // first line of a source that goes on to a second line, which the main pattern does not cross)
+    const afterQuest = string.match(/^Crafting after\s+(?<character>[^()\n]+?)(?:\s+Level\s+(?<levelNum>\d+))?\s+quest\s+\((?<quest>[^)]+)\)(?<tail>[^\n]*)$/im);
+    const match = string.match(regex) || dashRealm || afterQuest;
 
     if (match) {
 
@@ -3177,7 +3207,8 @@ function parseItemSourceOnce(item) {
 
       const { character, levelNum, questType, quest, tail } = match.groups;
 
-      item.character = character ? character.trim() : "";
+      // DDV-50: the crafting words in front of the character ("Crafting -- Ariel", "Crafting (Quest) - Moana", "Crafting, during Tigger")
+      item.character = character ? character.trim().replace(/^Crafting\s*(?:\(Quest\))?\s*(?:--?|,)\s*/i, '').replace(/^(?:(?:also|crafted|given|place)\s+)*during\s+/i, '') : "";
       item.level = levelNum || "";
       item.questType = questType ? capitalize(questType.toLowerCase()) : ""; // Story or Realm
       item.quest = quest ? quest.trim() : "";
@@ -3747,7 +3778,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
       // values: unlisted reward, reward
       infoboxFrom = `|reward=${output_QuestTemplate(item)}`;
     }
-    else if ((item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) || item.location == 'quest/crafting' ){
+    else if (questUnlocksCrafting(item) || item.location == 'quest/crafting' ){
       infoboxFrom = `|unlockquest=${output_QuestTemplate(item)}`;
     }
     else {
@@ -3876,7 +3907,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
     if ( useDummyQuestFallback || (infoboxFrom == '' && itemSource == '') || item.qtyRewarded == '' && item.howObtained == '' && item.whenCollected == '' && item.whenRewarded == '') {
       // total default fallback if not assigned before this
       // no level defined in input - assume reward language - TODO
-      infoboxFrom = `|from=${output_QuestTemplate(item)}`;
+      infoboxFrom = `|${questUnlocksCrafting(item) ? 'unlockquest' : 'from'}=${output_QuestTemplate(item)}`; // DDV-50
 
 
       // It is available in connection with the quest [[QUESTNAME]].
@@ -3887,7 +3918,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
     }
 
     if (item.questParseFailed) { // B26: an unparsed quest source is a placeholder, never [[undefined]]
-      infoboxFrom = `|from=${output_QuestTemplate(item)}`;
+      infoboxFrom = `|${questUnlocksCrafting(item) ? 'unlockquest' : 'from'}=${output_QuestTemplate(item)}`; // DDV-50
       itemSource = '<!--SOURCE TODO.-->' + '<!--' + item.source + '-->';
     }
 
@@ -4952,7 +4983,7 @@ function generateVillagerHouseTemplate(item) {
   var t = '{{infobox\n|image=' + item.name + '.png\n|name=' + item.name + '\n|type=Houses\n|category=Villager House\n';
   t += '|residents=' + residents.map(function (r) { return '{{name|' + r + '}}'; }).join('<br>') + '\n';
   t += '|universe=\n|unlocks={{name|Star Coins|link=Villagers\'_Houses#Unlock_Costs{{!}}Dynamic}} based on unlock order\n';
-  t += '|gridSize=' + (size || '<!--WxD-->') + '\n';
+  t += '|gridSize=' + (size ? markHouseSize(size) : '<!--WxD' + DIMENSIONS_NOT_FILLED_MARKER) + '\n'; // DDV-50 (B44)
   t += '|unlockquest=' + (q ? '{{quest|' + q.quest + (q.character ? '|friendship=' + q.character : '') + (q.realm ? '|realm=' + q.realm : '') + '}}' : '<!--{{quest|QUESTNAME}}-->') + '\n}}\n';
   t += "'''" + item.name + "''' is a [[Villagers' Houses|Villager House]]";
   if (residents.length) t += ' where ' + oxfordJoin(residents.map(function (r) { return '[[' + r + ']]'; })) + ' live' + (residents.length == 1 ? 's' : '');
