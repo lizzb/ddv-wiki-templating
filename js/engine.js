@@ -3194,7 +3194,10 @@ function parseItemSourceOnce(item) {
     // DDV-50: "Crafting after Tigger Quest (A Honey of a Problem)": a quest with no level and no story/realm word (also the
     // first line of a source that goes on to a second line, which the main pattern does not cross)
     const afterQuest = string.match(/^Crafting after\s+(?<character>[^()\n]+?)(?:\s+Level\s+(?<levelNum>\d+))?\s+quest\s+\((?<quest>[^)]+)\)(?<tail>[^\n]*)$/im);
-    const match = string.match(regex) || dashRealm || afterQuest;
+    // DDV-53: "Crafting after Lady Quest 2/3 (Life's a (Meat)Ball) (reward) -- ..." and "Lady quest 3/3 (A Curious Dish) -- ...":
+    // a quest that is step N of M, with brackets allowed inside the quest name. What follows the name is the sheet's note, not a timing.
+    const stepQuest = string.match(/^(?:Crafting after\s+)?(?<character>[^()\n\/]+?)\s+quest\s+\d+\/\d+\s+\((?<quest>(?:[^()\n]|\([^()\n]*\))+)\)/im);
+    const match = string.match(regex) || dashRealm || afterQuest || stepQuest;
 
     if (match) {
 
@@ -3212,6 +3215,7 @@ function parseItemSourceOnce(item) {
       item.level = levelNum || "";
       item.questType = questType ? capitalize(questType.toLowerCase()) : ""; // Story or Realm
       item.quest = quest ? quest.trim() : "";
+      item.questStep = match === stepQuest; // DDV-53
 
   // Initialize outputs
       item.qtyRewarded = "";
@@ -3221,7 +3225,7 @@ function parseItemSourceOnce(item) {
       item.postQuestMailboxMessageTitle = "";
       item.maxLimit = "";
 
-      if (tail) {
+      if (tail && match !== stepQuest) { // DDV-53: the note after a "2/3" step is not a timing
     // Extract quoted strings ("I found this...")
         const quoteMatch = tail.match(/\("(?<quote>[^"]+)"\)/);
         if (quoteMatch) {
@@ -3799,6 +3803,9 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
     else if (item.questType == 'Realm') { // B26
       itemSource += ` ${actionVerb} the [[${item.character}#Quests|${item.character}]] Realm quest [[${item.quest}]]`;
     }
+    else if (!item.level) { // DDV-53: no level in the source ("Crafting after Tigger Quest (...)"): no "Friendship Level ]]"
+      itemSource += ` ${actionVerb} the [[${item.character}#Quests|${item.character}]] quest [[${item.quest}]]`;
+    }
     else {
       itemSource += ` reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]]`;
       itemSource += ` and ${actionVerb} the quest [[${item.quest}]]`;
@@ -3810,15 +3817,18 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
       itemSource += `,`;
     }
 
-    if ((item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) && item.howObtained == '') {
+    // DDV-53: a "2/3" step quest (questStep) is a reward after the step, not something crafted and placed during the quest
+    const craftsAfterQuest = (item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) && !item.questStep;
+    if (craftsAfterQuest && item.howObtained == '') {
       item.howObtained = 'crafted';
     }
 
-    if (item.howObtained && item.howObtained != 'obtained' || (item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) ) {
+    if (item.howObtained && item.howObtained != 'obtained' || craftsAfterQuest) {
       let tempItemQty = item.qtyRewarded ? insertNumberWord(item.qtyRewarded) : 'one';
       // one is crafted during the quest, placed in the [[Nectar Apiary]],
       // and will remain placed after the quest is completed.
       tempItemQty = (tempItemQty=='one') ? 'it is' : tempItemQty + ' are'
+      itemSource = itemSource.replace(/\.$/, ','); // DDV-53: "...the quest [[X]], it is crafted", not "[[X]]. it is crafted"
       itemSource += ` ${tempItemQty} ${item.howObtained} during the quest`;
 
       if (item.itemType != 'Clothing') {
@@ -3850,7 +3860,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
         }  */
     }
 
-    if (item.source.includes('unlocks recipe') || item.source.includes('Crafting after ')) {
+    if (craftsAfterQuest) {
       itemSource += ` After that quest the [[Crafting|crafting recipe]] will be permanently unlocked.`;
     }
 
@@ -3858,7 +3868,7 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
       // unless overtly stated from sheet source, do not specify how/when it is collected
       itemSource += ` It is automatically collected during the quest.`;
     }
-    if (item.source.includes('pick up')) {
+    if (item.source.includes('pick up') && !/re-pick up/i.test(item.source)) { // DDV-53: "must re-pick up in 1.22" is a note about an update
       // unless overtly stated from sheet source, do not specify how/when it is collected
       itemSource += ` It can be collected by picking it up.`;
     }
@@ -3912,6 +3922,12 @@ After progressing through the [[Eeyore#Quests|Eeyore]] story quest [[Chapter 5: 
 
       // It is available in connection with the quest [[QUESTNAME]].
       itemSource = `It is obtained in association with the [[${item.character}#Quests|${item.character}]] quest [[${item.quest}]].`;
+      if (questUnlocksCrafting(item) && !item.questParseFailed && item.character && item.quest) { // DDV-53: a crafted item the quest unlocks says so
+        const unlockedBy = item.level
+          ? `reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and completing the quest [[${item.quest}]]`
+          : `completing the [[${item.character}#Quests|${item.character}]] ${item.questType ? item.questType.toLowerCase() + ' ' : ''}quest [[${item.quest}]]`;
+        itemSource = `After ${unlockedBy}, the [[Crafting|crafting recipe]] will be unlocked.`;
+      }
       // itemSource = `It is obtained in association with reaching [[${item.character}#Friendship Rewards|Friendship Level ${item.level}]] with [[${item.character}]] and progressing in the quest [[${item.quest}]].`;
       itemSource += placeholderCommentBodyDetailsQuest;
 
