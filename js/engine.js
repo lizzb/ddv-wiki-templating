@@ -2221,6 +2221,7 @@ function storeConditionText(c) {
 function questUnlocksCrafting(item) {
   const s = String(item.source || '');
   if (s.includes('unlocks recipe') || s.includes('Crafting after ')) return true;
+  if (/\bCrafting \(Quest\)/i.test(s)) return false; // "Crafting (Quest) - ...": crafted only during the quest
   const loc = String(item.location || '');
   if (!/quest/i.test(s) && !loc.includes('quest')) return false;
   if (!/\bcraft/i.test(s) && !loc.includes('craft')) return false;
