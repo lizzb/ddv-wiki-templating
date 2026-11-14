@@ -1758,6 +1758,12 @@ function generateCritterSchedule(item) {
   return template;
 }
 
+// "a" or "an" for the first word a reader sees in wikitext: a link [[Page|label]] counts as its label
+function indefiniteArticle(text) {
+  var shown = String(text).replace(/\[\[(?:[^\]|]*\|)?([^\]]*)\]\]/g, '$1').trim();
+  return /^[aeiou]/i.test(shown) ? 'an' : 'a';
+}
+
 function generateCompanionTemplate(item) {
 
   var template = '';
@@ -1781,7 +1787,7 @@ function generateCompanionTemplate(item) {
 
     if (isCritter) {
       template += "\n|from=Feeding Critters";
-      template += "\n|found=in the '''Honeyglow Woods''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
+      template += "\n|found=in the '''" + newExpansionCollection + "''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
       template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
       template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
       template += "\n|numFeedings=<!--(%%numFeedings%%)--><!--three <!--(3)-->";
@@ -1838,7 +1844,7 @@ function generateCompanionTemplate(item) {
     }
     var introSecondary = ""; // TODO?: " which was available during the [[Pixar Fest Star Path]]";
 
-    template += '\n'+"'''%%name%%''' is a " + introLink + introSecondary + ".";
+    template += '\n'+"'''%%name%%''' is " + indefiniteArticle(introLink) + " " + introLink + introSecondary + ".";
     template += '\n\n' + generateBodyFromPremiumShop(item);
 
     // TODO - why is the star path body text not generating??
