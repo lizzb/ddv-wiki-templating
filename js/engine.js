@@ -63,6 +63,8 @@ var SETTINGS = {
   functionsConfirmed: { type: 'boolean', default: false, about: 'furniture functions confirmed (else filler text)' },
   premiumConfirmed: { type: 'boolean', default: false,
     about: 'premium items: the collection, tags, price, size, functions and placement boxes apply to them too (off: all of those are commented out on a premium article)' },
+  premiumBuypriceBlank: { type: 'boolean', default: false,
+    about: 'premium furniture: an empty |buyprice= and none at all for premium flooring and wallpaper (off: the sheet\'s star coin price, as for other furniture)' },
   placementConfirmed: { type: 'boolean', default: false,
     about: 'size, placement, surface area and environment confirmed (part of categoriesColorsTraitsConfirmed before DDV-28)' },
 
@@ -98,6 +100,7 @@ var VILLAGE_NAMES = { DV: 'Dreamlight Valley', EI: 'Eternity Isle', SV: 'Storybo
 var updateNumber, newExpansionCollection, starPathNameShort, starPathName, starPathToken;
 var mealNavbox, bundleStartDate, bundleEndDate, companionCollection, wikiVersionLabels;
 var collectionConfirmed, priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed, premiumConfirmed;
+var premiumBuypriceBlank;
 var showItemDebug, renderPSbundles, customTemplate;
 
 // (CR26) template, output, tempTemplate, bundleArray, itemUseIntro_clothing and
@@ -1711,9 +1714,55 @@ function generateFlowerTemplate(item) {
     return isCompanion;
   }
 
+// DDV-59: a companion record (as opposed to a sheet row) carries its own fields: companionClass
+// (Notable / Animal), isCritter, gathering (the gathering bonus type), level2reward and
+// level2qtysuffix (the friendship level 2 reward and " (n)" for a quantity above 1). With any of
+// them the companion article is filled from them; without them (sheet rows) it is unchanged.
+var COMPANION_RECORD_FIELDS = ['companionClass', 'isCritter', 'gathering', 'level2reward', 'level2qtysuffix'];
+function isCompanionRecord(item) {
+  return !!item && COMPANION_RECORD_FIELDS.some(function (k) { return Object.prototype.hasOwnProperty.call(item, k); });
+}
+
+// DDV-59: critter companions get a feeding schedule and a (commented) yield table
+function generateCritterSchedule(item) {
+  let template = '';
+  template += "\n{{CritterSchedule";
+  template += "\n|location=<!--BIOME1{{!}}REGION1--><!--%%biome%%-->";
+  for (const day of ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']) {
+    template += "\n|" + day + "=TBA";
+  }
+  template += "\n}}<!--";
+  template += "\n";
+  template += "\n==Yield==";
+  template += "\n{| class=wikitable id='recipe-table'";
+  template += '\n!style="" | Food Type';
+  template += '\n!style="" | Item';
+  template += '\n!style="" | Possible Rewards';
+  template += "\n|-";
+  template += "\n| Favorite";
+  template += "\n| TBA";
+  template += "\n|";
+  template += "\n{{name|Dream Shard|2}}<br>";
+  template += "\n{{name|Memory Shard}}<br>";
+  template += "\n{{name|Motif Bag}}";
+  template += "\n|-";
+  template += "\n| Liked";
+  template += "\n| TBA";
+  template += "\n|";
+  template += "\n{{name|Dream Shard}}<br>";
+  template += "\n{{name|Memory Shard}}<br>";
+  template += "\n{{name|Wheat/Carrot/Spinach Seed}}";
+  template += "\n|}-->";
+  template += "\n{{cleanup|Missing Love and Like rewards}}";
+  template += "\n";
+  return template;
+}
+
 function generateCompanionTemplate(item) {
 
   var template = '';
+  var record = isCompanionRecord(item); // DDV-59
+  var isCritter = record && !!item.isCritter;
 
   {
 
@@ -1722,14 +1771,27 @@ function generateCompanionTemplate(item) {
     template += output_image(item); // template += '\n|image=%%name%%.png';
     template += output_type(item); // "\n|type=Companions"; // PLURAL Companions
     template += "|category=<!--Animal/Notable Companions"; //output_category(item); // Animal Companions / Notable Companions
+    if (isCritter) { template += ", Critter"; }
     template += "-->\n";
     template += '|critterType=<!--Capybara-->\n';
     template += output_collection(item);  // Dreamlight Valley
     template += output_universe(item);
-    template += '|hangout=<!--Flowers-->';
+    template += record ? '|hangout=<!--%%gathering%%-->' : '|hangout=<!--Flowers-->';
     template += '\n'+output_from(item);
 
-    template += '}}'; // END OF INFOBOX
+    if (isCritter) {
+      template += "\n|from=Feeding Critters";
+      template += "\n|found=in the '''Honeyglow Woods''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
+      template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
+      template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
+      template += "\n|numFeedings=<!--(%%numFeedings%%)--><!--three <!--(3)-->";
+      template += "\n|critterCollection=" + newExpansionCollection;
+      template += "\n|hangout=<!--%%gathering%%-->";
+      template += "\n}}";
+      template += generateCritterSchedule(item);
+    } else {
+      template += '}}'; // END OF INFOBOX (a critter's is closed above, before {{CritterSchedule}})
+    }
     //template += `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`;
 
     let infoboxHangout = `[[Foraging]] / [[Foraging#Flowers{{!}}Flowers]]`;
@@ -1740,7 +1802,16 @@ function generateCompanionTemplate(item) {
     let level4LinkLabel = `[[Foraging|Resource Collection]]`;
     let level2LinkLabel = `[[Ingredients|Ingredient]] / [[Foraging#Flowers|Flower]]`;
     let level2RewardItem = `REWARDITEM`;
-    let level2RewardQty = `COUNT`;
+    let level2RewardQty = ` (COUNT)`;
+    if (record) {
+      // DDV-59: from the record; level2qtysuffix is " (n)", or blank for a quantity of 1
+      infoboxHangout = inlineLink1 = inlineLink2 = `[[%%gathering%%]]`;
+      level4Icon = `Companion Gather %%gathering%% Icon`;
+      level4HangoutType = `[[%%gathering%%|%%gathering%% Gathering Bonus]]`;
+      level4LinkLabel = `[[%%gathering%%|Resource Collection]]`;
+      level2RewardItem = `%%level2reward%%`;
+      level2RewardQty = `%%level2qtysuffix%%`;
+    }
 
     template += '\n{{ItemDescription';
     template += '\n|%%name%%';
@@ -1757,6 +1828,14 @@ function generateCompanionTemplate(item) {
     // is a limited time premium [[Companions#Event Companions|event companion]]
     // is a premium [[Companions#Premium Companions|companion]].
     var introLink = "premium [[Companions#Event Companions|event companion]]";
+    if (record) {
+      // DDV-59: by companion type; notable first, then critter, star path (tier), premium bundle
+      if (item.companionClass === 'Notable') introLink = "[[Companions#Notable_Companions|notable companion]]";
+      else if (isCritter) introLink = "[[Companions#Critter_Companions|critter companion]]";
+      else if (item.tier) introLink = "[[Companions#Event_Companions|event companion]]";
+      else if (item.bundleName) introLink = "[[Companions#Premium_Companions|premium companion]]";
+      else introLink = "[[Companions|companion]]";
+    }
     var introSecondary = ""; // TODO?: " which was available during the [[Pixar Fest Star Path]]";
 
     template += '\n'+"'''%%name%%''' is a " + introLink + introSecondary + ".";
@@ -1793,7 +1872,7 @@ function generateCompanionTemplate(item) {
     template += `\n!Name`;
     template += `\n!Type`;
     template += `\n|-`;
-    template += `\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:${level2RewardItem}.png| 50x50px| center]]--> || <!--[[${level2RewardItem}]] (${level2RewardQty})--> || <!--${level2LinkLabel}-->`;
+    template += `\n|[[File:Friendship_2.png|32px|center|link=Friendship]] || <!--[[File:${level2RewardItem}.png| 50x50px| center]]--> || <!--[[${level2RewardItem}]]${level2RewardQty}--> || <!--${level2LinkLabel}-->`;
     template += `\n|-`;
     template += `\n|[[File:Friendship_3.png|32px|center|link=Friendship]] || [[File:Companion Inventory Bonus Icon.png| 50x50px| center]] || [[Inventory|Inventory Increase]] (+4) || [[Inventory]]`;
     template += `\n|-`;
@@ -1803,7 +1882,8 @@ function generateCompanionTemplate(item) {
     template += `\n|}`;
     template += `\n}}`;
 
-    template += output_history(item) + output_navbox(item);
+    template += output_history(item) + (record ? "\n\n{{NavboxCompanion}}" : output_navbox(item));
+    if (isCritter) template += "\n__noTOC__";
 
     //template += '\n\n[[Category:Missing xxxxx]]';
   }
@@ -1862,8 +1942,11 @@ function generateCompanionTemplateOriginal(item) {
 
 
   // Create stub articles for critter items
+  // DDV-59: a companion record gets the full companion article, a sheet row the stub as before
   function renderCompanions(dataArray) {
-    return renderEachItem(dataArray, generateCompanionTemplateOriginal);
+    return renderEachItem(dataArray, function (item) {
+      return isCompanionRecord(item) ? generateCompanionTemplate(item) : generateCompanionTemplateOriginal(item);
+    });
   }
 
 
@@ -2422,6 +2505,12 @@ function output_buyprice(item) {
 
   var output = '|buyprice=%%buyprice%%\n';
 
+  // DDV-59 (setting premiumBuypriceBlank): premium furniture gets an empty |buyprice= for an editor
+  // to fill, premium flooring and wallpaper none at all; no Missing Price category for either
+  if (premiumBuypriceBlank && item.itemType == 'Furniture' && isPremium(item)) {
+    return isWallpaperFlooring(item) ? '' : '|buyprice=\n';
+  }
+
   // Don't include empty buyprice for clothing from Star Path or Premium Shop
   if (item.itemType == 'Clothing' && (item.starpath || isPremium(item))) {
     output = '';
@@ -2768,11 +2857,17 @@ function parseSizePlacementEnv(item) {
     item.size = item.size.split(' ')[0] + '*<!--DIMENSIONS NOT FILLED-->';
   }
 
+  // DDV-59: the placement is the text before the marker, so "bare, unpaved (outdoor)" keeps both
+  // terms (it used to be cut at the first space); notes after the marker are still dropped
+  var beforeMarker = function (text, marker) {
+    var cut = text.slice(0, text.indexOf(marker)).trim().replace(/,$/, '').trim();
+    return cut === '' ? marker : cut; // a cell of only the marker: see CR16 below
+  };
   if (item.placement && item.placement.includes('(outdoor)')) {
-    item.placement = item.placement.split(' ')[0]; // todo - more robust logic
+    item.placement = beforeMarker(item.placement, '(outdoor)');
     item.environment = 'outdooronly';
   } else if (item.placement && item.placement.includes('(indoor)')) {
-    item.placement = item.placement.split(' ')[0];
+    item.placement = beforeMarker(item.placement, '(indoor)');
     item.environment = 'indooronly';
   } else {
     //item.placement = "";
@@ -3105,7 +3200,7 @@ function parseItemSourceOnce(item) {
   // ===== Friendship =====
   if (item.location == 'friendship' || item.location == 'premium/friendship') {
     const string = item.source;
-    const regex = /([\w\W ]+) Level (\d)/;
+    const regex = /([\w\W ]+) Level (\d+)/; // DDV-59: two-digit levels (Level 10)
     const result = string.split(regex);
     item.character = result[1]; // friendship character
     item.level = result[2]; // friendship level
@@ -5755,6 +5850,7 @@ function resetState() {
   updateNumber = newExpansionCollection = starPathNameShort = starPathName = starPathToken = undefined;
   mealNavbox = bundleStartDate = bundleEndDate = companionCollection = wikiVersionLabels = undefined;
   collectionConfirmed = priceConfirmed = categoriesColorsTraitsConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = premiumConfirmed = undefined;
+  premiumBuypriceBlank = undefined;
   showItemDebug = renderPSbundles = customTemplate = undefined;
   sourceParsed = null;
   renderRowNames = null;
@@ -5785,6 +5881,7 @@ function render(rows, templateType, settings) {
   functionsConfirmed = s.functionsConfirmed;
   placementConfirmed = s.placementConfirmed;
   premiumConfirmed = s.premiumConfirmed;
+  premiumBuypriceBlank = s.premiumBuypriceBlank;
   showItemDebug = s.showItemDebug;
   renderPSbundles = s.renderPSbundles;
   customTemplate = s.customTemplate;
