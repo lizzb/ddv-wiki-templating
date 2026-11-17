@@ -1820,7 +1820,11 @@ function generateCompanionTemplate(item) {
   // DDV-60: a record pasted on the page has no missingCategories list of its own
   if (!Array.isArray(item.missingCategories)) item.missingCategories = [];
   // DDV-60 (B7): a record's own village names its collection; a sheet row keeps the companionCollection setting
-  var recordVillage = record && hasValue(item.collection) ? (VILLAGE_NAMES[item.collection == 'WR' ? 'WM' : item.collection] || String(item.collection)) : '';
+  // WB and WR are older codes for WM (Wishblossom Mountains); a code the engine does not know names the new village
+  // (the newExpansionCollection setting), never the bare code
+  if (record && (item.collection == 'WB' || item.collection == 'WR')) item.collection = 'WM';
+  var recordVillage = record && hasValue(item.collection) ? (VILLAGE_NAMES[item.collection] || newExpansionCollection || String(item.collection)) : '';
+  var recordCode = record && hasValue(item.collection) && !VILLAGE_NAMES[item.collection] ? item.collection : '';
 
   {
 
@@ -1834,6 +1838,8 @@ function generateCompanionTemplate(item) {
     template += '|critterType=<!--Capybara-->\n';
     // DDV-60 (B1): output_collection comments out both the village and the line (<!--<!--...-->--> for a record); once is enough
     var collectionLine = output_collection(item);
+    // output_collection comments a known village code; an unknown one is commented here the same way
+    if (record && recordCode && item.collection === recordCode) item.collection = wrapComment(recordCode, !collectionConfirmed);
     if (record) collectionLine = collectionLine.replace('|collection=' + wrapComment('%%collection%%', !collectionConfirmed), '|collection=%%collection%%');
     template += collectionLine;  // Dreamlight Valley
     template += output_universe(item);
