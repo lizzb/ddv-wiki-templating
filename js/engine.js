@@ -53,7 +53,7 @@ var SETTINGS = {
   companionCollection: { type: 'string', default: 'Dreamlight Valley',
     about: 'collection named in the companion article sentence ("... Companions Collection")' },
   wikiVersionLabels: { type: 'labels', default: {},
-    about: 'extra sheet version -> {{history}} label pairs; they win over the built-in WIKI_VERSION_RULES' },
+    about: 'extra sheet version -> {{history}} label pairs; they win over the built-in WIKI_VERSION_RULES; 1.26.1=X also labels rows of 1.26' },
 
   // confirmation boxes: false = the value is still to check, so it is wrapped in <!-- -->
   priceConfirmed: { type: 'boolean', default: false, about: 'price confirmed' },
@@ -222,6 +222,23 @@ function confirmableValue(item, column, confirmed, keepPlaceholder) {
 function wrapIfValue(text, item, column, confirmed) {
   if (Object.prototype.hasOwnProperty.call(item, column) && !hasValue(item[column])) return text;
   return wrapComment(text, !confirmed);
+}
+
+// Update day 1.26: a row's biome can be only the collection's kind ("Ingredients", "Foraging") when the
+// village is not known yet. Such a value, or a blank one, is not a biome.
+var COLLECTION_KIND_NAMES = /^(Minerals|Gems|Foraging|Fish|Ingredients|Meals|Companions|Crafting|Crafting Materials|Furniture Sets|Salvaging|Underwater)$/i;
+function knownBiome(item) {
+  return hasValue(item.biome) && !COLLECTION_KIND_NAMES.test(String(item.biome).trim());
+}
+// Update day 1.26 (Q63): rows of the ingredients template whose kind is a crafting material, not a
+// cooking type (Crafting Materials, Salvaging, Underwater), get the wiki's crafting-material article.
+var CRAFTING_MATERIAL_KINDS = /^(Crafting Materials?|Salvaging|Underwater|Foraging)$/i;
+function isCraftingMaterial(item) {
+  return CRAFTING_MATERIAL_KINDS.test(String(item.cookingType || '').trim()) || CRAFTING_MATERIAL_KINDS.test(String(item.collectionType || '').trim());
+}
+// The newest village as the navboxes take it: Keepsake Sea -> keepsakesea
+function villageNavboxKey() {
+  return String(newExpansionCollection || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
 // DDV-60 (B5): game data names a meal's category in the singular; the wiki's Cooking links, icons
@@ -1310,7 +1327,23 @@ function wrapNameTemplate(ing, ingQty) {
 
 
 
+// Update day 1.26 (owner): meals come out by category, appetizers, entrées, desserts, then the rest
+// (quest meals, unknown), in the pasted order within each; the ItemRecipe switch, the articles and the
+// Cooking rows all follow this order
+var MEAL_CATEGORY_ORDER = { Appetizers: 0, 'Entrées': 1, Desserts: 2 };
+function mealCategoryRank(item) {
+  var c = String(item.category || '').trim();
+  c = MEAL_CATEGORY_PLURAL[c] || (c == 'Entrees' ? 'Entrées' : c);
+  return Object.prototype.hasOwnProperty.call(MEAL_CATEGORY_ORDER, c) ? MEAL_CATEGORY_ORDER[c] : 3;
+}
+function sortMealsByCategory(dataArray) {
+  return dataArray.map(function (item, i) { return { item: item, i: i, r: mealCategoryRank(item) }; })
+    .sort(function (a, b) { return a.r - b.r || a.i - b.i; })
+    .map(function (x) { return x.item; });
+}
+
 function renderMeals(dataArray) {
+  dataArray = sortMealsByCategory(dataArray);
   var renderedHTML = '===== Template:ItemRecipe switch:=====\n';
   var delimiter = '';
   dataArray.forEach(function (item) {
@@ -1415,7 +1448,7 @@ function renderMeals(dataArray) {
     // meal article template
     //templateMealArticle += '\n{{stub}}';
     templateMealArticle += '\n{{infobox\n|image=%%name%%.png';
-    // DDV-60: description (collection box), stars, energy and sell price (price box) commented out until confirmed
+    // DDV-60: description and stars (collection box: the star count is the recipe's size), energy and sell price (price box) commented out until confirmed
     templateMealArticle += '\n|description=' + confirmableValue(item, 'description', collectionConfirmed);
     if (!isVersatileRecipe(item) && item.stars && item.stars == 5) {
       // If recipe is 5 stars and does NOT include versatile ingredients, do plural "Meals" instead of "Meal"
@@ -1428,7 +1461,7 @@ function renderMeals(dataArray) {
     if (!item.category) { item.category = '<!--Appetizers/Entrées/Desserts-->'; }
     templateMealArticle += '\n|category=%%category%%';
     templateMealArticle += '\n|collection='+newExpansionCollection;
-    templateMealArticle += '\n|stars=' + confirmableValue(item, 'stars', priceConfirmed, true);
+    templateMealArticle += '\n|stars=' + confirmableValue(item, 'stars', collectionConfirmed, true);
     templateMealArticle += '\n|energy=' + confirmableValue(item, 'energy', priceConfirmed, true);
     templateMealArticle += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed, true);
     //templateMealArticle += '\n|giftreward=\n|orderReward=\n|size=\n|placement=';
@@ -1440,9 +1473,9 @@ function renderMeals(dataArray) {
     templateMealArticle += '\n}}';
     // todo - make this conditional with collectionconfirmed
     //templateMealArticle += '{{cleanup|Ingredients and ingredient order need verification}}';
-    // DDV-60: the star count in the sentence follows the price box, as |stars= does
+    // DDV-60: the star count in the sentence follows the collection box, as |stars= does (update day 1.26: was the price box)
     var mealKind = insertCookingLink(item.category);
-    templateMealArticle += "\n'''%%name%%''' is " + (priceConfirmed ? 'a ' : indefiniteArticle(mealKind) + ' ') + wrapComment(insertNumberWord(item.stars)+"-star ", !priceConfirmed) + mealKind + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
+    templateMealArticle += "\n'''%%name%%''' is " + (collectionConfirmed ? 'a ' : indefiniteArticle(mealKind) + ' ') + wrapComment(insertNumberWord(item.stars)+"-star ", !collectionConfirmed) + mealKind + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
 
     templateMealArticle += '\n\n';
 
@@ -1463,7 +1496,7 @@ function renderMeals(dataArray) {
 
     templateMealArticle += output_history(item);
     // e.g. honeyglowwoods, wishblossommountains, storybookvale, eternityisle
-    templateMealArticle += '\n\n{{NavboxMeal|' + (mealNavbox || newExpansionCollection.toLowerCase().replace(/[^a-z0-9]/g, '')) + '}}';
+    templateMealArticle += '\n\n{{NavboxMeal|' + (mealNavbox || villageNavboxKey()) + '}}';
     templateMealArticle += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
 
     renderedHTML += microTemplate(templateMealArticle, item);
@@ -1477,10 +1510,10 @@ function renderMeals(dataArray) {
     template = '';
     //template = '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}\n| {{stars|%%stars%%}}\n| <!--{{energy|%%energy%%}}-->\n| <!--{{price|%%sellprice%%}}-->\n| {{ItemRecipe | %%name%% }}';
     // todo - wrap this in conditional comments
-    // DDV-60: stars, energy and price follow the price box, the recipe the collection box (quest meals as before)
+    // DDV-60: energy and price follow the price box, stars and the recipe the collection box (quest meals as before)
     var unpriced = !priceConfirmed && !isQuestMeal(item), unlisted = !collectionConfirmed && !isQuestMeal(item);
     template = '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}'
-      + '\n| ' + wrapComment('{{stars|%%stars%%}}', unpriced) + '\n| ' + wrapComment('{{energy|%%energy%%}}', unpriced)
+      + '\n| ' + wrapComment('{{stars|%%stars%%}}', unlisted) + '\n| ' + wrapComment('{{energy|%%energy%%}}', unpriced)
       + '\n| ' + wrapComment('{{price|%%sellprice%%}}', unpriced) + '\n| ' + wrapComment('{{ItemRecipe | %%name%% }}', unlisted);
 
     template += '\n| [['+newExpansionCollection+']]';
@@ -1540,21 +1573,25 @@ function generateGemTemplate(item) {
   template += '\n|from={{inlineIcon|Mining|size=20|link=Mining}}';
   //template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
   // DDV-60: where it is found follows the collection box
-  template += '\n|biomes=' + wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed);
+  // update day 1.26: no real biome (blank, or only the collection's kind) = TBA
+  template += '\n|biomes=' + (knownBiome(item) ? wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed) : 'TBA');
   template += '\n|gridSize=';
   template += '\n|placement=<!--surfaces-->';
   template += '\n|stackMax=';
   template += '\n}}';
 //  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in [[Everafter]] area of [[Wishblossom Mountains]]. "; 
-  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]]" + wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) + ". "; // in the [[%%biome%%]]. // in all regions of [[%%biome%%]].
+  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]]" + (knownBiome(item) ? wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) : "<!-- in all regions of [[BIOME1]]-->") + ". "; // in the [[%%biome%%]]. // in all regions of [[%%biome%%]].
   template += '';
-  template += 'It can be used as a [[Crafting|crafting material]] to make items at a [[:Category:Crafting Stations|crafting station]]. ';
+  template += 'It can be used as a [[Crafting|crafting material]] to make items at a [[:Category:Crafting Stations|Crafting Station]]. ';
   template += '<!--It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. -->';
   template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Gems Collection|'+newExpansionCollection+' Gems Collection]].';
   template += ' ';
   template += "\n\n[[Mining#Gems|Gems]] " + PLACE_FROM_INVENTORY;
   template += ' ';
-  template += '\n<!--\nIn nodes where this gem can be found there is a chance to find [[Shiny %%name%%]], which is a less common and more valuable variant. In nodes where this gem can be found there is a chance to find [[NONSHINY]], which is a more common and less valuable variant.-->';
+  // update day 1.26: the other variant of the gem: "Shiny X" <-> "X"
+  var gemName = String(item.name || '');
+  if (/^Shiny /.test(gemName)) template += '\n<!--\nIn nodes where this gem can be found there is a chance to find [[' + gemName.replace(/^Shiny /, '') + ']], which is a more common and less valuable variant.-->';
+  else template += '\n<!--\nIn nodes where this gem can be found there is a chance to find [[Shiny ' + gemName + ']], which is a less common and more valuable variant.-->';
 
   //crafting recipes, quest objectives, quest recipes
 
@@ -1582,7 +1619,8 @@ function generateFlowerTemplate(item) {
   // CR22: one |biomes= (the wiki used the last of two); the multi-biome form stays as a hint
   template += '\n<!--|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}-->';
   // DDV-60: where it is found follows the collection box
-  template += '\n|biomes=' + wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed);
+  // update day 1.26: no real biome (blank, or only the collection's kind) = TBA
+  template += '\n|biomes=' + (knownBiome(item) ? wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed) : 'TBA');
   template += '\n|spawnTimer={{growthTime|}}';
   template += '\n|spawnMax=';
   template += '\n|gridSize=';
@@ -1590,9 +1628,9 @@ function generateFlowerTemplate(item) {
   template += '\n|stackMax=';
   template += '\n}}';
     //template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild<!--in '''REGION1''' and '''REGION2''' areas in [[BIOME1]]-->.";
-    template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild" + wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) + ".";
+    template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild" + (knownBiome(item) ? wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) : "<!-- in all regions of [[BIOME1]]-->") + ".";
     template += '';
-    template += "\n\n<!--There are exactly ITEMCOUNT '''{{PAGENAME}}''' found in the [[%%biome%%]], and another-->Another flower of the same type and color will only appear after one has been picked. There is an [[Flowers#Flower Spawning|internal-game timer]] for this flower type which respawns<!-- one every 60 minutes-->, and it can take up to 2 hours to fully repopulate all of these flowers between both areas.";
+    template += "\n\n<!--There are exactly ITEMCOUNT '''{{PAGENAME}}''' found in the [[" + (knownBiome(item) ? '%%biome%%' : 'BIOME1') + "]], and another-->Another flower of the same type and color will only appear after one has been picked. There is an [[Flowers#Flower Spawning|internal-game timer]] for this flower type which respawns<!-- one every 60 minutes-->, and it can take up to 2 hours to fully repopulate all of these flowers between both areas.";
     // line about beast flower shop? template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
     template += ' Once collected it will be added to the [[:Category:'+newExpansionCollection+' Foraging Collection|'+newExpansionCollection+' Foraging Collection]].';
     template += ' ';
@@ -1614,7 +1652,41 @@ function generateFlowerTemplate(item) {
     return renderEachItem(dataArray, generateFlowerTemplate);
   }
 
+  // Update day 1.26 (Q63): a crafting material (Foraging collection), as the wiki's pages are written
+  // (Reclaimed Barn Wood, Broken Weapon, Driftwood): |type=Foraging, |category=, |found=, {{NavboxForage}}.
+  function generateCraftingMaterialTemplate(item) {
+    var template = '';
+    template += '{{stub}}';
+    template += '\n{{infobox';
+    template += '\n|image=%%name%%.png';
+    template += '\n|description=' + confirmableValue(item, 'description', collectionConfirmed);
+    template += '\n|type=Foraging';
+    var kind = hasValue(item.collectionType) ? item.collectionType : item.cookingType;
+    template += '\n|category=' + (hasValue(kind) ? wrapComment(String(kind), !collectionConfirmed) : '');
+    template += '\n|collection=' + newExpansionCollection;
+    if (hasValue(item.energy)) template += '\n|energy=' + wrapComment(String(item.energy), !priceConfirmed);
+    template += '\n|buyprice=';
+    template += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed);
+    template += '\n|giftreward=';
+    template += '\n|found=' + (knownBiome(item) ? wrapComment('{{name|%%biome%%}}', !collectionConfirmed) : 'TBA');
+    template += '\n|from=<!--{{inlineIcon|Foraging|size=20|link=Foraging}} / <span id="nametemplate">[[File:Menu_Icon_Digging.png|20x20px|link=]] [[Digging]]</span> / <span id="nametemplate">[[File:Menu_Icon_Fishing.png|20x20px|link=]] [[Fishing]]</span>-->';
+    template += '\n|gridSize=';
+    template += '\n|placement=';
+    template += '\n|stackMax=';
+    template += '\n}}';
+    template += "\n'''%%name%%''' is a [[Foraging#Crafting_Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
+    template += '\n\nOnce collected it will be added to the [[:Category:' + newExpansionCollection + ' Foraging Collection|' + newExpansionCollection + ' Foraging Collection]].';
+    template += "\n\n[[Foraging|Foraged items]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After it has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
+    template += output_history(item);
+    template += '\n\n{{NavboxForage}}';
+    template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
+    return template;
+  }
+
   function generateIngredientsTemplate(item) {
+    if (isCraftingMaterial(item)) return generateCraftingMaterialTemplate(item);
+    // update day 1.26: a biome that is only the collection's kind (Ingredients, Foraging) is not known
+    var biome = knownBiome(item) ? '%%biome%%' : 'BIOME1';
     var template = '';
     template += '{{stub}}';
     template += '\n{{infobox';
@@ -1663,13 +1735,16 @@ function generateFlowerTemplate(item) {
         template += '\n|seed=%%name%% Seed';
         template += '\n|growtime={{growthTime|XXXXX}}<br>{{growthTime|XXXXX|biome=BIOME1|biome2=BIOME2NAME}}';
       }
-      else {
+      else if (knownBiome(item)) {
         //template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
         //template += '\n|biomes=BIOME1, BIOME2';
         template += '\n|biomes=%%biome%%';
       }
     }
     template += '\n-->';
+    template = template.replace('\n<!--\n-->', '');
+    // update day 1.26: no biome yet = TBA, shown (owner's note)
+    if (item.cookingType != "Fish" && ['Stall', 'Foraging - Tree/Bush', 'Gardening'].indexOf(item.obtainMethod) < 0 && !knownBiome(item)) template += '\n|biomes=TBA';
     template += '\n|gridSize=';
     template += '\n|placement=';
     template += '\n|stackMax=';
@@ -1686,15 +1761,15 @@ function generateFlowerTemplate(item) {
       template += "<!--";
       //template += "It can be [[Gardening|grown]] from [[%%name%% Seed]]s, which are purchased from [[Goofy's Stall]] in [[BIOME1]] and the [[BIOME2]].";
       //template += " It can be found growing on [[%%name%% Tree]]s in '''REGION1''' and '''REGION2''' areas of the [[BIOME1]].";
-      template += "It can be [[Gardening|grown]] from [[%%name%% Seed]]s, which are purchased from [[Goofy's Stall]] in the [[%%biome%%]].";
-      template += " It can be found growing on [[%%name%% Tree]]s in the [[%%biome%%]].";
+      template += "It can be [[Gardening|grown]] from [[%%name%% Seed]]s, which are purchased from [[Goofy's Stall]] in the [[" + biome + "]].";
+      template += " It can be found growing on [[%%name%% Tree]]s in the [[" + biome + "]].";
       
-      template += " It can be found [[foraging|growing wild]] on the ground in the [[%%biome%%]]";
+      template += " It can be found [[foraging|growing wild]] on the ground in the [[" + biome + "]]";
       template += '\n';
       template += "\nEach harvest gives YIELDCOUNT '''%%name%%''', and the fruit takes XXXXX hours/minutes to regrow. Trees/Bushes will continue to produce fruit even if moved outside their origin biome.";
       template += '\n';
       template += "\nThe [[%%name%% Seed|seeds]] are unlocked for sale after the first upgrade of [[Goofy\'s Stall]] in [[BIOME1]], and after the initial repair of [[Goofy\'s Stall]] in the [[BIOME2]].";
-      template += " The [[%%biome%%]] stall also has a chance to sell '''%%name%%''' directly.";
+      template += " The [[" + biome + "]] stall also has a chance to sell '''%%name%%''' directly.";
       template += " After planting it takes XXXXX minutes to grow, and WATERINGCOUNT total waterings until YIELDCOUNT can be harvested.";
       template += '\n-->';
     }
@@ -1732,7 +1807,8 @@ function generateFlowerTemplate(item) {
     template += '\n-->';
 
     template += output_history(item);
-    template += '\n\n{{NavboxIngredient}}';
+    // update day 1.26: the village goes in the navbox, as {{NavboxMeal|...}}
+    template += '\n\n{{NavboxIngredient|' + villageNavboxKey() + '}}';
     template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
 
     return template;
@@ -3025,6 +3101,14 @@ function updateAppropriateVersion(item) {
     if (typeof item.version === 'string' && own.call(rule.labels, item.version)) item.wikiVersion = rule.labels[item.version];
   }
   if (item.version != null && own.call(wikiVersionLabels, String(item.version))) item.wikiVersion = wikiVersionLabels[String(item.version)];
+  // update day 1.26: a label typed for the patch (1.26.1=Expansion 4) also covers rows the data gives
+  // only the update (1.26), unless 1.26 has a label of its own
+  else if (item.version != null && wikiVersionLabels) {
+    var v = String(item.version);
+    for (var key in wikiVersionLabels) {
+      if (own.call(wikiVersionLabels, key) && key.lastIndexOf('.') > 0 && key.slice(0, key.lastIndexOf('.')) === v) { item.wikiVersion = wikiVersionLabels[key]; break; }
+    }
+  }
 
   return item;
 }

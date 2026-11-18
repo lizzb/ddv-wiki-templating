@@ -46,7 +46,8 @@ WIKI+PARSER
 FUTURE TODO
 - remove line breaks in cells without breaking parser input 
 - detect line breaks in cell input and replace them with a newline character so as not to break the parsing
-- generateNewExpansionTemplate - new categories, memories, seeds
+- generateNewExpansionTemplate - new categories, memories, seeds (the old function is in archive/new-expansion-categories.js; removed from the engine 2026-11-02 as unused)
+- expansion prep: some navbox sections can be created in advance, e.g. Meals (NavboxMeal|<newvillage>) - add to the expansion prep list with the categories
 - bundle generation needs to insert House Dream Style
 - premium bundles for house generate with type=Furniture in infobox and itemdescription, should be "House Dream Style" (currently data not passed to access this, also Tool Dream Style/Companion/Character Dream Style)
 - sheet/parser/wiki: in-game ui says "Tool Set", not "Tool Dream Style"
