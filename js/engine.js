@@ -236,6 +236,10 @@ var CRAFTING_MATERIAL_KINDS = /^(Crafting Materials?|Salvaging|Underwater|Foragi
 function isCraftingMaterial(item) {
   return CRAFTING_MATERIAL_KINDS.test(String(item.cookingType || '').trim()) || CRAFTING_MATERIAL_KINDS.test(String(item.collectionType || '').trim());
 }
+// Update day 1.26: an item of the Fish collection: a fish, or another catch (Seafood, a crafting material)
+function isFishCollection(item) {
+  return /^fish$/i.test(String(item.cookingType || '').trim()) || /^fish$/i.test(String(item.collectionType || '').trim());
+}
 // The newest village as the navboxes take it: Keepsake Sea -> keepsakesea
 function villageNavboxKey() {
   return String(newExpansionCollection || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1663,22 +1667,32 @@ function generateFlowerTemplate(item) {
     template += '\n|image=%%name%%.png';
     template += '\n|description=' + confirmableValue(item, 'description', collectionConfirmed);
     template += '\n|type=Foraging';
-    var kind = hasValue(item.collectionType) ? item.collectionType : item.cookingType;
+    var fishCatch = isFishCollection(item);
+    var kind = (hasValue(item.collectionType) && !fishCatch) ? item.collectionType : item.cookingType;
     template += '\n|category=' + (hasValue(kind) ? wrapComment(String(kind), !collectionConfirmed) : '');
     template += '\n|collection=' + newExpansionCollection;
+    // a Fish collection catch: the infobox names the Fish Collection (|collectioncategory= wins over |type=)
+    if (fishCatch) template += '\n|collectioncategory=' + wrapComment('Fish', !collectionConfirmed);
     if (hasValue(item.energy)) template += '\n|energy=' + wrapComment(String(item.energy), !priceConfirmed);
     template += '\n|buyprice=';
     template += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed);
     template += '\n|giftreward=';
     template += '\n|found=' + (knownBiome(item) ? wrapComment('{{name|%%biome%%}}', !collectionConfirmed) : 'TBA');
-    template += '\n|from=<!--{{inlineIcon|Foraging|size=20|link=Foraging}} / <span id="nametemplate">[[File:Menu_Icon_Digging.png|20x20px|link=]] [[Digging]]</span> / <span id="nametemplate">[[File:Menu_Icon_Fishing.png|20x20px|link=]] [[Fishing]]</span>-->';
+    if (fishCatch) {
+      // a crafting material of the Fish collection is caught (as Driftwood, which is in the Foraging collection)
+      template += '\n|pool=<!--{{pool|None}}-->';
+      template += '\n|from=<span id="nametemplate">[[File:Menu_Icon_Fishing.png|20x20px|link=]] [[Fishing]]</span>';
+    }
+    else template += '\n|from=<!--{{inlineIcon|Foraging|size=20|link=Foraging}} / <span id="nametemplate">[[File:Menu_Icon_Digging.png|20x20px|link=]] [[Digging]]</span> / <span id="nametemplate">[[File:Menu_Icon_Fishing.png|20x20px|link=]] [[Fishing]]</span>-->';
     template += '\n|gridSize=';
     template += '\n|placement=';
     template += '\n|stackMax=';
     template += '\n}}';
-    template += "\n'''%%name%%''' is a [[Foraging#Crafting_Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
-    template += '\n\nOnce collected it will be added to the [[:Category:' + newExpansionCollection + ' Foraging Collection|' + newExpansionCollection + ' Foraging Collection]].';
-    template += "\n\n[[Foraging|Foraged items]] can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After it has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
+    if (fishCatch) template += "\n'''%%name%%''' is a [[Crafting|crafting material]] which can be found by [[fishing]]<!-- in any open water--> in [[" + newExpansionCollection + "]].";
+    else template += "\n'''%%name%%''' is a [[Foraging#Crafting_Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
+    var collName = newExpansionCollection + (fishCatch ? ' Fish Collection' : ' Foraging Collection');
+    template += '\n\nOnce collected it will be added to the [[:Category:' + collName + '|' + collName + ']].';
+    template += "\n\n" + (fishCatch ? "[[Crafting|Crafting materials]]" : "[[Foraging|Foraged items]]") + " can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After it has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
     template += output_history(item);
     template += '\n\n{{NavboxForage}}';
     template += '\n\n[[Category:Missing Size]] [[Category:Missing Placement]] [[Category: Missing Description]]';
@@ -1687,6 +1701,7 @@ function generateFlowerTemplate(item) {
 
   function generateIngredientsTemplate(item) {
     if (isCraftingMaterial(item)) return generateCraftingMaterialTemplate(item);
+    var fishColl = isFishCollection(item); // before collectionType is wrapped in a comment below
     // update day 1.26: a biome that is only the collection's kind (Ingredients, Foraging) is not known
     var biome = knownBiome(item) ? '%%biome%%' : 'BIOME1';
     var template = '';
@@ -1718,9 +1733,9 @@ function generateFlowerTemplate(item) {
     template += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed, true);
     template += '\n|giftreward=';
     template += '\n<!--';
-    if (item.cookingType == "Fish") {
+    if (fishColl) {
       template += '\n|from=fishing';
-      template += '\n|biomes=%%biome%%';
+      if (knownBiome(item)) template += '\n|biomes=%%biome%%';
       template += '\n|pool=None/Gold/{{pool|White}}, can be {{pool|Blue}}';
     }
     else {
@@ -1746,14 +1761,19 @@ function generateFlowerTemplate(item) {
     template += '\n-->';
     template = template.replace('\n<!--\n-->', '');
     // update day 1.26: no biome yet = TBA, shown (owner's note)
-    if (item.cookingType != "Fish" && ['Stall', 'Foraging - Tree/Bush', 'Gardening'].indexOf(item.obtainMethod) < 0 && !knownBiome(item)) template += '\n|biomes=TBA';
+    if (['Stall', 'Foraging - Tree/Bush', 'Gardening'].indexOf(item.obtainMethod) < 0 && !knownBiome(item)) template += '\n|biomes=TBA';
     template += '\n|gridSize=';
     template += '\n|placement=';
     template += '\n|stackMax=';
     template += '\n}}';
 
+    var fishWhere = knownBiome(item) ? wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) : " in [[" + newExpansionCollection + "]]"; // DDV-60: location follows the collection box
     if (item.cookingType == "Fish") {
-      template += "\n'''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools-->" + wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) + "."; // DDV-60: location follows the collection box
+      template += "\n'''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools-->" + fishWhere + ".";
+    }
+    else if (fishColl) {
+      // update day 1.26: a Fish collection catch of another cooking type (Seafood, Sweets...)
+      template += "\n'''%%name%%''' is a " + insertIngredientCategoryLink(item.cookingType) + " type [[Ingredients|ingredient]] which can be found by [[fishing]]<!--all/COLOR/open water or white pools-->" + fishWhere + ".";
     }
     else {
       // DDV-60 (B6): without a known type, "an ingredient" (was "a ingredient type [[Ingredients|ingredient]]")
@@ -1776,7 +1796,7 @@ function generateFlowerTemplate(item) {
       template += '\n-->';
     }
     template += '\n\n<!--It can be consumed to regain [[energy]], or used as an [[Ingredients|ingredient]] in [[Cooking#Meal Recipes|cooked meals]]. -->';
-    if (item.cookingType == "Fish") {
+    if (fishColl) {
       template += 'Once collected it will be added to the [[:Category:'+newExpansionCollection+' Fish Collection|'+newExpansionCollection+' Fish Collection]].';
     }
     else {
