@@ -1327,7 +1327,23 @@ function wrapNameTemplate(ing, ingQty) {
 
 
 
+// Update day 1.26 (owner): meals come out by category, appetizers, entrées, desserts, then the rest
+// (quest meals, unknown), in the pasted order within each; the ItemRecipe switch, the articles and the
+// Cooking rows all follow this order
+var MEAL_CATEGORY_ORDER = { Appetizers: 0, 'Entrées': 1, Desserts: 2 };
+function mealCategoryRank(item) {
+  var c = String(item.category || '').trim();
+  c = MEAL_CATEGORY_PLURAL[c] || (c == 'Entrees' ? 'Entrées' : c);
+  return Object.prototype.hasOwnProperty.call(MEAL_CATEGORY_ORDER, c) ? MEAL_CATEGORY_ORDER[c] : 3;
+}
+function sortMealsByCategory(dataArray) {
+  return dataArray.map(function (item, i) { return { item: item, i: i, r: mealCategoryRank(item) }; })
+    .sort(function (a, b) { return a.r - b.r || a.i - b.i; })
+    .map(function (x) { return x.item; });
+}
+
 function renderMeals(dataArray) {
+  dataArray = sortMealsByCategory(dataArray);
   var renderedHTML = '===== Template:ItemRecipe switch:=====\n';
   var delimiter = '';
   dataArray.forEach(function (item) {
