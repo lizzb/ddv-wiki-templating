@@ -205,6 +205,29 @@ function wrapComment(input, doWrap) {
   else return input;
 }
 
+// DDV-60: a value the game shows in its collection menu (energy, sell price, meal stars, a recipe, a
+// description, where an item is found) goes into a new article commented out until its box is ticked,
+// as furniture prices are: |energy=<!--1500-->. A blank value stays blank (no empty comment). Without
+// the column at all, keepPlaceholder leaves %%column%% in the text, as before, so a missing column
+// still shows up on the page.
+function hasValue(v) {
+  return v !== undefined && v !== null && String(v).trim() !== '';
+}
+function confirmableValue(item, column, confirmed, keepPlaceholder) {
+  if (!Object.prototype.hasOwnProperty.call(item, column)) return keepPlaceholder ? '%%' + column + '%%' : '';
+  return hasValue(item[column]) ? wrapComment(String(item[column]), !confirmed) : '';
+}
+// DDV-60: text about a value (e.g. " in all regions of [[%%biome%%]]") is commented out with it;
+// when the item has the column but it is blank, the text is left as it was
+function wrapIfValue(text, item, column, confirmed) {
+  if (Object.prototype.hasOwnProperty.call(item, column) && !hasValue(item[column])) return text;
+  return wrapComment(text, !confirmed);
+}
+
+// DDV-60 (B5): game data names a meal's category in the singular; the wiki's Cooking links, icons
+// and categories use the plural
+var MEAL_CATEGORY_PLURAL = { 'Appetizer': 'Appetizers', 'Entrée': 'Entrées', 'Entree': 'Entrées', 'Dessert': 'Desserts' };
+
 
 
 function determineCharacterFromDreamStyle(itemName) {
@@ -1291,6 +1314,9 @@ function renderMeals(dataArray) {
   var renderedHTML = '===== Template:ItemRecipe switch:=====\n';
   var delimiter = '';
   dataArray.forEach(function (item) {
+    // DDV-60 (B5): Dessert -> Desserts, Entrée -> Entrées, Appetizer -> Appetizers
+    var plural = MEAL_CATEGORY_PLURAL[String(item.category || '').trim()];
+    if (plural) item.category = plural;
     var ingredientArray = [];
     if (item["ing1"] && item["ing1"] != "-") ingredientArray.push(item["ing1"]);
     if (item["ing2"] && item["ing2"] != "-") ingredientArray.push(item["ing2"]);
@@ -1351,8 +1377,8 @@ function renderMeals(dataArray) {
     // meal switch statement template
     //template = '\n|%%name%%=<!--{{name|ING1NAME}}<br>{{name|ING2NAME}}<br>{{name|ING3NAME}}<br>{{name|ING4NAME}}<br>{{name|ING5NAME}}-->\n';
     //template = '\n|%%name%%=<!--'+item.itemRecipeString+'-->';
-    // todo - make conditional with collectionconfirmed
-    template = '\n\t|%%name%%='+item.itemRecipeString+'';
+    // DDV-60: the recipe is commented out until the collection box is ticked (quest meals as before)
+    template = '\n\t|%%name%%='+wrapComment(item.itemRecipeString, !collectionConfirmed && !isQuestMeal(item))+'';
     //template += '\n';
 
     template = template.replaceAll('{{name|Any Fish}}', '{{name|Fish|link=:Category:Fish{{!}}Any Fish}}');
@@ -1389,7 +1415,8 @@ function renderMeals(dataArray) {
     // meal article template
     //templateMealArticle += '\n{{stub}}';
     templateMealArticle += '\n{{infobox\n|image=%%name%%.png';
-    templateMealArticle += '\n|description=';
+    // DDV-60: description (collection box), stars, energy and sell price (price box) commented out until confirmed
+    templateMealArticle += '\n|description=' + confirmableValue(item, 'description', collectionConfirmed);
     if (!isVersatileRecipe(item) && item.stars && item.stars == 5) {
       // If recipe is 5 stars and does NOT include versatile ingredients, do plural "Meals" instead of "Meal"
       // prevents "and more" on the energy display when rendered in infobox
@@ -1401,19 +1428,21 @@ function renderMeals(dataArray) {
     if (!item.category) { item.category = '<!--Appetizers/Entrées/Desserts-->'; }
     templateMealArticle += '\n|category=%%category%%';
     templateMealArticle += '\n|collection='+newExpansionCollection;
-    templateMealArticle += '\n|stars=%%stars%%';
-    templateMealArticle += '\n|energy=%%energy%%';
-    templateMealArticle += '\n|sellprice=%%sellprice%%';
+    templateMealArticle += '\n|stars=' + confirmableValue(item, 'stars', priceConfirmed, true);
+    templateMealArticle += '\n|energy=' + confirmableValue(item, 'energy', priceConfirmed, true);
+    templateMealArticle += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed, true);
     //templateMealArticle += '\n|giftreward=\n|orderReward=\n|size=\n|placement=';
     templateMealArticle += '\n|giftreward=\n|gridSize=\n|placement=<!--surfaces-->';
     templateMealArticle += '\n|ingredients=';
 
     //template += wrapComment('{{IngredientList | '+item.ingredientListString+' | addCategories }}', !collectionConfirmed);
-    templateMealArticle += '{{IngredientList | '+item.ingredientListString+' | addCategories }}';
+    templateMealArticle += wrapComment('{{IngredientList | '+item.ingredientListString+' | addCategories }}', !collectionConfirmed);
     templateMealArticle += '\n}}';
     // todo - make this conditional with collectionconfirmed
     //templateMealArticle += '{{cleanup|Ingredients and ingredient order need verification}}';
-    templateMealArticle += "\n'''%%name%%''' is a " + insertNumberWord(item.stars)+"-star " + '' + insertCookingLink(item.category) + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
+    // DDV-60: the star count in the sentence follows the price box, as |stars= does
+    var mealKind = insertCookingLink(item.category);
+    templateMealArticle += "\n'''%%name%%''' is " + (priceConfirmed ? 'a ' : indefiniteArticle(mealKind) + ' ') + wrapComment(insertNumberWord(item.stars)+"-star ", !priceConfirmed) + mealKind + ' which can be made at a [[:Category:Cooking Stations|cooking station]].';
 
     templateMealArticle += '\n\n';
 
@@ -1448,7 +1477,11 @@ function renderMeals(dataArray) {
     template = '';
     //template = '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}\n| {{stars|%%stars%%}}\n| <!--{{energy|%%energy%%}}-->\n| <!--{{price|%%sellprice%%}}-->\n| {{ItemRecipe | %%name%% }}';
     // todo - wrap this in conditional comments
-    template = '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}\n| {{stars|%%stars%%}}\n| {{energy|%%energy%%}}\n| {{price|%%sellprice%%}}\n| {{ItemRecipe | %%name%% }}';
+    // DDV-60: stars, energy and price follow the price box, the recipe the collection box (quest meals as before)
+    var unpriced = !priceConfirmed && !isQuestMeal(item), unlisted = !collectionConfirmed && !isQuestMeal(item);
+    template = '\n|-\n| [[File:%%name%%.png|center|50x50px|link=%%name%%]]\n| [[%%name%%]]\n| {{inlineIcon|%%category%%}}'
+      + '\n| ' + wrapComment('{{stars|%%stars%%}}', unpriced) + '\n| ' + wrapComment('{{energy|%%energy%%}}', unpriced)
+      + '\n| ' + wrapComment('{{price|%%sellprice%%}}', unpriced) + '\n| ' + wrapComment('{{ItemRecipe | %%name%% }}', unlisted);
 
     template += '\n| [['+newExpansionCollection+']]';
 
@@ -1494,24 +1527,26 @@ function generateGemTemplate(item) {
   template = '';
   template += '{{infobox';
   template += '\n|image=%%name%%.png';
-  template += '\n|description=';
+  // DDV-60: description (collection box) and sell price (price box) commented out until confirmed
+  template += '\n|description=' + confirmableValue(item, 'description', collectionConfirmed);
   template += '\n|type=Gem';
   template += '\n|collection='+newExpansionCollection;
   template += '\n|buyprice=';
-  template += '\n|sellprice=';
+  template += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed);
   template += '\n|giftreward=';
   template += '\n|color=';
   // CR22: one |from= (the wiki uses the last of two, so the inlineIcon one is kept)
   template += '\n<!--|from=<span id="nametemplate">[[File:Goofy\'s Stall.png|20x20px|link=]] [[Aladdin\'s Gem Stall]] (5)</span><br>-->';
   template += '\n|from={{inlineIcon|Mining|size=20|link=Mining}}';
   //template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
-  template += '\n|biomes=%%biome%%';
+  // DDV-60: where it is found follows the collection box
+  template += '\n|biomes=' + wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed);
   template += '\n|gridSize=';
   template += '\n|placement=<!--surfaces-->';
   template += '\n|stackMax=';
   template += '\n}}';
 //  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in [[Everafter]] area of [[Wishblossom Mountains]]. "; 
-  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]] in all regions of [[%%biome%%]]. "; // in the [[%%biome%%]]. // in all regions of [[%%biome%%]].
+  template += "\n'''%%name%%''' is a [[Mining#Gems|gem]] which can be found when [[mining]] rock nodes using the [[Pickaxe]]" + wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) + ". "; // in the [[%%biome%%]]. // in all regions of [[%%biome%%]].
   template += '';
   template += 'It can be used as a [[Crafting|crafting material]] to make items at a [[:Category:Crafting Stations|crafting station]]. ';
   template += '<!--It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. -->';
@@ -1535,17 +1570,19 @@ function generateFlowerTemplate(item) {
   var template = '';
   template += '{{Infobox';
   template += '\n|image=%%name%%.png';
-  template += '\n|description=';
+  // DDV-60: description (collection box) and sell price (price box) commented out until confirmed
+  template += '\n|description=' + confirmableValue(item, 'description', collectionConfirmed);
   template += '\n|type=Foraging';
   template += '\n|category=Flowers';
   template += '\n|collection='+newExpansionCollection;
-  template += '\n|sellprice=';
+  template += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed);
   template += '\n|giftreward=';
   template += '\n|color=';
   template += '\n|from={{name|Foraging}}';
   // CR22: one |biomes= (the wiki used the last of two); the multi-biome form stays as a hint
   template += '\n<!--|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}-->';
-  template += '\n|biomes=%%biome%%';
+  // DDV-60: where it is found follows the collection box
+  template += '\n|biomes=' + wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed);
   template += '\n|spawnTimer={{growthTime|}}';
   template += '\n|spawnMax=';
   template += '\n|gridSize=';
@@ -1553,7 +1590,7 @@ function generateFlowerTemplate(item) {
   template += '\n|stackMax=';
   template += '\n}}';
     //template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild<!--in '''REGION1''' and '''REGION2''' areas in [[BIOME1]]-->.";
-    template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild in all regions of [[%%biome%%]]."; // wild in the [[%%biome%%]].";
+    template+= "\n'''%%name%%''' is a [[Foraging#Flowers|flower]] type that can be [[Foraging|found growing]] wild" + wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) + ".";
     template += '';
     template += "\n\n<!--There are exactly ITEMCOUNT '''{{PAGENAME}}''' found in the [[%%biome%%]], and another-->Another flower of the same type and color will only appear after one has been picked. There is an [[Flowers#Flower Spawning|internal-game timer]] for this flower type which respawns<!-- one every 60 minutes-->, and it can take up to 2 hours to fully repopulate all of these flowers between both areas.";
     // line about beast flower shop? template += 'It also has a chance to be sold at [[Aladdin\'s Gem Stall]] in [['+newExpansionCollection+']]. ';
@@ -1582,10 +1619,13 @@ function generateFlowerTemplate(item) {
     template += '{{stub}}';
     template += '\n{{infobox';
     template += '\n|image=%%name%%.png';
-    template += '\n|description=';
+    // DDV-60: description (collection box) commented out until confirmed
+    template += '\n|description=' + confirmableValue(item, 'description', collectionConfirmed);
     template += '\n|type=Ingredient';
     if (!item.cookingType) {
-      item.cookingType = '<!--Seafood/Fruit/Vegetables/Spices/Dairy and Oil/Grains/Protein-->';
+      // DDV-60 (B1): the line below comments it out already (was <!--<!--...-->-->)
+      item.cookingType = 'Seafood/Fruit/Vegetables/Spices/Dairy and Oil/Grains/Protein';
+      item.cookingTypeUnknown = true;
     }
     //item.cookingType = '<!--Fish-->'; // temporary hack
     template += '\n|ingtype=<!--%%cookingType%%-->'; //Vegetables, plural, on wiki - TODO FIX - MAKE SURE SHEET IN ALIGNMENT
@@ -1593,10 +1633,15 @@ function generateFlowerTemplate(item) {
     if (!item.collectionType) {
       item.collectionType = '<!--Fish/Seafood/Vegetables - remove if same as ingType-->'; // e.g. Crab, Squid... tODO OTHER EXAMPLES TO REFERENCE
     }
+    else {
+      // DDV-60: a collection menu value, commented out until the collection box is ticked
+      item.collectionType = wrapComment(item.collectionType, !collectionConfirmed);
+    }
     template += '\n|collectioncategory=%%collectionType%%';
-    template += '\n|energy=%%energy%%';
+    // DDV-60: energy and sell price commented out until the price box is ticked
+    template += '\n|energy=' + confirmableValue(item, 'energy', priceConfirmed, true);
     template += '\n|buyprice=';
-    template += '\n|sellprice=%%sellprice%%';
+    template += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed, true);
     template += '\n|giftreward=';
     template += '\n<!--';
     if (item.cookingType == "Fish") {
@@ -1631,10 +1676,13 @@ function generateFlowerTemplate(item) {
     template += '\n}}';
 
     if (item.cookingType == "Fish") {
-      template += "\n'''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools--> in all regions of [[%%biome%%]]."; // in all regions of [[BIOME]] //  in the [[%%biome%%]].";
+      template += "\n'''%%name%%''' is a type of [[Fishing#Fish Types|fish]]<!--[[:Category:Fish|fish]]--> which can be found by [[fishing]]<!--all/COLOR/open water or white pools-->" + wrapIfValue(" in all regions of [[%%biome%%]]", item, 'biome', collectionConfirmed) + "."; // DDV-60: location follows the collection box
     }
     else {
-      template += "\n'''%%name%%''' is a "+insertIngredientCategoryLink(item.cookingType)+" type [[Ingredients|ingredient]] used in [[cooking]].";
+      // DDV-60 (B6): without a known type, "an ingredient" (was "a ingredient type [[Ingredients|ingredient]]")
+      var ingLink = item.cookingTypeUnknown ? 'ingredient' : insertIngredientCategoryLink(item.cookingType);
+      if (ingLink == 'ingredient') template += "\n'''%%name%%''' is an [[Ingredients|ingredient]] used in [[cooking]].";
+      else template += "\n'''%%name%%''' is a "+ingLink+" type [[Ingredients|ingredient]] used in [[cooking]].";
       template += "<!--";
       //template += "It can be [[Gardening|grown]] from [[%%name%% Seed]]s, which are purchased from [[Goofy's Stall]] in [[BIOME1]] and the [[BIOME2]].";
       //template += " It can be found growing on [[%%name%% Tree]]s in '''REGION1''' and '''REGION2''' areas of the [[BIOME1]].";
@@ -1769,6 +1817,14 @@ function generateCompanionTemplate(item) {
   var template = '';
   var record = isCompanionRecord(item); // DDV-59
   var isCritter = record && !!item.isCritter;
+  // DDV-60: a record pasted on the page has no missingCategories list of its own
+  if (!Array.isArray(item.missingCategories)) item.missingCategories = [];
+  // DDV-60 (B7): a record's own village names its collection; a sheet row keeps the companionCollection setting
+  // WB and WR are older codes for WM (Wishblossom Mountains); a code the engine does not know names the new village
+  // (the newExpansionCollection setting), never the bare code
+  if (record && (item.collection == 'WB' || item.collection == 'WR')) item.collection = 'WM';
+  var recordVillage = record && hasValue(item.collection) ? (VILLAGE_NAMES[item.collection] || newExpansionCollection || String(item.collection)) : '';
+  var recordCode = record && hasValue(item.collection) && !VILLAGE_NAMES[item.collection] ? item.collection : '';
 
   {
 
@@ -1780,7 +1836,12 @@ function generateCompanionTemplate(item) {
     if (isCritter) { template += ", Critter"; }
     template += "-->\n";
     template += '|critterType=<!--Capybara-->\n';
-    template += output_collection(item);  // Dreamlight Valley
+    // DDV-60 (B1): output_collection comments out both the village and the line (<!--<!--...-->--> for a record); once is enough
+    var collectionLine = output_collection(item);
+    // output_collection comments a known village code; an unknown one is commented here the same way
+    if (record && recordCode && item.collection === recordCode) item.collection = wrapComment(recordCode, !collectionConfirmed);
+    if (record) collectionLine = collectionLine.replace('|collection=' + wrapComment('%%collection%%', !collectionConfirmed), '|collection=%%collection%%');
+    template += collectionLine;  // Dreamlight Valley
     template += output_universe(item);
     template += record ? '|hangout=<!--%%gathering%%-->' : '|hangout=<!--Flowers-->';
     template += '\n'+output_from(item);
@@ -1790,7 +1851,8 @@ function generateCompanionTemplate(item) {
       template += "\n|found=in the '''" + newExpansionCollection + "''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
       template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
       template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
-      template += "\n|numFeedings=<!--(%%numFeedings%%)--><!--three <!--(3)-->";
+      // DDV-60 (B1): one comment (was <!--()--><!--three <!--(3)-->)
+      template += "\n|numFeedings=" + (hasValue(item.numFeedings) ? "<!--(%%numFeedings%%)-->" : "<!--three (3)-->");
       template += "\n|critterCollection=" + newExpansionCollection;
       template += "\n|hangout=<!--%%gathering%%-->";
       template += "\n}}";
@@ -1814,7 +1876,8 @@ function generateCompanionTemplate(item) {
       infoboxHangout = inlineLink1 = inlineLink2 = `[[%%gathering%%]]`;
       level4Icon = `Companion Gather %%gathering%% Icon`;
       level4HangoutType = `[[%%gathering%%|%%gathering%% Gathering Bonus]]`;
-      level4LinkLabel = `[[%%gathering%%|Resource Collection]]`;
+      // DDV-60 (B2): no gathering bonus in the record: no link (was [[|Resource Collection]], outside any comment)
+      level4LinkLabel = hasValue(item.gathering) ? `[[%%gathering%%|Resource Collection]]` : `Resource Collection`;
       level2RewardItem = `%%level2reward%%`;
       level2RewardQty = `%%level2qtysuffix%%`;
     }
@@ -1857,7 +1920,8 @@ function generateCompanionTemplate(item) {
     */
 
     var companionCollectionText = ' Once collected it will be added to the [[:Category: %%collection%% %%itemType%% Collection|%%collection%% %%itemType%% Collection]].';
-    companionCollectionText = ' Once collected it will be added to the [[:Category:' + companionCollection + ' Companions Collection|' + companionCollection + ' Companions Collection]].';
+    var collectionName = recordVillage || companionCollection;
+    companionCollectionText = ' Once collected it will be added to the [[:Category:' + collectionName + ' Companions Collection|' + collectionName + ' Companions Collection]].';
     template += companionCollectionText;
 
     template += `\n\nIt can be equipped using the [[Wardrobe menu]] inside the [[Inventory]], under the '''Companions''' category.`;
