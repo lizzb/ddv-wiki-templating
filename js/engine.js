@@ -95,7 +95,7 @@ var WIKI_VERSION_RULES = [
 ];
 
 // Sheet village code -> village name (CR25: was two switch blocks). WR is the old code for WM.
-var VILLAGE_NAMES = { DV: 'Dreamlight Valley', EI: 'Eternity Isle', SV: 'Storybook Vale', WM: 'Wishblossom Mountains', HW: 'Honeyglow Woods' };
+var VILLAGE_NAMES = { DV: 'Dreamlight Valley', EI: 'Eternity Isle', SV: 'Storybook Vale', WM: 'Wishblossom Mountains', HW: 'Honeyglow Woods', KS: 'Keepsake Sea' };
 
 var updateNumber, newExpansionCollection, starPathNameShort, starPathName, starPathToken;
 var mealNavbox, bundleStartDate, bundleEndDate, companionCollection, wikiVersionLabels;
@@ -1832,8 +1832,8 @@ function generateFlowerTemplate(item) {
     template += '\n|placement=';
     template += '\n|stackMax=';
     template += '\n}}';
-    if (fishCatch) template += "\n'''%%name%%''' is a [[Fishing#Crafting_Materials|crafting material]] that can be caught while [[fishing]]<!-- in open water or white pools--> in [[" + newExpansionCollection + "]].";
-    else template += "\n'''%%name%%''' is a [[Foraging#Crafting_Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
+    if (fishCatch) template += "\n'''%%name%%''' is a [[Fishing#Crafting Materials|crafting material]] that can be caught while [[fishing]]<!-- in open water or white pools--> in [[" + newExpansionCollection + "]].";
+    else template += "\n'''%%name%%''' is a [[Foraging#Crafting Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
     var collName = newExpansionCollection + (fishCatch ? ' Fish Collection' : ' Foraging Collection');
     template += '\n\nOnce collected it will be added to the [[:Category:' + collName + '|' + collName + ']].';
     template += "\n\n" + (fishCatch ? "[[Crafting|Crafting materials]]" : "[[Foraging|Foraged items]]") + " can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After it has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
@@ -2149,9 +2149,9 @@ function generateCompanionTemplate(item) {
     if (isCritter) template += "\n|numFeedings=" + (hasValue(item.numFeedings) ? "<!--(%%numFeedings%%)-->" : "<!--three (3)-->");
     template += '\n}}';
 
-    // is a limited time premium [[Companions#Event Companions|event companion]]
-    // is a premium [[Companions#Premium Companions|companion]].
-    var introLink = "premium [[Companions#Event Companions|event companion]]";
+    // is a limited time premium [[Companions#Event_Companions|event companion]]
+    // is a premium [[Companions#Premium_Companions|companion]].
+    var introLink = "premium [[Companions#Event_Companions|event companion]]";
     if (record) {
       // DDV-59: by companion type; notable first, then critter, star path (tier), premium bundle
       if (item.companionClass === 'Notable') introLink = "[[Companions#Notable_Companions|notable companion]]";
@@ -2920,6 +2920,7 @@ function output_collection(item) {
   case 'WM':
   case 'WR':
   case 'HW':
+  case 'KS':
     item.collection = wrapComment(VILLAGE_NAMES[item.collection == 'WR' ? 'WM' : item.collection] || 'Dreamlight Valley', !collectionConfirmed);
     break;
   case 'Dream Style':
