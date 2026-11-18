@@ -10,7 +10,7 @@
  *   rows          array of row objects, one per sheet row (the page builds them from the pasted
  *                 TSV with CSVParser, see app.js)
  *   templateType  spDuties, spRewards, questItems, meals, ingredients, gems, flowers,
- *                 companions, clothingFurniture
+ *                 companions, clothingFurniture, biomes (DDV-61)
  *   settings      an object; every name, type, required or default is in SETTINGS below.
  *                 render() refuses an unknown name, a missing required value and a value of the
  *                 wrong type, with a message that names it (DDV-28).
@@ -1576,6 +1576,127 @@ function generateQuestMealArticle(item) {
 }
 
 // Create stub articles for gem items
+// ===== DDV-61: biome articles (page-only stub, owner Q60 b) =====
+// One article per biome, the skeleton of the newest biome pages (Wishblossom Mountains, Storybook Vale):
+// infobox, intro, regions, Wishing Wells, sub biomes, then the found-here sections with their table
+// headers and no rows. One row per region; columns (lower case):
+//   biome (required), region, regionquest, regionrequirement, regioncost, wellcost   - per region
+//   critter, connectedto, unlockquest, unlocks, characters, expansion                - per biome, from
+//                                                                                       the first row that has them
+// Owner's rules (DDV-60): costs are commented until the price box is ticked; nothing that takes days
+// to learn (critter schedules) is written; the found-here lists stay empty for now.
+function renderBiomes(dataArray) {
+  var order = [];
+  var byBiome = {};
+  dataArray.forEach(function (row) {
+    var name = biomeCell(row, 'biome');
+    if (!name) return;
+    if (!byBiome[name]) { byBiome[name] = []; order.push(name); }
+    byBiome[name].push(row);
+  });
+  if (!order.length) return 'Biome articles need a biome column (one row per region).';
+  return order.map(function (name) { return biomeArticle(name, byBiome[name]); }).join(ARTICLE_DELIMITER) + ARTICLE_DELIMITER;
+}
+
+function biomeCell(row, column) {
+  return row && hasValue(row[column]) ? String(row[column]).trim() : '';
+}
+function biomeFirst(rows, column) {
+  for (var i = 0; i < rows.length; i++) if (biomeCell(rows[i], column)) return biomeCell(rows[i], column);
+  return '';
+}
+function biomeList(text) {
+  return text ? text.split(/\s*[,;]\s*/).filter(function (s) { return s; }) : [];
+}
+// a section link on the biome's own page: {{name|Wishing Alps|link=Wishing Alps#Silver_Summit{{!}}Silver Summit}}
+function biomeRegionLink(biome, region) {
+  return '{{name|' + biome + '|link=' + biome + '#' + region.replace(/ /g, '_') + '{{!}}' + region + '}}';
+}
+function biomePrice(value) {
+  return value ? wrapComment('{{price|' + value + '}}', !priceConfirmed) : '';
+}
+function biomeQuest(value) {
+  return value.indexOf('{{') === 0 ? value : '{{quest|' + value + '|realm=Story}}';
+}
+
+function biomeArticle(name, rows) {
+  var village = newExpansionCollection;
+  var regions = rows.filter(function (r) { return biomeCell(r, 'region'); });
+  var critter = biomeFirst(rows, 'critter');
+  var connected = biomeList(biomeFirst(rows, 'connectedto'));
+  var unlockQuest = biomeFirst(rows, 'unlockquest');
+  var characters = biomeList(biomeFirst(rows, 'characters'));
+  var expansion = biomeFirst(rows, 'expansion') || village;
+  var label = updateAppropriateVersion({ version: updateNumber, collection: village }).wikiVersion || updateNumber;
+  var expansionPage = /^Expansion (\d+)/.test(label) ? 'Expansion_' + label.match(/^Expansion (\d+)/)[1] : 'TODO_EXPANSION';
+  var t = '';
+
+  t += '{{infobox';
+  t += '\n|image=' + (regions.length ? biomeCell(regions[0], 'region') + ' Fast Travel.jpg' : '');
+  t += '\n|width=400px';
+  t += '\n|unlocks=' + biomePrice(biomeFirst(rows, 'unlocks'));
+  t += '\n|well=' + biomePrice(biomeFirst(rows, 'wellcost'));
+  t += '\n|critter=' + (critter ? '{{name|' + critter + '}}' : '');
+  t += '\n|found={{name|' + village + '}}';
+  t += '\n|connectedto=' + connected.map(function (b) { return '{{name|' + b + '}}'; }).join('<br>');
+  t += '\n|unlockquest=' + (unlockQuest ? biomeQuest(unlockQuest) : '');
+  t += '\n|regions=' + regions.map(function (r) {
+    var cost = biomePrice(biomeCell(r, 'regioncost'));
+    return '\n' + biomeRegionLink(name, biomeCell(r, 'region')) + (cost ? ' (' + cost + ')' : '');
+  }).join('<br>');
+  t += '\n|maplink=' + village;
+  t += '\n|maparea=' + name;
+  t += '\n}}{{TOC Right}}';
+  t += "\n'''" + name + "''' is a biome in [[" + village + ']], available after unlocking the paid expansion [[Version_History/' + expansionPage + '|"' + expansion + '"]].';
+  t += '\n\nIt is located on the <!--north/south/east/west--> side of [[' + village + ']]' +
+    (connected.length ? ', and is connected to ' + connected.map(function (b) { return '[[' + b + ']]'; }).join(' and ') : '') + '.';
+  t += '\n\n<!--How it is unlocked.-->';
+
+  t += '\n\n==Characters==\n<gallery widths=120px heights=120px class="clothesgallery">';
+  characters.forEach(function (c) { t += '\nFile:' + c + '.png|[[' + c + ']]|link=' + c; });
+  t += '\n</gallery>';
+  t += '\n\n==Unlocking==\n<!--How the biome is unlocked.-->';
+
+  t += '\n\n==Points of Interest==\n===Wishing Wells===';
+  t += '\n:\'\'Main article: [[Wishing Well#' + village + ' Wishing Wells|Wishing Well]]\'\'';
+  t += '\nEach sub biome has a [[Wishing Well]] which can be unlocked using [[Star Coins]]. Once unlocked, they provide fast travel teleportation using the map.';
+  t += "\n\n{|class=wikitable id='recipe-table'\n!Biome\n!Biome Unlock\n!Well Repair Cost";
+  regions.forEach(function (r) {
+    t += '\n|-\n|' + biomeRegionLink(name, biomeCell(r, 'region')) + ' || ' + biomePrice(biomeCell(r, 'regioncost')) + ' || ' + biomePrice(biomeCell(r, 'wellcost'));
+  });
+  t += '\n|}';
+  t += "\n\n===Blueprints===\n{|class=wikitable id='recipe-table'\n!Image\n!Name\n!Biome\n!Requires\n|}";
+  t += "\n<!--\n===Goofy's Stall===\n:''Main article: [[Goofy's Stall#" + name + "|Goofy's Stall]]''\n{{#lsth:Goofy's Stall|<span id=\"headericon\">[[File:" + name + '.png|link=' + name + ']] [[' + name + ']]</span>}}\n-->';
+  t += '\n===Obstacles===\n{{#lsth:' + village + '|Obstacles}}';
+
+  t += '\n\n===Sub Biomes===';
+  regions.forEach(function (r) {
+    t += '\n\n====' + biomeCell(r, 'region') + '====';
+    if (biomeCell(r, 'regionquest')) t += '\n:Unlock Quest: ' + biomeQuest(biomeCell(r, 'regionquest'));
+    if (biomeCell(r, 'regionrequirement')) t += '\n:Unlock Requirement: ' + biomeCell(r, 'regionrequirement');
+    if (biomeCell(r, 'regioncost')) t += '\n' + wrapComment(':Unlock Cost: {{price|' + biomeCell(r, 'regioncost') + '|showLabel}}', !priceConfirmed);
+    t += '\n<!--Description of ' + biomeCell(r, 'region') + '.-->';
+  });
+
+  t += "\n\n==Critters==\n:''Main article: [[Critters]]''";
+  t += '\n<!--' + (critter ? "'''[[" + critter + "]]''' are" : 'CRITTER are') + ' the [[Critters|critter]] type in this biome. Their favorite food is FOOD, and their liked foods are FOODS.-->';
+  t += "\n\n{| class='wikitable sortable' id='recipe-table' style=\"text-align:center;\"\n! class=\"unsortable\" | Image\n! Name\n! Location\n! Sunday\n! Monday\n! Tuesday\n! Wednesday\n! Thursday\n! Friday\n! Saturday\n|}";
+
+  t += '\n\n==Resources==\n{{MapThumb|' + village + '|area=' + name + '|text=Interactive Resource Map}}';
+  t += "\n===Fishing===\n:''Main article: [[Fishing]]''\n{| class=\"wikitable sortable\" id='recipe-table'\n! class=\"unsortable\" | Image\n!Name\n!Ripples\n!Sell Price\n!Energy\n|}";
+  t += "\n\n===Foraging===\n:''Main article: [[Foraging]]''\n{| class='wikitable sortable' id='recipe-table'\n! class=\"unsortable\" | Image\n!Name\n!Sell Price\n!Energy\n!Count\n|}";
+  t += "\n\n===Flowers===\n:''Main article: [[Foraging#Flowers|Foraging: Flowers]]''\n{| class='wikitable sortable' id='recipe-table'\n! class=\"unsortable\" | Image\n!Name\n!Sell Price\n!Max Spawns<ref>The maximum spawn count is shared across all possible locations where the item can appear.</ref>\n!Region\n|}\n<references />";
+  t += "\n\n===Digging===\n:''Main article: [[Digging]]''\n{| class='wikitable sortable' id='recipe-table'\n! class=\"unsortable\" | Image\n!Name\n!Sell Price\n|}";
+  t += "\n\n===Mining===\n:''Main article: [[Mining]]''\n{| class='wikitable sortable' id='recipe-table'\n! class=\"unsortable\" | Image\n!Name\n!Sell Price\n|}";
+
+  t += '\n\n==Gallery==\n<gallery mode=packed style="text-align:left;">';
+  regions.forEach(function (r) { t += '\nFile:' + biomeCell(r, 'region') + ' Fast Travel.jpg'; });
+  t += '\n</gallery>';
+  t += '\n\n==History==\n{{history|' + label + '|Added}}';
+  t += '\n\n{{NavboxLocation}}\n\n[[Category:Locations]]';
+  return t;
+}
+
 function renderGems(dataArray) {
   dataArray = sortByGroupThenName(dataArray);
   return renderEachItem(dataArray, generateGemTemplate);
@@ -2608,6 +2729,9 @@ function renderParent(dataArray, templateType) {
       break;
     case "flowers":
       outputHTML = renderFlowers(dataArray);
+      break;
+    case "biomes": // DDV-61
+      outputHTML = renderBiomes(dataArray);
       break;
     case "clothingFurniture":
       // necessary prepping of items (e.g. re-setting itemType, etc) is done here, so call this before renderPSBundles

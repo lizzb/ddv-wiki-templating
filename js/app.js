@@ -274,6 +274,13 @@ DataConverter.prototype.insertSampleData = function(dataName) {
 	    'Red Daisy\tPlaza\n' +
 	    'Shiny Garnet\tPlaza';
   	}
+  	else if (dataName == "biomes") {
+  		// DDV-61: one row per region; the per-biome columns are read from the first row that has them
+  		outputString = 'biome\tregion\tregionquest\tregionrequirement\tregioncost\twellcost\tcritter\tconnectedto\tunlockquest\tunlocks\tcharacters\texpansion'
+		+'\nWishing Alps\tWishblossom Ranch\tA Wishful Invitation\t\t\t2500\tGoose\tGlamour Gulch, Pixie Acres\tA Wishful Invitation\t10000|dreamlight\tSnow White, Tinker Bell\tWishblossom Ranch'
+		+'\nWishing Alps\tRanch Highlands\tWheel Big Trouble\t\t\t2500\t\t\t\t\t\t'
+		+'\nWishing Alps\tSilver Summit\t\t{{friendship|Maximus|3}} (\'\'\'Jump\'\'\' ability)\t\t2500\t\t\t\t\t\t';
+  	}
   	else if (dataName == "companions") {
   		//outputString = 'name\ttype\tbiome\tregion\tfavfood\tlikedfoods\nBee 1\tBee\tPixie Acres\ttba\ttba\ttba\nSkunk 2\tSkunk\tGlamour Gulch\ttba\ttba\ttba\nGoose 3\tGoose\tWishing Alps\ttba\ttba\ttba';
   		outputString = 'name\ttype\tbiome\tregion\tfavfood\tlikedfoods\tschedule\tnumFeedings'
@@ -529,6 +536,7 @@ onPageReady(function() {
                	case "companions":
                	case "gems":
                	case "flowers":
+               	case "biomes":
                     templateType = headerModVal;
                     break;
             }
