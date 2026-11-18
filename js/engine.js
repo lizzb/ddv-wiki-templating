@@ -1967,14 +1967,13 @@ function generateCompanionTemplate(item) {
     template += '\n'+output_from(item);
 
     if (isCritter) {
-      template += "\n|from=Feeding Critters";
-      template += "\n|found=in the '''" + newExpansionCollection + "''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
-      template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
-      template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
-      // DDV-60 (B1): one comment (was <!--()--><!--three <!--(3)-->)
-      template += "\n|numFeedings=" + (hasValue(item.numFeedings) ? "<!--(%%numFeedings%%)-->" : "<!--three (3)-->");
-      template += "\n|critterCollection=" + newExpansionCollection;
-      template += "\n|hangout=<!--%%gathering%%-->";
+      // DDV-60 (Q62 a): the Infobox has found, favfood, likedfoods and minfeedings, as the wiki's critter pages do;
+      // from, the sentences (found, favoriteFood, likedFoods, numFeedings) and critterCollection are in
+      // {{ItemDescription}} below. found names the biome, commented until the collection box is ticked; no days (R1).
+      template += "\n|found=" + (hasValue(item.biome) ? wrapComment("{{name|%%biome%%}}", !collectionConfirmed) : "<!--{{name|BIOME}}-->");
+      template += "\n|favfood=TBA";
+      template += "\n|likedfoods=TBA";
+      template += "\n|minfeedings=" + (hasValue(item.numFeedings) ? "<!--%%numFeedings%%-->" : "<!--3-->");
       template += "\n}}";
       template += generateCritterSchedule(item);
     } else {
@@ -2006,12 +2005,25 @@ function generateCompanionTemplate(item) {
     template += '\n|%%name%%';
     template += '\n|type=Companion'; // SINGULAR Companion, not plural
     template += '\n|critterType=<!--Goose/Bee/Skunk/Sunbird/Capybara-->\n';
-    template += output_from(item);
+    if (isCritter) {
+      // DDV-60 (Q62 a): the critter sentences, moved here from the Infobox, in the wiki's order (Goose, Brown Owl)
+      template += "|from=Feeding Critters";
+      template += "\n|found=in the '''" + newExpansionCollection + "''' Village<!--in '''REGION1''' area of [[%%biome%%]] all day on Sunday, Wednesday, Thursday, Friday, and Saturday / after completing the quest [[QUESTNAME]] at all times / on DAY mornings/afternoons from XXX AM to XXX PM -->";
+      template += "\n|favoriteFood=TBA<!--[[FAV1]], and [[FAV2]]-->";
+      template += "\n|likedFoods=other foods that have not yet been verified<!--all other [[Gems]]--><!--[[:Category:Grains|Grains]]-->";
+      template += "\n";
+    } else {
+      template += output_from(item);
+    }
     //template += '\n|from=Premium Shop';
     //template += '\n|bundleName=XXX_COMPANIONNAME_XXX (Bundle){{!}}XXX_COMPANIONNAME_XXX';
     //template += '\n|bundlePrice=XXX_BUNDLEPRICE_XXX';
-    template += '|critterCollection=%%collection%%';
+    // DDV-60 (Q62 a): a critter's critterCollection is the newest-village setting, as its found sentence (Q52 b);
+    // it was in the Infobox, which made two critterCollection lines
+    template += isCritter ? '|critterCollection=' + newExpansionCollection : '|critterCollection=%%collection%%';
     template += `\n|hangout=<!--${infoboxHangout}-->`;
+    // DDV-60 (B1): one comment (was <!--()--><!--three <!--(3)-->); DDV-60 (Q62 a): here, not in the Infobox
+    if (isCritter) template += "\n|numFeedings=" + (hasValue(item.numFeedings) ? "<!--(%%numFeedings%%)-->" : "<!--three (3)-->");
     template += '\n}}';
 
     // is a limited time premium [[Companions#Event Companions|event companion]]
