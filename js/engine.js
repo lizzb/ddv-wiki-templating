@@ -240,6 +240,25 @@ function isCraftingMaterial(item) {
 function isFishCollection(item) {
   return /^fish$/i.test(String(item.cookingType || '').trim()) || /^fish$/i.test(String(item.collectionType || '').trim());
 }
+// Update day 1.26 (owner): items of a collection come out grouped as the collection is (groupOf: a list of
+// keys compared in turn), alphabetical by name within a group (accents ignored), as meals are
+function sortByGroupThenName(dataArray, groupOf) {
+  var cmp = function (x, y) { return String(x).localeCompare(String(y), 'en', { sensitivity: 'base' }); };
+  return dataArray.map(function (item, i) { return { item: item, i: i, g: groupOf ? groupOf(item) : [] }; })
+    .sort(function (a, b) {
+      for (var k = 0; k < a.g.length; k++) {
+        var d = (typeof a.g[k] === 'number') ? a.g[k] - b.g[k] : cmp(a.g[k], b.g[k]);
+        if (d) return d;
+      }
+      return cmp(a.item.name || '', b.item.name || '') || a.i - b.i;
+    })
+    .map(function (x) { return x.item; });
+}
+// ingredients template rows: ingredients, then the Fish collection, then crafting materials; within each by
+// collection menu sub-category (Fruit, Crafting Materials, Salvaging, Underwater...)
+function ingredientRowGroup(item) {
+  return [isFishCollection(item) ? 1 : isCraftingMaterial(item) ? 2 : 0, String(item.collectionType || item.cookingType || '')];
+}
 // The newest village as the navboxes take it: Keepsake Sea -> keepsakesea
 function villageNavboxKey() {
   return String(newExpansionCollection || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -1558,6 +1577,7 @@ function generateQuestMealArticle(item) {
 
 // Create stub articles for gem items
 function renderGems(dataArray) {
+  dataArray = sortByGroupThenName(dataArray);
   return renderEachItem(dataArray, generateGemTemplate);
 }
 
@@ -1580,7 +1600,7 @@ function generateGemTemplate(item) {
   //template += '\n|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1NAME}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2NAME}}';
   // DDV-60: where it is found follows the collection box
   // update day 1.26: no real biome (blank, or only the collection's kind) = TBA
-  template += '\n|biomes=' + (knownBiome(item) ? wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed) : 'TBA');
+  template += '\n|biomes=' + (knownBiome(item) ? wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed) : '<!--TBA-->');
   template += '\n|gridSize=';
   template += '\n|placement=<!--surfaces-->';
   template += '\n|stackMax=';
@@ -1626,7 +1646,7 @@ function generateFlowerTemplate(item) {
   template += '\n<!--|biomes={{name|BIOME1|link=BIOME1{{!}}REGION1}}<br>{{name|BIOME1|link=BIOME1{{!}}REGION2}}-->';
   // DDV-60: where it is found follows the collection box
   // update day 1.26: no real biome (blank, or only the collection's kind) = TBA
-  template += '\n|biomes=' + (knownBiome(item) ? wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed) : 'TBA');
+  template += '\n|biomes=' + (knownBiome(item) ? wrapIfValue('%%biome%%', item, 'biome', collectionConfirmed) : '<!--TBA-->');
   template += '\n|spawnTimer={{growthTime|}}';
   template += '\n|spawnMax=';
   template += '\n|gridSize=';
@@ -1655,6 +1675,7 @@ function generateFlowerTemplate(item) {
 
 
   function renderFlowers(dataArray) {
+    dataArray = sortByGroupThenName(dataArray);
     return renderEachItem(dataArray, generateFlowerTemplate);
   }
 
@@ -1677,7 +1698,7 @@ function generateFlowerTemplate(item) {
     template += '\n|buyprice=';
     template += '\n|sellprice=' + confirmableValue(item, 'sellprice', priceConfirmed);
     template += '\n|giftreward=';
-    template += '\n|found=' + (knownBiome(item) ? wrapComment('{{name|%%biome%%}}', !collectionConfirmed) : 'TBA');
+    template += '\n|found=' + (knownBiome(item) ? wrapComment('{{name|%%biome%%}}', !collectionConfirmed) : '<!--TBA-->');
     if (fishCatch) {
       // a crafting material of the Fish collection is caught (as Driftwood, which is in the Foraging collection)
       template += '\n|pool=<!--{{pool|None}}-->';
@@ -1761,7 +1782,7 @@ function generateFlowerTemplate(item) {
     template += '\n-->';
     template = template.replace('\n<!--\n-->', '');
     // update day 1.26: no biome yet = TBA, shown (owner's note)
-    if (['Stall', 'Foraging - Tree/Bush', 'Gardening'].indexOf(item.obtainMethod) < 0 && !knownBiome(item)) template += '\n|biomes=TBA';
+    if (['Stall', 'Foraging - Tree/Bush', 'Gardening'].indexOf(item.obtainMethod) < 0 && !knownBiome(item)) template += '\n|biomes=<!--TBA-->';
     template += '\n|gridSize=';
     template += '\n|placement=';
     template += '\n|stackMax=';
@@ -1838,6 +1859,7 @@ function generateFlowerTemplate(item) {
 
   // Create stub articles for ingredients (flowers and gems in the list get their own template)
   function renderIngredients(dataArray) {
+    dataArray = sortByGroupThenName(dataArray, ingredientRowGroup);
     return renderEachItem(dataArray, function (item) {
       if (isFlower(item)) return generateFlowerTemplate(item);
       if (isGem(item)) return generateGemTemplate(item);
@@ -2112,6 +2134,7 @@ function generateCompanionTemplateOriginal(item) {
   // Create stub articles for critter items
   // DDV-59: a companion record gets the full companion article, a sheet row the stub as before
   function renderCompanions(dataArray) {
+    dataArray = sortByGroupThenName(dataArray);
     return renderEachItem(dataArray, function (item) {
       return isCompanionRecord(item) ? generateCompanionTemplate(item) : generateCompanionTemplateOriginal(item);
     });
