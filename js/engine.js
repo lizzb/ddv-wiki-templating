@@ -1822,15 +1822,17 @@ function generateFlowerTemplate(item) {
     template += '\n|found=' + (knownBiome(item) ? wrapComment('{{name|%%biome%%}}', !collectionConfirmed) : '<!--TBA-->');
     if (fishCatch) {
       // a crafting material of the Fish collection is caught (as Driftwood, which is in the Foraging collection)
-      template += '\n|pool=<!--{{pool|None}}-->';
-      template += '\n|from=<span id="nametemplate">[[File:Menu_Icon_Fishing.png|20x20px|link=]] [[Fishing]]</span>';
+      // as Balloon Fish on the wiki (rev 153572): from = the Fishing icon, a pool, companion bonus fishing
+      template += '\n|pool=<!--{{pool|None}} or {{pool|White}}-->';
+      template += '\n|from={{inlineIcon|Fishing|size=20|link=Fishing}}';
+      template += '\n|companionbonus=fishing';
     }
     else template += '\n|from=<!--{{inlineIcon|Foraging|size=20|link=Foraging}} / <span id="nametemplate">[[File:Menu_Icon_Digging.png|20x20px|link=]] [[Digging]]</span> / <span id="nametemplate">[[File:Menu_Icon_Fishing.png|20x20px|link=]] [[Fishing]]</span>-->';
     template += '\n|gridSize=';
     template += '\n|placement=';
     template += '\n|stackMax=';
     template += '\n}}';
-    if (fishCatch) template += "\n'''%%name%%''' is a [[Crafting|crafting material]] which can be found by [[fishing]]<!-- in any open water--> in [[" + newExpansionCollection + "]].";
+    if (fishCatch) template += "\n'''%%name%%''' is a [[Fishing#Crafting_Materials|crafting material]] that can be caught while [[fishing]]<!-- in open water or white pools--> in [[" + newExpansionCollection + "]].";
     else template += "\n'''%%name%%''' is a [[Foraging#Crafting_Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
     var collName = newExpansionCollection + (fishCatch ? ' Fish Collection' : ' Foraging Collection');
     template += '\n\nOnce collected it will be added to the [[:Category:' + collName + '|' + collName + ']].';
