@@ -95,7 +95,7 @@ var WIKI_VERSION_RULES = [
 ];
 
 // Sheet village code -> village name (CR25: was two switch blocks). WR is the old code for WM.
-var VILLAGE_NAMES = { DV: 'Dreamlight Valley', EI: 'Eternity Isle', SV: 'Storybook Vale', WM: 'Wishblossom Mountains', HW: 'Honeyglow Woods' };
+var VILLAGE_NAMES = { DV: 'Dreamlight Valley', EI: 'Eternity Isle', SV: 'Storybook Vale', WM: 'Wishblossom Mountains', HW: 'Honeyglow Woods', KS: 'Keepsake Sea' };
 
 var updateNumber, newExpansionCollection, starPathNameShort, starPathName, starPathToken;
 var mealNavbox, bundleStartDate, bundleEndDate, companionCollection, wikiVersionLabels;
@@ -825,8 +825,9 @@ function determinePremiumBundleType(bundleItemArray) {
 
     }
 
-    // Update tally
-    itemTypeCounter[item.itemType] = (itemTypeCounter[item.itemType] ?? 0) + 1;
+    // Update tally (CR19: crafted furniture is furniture; it used to give bundleTypeTBD)
+    const tallyType = item.itemType === 'Crafted Furniture' ? 'Furniture' : item.itemType;
+    itemTypeCounter[tallyType] = (itemTypeCounter[tallyType] ?? 0) + 1;
 
   }
 
@@ -857,7 +858,8 @@ function determinePremiumBundleType(bundleItemArray) {
   else if (highestKeys.includes("Clothing") && highestKeys.includes("Furniture")) output = 'Clothing/Furniture';
   else if (highestKeys.includes("Clothing")) output = 'Clothing';
   else if (highestKeys.includes("Furniture")) output = 'Furniture';
-  else if (highestKeys.includes("MountGear")) output = 'Mount Customization';
+  else if (highestKeys.includes("MountGear")) output = 'Mount Accessories'; // owner's wiki section name (DDV-18 A10); was 'Mount Customization'
+  else if (highestKeys.includes("Environment")) output = 'Environment'; // sky effects: the Premium Shop page's Special section
   else output = 'bundleTypeTBD';
 
   /*
@@ -914,10 +916,10 @@ section_map = {
   }
 
   if (allKeys.includes("Goofy's Stall Skin")) {
-    if (allKeys.includes("Well")) output = 'Stall/Well';
+    // CR19: the key is "Wishing Well Skin" ("Well" is never an item type), so Stall/Well could never happen
+    if (allKeys.includes("Wishing Well Skin")) output = 'Stall/Well';
     else output = 'Stall';
   }
-  //TODO - Mount Customization, Poses
 
   if (output == 'bundleTypeTBD' && showItemDebug){
     console.log(`bundle has bundleTypeTBD, allKeys: ${allKeys}`)
@@ -1039,11 +1041,11 @@ section_map = {
       // outputAsNamedPropertyObject = false to make it an array and use for ddv-wiki-weeklyupdates, true to generate for premiumShopObj.js
       //outputAsNamedPropertyObject = false;
       if (outputAsNamedPropertyObject) {
-        output += `"${bundleObj.friendlyName}": `;
+        output += `${JSON.stringify(String(bundleObj.friendlyName))}: `;
       }
       output += `{`;
       output += `\n\t"protoDbName": "${bundleObj.protoDbName}",`;
-      output += `\n\t"friendlyName": "${bundleObj.friendlyName}",`;
+      output += `\n\t"friendlyName": ${JSON.stringify(String(bundleObj.friendlyName))},`; // CR10: a name with a quote stays valid JSON
       output += `\n\t"bundlePrice": "${bundleObj.bundlePrice}",`;
       output += `\n\t"versionAdded": "${bundleObj.version}",`; // don't think this is needed for weeklyupdates? - but its good to have
       output += `\n\t"bundleType": "${bundleObj.bundleType}",`;
@@ -1065,10 +1067,10 @@ section_map = {
     for (var i=0; i<bundleObj.itemArray.length; i++) {
       let item = bundleObj.itemArray[i]; 
       let itemQty = item.qty || "TBD";
-      let itemMSPrice = item.msCost = "NA";
+      let itemMSPrice = item.msCost || "NA"; // CR10: was an assignment, so the price was always "NA"
 
       output += `\n\t    { "id": "${item.id}",`;
-      output += ` "name": "${item.name}",`;
+      output += ` "name": ${JSON.stringify(String(item.name))},`;
       // TODO - parse SOURCE to see if qty or price is defined
       output += ` "qty": "${itemQty}", "price": "${itemMSPrice}",`;
       output += ` "itemType": "${item.itemType}",`;
@@ -1199,7 +1201,11 @@ section_map = {
   tempTemplate += `\n|items=${itemsParam2}`;
   tempTemplate += `\n|dates=\n* ${startWeekDate} - ${endWeekDate}`;
   tempTemplate += `\n}}`;
-  tempTemplate += ` {{cleanup|TODO - verify item order and counts}}`;
+  // The order and counts of a house or companion bundle need no check (a house, or a companion with its extras); every other
+  // bundle's order and counts are also in the Premium Shop history table, so the tag says to check both places.
+  if (!/House|Companion|Building/.test(String(bundleType || ''))) {
+    tempTemplate += ` {{cleanup|TODO - verify item order and counts here and in the Premium Shop history table}}`;
+  }
 
   //tempTemplate += `\n\n==History==\n{{history|${bundleVersion}|Added}}\n\n{{NavboxPremiumBundle}}`;
   tempTemplate += output_history(bundleObj);
@@ -1710,7 +1716,7 @@ function biomeArticle(name, rows) {
   var characters = biomeList(biomeFirst(rows, 'characters'));
   var expansion = biomeFirst(rows, 'expansion') || village;
   var label = updateAppropriateVersion({ version: updateNumber, collection: village }).wikiVersion || updateNumber;
-  var expansionPage = /^Expansion (\d+)/.test(label) ? 'Expansion_' + label.match(/^Expansion (\d+)/)[1] : 'TODO_EXPANSION';
+  var expansionPage = /^Expansion (\d+)/.test(label) ? 'Expansion ' + label.match(/^Expansion (\d+)/)[1] : 'TODO EXPANSION';
   var t = '';
 
   t += '{{infobox';
@@ -1729,7 +1735,7 @@ function biomeArticle(name, rows) {
   t += '\n|maplink=' + village;
   t += '\n|maparea=' + name;
   t += '\n}}{{TOC Right}}';
-  t += "\n'''" + name + "''' is a biome in [[" + village + ']], available after unlocking the paid expansion [[Version_History/' + expansionPage + '|"' + expansion + '"]].';
+  t += "\n'''" + name + "''' is a biome in [[" + village + ']], available after unlocking the paid expansion [[Version History/' + expansionPage + '|"' + expansion + '"]].';
   t += '\n\nIt is located on the <!--north/south/east/west--> side of [[' + village + ']]' +
     (connected.length ? ', and is connected to ' + connected.map(function (b) { return '[[' + b + ']]'; }).join(' and ') : '') + '.';
   t += '\n\n<!--How it is unlocked.-->';
@@ -1914,8 +1920,8 @@ function generateFlowerTemplate(item) {
     template += '\n|placement=';
     template += '\n|stackMax=';
     template += '\n}}';
-    if (fishCatch) template += "\n'''%%name%%''' is a [[Fishing#Crafting_Materials|crafting material]] that can be caught while [[fishing]]<!-- in open water or white pools--> in [[" + newExpansionCollection + "]].";
-    else template += "\n'''%%name%%''' is a [[Foraging#Crafting_Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
+    if (fishCatch) template += "\n'''%%name%%''' is a [[Fishing#Crafting Materials|crafting material]] that can be caught while [[fishing]]<!-- in open water or white pools--> in [[" + newExpansionCollection + "]].";
+    else template += "\n'''%%name%%''' is a [[Foraging#Crafting Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
     var collName = newExpansionCollection + (fishCatch ? ' Fish Collection' : ' Foraging Collection');
     template += '\n\nOnce collected it will be added to the [[:Category:' + collName + '|' + collName + ']].';
     template += "\n\n" + (fishCatch ? "[[Crafting|Crafting materials]]" : "[[Foraging|Foraged items]]") + " can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After it has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
@@ -2236,10 +2242,10 @@ function generateCompanionTemplate(item) {
     var introLink = "premium [[Companions#Event Companions|event companion]]";
     if (record) {
       // DDV-59: by companion type; notable first, then critter, star path (tier), premium bundle
-      if (item.companionClass === 'Notable') introLink = "[[Companions#Notable_Companions|notable companion]]";
-      else if (isCritter) introLink = "[[Companions#Critter_Companions|critter companion]]";
-      else if (item.tier) introLink = "[[Companions#Event_Companions|event companion]]";
-      else if (item.bundleName) introLink = "[[Companions#Premium_Companions|premium companion]]";
+      if (item.companionClass === 'Notable') introLink = "[[Companions#Notable Companions|notable companion]]";
+      else if (isCritter) introLink = "[[Companions#Critter Companions|critter companion]]";
+      else if (item.tier) introLink = "[[Companions#Event Companions|event companion]]";
+      else if (item.bundleName) introLink = "[[Companions#Premium Companions|premium companion]]";
       else introLink = "[[Companions|companion]]";
     }
     var introSecondary = ""; // TODO?: " which was available during the [[Pixar Fest Star Path]]";
@@ -2720,6 +2726,39 @@ function questUnlocksCrafting(item) {
   return true;
 }
 
+// DDV-68: where an item can be picked up in the world, as the start of "It is found ...", or null when the
+// source does not say it can be picked up ("must re-pick up in 1.22" is a note about an update, not a place).
+//   "Crafting, pick up in Paisley Park"            -> in [[Paisley Park]]<!--...-->
+//   "Pickup: Peaceful Meadow (Outside Merlin's house), Store", "Crafting, Pickup (Docks)", "Pickup (Dazzle Beach, near ...)"
+//   "Pickup, Crafting", "Pickup (limit 2)"         -> in the world<!--...--> (no place in the source)
+// The detail the source does not hold (the building or landmark) is left as a comment to fill in.
+function pickupPlaceText(source) {
+  if (typeof source !== 'string') return null;
+  var s = source.split('\n')[0];
+  // "must re-pick up in 1.22" is a note about an update; a separate "pick up" in the same line still counts
+  s = s.replace(/(?:must\s+)?re-pick ?up(?:\s+in\s+[\d.]+)?/gi, '');
+  if (!/pick ?up/i.test(s)) return null;
+  var m = s.match(/pick ?up(?: in|:)\s*([^,]+)/i) || s.match(/pick ?up\s*\(([^)]+)\)/i);
+  var place = m ? m[1].trim() : '';
+  var detail = '';
+  var paren = place.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
+  if (paren) { place = paren[1]; detail = paren[2].trim(); }
+  var comma = place.indexOf(',');
+  if (comma >= 0) { detail = place.slice(comma + 1).trim(); place = place.slice(0, comma).trim(); }
+  if (/^limit\b/i.test(place) || /^after\b/i.test(place)) place = '';
+  // A place that is not one clean link ("PIxie Flats?", "......", "world (Eternity Isle, The Docks)", "2 after ...",
+  // "Eternity Isle - Lower Docks") falls back to "the world", and the source's own wording goes in the comment.
+  if (place && (/\?/.test(place) || /^[.\s]+$/.test(place) || /world \(/i.test(place) || /^\d/.test(place) || / - /.test(place))) {
+    var raw = s.match(/pick ?up(?: in|:)\s*([^,(]*(?:\([^)]*\))?[^,]*)/i) || s.match(/pick ?up\s*\(([^)]+)\)/i);
+    detail = raw ? raw[1].trim() : place;
+    place = '';
+  }
+  var note = 'on the [[PARENT]] / near [[LANDMARK]]' + (detail ? ' -- ' + detail : '');
+  if (!place) return 'in the world<!--in [[PLACE]] ' + note + '-->';
+  var links = place.split(/\s+or\s+/).map(function (p) { return '[[' + p.trim() + ']]'; }).join(' or ');
+  return 'in ' + links + '<!--' + note + '-->';
+}
+
 function isQuestItem(item) {
   if (parseStoreCondition(item.source)) return false; // DDV-24 (B26, B48): a quest named as a store condition is not a reward
   var isQuestItem = 
@@ -3002,6 +3041,7 @@ function output_collection(item) {
   case 'WM':
   case 'WR':
   case 'HW':
+  case 'KS':
     item.collection = wrapComment(VILLAGE_NAMES[item.collection == 'WR' ? 'WM' : item.collection] || 'Dreamlight Valley', !collectionConfirmed);
     break;
   case 'Dream Style':
@@ -4108,13 +4148,14 @@ function output_from(item) {
   // DDV-24: a "Store ... after ..." source is a conditional Scrooge's Store item even when the store
   // column is empty or holds a clothing slot (table, trio, window)
   var storeKind = item.inStore;
-  if (item.storeCondition && ['EI', 'SV', 'WM', 'HW', 'HW - C', 'x - C'].indexOf(storeKind) < 0) storeKind = 'x - C';
+  if (item.storeCondition && ['EI', 'SV', 'WM', 'HW', 'KS', 'HW - C', 'x - C'].indexOf(storeKind) < 0) storeKind = 'x - C';
 
   switch (storeKind) {
   case 'EI':
   case 'SV':
   case 'WM':
   case 'HW':
+  case 'KS':
   case 'HW - C':
     if (showItemDebug) {
       console.log(item.name, ' is a scrooge item');
@@ -4216,6 +4257,19 @@ function output_from(item) {
       itemSource = 'It can be crafted using seasonal [[ingredients]] that are available during the [[' + item.event + ']] event at a [[:Category:Crafting Stations|Crafting Station]].'
     } else {
       itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
+    }
+  }
+
+  // DDV-68: a crafted or Scrooge's Store item that can also be picked up in the world. Quest items keep
+  // their own sentence ("It can be collected by picking it up.", in the quest section below).
+  var pickupPlace = pickupPlaceText(item.source);
+  if (pickupPlace !== null && !isQuestItem(item)) {
+    if (/^It can be crafted /.test(itemSource)) {
+      itemSource = 'It is found ' + pickupPlace + ', and can also be crafted ' + itemSource.slice('It can be crafted '.length).trim() +
+        ' It can be collected either by crafting it or picking it up.';
+    } else if (/^It has a chance /.test(itemSource)) {
+      itemSource = 'It is found ' + pickupPlace + ', and also has a chance ' + itemSource.slice('It has a chance '.length).trim().replace(/\.$/, '') +
+        '. It can be collected either by purchasing it or picking it up.';
     }
   }
 
@@ -4622,7 +4676,11 @@ function output_collectionStatus(item) {
   var craftingCollectionText =
   ' Once collected it will be added to both the [[:Category:%%collection%% Crafting Collection|%%collection%% Crafting Collection]] and the [[:Category:%%collection%% Furniture Sets Collection|%%collection%% Furniture Sets Collection]].';
   var furnitureCollectionText =
-  " Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
+  " Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]], and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
+  // DDV-68 (owner, Q72 a): a crafted item that is also sold in Scrooge's Store is in the Furniture Sets Collection only
+  if (item.location && item.location.includes('crafting') && isScroogeStoreValue(item.inStore)) {
+    craftingCollectionText = furnitureCollectionText.replaceAll('%%itemType%%', 'Furniture');
+  }
 
   //var clothingNoCollectionText = ' Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].';
 
@@ -4685,6 +4743,11 @@ function output_collectionStatus(item) {
   }
 
   return collectionText;
+}
+
+// DDV-68: the store column of an item sold in Scrooge's Store (any village, with or without a condition)
+function isScroogeStoreValue(value) {
+  return ['x', 'x - C', 'EI', 'SV', 'WM', 'HW', 'KS', 'HW - C'].indexOf(String(value || '').trim()) >= 0;
 }
 
 function wrapUnconfirmedCleanup(text) {
@@ -6103,7 +6166,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     // TEMPORARY - comment out empty infobox recipes
     newStr = newStr.replaceAll('|recipe=\n', '');
     newStr = newStr.replaceAll('{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: <!--Dreamlight Valley--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]].}}','{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: Dreamlight Valley Clothing Sets Collection|Dreamlight Valley Clothing Sets Collection]].}}');
-    newStr = newStr.replaceAll("{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}","{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}");
+    newStr = newStr.replaceAll("{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]], and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}","{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]], and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}");
 
 
 
