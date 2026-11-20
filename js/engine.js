@@ -743,8 +743,9 @@ function determinePremiumBundleType(bundleItemArray) {
 
     }
 
-    // Update tally
-    itemTypeCounter[item.itemType] = (itemTypeCounter[item.itemType] ?? 0) + 1;
+    // Update tally (CR19: crafted furniture is furniture; it used to give bundleTypeTBD)
+    const tallyType = item.itemType === 'Crafted Furniture' ? 'Furniture' : item.itemType;
+    itemTypeCounter[tallyType] = (itemTypeCounter[tallyType] ?? 0) + 1;
 
   }
 
@@ -775,7 +776,8 @@ function determinePremiumBundleType(bundleItemArray) {
   else if (highestKeys.includes("Clothing") && highestKeys.includes("Furniture")) output = 'Clothing/Furniture';
   else if (highestKeys.includes("Clothing")) output = 'Clothing';
   else if (highestKeys.includes("Furniture")) output = 'Furniture';
-  else if (highestKeys.includes("MountGear")) output = 'Mount Customization';
+  else if (highestKeys.includes("MountGear")) output = 'Mount Accessories'; // owner's wiki section name (DDV-18 A10); was 'Mount Customization'
+  else if (highestKeys.includes("Environment")) output = 'Environment'; // sky effects: the Premium Shop page's Special section
   else output = 'bundleTypeTBD';
 
   /*
@@ -832,10 +834,10 @@ section_map = {
   }
 
   if (allKeys.includes("Goofy's Stall Skin")) {
-    if (allKeys.includes("Well")) output = 'Stall/Well';
+    // CR19: the key is "Wishing Well Skin" ("Well" is never an item type), so Stall/Well could never happen
+    if (allKeys.includes("Wishing Well Skin")) output = 'Stall/Well';
     else output = 'Stall';
   }
-  //TODO - Mount Customization, Poses
 
   if (output == 'bundleTypeTBD' && showItemDebug){
     console.log(`bundle has bundleTypeTBD, allKeys: ${allKeys}`)
@@ -957,11 +959,11 @@ section_map = {
       // outputAsNamedPropertyObject = false to make it an array and use for ddv-wiki-weeklyupdates, true to generate for premiumShopObj.js
       //outputAsNamedPropertyObject = false;
       if (outputAsNamedPropertyObject) {
-        output += `"${bundleObj.friendlyName}": `;
+        output += `${JSON.stringify(String(bundleObj.friendlyName))}: `;
       }
       output += `{`;
       output += `\n\t"protoDbName": "${bundleObj.protoDbName}",`;
-      output += `\n\t"friendlyName": "${bundleObj.friendlyName}",`;
+      output += `\n\t"friendlyName": ${JSON.stringify(String(bundleObj.friendlyName))},`; // CR10: a name with a quote stays valid JSON
       output += `\n\t"bundlePrice": "${bundleObj.bundlePrice}",`;
       output += `\n\t"versionAdded": "${bundleObj.version}",`; // don't think this is needed for weeklyupdates? - but its good to have
       output += `\n\t"bundleType": "${bundleObj.bundleType}",`;
@@ -983,10 +985,10 @@ section_map = {
     for (var i=0; i<bundleObj.itemArray.length; i++) {
       let item = bundleObj.itemArray[i]; 
       let itemQty = item.qty || "TBD";
-      let itemMSPrice = item.msCost = "NA";
+      let itemMSPrice = item.msCost || "NA"; // CR10: was an assignment, so the price was always "NA"
 
       output += `\n\t    { "id": "${item.id}",`;
-      output += ` "name": "${item.name}",`;
+      output += ` "name": ${JSON.stringify(String(item.name))},`;
       // TODO - parse SOURCE to see if qty or price is defined
       output += ` "qty": "${itemQty}", "price": "${itemMSPrice}",`;
       output += ` "itemType": "${item.itemType}",`;
@@ -1117,7 +1119,11 @@ section_map = {
   tempTemplate += `\n|items=${itemsParam2}`;
   tempTemplate += `\n|dates=\n* ${startWeekDate} - ${endWeekDate}`;
   tempTemplate += `\n}}`;
-  tempTemplate += ` {{cleanup|TODO - verify item order and counts}}`;
+  // The order and counts of a house or companion bundle need no check (a house, or a companion with its extras); every other
+  // bundle's order and counts are also in the Premium Shop history table, so the tag says to check both places.
+  if (!/House|Companion|Building/.test(String(bundleType || ''))) {
+    tempTemplate += ` {{cleanup|TODO - verify item order and counts here and in the Premium Shop history table}}`;
+  }
 
   //tempTemplate += `\n\n==History==\n{{history|${bundleVersion}|Added}}\n\n{{NavboxPremiumBundle}}`;
   tempTemplate += output_history(bundleObj);
