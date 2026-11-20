@@ -2726,6 +2726,10 @@ function questUnlocksCrafting(item) {
   return true;
 }
 
+// DDV-68 (row 4.18): places that take "the" in the pick-up sentence ("in the [[Peaceful Meadow]]"); any other place gets
+// none ("in [[Paisley Park]]"). A new place takes a one-line change here. Matched case-insensitively.
+const PICKUP_PLACES_WITH_THE = ['Peaceful Meadow', 'Dreamlight Library', "Captain's Cabin", 'Pirate Ship'];
+
 // DDV-68: where an item can be picked up in the world, as the start of "It is found ...", or null when the
 // source does not say it can be picked up ("must re-pick up in 1.22" is a note about an update, not a place).
 //   "Crafting, pick up in Paisley Park"            -> in [[Paisley Park]]<!--...-->
@@ -2755,7 +2759,11 @@ function pickupPlaceText(source) {
   }
   var note = 'on the [[PARENT]] / near [[LANDMARK]]' + (detail ? ' -- ' + detail : '');
   if (!place) return 'in the world<!--in [[PLACE]] ' + note + '-->';
-  var links = place.split(/\s+or\s+/).map(function (p) { return '[[' + p.trim() + ']]'; }).join(' or ');
+  var links = place.split(/\s+or\s+/).map(function (p) {
+    p = p.trim();
+    var the = PICKUP_PLACES_WITH_THE.some(function (x) { return x.toLowerCase() === p.toLowerCase(); }) ? 'the ' : '';
+    return the + '[[' + p + ']]';
+  }).join(' or ');
   return 'in ' + links + '<!--' + note + '-->';
 }
 
