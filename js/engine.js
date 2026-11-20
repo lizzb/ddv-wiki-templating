@@ -1628,7 +1628,7 @@ function biomeArticle(name, rows) {
   var characters = biomeList(biomeFirst(rows, 'characters'));
   var expansion = biomeFirst(rows, 'expansion') || village;
   var label = updateAppropriateVersion({ version: updateNumber, collection: village }).wikiVersion || updateNumber;
-  var expansionPage = /^Expansion (\d+)/.test(label) ? 'Expansion_' + label.match(/^Expansion (\d+)/)[1] : 'TODO_EXPANSION';
+  var expansionPage = /^Expansion (\d+)/.test(label) ? 'Expansion ' + label.match(/^Expansion (\d+)/)[1] : 'TODO EXPANSION';
   var t = '';
 
   t += '{{infobox';
@@ -1647,7 +1647,7 @@ function biomeArticle(name, rows) {
   t += '\n|maplink=' + village;
   t += '\n|maparea=' + name;
   t += '\n}}{{TOC Right}}';
-  t += "\n'''" + name + "''' is a biome in [[" + village + ']], available after unlocking the paid expansion [[Version_History/' + expansionPage + '|"' + expansion + '"]].';
+  t += "\n'''" + name + "''' is a biome in [[" + village + ']], available after unlocking the paid expansion [[Version History/' + expansionPage + '|"' + expansion + '"]].';
   t += '\n\nIt is located on the <!--north/south/east/west--> side of [[' + village + ']]' +
     (connected.length ? ', and is connected to ' + connected.map(function (b) { return '[[' + b + ']]'; }).join(' and ') : '') + '.';
   t += '\n\n<!--How it is unlocked.-->';
@@ -2149,15 +2149,15 @@ function generateCompanionTemplate(item) {
     if (isCritter) template += "\n|numFeedings=" + (hasValue(item.numFeedings) ? "<!--(%%numFeedings%%)-->" : "<!--three (3)-->");
     template += '\n}}';
 
-    // is a limited time premium [[Companions#Event_Companions|event companion]]
-    // is a premium [[Companions#Premium_Companions|companion]].
-    var introLink = "premium [[Companions#Event_Companions|event companion]]";
+    // is a limited time premium [[Companions#Event Companions|event companion]]
+    // is a premium [[Companions#Premium Companions|companion]].
+    var introLink = "premium [[Companions#Event Companions|event companion]]";
     if (record) {
       // DDV-59: by companion type; notable first, then critter, star path (tier), premium bundle
-      if (item.companionClass === 'Notable') introLink = "[[Companions#Notable_Companions|notable companion]]";
-      else if (isCritter) introLink = "[[Companions#Critter_Companions|critter companion]]";
-      else if (item.tier) introLink = "[[Companions#Event_Companions|event companion]]";
-      else if (item.bundleName) introLink = "[[Companions#Premium_Companions|premium companion]]";
+      if (item.companionClass === 'Notable') introLink = "[[Companions#Notable Companions|notable companion]]";
+      else if (isCritter) introLink = "[[Companions#Critter Companions|critter companion]]";
+      else if (item.tier) introLink = "[[Companions#Event Companions|event companion]]";
+      else if (item.bundleName) introLink = "[[Companions#Premium Companions|premium companion]]";
       else introLink = "[[Companions|companion]]";
     }
     var introSecondary = ""; // TODO?: " which was available during the [[Pixar Fest Star Path]]";
