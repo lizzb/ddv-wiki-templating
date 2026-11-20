@@ -2638,6 +2638,30 @@ function questUnlocksCrafting(item) {
   return true;
 }
 
+// DDV-68: where an item can be picked up in the world, as the start of "It is found ...", or null when the
+// source does not say it can be picked up ("must re-pick up in 1.22" is a note about an update, not a place).
+//   "Crafting, pick up in Paisley Park"            -> in [[Paisley Park]]<!--...-->
+//   "Pickup: Peaceful Meadow (Outside Merlin's house), Store", "Crafting, Pickup (Docks)", "Pickup (Dazzle Beach, near ...)"
+//   "Pickup, Crafting", "Pickup (limit 2)"         -> in the world<!--...--> (no place in the source)
+// The detail the source does not hold (the building or landmark) is left as a comment to fill in.
+function pickupPlaceText(source) {
+  if (typeof source !== 'string') return null;
+  var s = source.split('\n')[0];
+  if (!/pick ?up/i.test(s) || /re-pick ?up/i.test(s)) return null;
+  var m = s.match(/pick ?up(?: in|:)\s*([^,]+)/i) || s.match(/pick ?up\s*\(([^)]+)\)/i);
+  var place = m ? m[1].trim() : '';
+  var detail = '';
+  var paren = place.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
+  if (paren) { place = paren[1]; detail = paren[2].trim(); }
+  var comma = place.indexOf(',');
+  if (comma >= 0) { detail = place.slice(comma + 1).trim(); place = place.slice(0, comma).trim(); }
+  if (/^limit\b/i.test(place) || /^after\b/i.test(place)) place = '';
+  var note = 'on the [[PARENT]] / near [[LANDMARK]]' + (detail ? ' -- ' + detail : '');
+  if (!place) return 'in the world<!--in [[PLACE]] ' + note + '-->';
+  var links = place.split(/\s+or\s+/).map(function (p) { return '[[' + p.trim() + ']]'; }).join(' or ');
+  return 'in ' + links + '<!--' + note + '-->';
+}
+
 function isQuestItem(item) {
   if (parseStoreCondition(item.source)) return false; // DDV-24 (B26, B48): a quest named as a store condition is not a reward
   var isQuestItem = 
@@ -4027,13 +4051,14 @@ function output_from(item) {
   // DDV-24: a "Store ... after ..." source is a conditional Scrooge's Store item even when the store
   // column is empty or holds a clothing slot (table, trio, window)
   var storeKind = item.inStore;
-  if (item.storeCondition && ['EI', 'SV', 'WM', 'HW', 'HW - C', 'x - C'].indexOf(storeKind) < 0) storeKind = 'x - C';
+  if (item.storeCondition && ['EI', 'SV', 'WM', 'HW', 'KS', 'HW - C', 'x - C'].indexOf(storeKind) < 0) storeKind = 'x - C';
 
   switch (storeKind) {
   case 'EI':
   case 'SV':
   case 'WM':
   case 'HW':
+  case 'KS':
   case 'HW - C':
     if (showItemDebug) {
       console.log(item.name, ' is a scrooge item');
@@ -4135,6 +4160,19 @@ function output_from(item) {
       itemSource = 'It can be crafted using seasonal [[ingredients]] that are available during the [[' + item.event + ']] event at a [[:Category:Crafting Stations|Crafting Station]].'
     } else {
       itemSource = 'It can be crafted using a [[:Category:Crafting Stations|Crafting Station]].';
+    }
+  }
+
+  // DDV-68: a crafted or Scrooge's Store item that can also be picked up in the world. Quest items keep
+  // their own sentence ("It can be collected by picking it up.", in the quest section below).
+  var pickupPlace = pickupPlaceText(item.source);
+  if (pickupPlace !== null && !isQuestItem(item)) {
+    if (/^It can be crafted /.test(itemSource)) {
+      itemSource = 'It is found ' + pickupPlace + ', and can also be crafted ' + itemSource.slice('It can be crafted '.length).trim() +
+        ' It can be collected either by crafting it or picking it up.';
+    } else if (/^It has a chance /.test(itemSource)) {
+      itemSource = 'It is found ' + pickupPlace + ', and also has a chance ' + itemSource.slice('It has a chance '.length).trim().replace(/\.$/, '') +
+        '. It can be collected either by purchasing it or picking it up.';
     }
   }
 
@@ -4541,7 +4579,11 @@ function output_collectionStatus(item) {
   var craftingCollectionText =
   ' Once collected it will be added to both the [[:Category:%%collection%% Crafting Collection|%%collection%% Crafting Collection]] and the [[:Category:%%collection%% Furniture Sets Collection|%%collection%% Furniture Sets Collection]].';
   var furnitureCollectionText =
-  " Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
+  " Once collected it will be added to the [[:Category:%%collection%% %%itemType%% Sets Collection|%%collection%% %%itemType%% Sets Collection]], and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].";
+  // DDV-68 (owner, Q72 a): a crafted item that is also sold in Scrooge's Store is in the Furniture Sets Collection only
+  if (item.location && item.location.includes('crafting') && isScroogeStoreValue(item.inStore)) {
+    craftingCollectionText = furnitureCollectionText.replaceAll('%%itemType%%', 'Furniture');
+  }
 
   //var clothingNoCollectionText = ' Once collected it will not be added to the [[:Category:Untracked Clothing Sets Collection|Clothing Sets Collection]].';
 
@@ -4604,6 +4646,11 @@ function output_collectionStatus(item) {
   }
 
   return collectionText;
+}
+
+// DDV-68: the store column of an item sold in Scrooge's Store (any village, with or without a condition)
+function isScroogeStoreValue(value) {
+  return ['x', 'x - C', 'EI', 'SV', 'WM', 'HW', 'KS', 'HW - C'].indexOf(String(value || '').trim()) >= 0;
 }
 
 function wrapUnconfirmedCleanup(text) {
@@ -6022,7 +6069,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
     // TEMPORARY - comment out empty infobox recipes
     newStr = newStr.replaceAll('|recipe=\n', '');
     newStr = newStr.replaceAll('{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: <!--Dreamlight Valley--> Clothing Sets Collection|<!--Dreamlight Valley--> Clothing Sets Collection]].}}','{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category: Dreamlight Valley Clothing Sets Collection|Dreamlight Valley Clothing Sets Collection]].}}');
-    newStr = newStr.replaceAll("{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}","{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]] and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}");
+    newStr = newStr.replaceAll("{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:<!--Dreamlight Valley--> Furniture Sets Collection|<!--Dreamlight Valley--> Furniture Sets Collection]], and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}","{{cleanup|Uncomment once confirmed -- Once collected it will be added to the [[:Category:Dreamlight Valley Furniture Sets Collection|Dreamlight Valley Furniture Sets Collection]], and more can be ordered from [[Scrooge's Store#Catalog|Scrooge's Catalog]].}}");
 
 
 
