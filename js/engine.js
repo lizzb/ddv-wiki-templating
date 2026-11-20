@@ -2088,7 +2088,9 @@ function generateFlowerTemplate(item) {
     //(item.collection && item.collection.includes('Companion')) ||
     //(item.name && item.name.includes('Castle')) ||
     //(item.universe && item.universe.includes('Companion') ||
-    (item.category && item.category.includes('Companion'));
+    (item.category && item.category.includes('Companion')) ||
+    // DDV-64 (N24): a row whose itemType says Companion, pasted with furniture or clothing rows
+    /^companions?$/i.test(String(item.itemType || '').trim());
 
     return isCompanion;
   }
@@ -2156,6 +2158,8 @@ function generateCompanionTemplate(item) {
   if (record && (item.collection == 'WB' || item.collection == 'WR')) item.collection = 'WM';
   var recordVillage = record && hasValue(item.collection) ? (VILLAGE_NAMES[item.collection] || newExpansionCollection || String(item.collection)) : '';
   var recordCode = record && hasValue(item.collection) && !VILLAGE_NAMES[item.collection] ? item.collection : '';
+  // DDV-64 (N24): a sheet row with no village ("-" or blank) names the companionCollection setting, as its sentence does
+  if (!record && (!hasValue(item.collection) || String(item.collection).trim() == '-')) item.collection = companionCollection;
 
   {
 
@@ -2822,7 +2826,54 @@ function getFirstCategoryMatch(categoryVal, prioritizedCategoryArray) {
 // **** todo: hairstyle articles, accessories articles, character dream style articles
 // TODO - desert bloom coffee table not populating surfaceArea in infobox, leaving empty functions param
 
+// DDV-64 (N24): the template a row's itemType asks for. The page's radio button chooses the template for rows whose
+// itemType has none of its own, and for every row when it is set to something other than an item article
+// (star path duties and rewards, quest items, biomes). Keys are lower case.
+var ROW_TEMPLATES = ['clothingFurniture', 'companions', 'meals', 'ingredients', 'gems', 'flowers'];
+var TEMPLATE_OF_ITEMTYPE = {
+  'meal': 'meals', 'meals': 'meals',
+  'ingredient': 'ingredients', 'ingredients': 'ingredients', 'fish': 'ingredients', 'foraging': 'ingredients',
+  'gem': 'gems', 'gems': 'gems',
+  'flower': 'flowers', 'flowers': 'flowers',
+  'companion': 'companions', 'companions': 'companions', 'critter': 'companions',
+  'furniture': 'clothingFurniture', 'clothing': 'clothingFurniture', 'crafted furniture': 'clothingFurniture',
+  'building skin': 'clothingFurniture', 'dream style': 'clothingFurniture', 'house': 'clothingFurniture',
+  'landscaping': 'clothingFurniture', 'preset': 'clothingFurniture', 'environment': 'clothingFurniture',
+  'mountgear': 'clothingFurniture', 'mount equipment': 'clothingFurniture', 'face paint': 'clothingFurniture',
+  'touchofmagic': 'clothingFurniture', 'photomode': 'clothingFurniture'
+};
+function templateForRow(row, templateType) {
+  if (ROW_TEMPLATES.indexOf(templateType) < 0 || !row || typeof row !== 'object') return templateType;
+  var own = TEMPLATE_OF_ITEMTYPE[String(row.itemType || '').trim().toLowerCase()];
+  if (!own) return templateType;
+  // a companion pasted with furniture or clothing stays on that page: it gets the premium companion article there,
+  // and its bundle article lists it with the bundle's other items
+  if (templateType == 'clothingFurniture' && own == 'companions') return templateType;
+  return own;
+}
+
+// Rows grouped by their template, in the order each template first appears; each group is rendered as if its
+// template had been chosen on the page
 function renderParent(dataArray, templateType) {
+  if (customTemplate || !Array.isArray(dataArray)) return renderWithTemplate(dataArray, templateType);
+  var groups = [];
+  dataArray.forEach(function (row) {
+    var type = templateForRow(row, templateType);
+    var group = groups.filter(function (g) { return g.type === type; })[0];
+    if (!group) groups.push(group = { type: type, rows: [] });
+    group.rows.push(row);
+  });
+  if (groups.length <= 1) return renderWithTemplate(dataArray, groups.length ? groups[0].type : templateType);
+  var output = '';
+  groups.forEach(function (g) {
+    var part = renderWithTemplate(g.rows, g.type);
+    if (output && !/-{29}\s*$/.test(output)) output += ARTICLE_DELIMITER;
+    output += part;
+  });
+  return output;
+}
+
+function renderWithTemplate(dataArray, templateType) {
   //var dataArray = sampleItems;
   // templateType is a global var changed by radio buttons
 
@@ -5244,6 +5295,12 @@ function assignItemType(item) {
     item.collection = 'none';
   }
 
+  // DDV-64 (N25): a villager house skin is a Building Skin in no collection (in game: type=Building Skin, category=none)
+  if (isVillagerHouseSkin(item)) {
+    item.itemType = 'Building Skin';
+    item.collection = 'none';
+  }
+
   // Left commented: `isCharacterDreamStyle` without `(item)` is a function, so always true; uncommented, every item would become a Character Dream Style
   /*
 if (isCharacterDreamStyle) {
@@ -5460,6 +5517,44 @@ function isBuildingSkin(item) {
   return BUILDING_SKIN_TESTS.some(function (test) { return test(item); });
 }
 
+// DDV-64 (N25): a skin for a villager's house (Snowy Beast's Castle, the Mickey & Friends Celebration Houses) is a
+// Building Skin applied to that house, not a character or house dream style. The game numbers these 1706xxxxx and
+// names them "<House>!<Name>Skin"; a row may also give Building Skin as its itemType.
+function isVillagerHouseSkin(item) {
+  if (!item) return false;
+  var id = String(item.ID || item.id || item.itemID || '').trim();
+  if (/^1706\d{5}$/.test(id)) return true;
+  if (/House![A-Za-z0-9]*Skin$/.test(String(item.Subgroup || '').trim())) return true;
+  return String(item.itemType || '').trim() == 'Building Skin' && !BUILDING_SKIN_TESTS.some(function (test) { return test(item); });
+}
+
+// The villager house a skin is applied to: the row's appliedto, else from the name ("Mickey's Celebration House"
+// -> Mickey's House, "Snowy Beast's Castle" -> Beast's Castle, "Donald's Celebration Boat" -> Donald's Boat)
+function villagerHouseOf(item) {
+  var given = stripHTMLComments(String(item.appliedto || '')).trim();
+  if (given) return given.replace(/^\[\[|\]\]$/g, '');
+  var words = String(item.name || '').trim().split(/\s+/);
+  for (var i = 0; i < words.length - 1; i++) {
+    if (/['’]s$|s['’]$/.test(words[i])) return words[i] + ' ' + words[words.length - 1];
+  }
+  return '';
+}
+
+// As the owner's Snowy Beast's Castle and Mickey's Celebration House articles: type Building Skin, no category, no
+// collection or universe, the house it applies to, and the replace sentence kept for a check in game
+function generateVillagerHouseSkinTemplate(item) {
+  var house = villagerHouseOf(item);
+  var link = house ? '[[' + house + ']]' : '[[VILLAGERHOUSE]]';
+  var t = '{{infobox\n' + output_image(item) + '|type=Building Skin\n|category=none\n' +
+    '|appliedto=' + (house || '<!--VILLAGERHOUSE-->') + '\n' + output_from(item) + '|gridSize=\n|placement=\n}}\n';
+  t += "'''%%name%%''' is a [[Dream Styles#Building Dream Styles|Building Dream Style]] that can be applied to " + link + '.';
+  t += '\n\n' + generateBodyFromPremiumShop(item);
+  t += "{{cleanup|VERIFY -- It can be applied using the [[Furniture menu]] inside the Inventory by picking up " + link +
+    ", which enables an option to '''Replace''', and then choosing a replacement Building Dream Style.}}";
+  t += output_history(item) + '\n\n{{NavboxDreamStyle|building}}';
+  return t;
+}
+
 // A returning character dream style keeps the furniture/clothing article. A collection of only
 // "Dream Style" (some accessories) never chose this template: before CR01 the furniture article had
 // already turned that collection into "remove" when this was decided.
@@ -5612,6 +5707,7 @@ var ARTICLE_TEMPLATES = [
   { name: 'preset', test: isPreset, generate: generatePresetTemplate },
   { name: 'mount gear', test: isMountGear, generate: generateMountGearTemplate },
   { name: 'environment (special)', test: isEnvironmentEffect, generate: generateEnvironmentTemplate },
+  { name: 'villager house skin', test: isVillagerHouseSkin, generate: generateVillagerHouseSkinTemplate }, // DDV-64
   { name: 'building skin', test: isBuildingSkin, generate: generateBuildingSkinTemplate },
   { name: 'villager house', test: isVillagerHouse, generate: generateVillagerHouseTemplate },
   { name: 'house dream style', test: isHouse, generate: generateHouseTemplate },
