@@ -2647,7 +2647,9 @@ function questUnlocksCrafting(item) {
 function pickupPlaceText(source) {
   if (typeof source !== 'string') return null;
   var s = source.split('\n')[0];
-  if (!/pick ?up/i.test(s) || /re-pick ?up/i.test(s)) return null;
+  // "must re-pick up in 1.22" is a note about an update; a separate "pick up" in the same line still counts
+  s = s.replace(/(?:must\s+)?re-pick ?up(?:\s+in\s+[\d.]+)?/gi, '');
+  if (!/pick ?up/i.test(s)) return null;
   var m = s.match(/pick ?up(?: in|:)\s*([^,]+)/i) || s.match(/pick ?up\s*\(([^)]+)\)/i);
   var place = m ? m[1].trim() : '';
   var detail = '';
@@ -2656,6 +2658,13 @@ function pickupPlaceText(source) {
   var comma = place.indexOf(',');
   if (comma >= 0) { detail = place.slice(comma + 1).trim(); place = place.slice(0, comma).trim(); }
   if (/^limit\b/i.test(place) || /^after\b/i.test(place)) place = '';
+  // A place that is not one clean link ("PIxie Flats?", "......", "world (Eternity Isle, The Docks)", "2 after ...",
+  // "Eternity Isle - Lower Docks") falls back to "the world", and the source's own wording goes in the comment.
+  if (place && (/\?/.test(place) || /^[.\s]+$/.test(place) || /world \(/i.test(place) || /^\d/.test(place) || / - /.test(place))) {
+    var raw = s.match(/pick ?up(?: in|:)\s*([^,(]*(?:\([^)]*\))?[^,]*)/i) || s.match(/pick ?up\s*\(([^)]+)\)/i);
+    detail = raw ? raw[1].trim() : place;
+    place = '';
+  }
   var note = 'on the [[PARENT]] / near [[LANDMARK]]' + (detail ? ' -- ' + detail : '');
   if (!place) return 'in the world<!--in [[PLACE]] ' + note + '-->';
   var links = place.split(/\s+or\s+/).map(function (p) { return '[[' + p.trim() + ']]'; }).join(' or ');
