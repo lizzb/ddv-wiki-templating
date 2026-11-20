@@ -943,20 +943,30 @@ section_map = {
     // TODO - add to relatedItems in alpha sort order
     var resultArray = [];
 
+    // DDV-65 (N33): a row counts toward its own bundle (the first in its source) and toward every mega bundle its
+    // source names, each with that bundle's own count; a mega bundle was never collected before, so it had no article.
+    var entries = [];
     dataArray.forEach(function (item) {
+      var listed = Array.isArray(item.bundles) ? item.bundles : [];
+      var first = listed.find(function (b) { return b.bundleName === item.bundleName; });
+      entries.push({ item: item, bundle: first || { bundleName: item.bundleName, bundlePrice: item.bundlePrice, bundleQty: item.bundleQty, msCost: item.msCost } });
+      listed.forEach(function (b) {
+        if (b.isMega && b !== first) entries.push({ item: item, bundle: b });
+      });
+    });
+
+    entries.forEach(function (entry) {
+      let item = entry.item;
       let itemID = item.ID || item.id || item.itemID;
 
-      // TODO: parse source value to determine itemQty and msCost per item
-      let bundleQty = item.bundleQty || "TBD";
-      let msCost = item.msCost || "NA"
+      let bundleQty = entry.bundle.bundleQty || "TBD";
+      let msCost = entry.bundle.msCost || "NA"
       let houseSize = item.W ? `${item.W}x${item.L}` : item.size; //'WWxLL'
 
-      // bundleQty, msCost 
-
-      const searchItem = item.bundleName;
-      //item = parseItemSource(item); // Item source already parsed for infobox, shouldnt be necessary here ... but think logic flow is wonky
+      const searchItem = entry.bundle.bundleName;
       const foundObject = resultArray.find( (obj) => obj.bundleName === searchItem );
       if (foundObject) {
+        if (entry.bundle.isMega) foundObject.isMega = true;
         //if (!foundObject.psBundleItems) foundObject.psBundleItems = [];
         foundObject.psBundleItems.push(item.name);
 
@@ -965,33 +975,32 @@ section_map = {
         foundObject.itemArray.push(itemObj);
 
       } else {
-        // **** TODO - single-item bundles seem to have duplicate values??? or perhaps just using the wrong template - also not including one of the items in multi-item bundles??
-        item.psBundleItems = [];
-        item.psBundleItems.push(item.name);
-
         // limited is currently the propertyname being used for icon
         //let collection_icon = (item.limited == 'b') ? 'premium' : 'notpremium';
         let itemObj = { "id": itemID, "name": item.name, "qty": bundleQty, "msCost": msCost, "itemType": item.itemType, "universe": item.universe, "collection_icon": "premium", "categories": item.category ? item.category.split(','): '' };
         itemObj.size = houseSize; // TODO: is only relevant if item is a house
-        item.itemArray = [];
-        item.itemArray.push(itemObj);
-        //resultArray.push(item);
 
         // default/initialize the bundle version to whatever the version of the first item itemType was,
         // which is NOT robust for returning items - if you set to item.version
         // TODO FIX VERSION - for now, default to the global variable "updateNumber" - the current/latest update
         let bundleObj = {
-          bundleName: item.bundleName,
-          bundlePrice: item.bundlePrice,
-          psBundleItems: item.psBundleItems,
+          bundleName: entry.bundle.bundleName,
+          bundlePrice: entry.bundle.bundlePrice,
+          psBundleItems: [item.name],
           //bundleType: item.itemType,
           //version: updateNumber, //item.version,
           version: item.version, // versionAdded should use version of first item added for historical bundles - but this will break with returning star path bundles! in that case should use column val becameBundle
 
           protoDbName: "unknown",
-          friendlyName: item.bundleName,
-          itemArray: item.itemArray
+          friendlyName: entry.bundle.bundleName,
+          itemArray: [itemObj],
+          isMega: Boolean(entry.bundle.isMega)
       };
+      // the row keeps the lists of its own bundle (as before; nothing else reads them)
+      if (!entry.bundle.isMega || entry.bundle.bundleName === item.bundleName) {
+        item.psBundleItems = bundleObj.psBundleItems;
+        item.itemArray = bundleObj.itemArray;
+      }
 
       resultArray.push( bundleObj );
     }
@@ -1003,7 +1012,7 @@ section_map = {
       bundleObj.standaloneBundleNaming = isStandaloneBundle(bundleObj.bundleName);
 
 
-      bundleObj.bundleType = determinePremiumBundleType(bundleObj.itemArray);
+      bundleObj.bundleType = bundleObj.isMega ? 'Mega Bundle' : determinePremiumBundleType(bundleObj.itemArray);
     });
 
 
@@ -1180,30 +1189,39 @@ section_map = {
     let bundleType = bundleObj.bundleType;
     let bundleVersion = bundleObj.version;
 
-    let psBundleItemsInline = bundleObj.psBundleItems.join(', ');
+    // DDV-65 (N32): the items in row order, each with its count in this bundle when more than one: "Name (10)"
+    let countOf = function (itemObj) { return (typeof itemObj.qty === 'number' && itemObj.qty > 1) ? ` (${itemObj.qty})` : ''; };
+    let psBundleItemsInline = bundleObj.itemArray.map(function (itemObj) { return itemObj.name + countOf(itemObj); }).join(', ');
+    let countsUnknown = bundleObj.itemArray.some(function (itemObj) { return typeof itemObj.qty !== 'number'; });
+
+    // N31: a bundle of villager house skins (and other Building Skins) is a Building Dream Style bundle on the wiki;
+    // bundleType itself stays "Building", the value the shop-page tools read
+    let articleCategory = bundleObj.itemArray.some(function (itemObj) { return itemObj.itemType === 'Building Skin'; }) && bundleType === 'Building'
+      ? 'Building Dream Style' : bundleType;
 
   var imageParam = `${bundleName}`; // vs '%%bundleName%% Store'
-  var itemsParam1 = '<!--TODO: VERIFY ORDER BEFORE COPY/PASTING BELOW-->'; // vs ''
-  var itemsParam2 = "\n<!--|itemgallery={{Gallery|ITEM_COUNTSINGLE|caption='''[[ITEM_COUNTSINGLE]]'''|link=ITEM_COUNTSINGLE}}\n{{Gallery|NITEM_COUNTMANY|caption='''[[NITEM_COUNTMANY]]''' (ITEM_COUNT)|link=NITEM_COUNTMANY}}-->"; // vs '%%psBundleItems%%'
+  var itemsParam2 = `${psBundleItemsInline}`;
+  // one gallery row per item, its count after the link (as the wiki's bundle articles); a mega bundle's gallery starts
+  // on its own line, as the wiki's mega bundle articles. A Building Dream Style bundle has no gallery (as on the wiki).
+  var gallery = bundleObj.itemArray.map(function (itemObj) {
+    return `{{Gallery|${itemObj.name}|caption='''[[${itemObj.name}]]'''${countOf(itemObj)}|link=${itemObj.name}}}`;
+  }).join('\n');
+  if (articleCategory !== 'Building Dream Style') {
+    itemsParam2 += `\n|itemgallery=${bundleObj.isMega ? '\n' : ''}${gallery}`;
+  }
 
   if (bundleObj.standaloneBundleNaming) {
     imageParam = `${bundleName} Store`;
-    itemsParam1 = '';
-    itemsParam2 = `${psBundleItemsInline}`; //'%%psBundleItems%%'; // will be single item, usually (unless standalone naming is being used because bundle name = item name contained but >1 item)
+    itemsParam2 = `${psBundleItemsInline}`; // will be single item, usually (unless standalone naming is being used because bundle name = item name contained but >1 item)
   }
-  if (bundleType) {
-    // TODO: set to "House Dream Style", "Tool Dream Style", "Character Dream Style", "Companion"
-    // currently we do not have a property like that available, must be manually set from sheet as first column - jk we should have this already by determinebundletype
-  }
-  var tempTemplate = `{{infobox\n|name=${bundleName}\n|image=${imageParam}.png\n|width=350px\n|type=Premium Bundle\n|category=${bundleType}\n|from=Premium Shop\n|sellprice={{price|${bundlePrice}|moonstone}}`;
-  tempTemplate += `\n|items=${psBundleItemsInline}${itemsParam1}\n}}`;
-  tempTemplate += `\n{{BundleDescription\n|${bundleName}\n|type=Premium Bundle\n|category=${bundleType}\n|from=Premium Shop\n|bundlePrice=${bundlePrice}`;
+  var tempTemplate = `{{infobox\n|name=${bundleName}\n|image=${imageParam}.png\n|width=350px\n|type=Premium Bundle\n|category=${articleCategory}\n|from=Premium Shop\n|sellprice={{price|${bundlePrice}|moonstone}}`;
+  tempTemplate += `\n|items=${psBundleItemsInline}\n}}`;
+  tempTemplate += `\n{{BundleDescription\n|${bundleName}\n|type=Premium Bundle\n|category=${articleCategory}\n|from=Premium Shop\n|bundlePrice=${bundlePrice}`;
   tempTemplate += `\n|items=${itemsParam2}`;
   tempTemplate += `\n|dates=\n* ${startWeekDate} - ${endWeekDate}`;
   tempTemplate += `\n}}`;
-  // The order and counts of a house or companion bundle need no check (a house, or a companion with its extras); every other
-  // bundle's order and counts are also in the Premium Shop history table, so the tag says to check both places.
-  if (!/House|Companion|Building/.test(String(bundleType || ''))) {
+  // N32: the items and counts are filled in, so the check tag stays only while a count is unknown ("(xX)" in the sheet)
+  if (countsUnknown) {
     tempTemplate += ` {{cleanup|TODO - verify item order and counts here and in the Premium Shop history table}}`;
   }
 
@@ -4064,7 +4082,7 @@ function parseItemSourceOnce(item) {
       const msMatch = match[4];  // e.g., "250" or "___"
 
       // Process Quantity
-      let bundleQty = 1; // Default
+      let bundleQty = 1; // Default (no "(xN)": one)
       if (qtyMatch) {
         if (qtyMatch.toLowerCase() === 'xx') {
           bundleQty = "TBD";
@@ -4072,10 +4090,8 @@ function parseItemSourceOnce(item) {
           bundleQty = parseInt(qtyMatch.replace(/x/i, ''), 10);
         }
       }
-      else {
-        // if !qtyMatch
-        bundleQty = "TBD";
-      }
+      // DDV-65: no "(xN)" means one, as the comment above says and as the sheet writes a count only when it is
+      // more than one ("(xX)" is the unknown count); this used to give "TBD"
 
       // TODO FIX: this looks like its being called 3x per item?
 
@@ -4101,7 +4117,8 @@ function parseItemSourceOnce(item) {
         bundleName,
         bundlePrice,
         bundleQty,
-        msCost
+        msCost,
+        isMega: /Mega Bundle\s*-/i.test(match[0]) // DDV-65 (N33): "Premium Bundle - Mega Bundle - <name>"
       });
     }
 
@@ -5242,7 +5259,8 @@ function assignRelatedItemsFromInputArray(item, bundleArray) {
   bundleArray.forEach(function(bundleItem) {
 
     // make sure the name of bundle is defined, otherwise everything without a bundle will lump together
-    if (bundleItem.bundleName) {
+    // (DDV-65: a mega bundle's items are not related items; the item's own bundle gives them)
+    if (bundleItem.bundleName && !bundleItem.isMega) {
       if (bundleItem.psBundleItems.includes(item.name) && bundleItem.psBundleItems.length >1) {
         // Filter out the item whose name matches itemObj.name and assign to relatedItems
         item.relatedItems = bundleItem.psBundleItems.filter(
