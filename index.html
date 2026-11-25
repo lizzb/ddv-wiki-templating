@@ -86,12 +86,15 @@
           <p>
             <label><input type="checkbox" id="placementConfirmedCB" class="settings-element"> Size/Placement/Surface Area/Environment Confirmed</label>
           </p>
+          <p>
+            <label><input type="checkbox" id="universeConfirmedCB" class="settings-element"> Universe Confirmed</label>
+          </p>
           <div class="premium-setting">
             <h5>Premium items</h5>
             <p>
               <label><input type="checkbox" id="premiumConfirmedCB" class="settings-element"> Follow the boxes above</label>
             </p>
-            <p class="setting-note">Off: premium articles keep collection, tags, price, size, functions and placement commented out, whatever the boxes above say.</p>
+            <p class="setting-note">Off: premium articles keep collection, tags, price, size, functions, placement and universe commented out, whatever the boxes above say.</p>
           </div>
           <p>
             <label><input type="checkbox" id="showItemDebugCB" class="settings-element"> Show Item Debug</label>
@@ -260,7 +263,7 @@
 // When ANY of these change, immediately re-render the wiki output.
 // This is delegated so it works even if DOM elements are added/changed later.
 document.addEventListener('change', function(e) {
-  if (!e.target.matches('#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #placementConfirmedCB, #premiumConfirmedCB, #showItemDebugCB')) return;
+  if (!e.target.matches('#priceConfirmedCB, #categoriesColorsTraitsConfirmedCB, #tagsConfirmedCB, #collectionConfirmedCB, #functionsConfirmedCB, #placementConfirmedCB, #universeConfirmedCB, #premiumConfirmedCB, #showItemDebugCB')) return;
   if (typeof d !== 'undefined' && d && typeof d.convert === 'function') {
     d.convert();
   }

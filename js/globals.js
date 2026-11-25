@@ -56,7 +56,10 @@ function readEngineSettings() {
     // size, placement, surface area and environment (own box since DDV-28)
     placementConfirmed: document.getElementById("placementConfirmedCB").checked,
 
-    // premium items: off = collection, tags, price, size, functions and placement stay commented out on them (DDV-27)
+    // universe in the infobox, description template and intro sentence (DDV-74)
+    universeConfirmed: document.getElementById("universeConfirmedCB").checked,
+
+    // premium items: off = collection, tags, price, size, functions, placement and universe stay commented out on them (DDV-27)
     premiumConfirmed: document.getElementById("premiumConfirmedCB").checked,
 
     // whether to console print out source of item as detected
