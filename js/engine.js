@@ -2781,6 +2781,8 @@ function pickupPlaceText(source) {
   var s = source.split('\n')[0];
   // "must re-pick up in 1.22" is a note about an update; a separate "pick up" in the same line still counts
   s = s.replace(/(?:must\s+)?re-pick ?up(?:\s+in\s+[\d.]+)?/gi, '');
+  // "Pick up again if crafted prior to ..." is a note about collecting it again, not a place in the world
+  s = s.replace(/pick ?up again\b[^,;]*/gi, '');
   if (!/pick ?up/i.test(s)) return null;
   var m = s.match(/pick ?up(?: in|:)\s*([^,]+)/i) || s.match(/pick ?up\s*\(([^)]+)\)/i);
   var place = m ? m[1].trim() : '';
@@ -2799,12 +2801,13 @@ function pickupPlaceText(source) {
   }
   var note = 'on the [[PARENT]] / near [[LANDMARK]]' + (detail ? ' -- ' + detail : '');
   if (!place) return 'in the world<!--in [[PLACE]] ' + note + '-->';
-  var links = place.split(/\s+or\s+/).map(function (p) {
-    p = p.trim();
+  // "A or B" and "A/B/C" are lists of places, one link each ("[[A/B]]" would be a subpage that does not exist)
+  var links = place.split(/\s*\/\s*|\s+or\s+/).map(function (p) { return p.trim(); }).filter(Boolean).map(function (p) {
     var the = PICKUP_PLACES_WITH_THE.some(function (x) { return x.toLowerCase() === p.toLowerCase(); }) ? 'the ' : '';
     return the + '[[' + p + ']]';
-  }).join(' or ');
-  return 'in ' + links + '<!--' + note + '-->';
+  });
+  var list = links.length > 2 ? links.slice(0, -1).join(', ') + ' or ' + links[links.length - 1] : links.join(' or ');
+  return 'in ' + list + '<!--' + note + '-->';
 }
 
 function isQuestItem(item) {
