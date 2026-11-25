@@ -1730,9 +1730,9 @@ function biomeFirst(rows, column) {
 function biomeList(text) {
   return text ? text.split(/\s*[,;]\s*/).filter(function (s) { return s; }) : [];
 }
-// a section link on the biome's own page: {{name|Wishing Alps|link=Wishing Alps#Silver_Summit{{!}}Silver Summit}}
+// a section link on the biome's own page: {{name|Wishing Alps|link=Wishing Alps#Silver Summit{{!}}Silver Summit}} (DDV-80: spaces, no underscores)
 function biomeRegionLink(biome, region) {
-  return '{{name|' + biome + '|link=' + biome + '#' + region.replace(/ /g, '_') + '{{!}}' + region + '}}';
+  return '{{name|' + biome + '|link=' + biome + '#' + region + '{{!}}' + region + '}}';
 }
 function biomePrice(value) {
   return value ? wrapComment('{{price|' + value + '}}', !priceConfirmed) : '';
@@ -4255,7 +4255,7 @@ function output_from(item) {
   // DDV-24: a "Store ... after ..." source is a conditional Scrooge's Store item even when the store
   // column is empty or holds a clothing slot (table, trio, window)
   var storeKind = item.inStore;
-  if (item.storeCondition && ['EI', 'SV', 'WM', 'HW', 'KS', 'HW - C', 'x - C'].indexOf(storeKind) < 0) storeKind = 'x - C';
+  if (item.storeCondition && (storeKind === 'x' || SCROOGE_STORE_VALUES.indexOf(storeKind) < 0)) storeKind = 'x - C';
 
   switch (storeKind) {
   case 'EI':
@@ -4263,7 +4263,11 @@ function output_from(item) {
   case 'WM':
   case 'HW':
   case 'KS':
+  case 'EI - C': // DDV-80: every village's conditional code reads like 'HW - C'
+  case 'SV - C':
+  case 'WM - C':
   case 'HW - C':
+  case 'KS - C':
     if (showItemDebug) {
       console.log(item.name, ' is a scrooge item');
     }
@@ -4278,6 +4282,8 @@ function output_from(item) {
       if (item.quest) {
         itemSource += ` after completing the quest [[${item.quest}]]`;
       }
+      // DDV-80: a '<village> - C' row whose source names no condition the engine reads keeps the source as a comment
+      if (/ - C$/.test(storeKind) && !item.character && !item.quest) itemSource += '<!--' + item.source + '-->';
     }
     itemSource += '. ';
     break;
@@ -4345,7 +4351,7 @@ function output_from(item) {
 
   // DDV-25 (T08): a floating festival puzzle reward, as js/todos and Horse Topiary have it
   if (item.puzzle) {
-    let anchor = `${item.puzzleEvent}#${item.puzzle.replace(/ /g, '_')}`;
+    let anchor = `${item.puzzleEvent}#${item.puzzle}`; // DDV-80: spaces in the anchor, no underscores
     infoboxFrom = `|from=[[${item.puzzleEvent}]]\n|reward=[[${anchor}|"${item.puzzle}" puzzle]]`;
     itemSource = `It is a reward for solving the [[${anchor}|${item.puzzle}]] puzzle during the limited time [[${item.puzzleEvent}]] event.<!--Puzzle solving details, including link to Pouch object.-->`;
   }
@@ -4853,8 +4859,10 @@ function output_collectionStatus(item) {
 }
 
 // DDV-68: the store column of an item sold in Scrooge's Store (any village, with or without a condition)
+// DDV-80: each village code also has a conditional form '<village> - C'
+var SCROOGE_STORE_VALUES = ['x', 'x - C', 'EI', 'SV', 'WM', 'HW', 'KS', 'EI - C', 'SV - C', 'WM - C', 'HW - C', 'KS - C'];
 function isScroogeStoreValue(value) {
-  return ['x', 'x - C', 'EI', 'SV', 'WM', 'HW', 'KS', 'HW - C'].indexOf(String(value || '').trim()) >= 0;
+  return SCROOGE_STORE_VALUES.indexOf(String(value || '').trim()) >= 0;
 }
 
 function wrapUnconfirmedCleanup(text) {
@@ -5760,7 +5768,7 @@ function generateVillagerHouseTemplate(item) {
   var size = item.W && item.L ? item.W + 'x' + item.L : '';
   var t = '{{infobox\n|image=' + item.name + '.png\n|name=' + item.name + '\n|type=Houses\n|category=Villager House\n';
   t += '|residents=' + residents.map(function (r) { return '{{name|' + r + '}}'; }).join('<br>') + '\n';
-  t += '|universe=\n|unlocks={{name|Star Coins|link=Villagers\'_Houses#Unlock_Costs{{!}}Dynamic}} based on unlock order\n';
+  t += '|universe=\n|unlocks={{name|Star Coins|link=Villagers\' Houses#Unlock Costs{{!}}Dynamic}} based on unlock order\n';
   t += '|gridSize=' + (size ? markHouseSize(size) : '<!--WxD' + DIMENSIONS_NOT_FILLED_MARKER) + '\n'; // DDV-50 (B44)
   t += '|unlockquest=' + (q ? '{{quest|' + q.quest + (q.character ? '|friendship=' + q.character : '') + (q.realm ? '|realm=' + q.realm : '') + '}}' : '<!--{{quest|QUESTNAME}}-->') + '\n}}\n';
   t += "'''" + item.name + "''' is a [[Villagers' Houses|Villager House]]";
@@ -6064,7 +6072,7 @@ function generateHouseTemplate(item) {
     //template += output_collectionStatus(item);
 
     //template += output_itemUsage(item);
-    template += "\n\nIt can be applied using the [[Furniture menu]] inside the Inventory by picking up the [[Player's House]], which enables an option to '''Replace''', and then choosing a replacement House Dream Style. The Player's House must be fully upgraded to change its Dream Style. It can be also be placed in the Valley as an [[Dream_Styles#Placing Additional House Dream Styles|additional House]].";
+    template += "\n\nIt can be applied using the [[Furniture menu]] inside the Inventory by picking up the [[Player's House]], which enables an option to '''Replace''', and then choosing a replacement House Dream Style. The Player's House must be fully upgraded to change its Dream Style. It can be also be placed in the Valley as an [[Dream Styles#Placing Additional House Dream Styles|additional House]].";
 
     // Occasionally house bundles include furniture
     template += output_relatedItems(item);
