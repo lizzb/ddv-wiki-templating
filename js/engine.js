@@ -62,11 +62,13 @@ var SETTINGS = {
   collectionConfirmed: { type: 'boolean', default: false, about: 'collection confirmed (else wrapped in a cleanup tag)' },
   functionsConfirmed: { type: 'boolean', default: false, about: 'furniture functions confirmed (else filler text)' },
   premiumConfirmed: { type: 'boolean', default: false,
-    about: 'premium items: the collection, tags, price, size, functions and placement boxes apply to them too (off: all of those are commented out on a premium article)' },
+    about: 'premium items: the collection, tags, price, size, functions, placement and universe boxes apply to them too (off: all of those are commented out on a premium article)' },
   premiumBuypriceBlank: { type: 'boolean', default: false,
     about: 'premium furniture: an empty |buyprice= and none at all for premium flooring and wallpaper (off: the sheet\'s star coin price, as for other furniture)' },
   placementConfirmed: { type: 'boolean', default: false,
     about: 'size, placement, surface area and environment confirmed (part of categoriesColorsTraitsConfirmed before DDV-28)' },
+  universeConfirmed: { type: 'boolean', default: false,
+    about: 'universe confirmed (DDV-74; off: the universe is commented out in the infobox, the description template and the intro sentence)' },
 
   // other
   showItemDebug: { type: 'boolean', default: false, about: 'print the detected item source to the console' },
@@ -100,6 +102,7 @@ var VILLAGE_NAMES = { DV: 'Dreamlight Valley', EI: 'Eternity Isle', SV: 'Storybo
 var updateNumber, newExpansionCollection, starPathNameShort, starPathName, starPathToken;
 var mealNavbox, bundleStartDate, bundleEndDate, companionCollection, wikiVersionLabels;
 var collectionConfirmed, priceConfirmed, categoriesColorsTraitsConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed, premiumConfirmed;
+var universeConfirmed;
 var premiumBuypriceBlank;
 var showItemDebug, renderPSbundles, customTemplate;
 
@@ -240,6 +243,14 @@ function isVowel(x) {
 }
 
 function createUniverseLink(itemType, universe) {
+  var link = universeLinkText(itemType, universe);
+  // DDV-74 (N22): an unconfirmed universe is commented out with its "n" (" is a<!--n [[Furniture#Aladdin|Aladdin]] themed-->
+  // piece of ..."); a blank one is commented already, a character dream style names no universe
+  if (universeConfirmed || !link.slice(5) || /^ is a</.test(link) || universe == 'Character Dream Style') return link;
+  return ' is a' + wrapComment(link.slice(5), true);
+}
+
+function universeLinkText(itemType, universe) {
   var output = ' is a';
 
   // don't have full coverage for this conditional
@@ -1327,6 +1338,8 @@ function insertCookingLink(input) {
     return '[[Cooking#Desserts|dessert meal]]';
   case 'Any Dairy and Oil':
     return '[[:Category:Dairy and Oil|any Dairy and Oil]]';
+  case 'Any Dairy or Oil': // DDV-74 (N58): the game's wording, as on Kraken's Catch
+    return '[[:Category:Dairy and Oil|any Dairy or Oil]]';
   case 'Any Sweet':
     return '[[:Category:Sweets|any Sweet]]';
   case 'Any Fruit':
@@ -1503,6 +1516,7 @@ function renderMeals(dataArray) {
     item.ingredientListString = item.ingredientListString.replaceAll('Any Spice', 'Spices');
     item.ingredientListString = item.ingredientListString.replaceAll('Any Sweet', 'Sweets');
     item.ingredientListString = item.ingredientListString.replaceAll('Any Vegetable', 'Vegetables');
+    item.ingredientListString = item.ingredientListString.replace(/Any Dairy (?:or|and) Oil/g, 'Dairy and Oil'); // DDV-74 (N58)
 
 
 
@@ -1552,6 +1566,8 @@ function renderMeals(dataArray) {
     template = template.replaceAll('{{name|Any Spice}}', '{{name|Spices & Herbs|link=:Category:Spices{{!}}Any Spice}}');
     template = template.replaceAll('{{name|Any Sweet}}', '{{name|Sweets|link=:Category:Sweets{{!}}Any Sweet}}');
     template = template.replaceAll('{{name|Any Vegetable}}', '{{name|Vegetables|link=:Category:Vegetables{{!}}Any Vegetable}}');
+    // DDV-74 (N58): as the owner wrote it for Kraken's Catch
+    template = template.replaceAll('{{name|Any Dairy or Oil}}', '{{name|Dairy and Oil|link=:Category:Dairy and Oil{{!}}Any Dairy or Oil}}');
 
     renderedHTML += microTemplate(template, item);
     renderedHTML += delimiter;
@@ -1931,15 +1947,17 @@ function generateFlowerTemplate(item) {
       // as Balloon Fish on the wiki (rev 153572): from = the Fishing icon, a pool, companion bonus fishing
       template += '\n|pool=<!--{{pool|None}} or {{pool|White}}-->';
       template += '\n|from={{inlineIcon|Fishing|size=20|link=Fishing}}';
-      template += '\n|companionbonus=fishing';
+      // DDV-74 (N6): a companion bonus stays commented out until someone has seen it in game (no box covers it)
+      template += '\n|companionbonus=<!--fishing-->';
     }
-    else template += '\n|from=<!--{{inlineIcon|Foraging|size=20|link=Foraging}} / <span id="nametemplate">[[File:Menu_Icon_Digging.png|20x20px|link=]] [[Digging]]</span> / <span id="nametemplate">[[File:Menu_Icon_Fishing.png|20x20px|link=]] [[Fishing]]</span>-->';
+    // DDV-74 (N10): mined materials (Pumice Stone) get the Mining choice too, as the gem article writes it
+    else template += '\n|from=<!--{{inlineIcon|Foraging|size=20|link=Foraging}} / <span id="nametemplate">[[File:Menu_Icon_Digging.png|20x20px|link=]] [[Digging]]</span> / <span id="nametemplate">[[File:Menu_Icon_Fishing.png|20x20px|link=]] [[Fishing]]</span> / {{inlineIcon|Mining|size=20|link=Mining}}-->';
     template += '\n|gridSize=';
     template += '\n|placement=';
     template += '\n|stackMax=';
     template += '\n}}';
     if (fishCatch) template += "\n'''%%name%%''' is a [[Fishing#Crafting Materials|crafting material]] that can be caught while [[fishing]]<!-- in open water or white pools--> in [[" + newExpansionCollection + "]].";
-    else template += "\n'''%%name%%''' is a [[Foraging#Crafting Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
+    else template += "\n'''%%name%%''' is a [[Foraging#Crafting Materials|foraged material]] which can be found<!-- [[Foraging|foraged]] from the ground / [[digging]] the ground / [[fishing]] in any open water / [[mining]] rock nodes using the [[Pickaxe]]--> in <!--the [[REGION1]] area in -->[[" + newExpansionCollection + "]].";
     var collName = newExpansionCollection + (fishCatch ? ' Fish Collection' : ' Foraging Collection');
     template += '\n\nOnce collected it will be added to the [[:Category:' + collName + '|' + collName + ']].';
     template += "\n\n" + (fishCatch ? "[[Crafting|Crafting materials]]" : "[[Foraging|Foraged items]]") + " can be placed in the world by highlighting them inside the [[Inventory]] window and selecting ''Drop''. After it has been removed from inventory, it can be positioned using [[Furniture Menu#Placing Furniture|furniture placement mode]].";
@@ -3236,7 +3254,7 @@ function output_universe(item) {
   }
   if (item.universe == 'General') item.universe = 'Other';
 
-  var output = '|universe=%%universe%%\n'; //`|universe=${item.universe}\n`;
+  var output = '|universe=' + universeField() + '\n'; //`|universe=${item.universe}\n`;
 
   /*
     if (item.universe == "(none)") {
@@ -3252,10 +3270,16 @@ function output_universe(item) {
   // Q2 (B12): "none (Hercules)", "none - Landscaping (Trees)": no universe of its own, so the infobox
   // says none; the navbox still groups the item with the universe in brackets (output_navbox)
   if (inferredUniverse(item) !== null) {
-    output = '|universe=none\n';
+    output = '|universe=' + wrapComment('none', !universeConfirmed) + '\n';
   }
 
   return output;
+}
+
+// DDV-74 (N22, N71): the universe placeholder for an infobox or description template; commented out until the
+// "universe confirmed" box is ticked (premium articles: and the premium box)
+function universeField() {
+  return wrapComment('%%universe%%', !universeConfirmed);
 }
 
 // Q2 (B04, B12): for an item with no universe of its own ("none", "None", "(none)",
@@ -3447,7 +3471,7 @@ function output_relatedItems(item) {
 
   var output = '';
   //output = '\n<!--\n{{relatedItems | xxx, xxx, xxx}}\n-->\n';
-  if (item.bundleName && item.relatedItems && item.relatedItems.length >= 1) {
+  if ((item.bundleName || item.questRewardSet) && item.relatedItems && item.relatedItems.length >= 1) {
     //output = `\n<!--\n{{relatedItems | ${item.relatedItems.join(', ')} }}\n-->`;
 
     // alpha size related items before outputting
@@ -3507,7 +3531,11 @@ function output_prioritizedCategory(categoryVal) {
   var prioritizedCategories = ["House", "Wallpaper", "Flooring", "Attractions", "Windows", "Appliance", "Utilities", "Electronics", "Seating", "Tables", "Beds", "Rugs", "Foliage", "Landscaping", "Rocks", "Lighting", "Misc.", "Storage", "Art", "Decor", "Wall", "Essentials", "Trimmings", "Companions", "Tools", "Hats", "Masks", "Glasses", "Earrings", "Neckwear", "Coats", "Tops", "Back", "Bracelets", "Gloves", "Pants", "Shorts", "Skirts", "Hose Socks", "Shoes", "Dresses", "Costumes", "Gliders", "Hairstyles"];
   //TODO: "Floors", "Ceiling Textures", "Ceiling Decorations", "Trees", "Fencing"... Paths?
 
+  // DDV-74 (N36): {{NavboxFurniture}} has no art section (wiki: "Art, Misc." -> misc), so Art is skipped for the next
+  // category, and an item that is only Art goes under decor
+  prioritizedCategories = prioritizedCategories.filter(function (c) { return c != 'Art'; });
   output = getFirstCategoryMatch(categoryVal, prioritizedCategories);
+  if (!output && categoryVal.split(',').map(function (c) { return c.trim(); }).indexOf('Art') >= 0) output = 'Decor';
 
   return output.toLowerCase().trim().replace(/\s/g, '').replace(/\./g, '');
 }
@@ -5252,6 +5280,38 @@ if (item.itemType == 'Furniture' || item.itemType == 'Crafted Furniture') {
 }
 
 
+// DDV-74 (N70): clothing rewarded together by one level 10 friendship quest lists the others as related items. The
+// key is the source part "<Villager> Level 10 Quest (<quest>) (reward)" (quest/Quest as the sheet writes either);
+// only rows rendered together are known, as for bundles.
+var LEVEL_TEN_REWARD_RE = /([^,/()]+?)\s+Level 10 quest\s*\(([^)]+)\)\s*\(reward\)/gi;
+function levelTenQuestRewardKeys(item) {
+  var keys = [], m, src = String(item && item.source || '');
+  LEVEL_TEN_REWARD_RE.lastIndex = 0;
+  while ((m = LEVEL_TEN_REWARD_RE.exec(src))) keys.push((m[1].trim() + '|' + m[2].trim()).toLowerCase());
+  return keys;
+}
+function levelTenQuestRewardSets(dataArray) {
+  var sets = {};
+  dataArray.forEach(function (item) {
+    if (!item || !item.name || String(item.itemType || '').trim() != 'Clothing') return;
+    levelTenQuestRewardKeys(item).forEach(function (key) {
+      sets[key] = sets[key] || [];
+      if (sets[key].indexOf(item.name) < 0) sets[key].push(item.name);
+    });
+  });
+  return sets;
+}
+function assignQuestRewardRelatedItems(item, sets) {
+  if (!item || (item.relatedItems && item.relatedItems.length) || String(item.itemType || '').trim() != 'Clothing') return item;
+  levelTenQuestRewardKeys(item).forEach(function (key) {
+    (sets[key] || []).forEach(function (name) {
+      if (name !== item.name && item.relatedItems.indexOf(name) < 0) item.relatedItems.push(name);
+    });
+  });
+  if (item.relatedItems.length) item.questRewardSet = true;
+  return item;
+}
+
 // may not be ALL related items total, will be limited to whatevers in bundleArray
 function assignRelatedItemsFromInputArray(item, bundleArray) {
 
@@ -5577,6 +5637,7 @@ function generateVillagerHouseSkinTemplate(item) {
   t += '\n\n' + generateBodyFromPremiumShop(item);
   t += "{{cleanup|VERIFY -- It can be applied using the [[Furniture menu]] inside the Inventory by picking up " + link +
     ", which enables an option to '''Replace''', and then choosing a replacement Building Dream Style.}}";
+  t += output_relatedItems(item); // DDV-74 (N27): the other skins of its bundle
   t += output_history(item) + '\n\n{{NavboxDreamStyle|building}}';
   return t;
 }
@@ -5782,6 +5843,7 @@ function renderClothingFurnitureArticle(dataArray) {
 
   // get unique bundles with populated items from input array
   var bundleArray = parseUniqueBundles(dataArray);
+  var questRewardSets = levelTenQuestRewardSets(dataArray); // DDV-74 (N70)
 
   var delimiter = ARTICLE_DELIMITER;
 
@@ -5790,6 +5852,7 @@ function renderClothingFurnitureArticle(dataArray) {
 
     // possibly assigning itself recursively...??
     item = assignRelatedItemsFromInputArray(item, bundleArray);
+    item = assignQuestRewardRelatedItems(item, questRewardSets);
 
     // =*=*=*=*= PARSING ITEM START =*=*=*=*=
     // trying to troubleshoot why interpolation doesnt work for bundleName etc params
@@ -5885,20 +5948,21 @@ function renderClothingFurnitureArticle(dataArray) {
     renderedHTML += delimiter;
   };
 
-  // DDV-27: a premium article comments out collection, tags, price, size, functions and placement
+  // DDV-27: a premium article comments out collection, tags, price, size, functions, placement (and, DDV-74, universe)
   // unless the "premium confirmed" box is ticked as well as the field's own box (colors, traits and
   // categories are not held back). The boxes are module variables, so they are switched off for
   // this one article and put back after it.
   dataArray.forEach(function(item) {
-    var saved = [collectionConfirmed, priceConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed];
+    var saved = [collectionConfirmed, priceConfirmed, tagsConfirmed, functionsConfirmed, placementConfirmed, universeConfirmed];
     if (!premiumConfirmed && isPremiumArticle(item)) {
-      collectionConfirmed = priceConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = false;
+      // DDV-74 (N22): the universe too; premium tags are slow to read in game, so it is checked last
+      collectionConfirmed = priceConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = universeConfirmed = false;
     }
     try {
       renderOneArticle(item);
     } finally {
       collectionConfirmed = saved[0]; priceConfirmed = saved[1]; tagsConfirmed = saved[2];
-      functionsConfirmed = saved[3]; placementConfirmed = saved[4];
+      functionsConfirmed = saved[3]; placementConfirmed = saved[4]; universeConfirmed = saved[5];
     }
   });
 
@@ -5968,7 +6032,7 @@ function generateHouseTemplate(item) {
     // === ItemDescription template for house
     var itemDescriptionTemplate = '';
 
-    itemDescriptionTemplate += '{{ItemDescription\n|%%name%%\n|type=House Dream Style\n|universe=%%universe%%';
+    itemDescriptionTemplate += '{{ItemDescription\n|%%name%%\n|type=House Dream Style\n|universe=' + universeField();
 
     if (item.tier) {
       item.itemFrom = starPathDescriptionFrom(item, '\n');
@@ -6132,12 +6196,12 @@ function generateCharacterDreamStyleTemplate(item) {
     template = '';
     // for some reason type was populating with Dream Style not Character Dream Style -- too lazy to fix everything atm
     template +=
-    `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=%%universe%%\n${output_from(item)}}}\n`
+    `{{infobox\n${output_image(item)}|width=225px\n|type=Character Dream Style\n|appliedto=%%appliedto%%\n|universe=${universeField()}\n${output_from(item)}}}\n`
 
     // this could be more elegant.... usually use the itemdescription, unless it is a returning starpath item
     {
       template +=
-      '{{ItemDescription\n|%%name%%\n|type=Character Dream Style\n|character=%%appliedto%%\n|universe=%%universe%%';
+      '{{ItemDescription\n|%%name%%\n|type=Character Dream Style\n|character=%%appliedto%%\n|universe=' + universeField();
       if (item.tier) {
         item.itemFrom += starPathDescriptionFrom(item, '\n');
       }
@@ -6194,7 +6258,7 @@ function generateWallpaperFloorsDescriptionTemplate(item) {
         output_missingCategories(item);
     }
 
-    template += '{{WallpaperFloorsDescription|wftype=%%category%%|universe=%%universe%%';
+    template += '{{WallpaperFloorsDescription|wftype=%%category%%|universe=' + universeField();
 
     // todo: check for player level
 
@@ -6454,7 +6518,7 @@ function resetState() {
   updateNumber = newExpansionCollection = starPathNameShort = starPathName = starPathToken = undefined;
   mealNavbox = bundleStartDate = bundleEndDate = companionCollection = wikiVersionLabels = undefined;
   collectionConfirmed = priceConfirmed = categoriesColorsTraitsConfirmed = tagsConfirmed = functionsConfirmed = placementConfirmed = premiumConfirmed = undefined;
-  premiumBuypriceBlank = undefined;
+  premiumBuypriceBlank = universeConfirmed = undefined;
   showItemDebug = renderPSbundles = customTemplate = undefined;
   sourceParsed = null;
   renderRowNames = null;
@@ -6485,6 +6549,7 @@ function render(rows, templateType, settings) {
   functionsConfirmed = s.functionsConfirmed;
   placementConfirmed = s.placementConfirmed;
   premiumConfirmed = s.premiumConfirmed;
+  universeConfirmed = s.universeConfirmed;
   premiumBuypriceBlank = s.premiumBuypriceBlank;
   showItemDebug = s.showItemDebug;
   renderPSbundles = s.renderPSbundles;
